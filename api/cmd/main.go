@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"log"
 	"net/http"
 	"os"
 
@@ -18,9 +19,9 @@ func main() {
 		fmt.Fprint(w, http.StatusText(http.StatusOK))
 	})
 
-	fmt.Println("Server is listening on port 80...")
-	err := http.ListenAndServe(":80", nil)
+	fmt.Println("Server is listening on port 443...")
+	err := http.ListenAndServeTLS(":443", "./cert.pem", "./key.pem", nil)
 	if err != nil {
-		fmt.Printf("Failed to start server: %v\n", err)
+		log.Fatal("ListenAndServe: ", err)
 	}
 }
