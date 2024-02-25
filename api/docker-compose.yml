@@ -8,4 +8,7 @@ services:
       - ./:/go/src/email-validator/api
     environment:
       - env=DEV
-  # add reacher service
+    ports:
+      - 80:80
+  reacher:
+    image: reacherhq/backend:latest
