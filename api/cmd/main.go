@@ -11,7 +11,7 @@ import (
 
 func main() {
 	if os.Getenv("env") == "DEV" {
-		err := godotenv.Load("/.env")
+		err := godotenv.Load("./.env")
 		if err != nil {
 			log.Fatal("godotenv.Load: ", err)
 		}
