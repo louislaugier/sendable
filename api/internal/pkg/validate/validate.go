@@ -16,7 +16,7 @@ func ValidateEmailAddress(email string) error {
 		}
 	`, email))))
 	if err != nil {
-		log.Println("Error requesting local reacher:", err)
+		log.Println("error requesting local reacher:", err)
 		return err
 	}
 	defer r.Body.Close()
@@ -24,7 +24,7 @@ func ValidateEmailAddress(email string) error {
 	responseMap := map[string]interface{}{}
 	err = json.NewDecoder(r.Body).Decode(&responseMap)
 	if err != nil {
-		log.Println("Error decoding response:", err)
+		log.Println("error decoding response:", err)
 		return err
 	}
 
