@@ -3,10 +3,9 @@ services:
   api:
     build:
       context: .
-      dockerfile: ./api/Dockerfile.dev
+      dockerfile: Dockerfile.dev
     volumes:
-      - ./:/go/src/email-validator
+      - ./:/go/src/email-validator/api
     environment:
       - env=DEV
-  # frontend
-  # database
+  # add reacher service

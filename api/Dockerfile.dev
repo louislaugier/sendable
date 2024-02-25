@@ -1,13 +1,14 @@
-FROM golang:1.18-alpine
+FROM golang:1.22-alpine
 
 ENV env=dev
 
-WORKDIR /go/src/email-validator
+WORKDIR /go/src/email-validator/api
 
 COPY . .
 
-RUN go mod download && go install github.com/cosmtrek/air@latest
+RUN go install ./...
+RUN go install github.com/cosmtrek/air@latest
 
-WORKDIR /go/src/email-validator/cmd
+WORKDIR /go/src/email-validator/api/cmd
 
 CMD ["air", "."]
