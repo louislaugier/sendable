@@ -10,6 +10,12 @@ import (
 )
 
 func main() {
+	currentDir, err := os.Getwd()
+	if err != nil {
+		log.Fatal("Error getting current directory: ", err)
+	}
+	log.Println(currentDir)
+
 	if os.Getenv("env") == "DEV" {
 		err := godotenv.Load("../.env")
 		if err != nil {
@@ -30,9 +36,9 @@ func main() {
 	// 	}
 	// }
 
-	fmt.Println("HTTPS server is listening on port 443...")
-	err := http.ListenAndServeTLS(":443", "../cert.pem", "../key.pem", nil)
-	if err != nil {
-		log.Fatal("ListenAndServe: ", err)
-	}
+	// fmt.Println("HTTPS server is listening on port 443...")
+	// err := http.ListenAndServeTLS(":443", "../cert.pem", "../key.pem", nil)
+	// if err != nil {
+	// 	log.Fatal("ListenAndServe: ", err)
+	// }
 }
