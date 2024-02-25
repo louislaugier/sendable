@@ -9,6 +9,4 @@ COPY . .
 RUN go install ./...
 RUN go install github.com/cosmtrek/air@latest
 
-WORKDIR /go/src/email-validator/api/cmd
-
 CMD ["air", "."]
