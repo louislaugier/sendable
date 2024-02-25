@@ -11,7 +11,7 @@ import (
 
 func main() {
 	if os.Getenv("env") == "DEV" {
-		err := godotenv.Load("../.env")
+		err := godotenv.Load("/.env")
 		if err != nil {
 			log.Fatal("godotenv.Load: ", err)
 		}
@@ -31,7 +31,7 @@ func main() {
 	// }
 
 	fmt.Println("HTTPS server is listening on port 443...")
-	err := http.ListenAndServeTLS(":443", "../cert.pem", "../key.pem", nil)
+	err := http.ListenAndServeTLS(":443", "/cert.pem", "/key.pem", nil)
 	if err != nil {
 		log.Fatal("ListenAndServe: ", err)
 	}
