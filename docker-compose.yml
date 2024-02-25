@@ -14,7 +14,7 @@ services:
       - vpc_local
   db:
     build:
-      context: api
+      context: ./migrations
       dockerfile: Dockerfile.dev.db
     environment:
       POSTGRES_PASSWORD: pass
