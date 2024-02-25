@@ -5,20 +5,13 @@ import (
 	"log"
 	"net/http"
 	"os"
-	"path/filepath"
 
 	"github.com/joho/godotenv"
 )
 
 func main() {
-	// Use filepath.Join to build the path dynamically based on the current working directory.
-	currentDir, err := os.Getwd()
-	if err != nil {
-		log.Fatal("Error getting current directory: ", err)
-	}
-
 	if os.Getenv("env") == "DEV" {
-		err := godotenv.Load(filepath.Join(currentDir, ".env"))
+		err := godotenv.Load("../.env")
 		if err != nil {
 			log.Fatal("godotenv.Load: ", err)
 		}
@@ -38,8 +31,8 @@ func main() {
 	// }
 
 	fmt.Println("HTTPS server is listening on port 443...")
-	err = http.ListenAndServeTLS(":443", filepath.Join(currentDir, "cert.pem"), filepath.Join(currentDir, "key.pem"), nil)
+	err := http.ListenAndServeTLS(":443", "../cert.pem", "../key.pem", nil)
 	if err != nil {
-		log.Fatal("ListenAndServeTLS: ", err)
+		log.Fatal("ListenAndServe: ", err)
 	}
 }
