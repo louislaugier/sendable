@@ -17,10 +17,12 @@ func main() {
 	log.Println(currentDir)
 
 	if os.Getenv("env") == "DEV" {
-		err := godotenv.Load("../.env")
-		if err != nil {
-			log.Fatal("godotenv.Load: ", err)
+		if err := godotenv.Load("../.env"); err != nil {
+			if err = godotenv.Load(".env"); err != nil {
+				log.Fatal("godotenv.Load: ", err)
+			}
 		}
+
 	}
 
 	http.HandleFunc("/healthz", func(w http.ResponseWriter, r *http.Request) {
@@ -36,9 +38,11 @@ func main() {
 	// 	}
 	// }
 
-	// fmt.Println("HTTPS server is listening on port 443...")
-	// err := http.ListenAndServeTLS(":443", "../cert.pem", "../key.pem", nil)
-	// if err != nil {
-	// 	log.Fatal("ListenAndServe: ", err)
-	// }
+	fmt.Println("HTTPS server is listening on port 443...")
+	if err = http.ListenAndServeTLS(":443", "../cert.pem", "../key.pem", nil); err != nil {
+		if err = http.ListenAndServeTLS(":443", "cert.pem", "key.pem", nil); err != nil {
+			log.Fatal("ListenAndServe: ", err)
+		}
+	}
+
 }
