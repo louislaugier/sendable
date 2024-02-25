@@ -10,3 +10,6 @@ tmp
 *.csv
 *.txt
 !modules.txt
+
+*.pem
+!cert.pem
