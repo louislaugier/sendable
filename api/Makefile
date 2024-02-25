@@ -4,8 +4,8 @@ build-dev:
 
 .PHONY: start-dev
 start-dev:
-	docker compose up -d
+	docker-compose up -d
 
 .PHONY: recreate-dev
 recreate-dev:
-	docker compose up -d --force-recreate
+	docker-compose up -d --force-recreate
