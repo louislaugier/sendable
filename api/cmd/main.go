@@ -28,7 +28,7 @@ func main() {
 	// }
 
 	fmt.Println("Server is listening on port 443...")
-	err := http.ListenAndServeTLS(":443", "/cert.pem", "/key.pem", nil)
+	err := http.ListenAndServeTLS(":443", "../cert.pem", "../key.pem", nil)
 	if err != nil {
 		log.Fatal("ListenAndServe: ", err)
 	}
