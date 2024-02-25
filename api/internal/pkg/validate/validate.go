@@ -10,7 +10,7 @@ import (
 )
 
 func ValidateEmailAddress(email string) error {
-	r, err := http.Post("http://localhost:8080/v0/check_email", "application/json", bytes.NewBuffer([]byte(fmt.Sprintf(`
+	r, err := http.Post("http://reacher:8080/v0/check_email", "application/json", bytes.NewBuffer([]byte(fmt.Sprintf(`
 		{
 			"to_email": "%s"
 		}
