@@ -1,4 +1,4 @@
-CREATE TYPE IF NOT EXISTS order_duration AS ENUM ('monthly', 'yearly');
+CREATE TYPE order_duration AS ENUM ('monthly', 'yearly', 'lifetime');
 
 CREATE TABLE IF NOT EXISTS "public"."order" (
     "id" SERIAL PRIMARY KEY,
