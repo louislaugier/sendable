@@ -1,7 +1,9 @@
 package main
 
 import (
+	"email-validator/internal/pkg/email"
 	"fmt"
+	"log"
 	"net/http"
 	"os"
 
@@ -17,6 +19,8 @@ func main() {
 		w.WriteHeader(http.StatusOK)
 		fmt.Fprint(w, http.StatusText(http.StatusOK))
 	})
+
+	log.Println(email.Validate("l.laugier@pm.me"))
 
 	fmt.Println("Server is listening on port 80...")
 	http.ListenAndServe(":80", nil)

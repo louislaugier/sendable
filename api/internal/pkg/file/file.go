@@ -1,7 +1,7 @@
 package csv
 
 import (
-	"email-validator/internal/pkg/validate"
+	"email-validator/internal/pkg/email"
 	"encoding/csv"
 	"fmt"
 	"io"
@@ -75,7 +75,7 @@ func GetValidEmailsFromCSVIntoNewCSV(inputPath string, outputPath string) {
 					}
 				}
 				if numNumbers <= numLetters { // Only process emails where number of numbers <= number of letters
-					if err := validate.ValidateEmailAddress(ewl.Email); err == nil {
+					if err := email.Validate(ewl.Email); err == nil {
 						mu.Lock()
 						log.Printf("Valid email on line %d: %s.\n", ewl.LineNumber, ewl.Email)
 						validEmails = append(validEmails, ewl.Email)

@@ -1,4 +1,4 @@
-package validate
+package email
 
 import (
 	"bytes"
@@ -9,7 +9,7 @@ import (
 	"net/http"
 )
 
-func ValidateEmailAddress(email string) error {
+func Validate(email string) error {
 	r, err := http.Post("http://reacher:8080/v0/check_email", "application/json", bytes.NewBuffer([]byte(fmt.Sprintf(`
 		{
 			"to_email": "%s"
