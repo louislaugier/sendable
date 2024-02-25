@@ -9,3 +9,4 @@ tmp
 
 *.csv
 *.txt
+!modules.txt
