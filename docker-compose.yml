@@ -1,0 +1,12 @@
+version: '3.8'
+services:
+  api:
+    build:
+      context: .
+      dockerfile: ./api/Dockerfile.dev
+    volumes:
+      - ./:/go/src/email-validator
+    environment:
+      - env=DEV
+  # frontend
+  # database
