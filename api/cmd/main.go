@@ -19,13 +19,13 @@ func main() {
 		fmt.Fprint(w, http.StatusText(http.StatusOK))
 	})
 
-	if os.Getenv("env") == "DEV" {
-		fmt.Println("Server is listening on port 80...")
-		err := http.ListenAndServe(":80", nil)
-		if err != nil {
-			log.Fatal("ListenAndServe: ", err)
-		}
-	}
+	// if os.Getenv("env") == "DEV" {
+	// 	fmt.Println("Server is listening on port 80...")
+	// 	err := http.ListenAndServe(":80", nil)
+	// 	if err != nil {
+	// 		log.Fatal("ListenAndServe: ", err)
+	// 	}
+	// }
 
 	fmt.Println("Server is listening on port 443...")
 	err := http.ListenAndServeTLS(":443", "./cert.pem", "./key.pem", nil)

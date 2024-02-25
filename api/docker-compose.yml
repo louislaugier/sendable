@@ -9,6 +9,7 @@ services:
     environment:
       - env=DEV
     ports:
-      - 80:80
+      # - 80:80
+      - 443:443
   reacher:
     image: reacherhq/backend:latest
