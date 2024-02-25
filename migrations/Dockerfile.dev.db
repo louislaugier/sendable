@@ -1,0 +1,5 @@
+FROM postgres:15
+
+# Files will be ran in alphabetical order
+COPY migrations/migrations.sql /docker-entrypoint-initdb.d/migrations.sql
+COPY migrations/seeds.sql /docker-entrypoint-initdb.d/seeds.sql

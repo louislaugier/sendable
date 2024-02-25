@@ -1,0 +1,28 @@
+version: '3.8'
+services:
+  api:
+    build:
+      context: ./api
+      dockerfile: Dockerfile.dev
+    volumes:
+      - ./api/:/go/src/email-validator/api
+    environment:
+      - env=DEV
+    ports:
+      - 443:443
+    networks:
+      - vpc_local
+  db:
+    build:
+      context: api
+      dockerfile: Dockerfile.dev.db
+    environment:
+      POSTGRES_PASSWORD: pass
+      POSTGRES_DB: db
+    networks:
+      - vpc_local
+  reacher:
+    image: reacherhq/backend:latest
+networks:
+  vpc_local:
+    driver: bridge

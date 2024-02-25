@@ -1,7 +1,23 @@
-.PHONY: start-api-dev
-start-api-dev:
-	make -C api start-dev
+.PHONY: build-api-dev
+build-dev:
+	docker build -t app -f ./api/Dockerfile.dev --no-cache .
 
-.PHONY: start-reacher
-start-reacher:
-	docker run -d -p 8080:8080 reacherhq/backend:latest
+.PHONY: recreate-api-dev
+recreate-dev-dev:
+	docker-compose rm -sfv api
+	make build-api-dev
+	make start-dev
+
+.PHONY: start-dev
+start-dev:
+	docker-compose up -d
+
+.PHONY: recreate-dev
+recreate-dev:
+	docker-compose up -d --force-recreate
+
+.PHONY: migrate-local
+migrate-local:
+	docker-compose rm -sfv db
+	docker-compose build db --no-cache
+	make start-dev
