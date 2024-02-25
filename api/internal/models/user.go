@@ -6,6 +6,17 @@ import (
 	"github.com/google/uuid"
 )
 
+type Provider string
+
+const (
+	GoogleProvider     Provider = "google"
+	FacebookProvider   Provider = "facebook"
+	AppleProvider      Provider = "apple"
+	SalesforceProvider Provider = "salesforce"
+	ZohoProvider       Provider = "zoho"
+	HubspotProvider    Provider = "hubspot"
+)
+
 type User struct {
 	ID uuid.UUID `json:"uuid.UUID"`
 
@@ -15,6 +26,10 @@ type User struct {
 	IP string `json:"IP,omitempty"`
 
 	TwoFaPrivateKeyHash string `json:"twoFaPrivateKeyHash,omitempty"`
+
+	JWT string `json:"jwt,omitempty"`
+
+	Provider Provider `json:"provider,omitempty"`
 
 	Orders []*Order `json:"orders,omitempty"`
 
