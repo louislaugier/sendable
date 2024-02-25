@@ -2,82 +2,15 @@ package validate
 
 import (
 	"bytes"
-	"email-validator/internal/pkg/format"
 	"encoding/json"
 	"errors"
 	"fmt"
 	"log"
 	"net/http"
 	"os"
-	"strings"
-
-	h "email-validator/internal/pkg/host"
 )
 
-func split(email string) (account, host string) {
-	i := strings.LastIndexByte(email, '@')
-	if i < 0 {
-		return
-	}
-	account = email[:i]
-	host = email[i+1:]
-	return
-}
-
-// Don't use raw with a dirty IP
 func ValidateEmailAddress(email string) error {
-	_, host := split(email)
-
-	if err := format.ValidateFormat(email); err != nil {
-		return err
-	}
-
-	client, err := h.ValidateHostMXAndDialServerWithProxy(host)
-	if err != nil {
-		return err
-	}
-	defer client.Close()
-
-	err = client.Hello("mail.example.com")
-	if err != nil {
-		return err
-	}
-
-	// err = client.Mail(email)
-	// if err != nil {
-	// 	return err
-	// }
-
-	err = client.Rcpt(email)
-	if err != nil {
-		return err
-	}
-
-	// w, err := client.Data()
-	// if err != nil {
-	// 	return err
-	// }
-
-	// ID := uuid.New()
-	// message := []byte(
-	// 	fmt.Sprintf(("From: Your Name <your_email@example.com>\r\n" +
-	// 		"To: Recipient <%s>\r\n" +
-	// 		"Subject: A subject\r\n" +
-	// 		"Message-ID: <%s>\r\n" +
-	// 		"\r\n"), email, ID),
-	// )
-
-	// _, err = w.Write(message)
-	// if err != nil {
-	// 	return err
-	// }
-
-	// w.Close()
-
-	return nil
-}
-
-func ValidateEmailAddressFromAPI(email string) error {
 	r, err := http.Post(fmt.Sprintf(`%s/v0/check_email`, os.Getenv("VALIDATOR_BASE_URL")), "application/json", bytes.NewBuffer([]byte(fmt.Sprintf(`
 		{
 			"to_email": "%s",

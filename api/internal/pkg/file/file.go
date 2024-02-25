@@ -75,7 +75,7 @@ func GetValidEmailsFromCSVIntoNewCSV(inputPath string, outputPath string) {
 					}
 				}
 				if numNumbers <= numLetters { // Only process emails where number of numbers <= number of letters
-					if err := validate.ValidateEmailAddressFromAPI(ewl.Email); err == nil {
+					if err := validate.ValidateEmailAddress(ewl.Email); err == nil {
 						mu.Lock()
 						log.Printf("Valid email on line %d: %s.\n", ewl.LineNumber, ewl.Email)
 						validEmails = append(validEmails, ewl.Email)
