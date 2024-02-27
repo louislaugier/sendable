@@ -6,8 +6,8 @@ import (
 	"email-validator/internal/pkg/file"
 	"email-validator/internal/pkg/format"
 	"errors"
-	"io"
 	"log"
+	"mime/multipart"
 	"os"
 	"strconv"
 	"strings"
@@ -40,19 +40,24 @@ func Validate(email string) (*models.ReacherResponse, error) {
 }
 
 // ValidateManyFromFile determines the file format and validates emails accordingly
-func ValidateManyFromFile(reader io.Reader, extension string) ([]models.ReacherResponse, error) {
+func ValidateManyFromFile(uploadedFile multipart.File, uploadedFileHeader *multipart.FileHeader, extension string) ([]models.ReacherResponse, error) {
 	var emails []string
 	var err error
 
 	switch strings.ToLower(extension) {
 	case "csv":
-		emails, err = file.GetEmailsFromCSV(reader, ',')
+		delimiter, err := file.GuessCSVDelimiter(uploadedFileHeader)
+		if err != nil {
+			return nil, err
+		}
+
+		emails, err = file.GetEmailsFromCSV(uploadedFile, delimiter)
 	case "xlsx":
-		emails, err = file.GetEmailsFromXLSX(reader)
+		emails, err = file.GetEmailsFromXLSX(uploadedFile)
 	case "xls":
-		emails, err = file.GetEmailsFromXLS(reader)
+		emails, err = file.GetEmailsFromXLS(uploadedFile)
 	case "txt":
-		emails, err = file.GetEmailsFromTXT(reader)
+		emails, err = file.GetEmailsFromTXT(uploadedFile)
 	default:
 		return nil, format.ErrInvalidFileExt
 	}

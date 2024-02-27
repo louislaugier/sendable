@@ -1,37 +1,50 @@
 package file
 
 import (
+	"bufio"
 	"email-validator/internal/pkg/format"
 	"encoding/csv"
 	"io"
-	"log"
+	"mime/multipart"
 	"os"
 	"strconv"
 	"strings"
 	"sync"
 )
 
-func GetEmailsFromCSV(reader io.Reader, comma rune) ([]string, error) {
-	lines, err := getLinesFromCSV(reader, comma)
+// GetLinesFromCSV reads a CSV file from a multipart.File and returns the lines.
+func GetLinesFromCSV(file multipart.File, comma rune) ([][]string, error) {
+	// Reset the internal pointer to the beginning of the file
+	_, err := file.Seek(0, io.SeekStart)
 	if err != nil {
 		return nil, err
 	}
 
-	// Get THREADS_COUNT from the environment and convert it into an integer
+	// New CSV reader
+	csvReader := csv.NewReader(file)
+	csvReader.Comma = comma
+
+	// Read all CSV lines
+	return csvReader.ReadAll()
+}
+
+// GetEmailsFromCSV accepts a multipart.File, reads the lines of CSV,
+// and extracts valid email addresses.
+func GetEmailsFromCSV(file multipart.File, comma rune) ([]string, error) {
+	// Get lines from the CSV file
+	lines, err := GetLinesFromCSV(file, comma)
+	if err != nil {
+		return nil, err
+	}
+
 	threadsCountEnv := os.Getenv("THREADS_COUNT")
 	threadsCount, err := strconv.Atoi(threadsCountEnv)
 	if err != nil {
-		log.Printf("Invalid THREADS_COUNT value: %v\n", err)
 		threadsCount = 1 // Default to 1 if conversion fails or env var is not set
 	}
 
-	// Create a slice to store valid emails
-	emails := make([]string, 0)
-
-	// Initialize a WaitGroup to wait for all goroutines to finish
+	var emails []string
 	var wg sync.WaitGroup
-
-	// Create a mutex to protect shared resource (the emails slice)
 	var mutex sync.Mutex
 
 	for i := 0; i < threadsCount; i++ {
@@ -39,7 +52,6 @@ func GetEmailsFromCSV(reader io.Reader, comma rune) ([]string, error) {
 		go func(partitionIndex int) {
 			defer wg.Done()
 			for j, line := range lines {
-				// Each goroutine processes their respective partition of the slice
 				if j%threadsCount == partitionIndex {
 					for _, cell := range line {
 						trimmedCell := strings.TrimSpace(cell)
@@ -54,51 +66,84 @@ func GetEmailsFromCSV(reader io.Reader, comma rune) ([]string, error) {
 		}(i)
 	}
 
-	// Wait for all goroutines to finish
 	wg.Wait()
 
 	return emails, nil
 }
 
-func getLinesFromCSV(reader io.Reader, comma rune) ([][]string, error) {
-	// This remains almost the same because CSV reading is inherently sequential due to the way files are read
-	csvReader := csv.NewReader(reader)
-	csvReader.Comma = comma
+func CountLinesInCSV(fileHeader *multipart.FileHeader) (int, error) {
+	file, err := fileHeader.Open()
+	if err != nil {
+		return 0, err
+	}
+	defer file.Close()
 
-	var lines [][]string
-	var wg sync.WaitGroup
-	mu := sync.Mutex{}
-	errChannel := make(chan error, 1) // Buffered channel for error handling
-	closed := false                   // Flag to indicate if the channel is closed
+	scanner := bufio.NewScanner(file)
+	lineCount := 0
 
-	// Reading the CSV can't be parallelized in this way since it's a sequential operation
-	for {
-		record, err := csvReader.Read()
-		if err == io.EOF {
-			break
-		}
-		if err != nil {
-			// Send the error on the channel and exit the loop
-			if !closed {
-				errChannel <- err
-				closed = true
-				close(errChannel)
-			}
-			break
-		}
-		mu.Lock()
-		lines = append(lines, record)
-		mu.Unlock()
+	// Count the number of lines
+	for scanner.Scan() {
+		lineCount++
 	}
 
-	// Check for an error after the loop
-	select {
-	case err := <-errChannel:
-		return nil, err
-	default:
+	if err := scanner.Err(); err != nil {
+		return lineCount, err
 	}
 
-	wg.Wait()
+	return lineCount, nil
+}
 
-	return lines, nil
+// guessCSVDelimiter reads a sample of the CSV content from a multipart file
+// and guesses the delimiter based on the content.
+func GuessCSVDelimiter(fh *multipart.FileHeader) (rune, error) {
+	file, err := fh.Open()
+	if err != nil {
+		return 0, err
+	}
+	defer file.Close()
+
+	scanner := bufio.NewScanner(file)
+	scanner.Split(bufio.ScanLines)
+
+	linesCount, err := CountLinesInCSV(fh)
+	if err != nil {
+		return 0, err
+	}
+
+	var contentBuilder strings.Builder
+	for i := 0; i < linesCount && scanner.Scan(); i++ {
+		if i > 0 {
+			contentBuilder.WriteRune('\n')
+		}
+		contentBuilder.WriteString(scanner.Text())
+	}
+
+	if err := scanner.Err(); err != nil {
+		return 0, err
+	}
+
+	sampleContent := contentBuilder.String()
+
+	return detectDelimiter(sampleContent), nil
+}
+
+// detectDelimiter tries to guess the delimiter used in the CSV content.
+func detectDelimiter(content string) rune {
+	delimiters := []rune{',', ';', '\t', '|'}
+	delimiterCounts := make(map[rune]int)
+
+	for _, delim := range delimiters {
+		delimiterCounts[delim] = strings.Count(content, string(delim))
+	}
+
+	guessedDelimiter := ','
+	maxCount := 0
+	for delim, count := range delimiterCounts {
+		if count > maxCount {
+			guessedDelimiter = delim
+			maxCount = count
+		}
+	}
+
+	return guessedDelimiter
 }

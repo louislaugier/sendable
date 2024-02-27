@@ -5,19 +5,26 @@ import (
 	"fmt"
 	"io"
 	"log"
+	"mime/multipart"
 	"os"
 	"time"
 )
 
 // SaveFile saves the provided file
-func SaveFile(file *os.File, filePath string) error {
+func SaveFile(fileHeader *multipart.FileHeader, filePath string) error {
+	source, err := fileHeader.Open()
+	if err != nil {
+		return err
+	}
+	defer source.Close()
+
 	destination, err := os.Create(filePath)
 	if err != nil {
 		return err
 	}
 	defer destination.Close()
 
-	_, err = io.Copy(destination, file)
+	_, err = io.Copy(destination, source)
 	if err != nil {
 		return err
 	}

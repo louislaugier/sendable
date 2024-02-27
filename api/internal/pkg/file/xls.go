@@ -4,6 +4,7 @@ import (
 	"email-validator/internal/pkg/format"
 	"fmt"
 	"io"
+	"mime/multipart"
 	"os"
 	"strconv"
 	"sync"
@@ -12,8 +13,9 @@ import (
 	"github.com/tealeg/xlsx"
 )
 
-func GetEmailsFromXLSX(reader io.Reader) ([]string, error) {
-	cells, err := getCellsFromXLSX(reader)
+// Updated to handle multipart file uploads
+func GetEmailsFromXLSX(file multipart.File) ([]string, error) {
+	cells, err := getCellsFromXLSX(file)
 	if err != nil {
 		return nil, err
 	}
@@ -21,8 +23,9 @@ func GetEmailsFromXLSX(reader io.Reader) ([]string, error) {
 	return processCellsInParallel(cells), nil
 }
 
-func GetEmailsFromXLS(reader io.Reader) ([]string, error) {
-	cells, err := getCellsFromXLS(reader)
+// Updated to handle multipart file uploads
+func GetEmailsFromXLS(file multipart.File) ([]string, error) {
+	cells, err := getCellsFromXLS(file)
 	if err != nil {
 		return nil, err
 	}
@@ -30,14 +33,15 @@ func GetEmailsFromXLS(reader io.Reader) ([]string, error) {
 	return processCellsInParallel(cells), nil
 }
 
-func getCellsFromXLSX(reader io.Reader) ([]string, error) {
+func getCellsFromXLSX(file multipart.File) ([]string, error) {
 	tempFile, err := os.CreateTemp("", "temp.xlsx")
 	if err != nil {
 		return nil, fmt.Errorf("failed to create temp file: %w", err)
 	}
 	defer os.Remove(tempFile.Name()) // Clean up the file afterwards
 
-	_, err = io.Copy(tempFile, reader)
+	file.Seek(0, io.SeekStart) // Reset the file pointer to the beginning of the file
+	_, err = io.Copy(tempFile, file)
 	if err != nil {
 		return nil, fmt.Errorf("failed to copy to temp file: %w", err)
 	}
@@ -64,14 +68,15 @@ func getCellsFromXLSX(reader io.Reader) ([]string, error) {
 	return cells, nil
 }
 
-func getCellsFromXLS(reader io.Reader) ([]string, error) {
+func getCellsFromXLS(file multipart.File) ([]string, error) {
 	tempFile, err := os.CreateTemp("", "email-validator-*.xls")
 	if err != nil {
 		return nil, fmt.Errorf("failed to create temp file: %w", err)
 	}
 	defer os.Remove(tempFile.Name()) // Clean up the file afterwards
 
-	_, err = io.Copy(tempFile, reader)
+	file.Seek(0, io.SeekStart) // Reset the file pointer to the beginning of the file
+	_, err = io.Copy(tempFile, file)
 	if err != nil {
 		return nil, fmt.Errorf("failed to copy to temp file: %w", err)
 	}
@@ -88,6 +93,9 @@ func getCellsFromXLS(reader io.Reader) ([]string, error) {
 	var cells []string
 	for sheetIndex := 0; sheetIndex < workbook.NumSheets(); sheetIndex++ {
 		sheet := workbook.GetSheet(sheetIndex)
+		if sheet == nil {
+			continue
+		}
 		for rowIndex := 0; rowIndex <= int(sheet.MaxRow); rowIndex++ {
 			row := sheet.Row(rowIndex)
 			for colIndex := 0; colIndex < row.LastCol(); colIndex++ {
@@ -100,7 +108,6 @@ func getCellsFromXLS(reader io.Reader) ([]string, error) {
 	return cells, nil
 }
 
-// This helper function takes a slice of cells and returns a slice of emails after validation in parallel
 func processCellsInParallel(cells []string) []string {
 	threadsCountEnv := os.Getenv("THREADS_COUNT")
 	threadsCount, err := strconv.Atoi(threadsCountEnv)
@@ -110,33 +117,20 @@ func processCellsInParallel(cells []string) []string {
 
 	var wg sync.WaitGroup
 	emailChan := make(chan string, len(cells)) // Buffered channel for collecting emails
-	errorChan := make(chan error, 1)           // Buffered channel for error handling
+	defer close(emailChan)
 
 	for i := 0; i < threadsCount; i++ {
 		wg.Add(1)
 		go func(partitionIndex int) {
 			defer wg.Done()
-			for j, c := range cells {
-				if j%threadsCount == partitionIndex {
-					if format.IsEmailValid(c) {
-						emailChan <- c
-					}
+			for j, cell := range cells {
+				if j%threadsCount == partitionIndex && format.IsEmailValid(cell) {
+					emailChan <- cell
 				}
 			}
 		}(i)
 	}
-
 	wg.Wait()
-	close(emailChan)
-
-	// Check for an error
-	select {
-	case err := <-errorChan:
-		fmt.Println("Error processing emails:", err) // Handle or return the error as needed
-		close(errorChan)
-	default:
-		close(errorChan)
-	}
 
 	var emails []string
 	for email := range emailChan {

@@ -5,14 +5,15 @@ import (
 	"email-validator/internal/pkg/format"
 	"fmt"
 	"io"
+	"mime/multipart"
 	"os"
 	"strconv"
 	"sync"
 )
 
-// GetEmailsFromTXT processes and validates text data.
-func GetEmailsFromTXT(reader io.Reader) ([]string, error) {
-	lines, err := getLinesFromTXT(reader)
+// GetEmailsFromTXT now accepts a multipart.File and returns a slice of valid emails.
+func GetEmailsFromTXT(file multipart.File) ([]string, error) {
+	lines, err := getLinesFromTXT(file)
 	if err != nil {
 		return nil, err
 	}
@@ -20,11 +21,11 @@ func GetEmailsFromTXT(reader io.Reader) ([]string, error) {
 	return getEmailsFromLines(lines), nil
 }
 
-// getEmailsFromLines divides the lines across goroutines for parallel validation.
+// getEmailsFromLines occupies multiple worker goroutines to validate emails in parallel.
 func getEmailsFromLines(lines []string) []string {
 	threadsCount, err := strconv.Atoi(os.Getenv("THREADS_COUNT"))
 	if err != nil || threadsCount < 1 {
-		threadsCount = 1 // Default to 1 if conversion fails or THREADS_COUNT is not set
+		threadsCount = 1 // Fall back to single-thread if THREADS_COUNT is invalid or not set.
 	}
 
 	var wg sync.WaitGroup
@@ -34,13 +35,13 @@ func getEmailsFromLines(lines []string) []string {
 		close(emailChan)
 	}()
 
-	// Start a goroutine for each thread.
+	// Distribute the work between goroutines.
 	for i := 0; i < threadsCount; i++ {
 		wg.Add(1)
 		go func(i int) {
 			defer wg.Done()
 			for j, line := range lines {
-				if j%threadsCount == i { // Assign lines based on mod of goroutine index
+				if j%threadsCount == i { // Split the work using modular division
 					if format.IsEmailValid(line) {
 						emailChan <- line
 					}
@@ -49,7 +50,7 @@ func getEmailsFromLines(lines []string) []string {
 		}(i)
 	}
 
-	// Collect the emails.
+	// Collect the emails from the channel.
 	var emails []string
 	for email := range emailChan {
 		emails = append(emails, email)
@@ -58,9 +59,14 @@ func getEmailsFromLines(lines []string) []string {
 	return emails
 }
 
-// getLinesFromTXT reads a TXT file and returns a slice of lines.
-func getLinesFromTXT(reader io.Reader) ([]string, error) {
-	scanner := bufio.NewScanner(reader)
+// getLinesFromTXT is modified to accept a multipart.File and read lines to return a slice of strings.
+func getLinesFromTXT(file multipart.File) ([]string, error) {
+	// Make sure we are reading from the start of the file
+	if _, err := file.Seek(0, io.SeekStart); err != nil {
+		return nil, fmt.Errorf("error seeking file: %w", err)
+	}
+
+	scanner := bufio.NewScanner(file)
 	var lines []string
 
 	for scanner.Scan() {

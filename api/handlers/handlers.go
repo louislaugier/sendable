@@ -1,6 +1,7 @@
 package handlers
 
 import (
+	"email-validator/handlers/middleware"
 	"fmt"
 	"log"
 	"net"
@@ -9,7 +10,18 @@ import (
 	"strings"
 )
 
+func defineRoutes() {
+	http.HandleFunc("/healthz", HealthzHandler)
+
+	http.Handle("/auth", middleware.ValidateJWT(http.HandlerFunc(AuthHandler)))
+
+	http.Handle("/validate_email", middleware.ValidateJWT(http.HandlerFunc(ValidateEmailHandler)))
+	http.Handle("/validate_emails", middleware.ValidateJWT(http.HandlerFunc(ValidateEmailsHandler)))
+}
+
 func StartHTTPSServer() {
+	defineRoutes()
+
 	// if os.Getenv("env") == "DEV" {
 	// 	fmt.Println("HTTP server is listening on port 80...")
 	// 	err := http.ListenAndServe(":80", nil)
