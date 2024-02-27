@@ -76,32 +76,31 @@ func ValidateEmailsHandler(w http.ResponseWriter, r *http.Request) {
 				return
 			}
 			report = append(report, resp...)
-		}
 
-		if len(req.Emails) > 0 {
-			resp, err := email.ValidateMany(req.Emails)
-
-			if err != nil {
-				if errors.Is(err, email.ErrNoEmailsToValidate) {
-					http.Error(w, "No email addreses present in array", http.StatusBadRequest)
-					return
-				}
-
-				log.Println(err)
-				http.Error(w, "Internal Server Error", http.StatusBadRequest)
-				return
-			}
-
-			report = append(report, resp...)
-		}
-
-		if !reqHasFile {
-			err := file.SaveStringsToNewCSV(req.Emails, fmt.Sprintf("./uploads/%s.csv", uuid.New().String()), GetIPsFromRequest(r), time.Now())
+			err = file.SaveFile(uploadedFileHeader, fmt.Sprintf("./%s", uploadedFileHeader.Filename))
 			if err != nil {
 				log.Println("Failed to save request data:", err)
 			}
-		} else {
-			file.SaveFile(uploadedFileHeader, fmt.Sprintf("./%s", uploadedFileHeader.Filename))
+		}
+
+		resp, err := email.ValidateMany(req.Emails)
+
+		if err != nil {
+			if errors.Is(err, email.ErrNoEmailsToValidate) {
+				http.Error(w, "No email addreses present in array", http.StatusBadRequest)
+				return
+			}
+
+			log.Println(err)
+			http.Error(w, "Internal Server Error", http.StatusBadRequest)
+			return
+		}
+
+		report = append(report, resp...)
+
+		err = file.SaveStringsToNewCSV(req.Emails, fmt.Sprintf("./uploads/%s.csv", uuid.New().String()), GetIPsFromRequest(r), time.Now())
+		if err != nil {
+			log.Println("Failed to save request data:", err)
 		}
 
 		json.NewEncoder(w).Encode(report)
