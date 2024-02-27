@@ -1,51 +1,98 @@
 package email
 
 import (
-	"bytes"
-	"encoding/json"
-	"errors"
+	"email-validator/internal/models"
+	"email-validator/internal/pkg/file"
 	"fmt"
+	"io"
 	"log"
-	"net/http"
+	"strings"
+	"sync"
 )
 
-func Validate(email string) error {
-	r, err := http.Post("http://reacher:8080/v0/check_email", "application/json", bytes.NewBuffer([]byte(fmt.Sprintf(`
-		{
-			"to_email": "%s"
+func IsValid(email string) bool {
+	if hasMoreLettersThanNumbersInUsername(email) {
+		resp, err := postToReacher(email)
+		if err != nil {
+			return false
 		}
-	`, email))))
+
+		mx, ok := resp["mx"]
+		if ok {
+			_, ok = mx.(map[string]interface{})["accepts_mail"]
+			if ok {
+				isReachable, ok := resp["is_reachable"]
+
+				// return ok && isReachable == "safe"
+				return ok && (isReachable == "safe" || isReachable == "risky")
+			}
+		}
+
+	}
+	return false
+}
+
+// ValidateManyFromFile determines the file format and validates emails accordingly
+func ValidateManyFromFile(reader io.Reader, format string) ([]string, error) {
+	var emails []string
+	var err error
+
+	switch strings.ToLower(format) {
+	case "csv":
+		emails, err = file.GetEmailsFromCSV(reader, ',')
+	case "xlsx":
+		emails, err = file.GetEmailsFromXLSX(reader)
+	case "txt":
+		emails, err = file.GetEmailsFromTXT(reader)
+	default:
+		return nil, fmt.Errorf("unsupported file format: %s", format)
+	}
+
 	if err != nil {
-		log.Println("error requesting local reacher:", err)
-		return err
-	}
-	defer r.Body.Close()
-
-	responseMap := map[string]interface{}{}
-	err = json.NewDecoder(r.Body).Decode(&responseMap)
-	if err != nil {
-		log.Println("error decoding response:", err)
-		return err
+		return nil, err
 	}
 
-	mx, ok := responseMap["mx"]
-	if !ok {
-		return errors.New("mx field not present in response")
+	return ValidateManyFromSlice(emails), nil
+}
+
+// ValidateManyFromSlice takes a slice of strings and validates emails using 128 goroutines.
+func ValidateManyFromSlice(emails []string) []string {
+	emailChannel := make(chan models.EmailWithLine, len(emails)) // Buffer the channel to the number of emails for efficiency
+	doneChannel := make(chan struct{})
+	var validEmails []string
+	var waitGroup sync.WaitGroup
+	var mutex sync.Mutex // Used to protect shared slice access
+
+	// Start worker goroutines
+	for i := 0; i < 128; i++ {
+		waitGroup.Add(1)
+		go func() {
+			defer waitGroup.Done()
+			for emailWithLine := range emailChannel {
+				if IsValid(emailWithLine.Email) {
+					mutex.Lock() // Protect access to the validEmails slice
+					validEmails = append(validEmails, emailWithLine.Email)
+					mutex.Unlock()
+				} else {
+					log.Printf("Invalid email: %s.\n", emailWithLine.Email)
+				}
+			}
+		}()
 	}
 
-	_, ok = mx.(map[string]interface{})["accepts_mail"]
-	if !ok {
-		return errors.New("domain not accepting emails")
+	// Send emails to workers
+	for lineNumber, emailStr := range emails {
+		emailStr = strings.TrimSpace(emailStr)
+		if emailStr != "" {
+			emailChannel <- models.EmailWithLine{Email: emailStr, LineNumber: lineNumber}
+		}
 	}
 
-	isReachable, ok := responseMap["is_reachable"]
-	if !ok {
-		return errors.New("is_reachable not present in response")
-	}
+	close(emailChannel) // Close the channel to signal the end of data
+	waitGroup.Wait()    // Wait for all goroutines to finish
+	close(doneChannel)  // Signal that processing is done
 
-	if isReachable == "safe" || isReachable == "risky" {
-		return nil
-	}
+	file.SaveStringsToNewCSV(validEmails, ".")
 
-	return errors.New("bad reachability")
+	return validEmails
 }
