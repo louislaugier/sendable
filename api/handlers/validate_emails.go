@@ -20,17 +20,13 @@ type ValidateEmailsRequest struct {
 	Emails []string `json:"emails,omitempty"`
 }
 
+// Either multipart file (field name "file") or json payload
 // Invalid format emails not included in response
 func ValidateEmailsHandler(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 
 	if r.Method == http.MethodPost {
 		req := ValidateEmailsRequest{}
-
-		if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
-			http.Error(w, "Invalid payload", http.StatusBadRequest)
-			return
-		}
 
 		err := r.ParseMultipartForm(100 << 20) // 100 MB maximum
 		if err != nil {
@@ -49,16 +45,11 @@ func ValidateEmailsHandler(w http.ResponseWriter, r *http.Request) {
 		}
 		defer uploadedFile.Close()
 
-		if len(req.Emails) == 0 || err == http.ErrMissingFile {
-			http.Error(w, "Missing emails in payload", http.StatusBadRequest)
-			return
-		}
-
 		var report []models.ReacherResponse
 
-		fileExtension := strings.ToLower(strings.TrimPrefix(uploadedFileHeader.Filename, "."))
-
 		if reqHasFile {
+			fileExtension := strings.ToLower(strings.TrimPrefix(uploadedFileHeader.Filename, "."))
+
 			resp, err := email.ValidateManyFromFile(uploadedFile, uploadedFileHeader, fileExtension)
 			if err != nil {
 				if errors.Is(err, email.ErrNoEmailsToValidate) {
@@ -81,6 +72,13 @@ func ValidateEmailsHandler(w http.ResponseWriter, r *http.Request) {
 			if err != nil {
 				log.Println("Failed to save request data:", err)
 			}
+
+			json.NewEncoder(w).Encode(report)
+		}
+
+		if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
+			http.Error(w, "Invalid payload", http.StatusBadRequest)
+			return
 		}
 
 		resp, err := email.ValidateMany(req.Emails)
