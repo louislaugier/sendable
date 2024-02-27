@@ -26,6 +26,6 @@ migrate-local:
 
 
 # ssh into api container
-.PHONY: migrate-local
-migrate-local:
-	docker exec -it
+.PHONY: ssh-api-dev
+ssh-api-dev:
+	docker-compose exec api bash
