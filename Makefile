@@ -3,7 +3,7 @@ build-dev:
 	docker build -t app -f ./api/Dockerfile.dev --no-cache .
 
 .PHONY: recreate-api-dev
-recreate-dev-dev:
+recreate-api-dev:
 	docker-compose rm -sfv api
 	make build-api-dev
 	make start-dev
