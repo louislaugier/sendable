@@ -17,13 +17,13 @@ const (
 	ZohoProvider       Provider = "zoho"
 	HubspotProvider    Provider = "hubspot"
 
-	MailChimpProvider Provider = "mailchimp"
-	SendGridProvider  Provider = "sendgrid"
+	MailchimpProvider Provider = "mailchimp"
+	SendgridProvider  Provider = "sendgrid"
 	BrevoProvider     Provider = "brevo"
 )
 
 type User struct {
-	ID uuid.UUID `json:"uuid.UUID"`
+	ID uuid.UUID `json:"id"`
 
 	Email    string `json:"email"`
 	Password string `json:"password,omitempty"`

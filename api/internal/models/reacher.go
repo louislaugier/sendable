@@ -23,12 +23,12 @@ const (
 )
 
 type ReacherResponse struct {
-	Input       string       `json:"input,omitempty"`
-	IsReachable Reachability `json:"is_reachable,omitempty"`
-	Misc        misc         `json:"misc,omitempty"`
-	MX          mx           `json:"mx,omitempty"`
-	SMTP        smtp         `json:"smtp,omitempty"`
-	Syntax      syntax       `json:"syntax,omitempty"`
+	Input        string       `json:"input,omitempty"`
+	Reachability Reachability `json:"is_reachable,omitempty"`
+	Misc         misc         `json:"misc,omitempty"`
+	MX           mx           `json:"mx,omitempty"`
+	SMTP         smtp         `json:"smtp,omitempty"`
+	Syntax       syntax       `json:"syntax,omitempty"`
 }
 
 type misc struct {

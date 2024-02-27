@@ -9,8 +9,9 @@ import (
 type OrderDuration string
 
 const (
-	MonthlyOrder OrderDuration = "monthly"
-	YearlyOrder  OrderDuration = "yearly"
+	MonthlyOrder  OrderDuration = "monthly"
+	YearlyOrder   OrderDuration = "yearly"
+	LifetimeOrder OrderDuration = "lifetime"
 )
 
 type Order struct {

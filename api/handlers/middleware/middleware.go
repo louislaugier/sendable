@@ -33,7 +33,7 @@ func GenerateJWT(userID string) (*string, error) {
 			ExpiresAt: time.Now().AddDate(0, 0, 30).Unix(),
 			IssuedAt:  time.Now().Unix(),
 			Audience:  "https://api.sendable.email",
-			Id:        uuid.New().String(), // Ideally, generate a unique UUID here.
+			Id:        uuid.New().String(),
 		},
 	}
 
