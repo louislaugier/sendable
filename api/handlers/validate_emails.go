@@ -36,12 +36,11 @@ func ValidateEmailsHandler(w http.ResponseWriter, r *http.Request) {
 		}
 
 		uploadedFile, uploadedFileHeader, err := r.FormFile("file")
-		reqHasFile := err == http.ErrMissingFile
-		if err != nil {
-			if !reqHasFile {
-				http.Error(w, err.Error(), http.StatusInternalServerError)
-				return
-			}
+
+		reqHasFile := err == nil && err != http.ErrMissingFile
+		if err != nil && err != http.ErrMissingFile {
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+			return
 		}
 		defer uploadedFile.Close()
 
