@@ -41,6 +41,7 @@ func ValidateEmailHandler(w http.ResponseWriter, r *http.Request) {
 				return
 			}
 
+			log.Println(err)
 			http.Error(w, "Internal Server Error", http.StatusBadRequest)
 			return
 		}

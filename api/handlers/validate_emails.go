@@ -16,6 +16,7 @@ type ValidateEmailsRequest struct {
 	// file
 }
 
+// Invalid format emails not included in response
 func ValidateEmailsHandler(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 
@@ -50,6 +51,7 @@ func ValidateEmailsHandler(w http.ResponseWriter, r *http.Request) {
 		// 		return
 		// 	}
 
+		// 	log.Println(err)
 		// 	http.Error(w, "Internal Server Error", http.StatusBadRequest)
 		// 	return
 		// }
@@ -65,6 +67,7 @@ func ValidateEmailsHandler(w http.ResponseWriter, r *http.Request) {
 		// 			return
 		// 		}
 
+		// 		log.Println(err)
 		// 		http.Error(w, "Internal Server Error", http.StatusBadRequest)
 		// 		return
 		// 	}
