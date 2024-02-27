@@ -8,7 +8,7 @@ import (
 	"unicode"
 )
 
-var ErrInvalid = errors.New("invalid email address format")
+var ErrInvalidEmail = errors.New("invalid email address format")
 
 func IsEmailValid(email string) bool {
 	_, err := mail.ParseAddress(email)
@@ -17,6 +17,18 @@ func IsEmailValid(email string) bool {
 	}
 
 	return isEmailValidRegex(email) && hasMoreLettersThanNumbersInUsername(email)
+}
+
+func FilterInvalidEmails(emails []string) []string {
+	newEmails := []string{}
+
+	for _, email := range emails {
+		if IsEmailValid(email) {
+			newEmails = append(newEmails, email)
+		}
+	}
+
+	return newEmails
 }
 
 // dodge trap emails

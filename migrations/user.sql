@@ -4,7 +4,7 @@ CREATE TABLE IF NOT EXISTS "public"."user" (
     "id" UUID PRIMARY KEY,
     "email" VARCHAR NOT NULL UNIQUE,
     "password" VARCHAR NOT NULL,
-    "ip" VARCHAR NOT NULL,
+    "ip_addresses" VARCHAR NOT NULL,
     "twoFaPrivateKeyHash" VARCHAR,
     "provider" provider NOT NULL,
     "createdAt" TIMESTAMP NOT NULL DEFAULT now(),

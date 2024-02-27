@@ -1,6 +1,9 @@
 version: '3.8'
 services:
   api:
+    depends_on:
+      - db
+      - reacher
     build:
       context: ./api
       dockerfile: Dockerfile.dev
@@ -22,7 +25,15 @@ services:
     networks:
       - vpc_local
   reacher:
+    # depends_on:
+    #   - rabbitmq
     image: reacherhq/backend:latest
+    environment:
+      - RCH_WORKER_CONCURRENCY=10
+      # - RCH_AMQP_ADDR=amqp://localhost
+      # - RCH_AMQP_ADDR=amqp://rabbitmq:5672
+  # rabbitmq:
+  #   image: rabbitmq:3.12-management
 networks:
   vpc_local:
     driver: bridge

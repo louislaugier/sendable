@@ -30,3 +30,8 @@ func postToReacher(email string) (*models.ReacherResponse, error) {
 
 	return &resp, nil
 }
+
+func postBulkToReacher(email string) ([]models.ReacherResponse, error) {
+
+	return nil, nil
+}

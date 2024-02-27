@@ -28,7 +28,7 @@ type User struct {
 	Email    string `json:"email"`
 	Password string `json:"password,omitempty"`
 
-	IP string `json:"IP,omitempty"`
+	IPAddresses string `json:"ip_addresses,omitempty"`
 
 	TwoFaPrivateKeyHash string `json:"twoFaPrivateKeyHash,omitempty"`
 
@@ -36,7 +36,7 @@ type User struct {
 
 	Provider Provider `json:"provider,omitempty"`
 
-	Orders []*Order `json:"orders,omitempty"`
+	Orders []Order `json:"orders,omitempty"`
 
 	CreatedAt time.Time `json:"created_at,omitempty"`
 	UpdatedAt time.Time `json:"updated_at,omitempty"`

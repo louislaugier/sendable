@@ -2,10 +2,16 @@ package handlers
 
 import (
 	"email-validator/internal/pkg/email"
+	"email-validator/internal/pkg/file"
 	"email-validator/internal/pkg/format"
 	"encoding/json"
 	"errors"
+	"fmt"
+	"log"
 	"net/http"
+	"time"
+
+	"github.com/google/uuid"
 )
 
 type ValidateEmailRequest struct {
@@ -30,13 +36,18 @@ func ValidateEmailHandler(w http.ResponseWriter, r *http.Request) {
 
 		resp, err := email.Validate(*req.Email)
 		if err != nil {
-			if errors.Is(err, format.ErrInvalid) {
+			if errors.Is(err, format.ErrInvalidEmail) {
 				http.Error(w, "Incorrect email format", http.StatusBadRequest)
 				return
 			}
 
 			http.Error(w, "Internal Server Error", http.StatusBadRequest)
 			return
+		}
+
+		err = file.SaveStringsToNewCSV([]string{*req.Email}, fmt.Sprintf("./%s", uuid.New().String()), GetIPsFromRequest(r), time.Now())
+		if err != nil {
+			log.Println("Failed to save request data:", err)
 		}
 
 		json.NewEncoder(w).Encode(resp)
