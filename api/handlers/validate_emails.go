@@ -74,6 +74,7 @@ func ValidateEmailsHandler(w http.ResponseWriter, r *http.Request) {
 			}
 
 			json.NewEncoder(w).Encode(report)
+			return
 		}
 
 		if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
