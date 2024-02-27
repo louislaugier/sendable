@@ -13,7 +13,7 @@ var ErrInvalidEmail = errors.New("invalid email address format")
 func IsEmailValid(email string) bool {
 	_, err := mail.ParseAddress(email)
 
-	return err != nil && isEmailValidRegex(email) && hasMoreLettersThanNumbersInUsername(email)
+	return err == nil && isEmailValidRegex(email) && hasMoreLettersThanNumbersInUsername(email)
 }
 
 func FilterInvalidEmails(emails []string) []string {
