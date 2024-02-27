@@ -9,12 +9,17 @@ import (
 type Provider string
 
 const (
-	GoogleProvider     Provider = "google"
-	FacebookProvider   Provider = "facebook"
-	AppleProvider      Provider = "apple"
+	GoogleProvider   Provider = "google"
+	FacebookProvider Provider = "facebook"
+	AppleProvider    Provider = "apple"
+
 	SalesforceProvider Provider = "salesforce"
 	ZohoProvider       Provider = "zoho"
 	HubspotProvider    Provider = "hubspot"
+
+	MailChimpProvider Provider = "mailchimp"
+	SendGridProvider  Provider = "sendgrid"
+	BrevoProvider     Provider = "brevo"
 )
 
 type User struct {
