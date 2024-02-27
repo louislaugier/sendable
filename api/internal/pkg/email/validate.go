@@ -35,7 +35,6 @@ func Validate(email string) (*models.ReacherResponse, error) {
 
 		return resp, nil
 	}
-	log.Println("ok")
 
 	return nil, format.ErrInvalidEmail
 }
