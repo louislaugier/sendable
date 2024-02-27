@@ -13,3 +13,5 @@ tmp
 
 *.pem
 !cert.pem
+
+uploads/*

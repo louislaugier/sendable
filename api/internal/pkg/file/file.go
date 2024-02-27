@@ -2,6 +2,7 @@ package file
 
 import (
 	"encoding/csv"
+	"fmt"
 	"io"
 	"log"
 	"os"
@@ -26,7 +27,7 @@ func SaveFile(file *os.File, filePath string) error {
 
 // SaveStringsToNewCSV saves a list of strings to a new CSV file
 func SaveStringsToNewCSV(data []string, filePath string, IPs string, timestamp time.Time) error {
-	file, err := os.Create(filePath)
+	file, err := os.Create(fmt.Sprintf(`%s.csv`, filePath))
 	if err != nil {
 		return err
 	}

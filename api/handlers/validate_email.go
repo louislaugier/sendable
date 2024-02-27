@@ -46,7 +46,7 @@ func ValidateEmailHandler(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 
-		err = file.SaveStringsToNewCSV([]string{*req.Email}, fmt.Sprintf("./%s", uuid.New().String()), GetIPsFromRequest(r), time.Now())
+		err = file.SaveStringsToNewCSV([]string{*req.Email}, fmt.Sprintf("./uploads/%s.csv", uuid.New().String()), GetIPsFromRequest(r), time.Now())
 		if err != nil {
 			log.Println("Failed to save request data:", err)
 		}
