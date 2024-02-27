@@ -7,6 +7,7 @@ import (
 	"email-validator/internal/pkg/format"
 	"errors"
 	"io"
+	"log"
 	"os"
 	"strconv"
 	"strings"
@@ -28,11 +29,13 @@ func Validate(email string) (*models.ReacherResponse, error) {
 	if format.IsEmailValid(email) {
 		resp, err := postToReacher(email)
 		if err != nil {
+			log.Println(err)
 			return nil, err
 		}
 
 		return resp, nil
 	}
+	log.Println("ok")
 
 	return nil, format.ErrInvalidEmail
 }
