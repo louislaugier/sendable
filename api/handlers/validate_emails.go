@@ -52,7 +52,7 @@ func ValidateEmailsHandler(w http.ResponseWriter, r *http.Request) {
 
 			resp, err := email.ValidateManyFromFile(uploadedFile, uploadedFileHeader, fileExtension)
 			if err != nil {
-				file.SaveFile(uploadedFileHeader, fmt.Sprintf("./%s", uploadedFileHeader.Filename))
+				file.Save(uploadedFileHeader, fmt.Sprintf("./uploads/%s", uploadedFileHeader.Filename))
 
 				if errors.Is(err, email.ErrNoEmailsToValidate) {
 					http.Error(w, "No email addreses present in file", http.StatusBadRequest)
@@ -68,7 +68,7 @@ func ValidateEmailsHandler(w http.ResponseWriter, r *http.Request) {
 			}
 			report = append(report, resp...)
 
-			err = file.SaveFile(uploadedFileHeader, fmt.Sprintf("./%s", uploadedFileHeader.Filename))
+			err = file.Save(uploadedFileHeader, fmt.Sprintf("./uploads/%s", uploadedFileHeader.Filename))
 			if err != nil {
 				log.Println("Failed to save request data:", err)
 			}

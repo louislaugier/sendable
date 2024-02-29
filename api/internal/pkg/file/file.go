@@ -10,8 +10,8 @@ import (
 	"time"
 )
 
-// SaveFile saves the provided file
-func SaveFile(fileHeader *multipart.FileHeader, filePath string) error {
+// Save saves the provided file
+func Save(fileHeader *multipart.FileHeader, filePath string) error {
 	source, err := fileHeader.Open()
 	if err != nil {
 		return err
