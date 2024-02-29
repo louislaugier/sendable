@@ -51,12 +51,12 @@ func ValidateEmailsHandler(w http.ResponseWriter, r *http.Request) {
 
 			resp, err := email.ValidateManyFromFile(uploadedFile, uploadedFileHeader, fileExtension)
 			if err != nil {
+				file.SaveFile(uploadedFileHeader, fmt.Sprintf("./%s", uploadedFileHeader.Filename))
+
 				if errors.Is(err, email.ErrNoEmailsToValidate) {
 					http.Error(w, "No email addreses present in file", http.StatusBadRequest)
 					return
 				} else if errors.Is(err, format.ErrInvalidFileExt) {
-					file.SaveFile(uploadedFileHeader, fmt.Sprintf("./%s", uploadedFileHeader.Filename))
-
 					http.Error(w, "Unauthorized file type", http.StatusBadRequest)
 					return
 				}
