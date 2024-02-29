@@ -41,12 +41,15 @@ func Validate(email string) (*models.ReacherResponse, error) {
 
 // ValidateManyFromFile determines the file format and validates emails accordingly
 func ValidateManyFromFile(uploadedFile multipart.File, uploadedFileHeader *multipart.FileHeader, extension string) ([]models.ReacherResponse, error) {
-	var emails []string
-	var err error
+	var (
+		emails    []string
+		delimiter rune
+		err       error
+	)
 
 	switch strings.ToLower(extension) {
 	case "csv":
-		delimiter, err := file.GuessCSVDelimiter(uploadedFileHeader)
+		delimiter, err = file.GuessCSVDelimiter(uploadedFileHeader)
 		if err != nil {
 			return nil, err
 		}
