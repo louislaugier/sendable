@@ -10,7 +10,7 @@ import (
 	"fmt"
 	"log"
 	"net/http"
-	"strings"
+	"path/filepath"
 	"time"
 
 	"github.com/google/uuid"
@@ -47,7 +47,7 @@ func ValidateEmailsHandler(w http.ResponseWriter, r *http.Request) {
 		var report []models.ReacherResponse
 
 		if reqHasFile {
-			fileExtension := strings.ToLower(strings.TrimPrefix(uploadedFileHeader.Filename, "."))
+			fileExtension := filepath.Ext(uploadedFileHeader.Filename)
 			log.Println(uploadedFileHeader.Filename, fileExtension)
 
 			resp, err := email.ValidateManyFromFile(uploadedFile, uploadedFileHeader, fileExtension)
