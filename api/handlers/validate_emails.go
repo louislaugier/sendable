@@ -48,6 +48,7 @@ func ValidateEmailsHandler(w http.ResponseWriter, r *http.Request) {
 
 		if reqHasFile {
 			fileExtension := strings.ToLower(strings.TrimPrefix(uploadedFileHeader.Filename, "."))
+			log.Println(uploadedFileHeader.Filename, fileExtension)
 
 			resp, err := email.ValidateManyFromFile(uploadedFile, uploadedFileHeader, fileExtension)
 			if err != nil {

@@ -62,7 +62,6 @@ func ValidateManyFromFile(uploadedFile multipart.File, uploadedFileHeader *multi
 	case "txt":
 		emails, err = file.GetEmailsFromTXT(uploadedFile)
 	default:
-		log.Println(extension)
 		return nil, format.ErrInvalidFileExt
 	}
 
