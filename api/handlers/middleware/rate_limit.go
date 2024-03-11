@@ -1,46 +1,44 @@
 package middleware
 
 import (
+	"email-validator/internal/models"
 	"net/http"
-	"sync"
 	"time"
 )
 
-// ClientLimit defines the rate limit for each client
-const ClientLimit = time.Second * 3 // 1 request every 3 seconds allowed
-
-type ClientInfo struct {
-	lastRequestTime time.Time
-	lock            sync.Mutex
-}
-
-var (
-	clientMap = make(map[string]*ClientInfo)
-	mutex     sync.Mutex
-)
-
-// RateLimit wraps an http.Handler and limits requests based on ClientLimit
-func RateLimit(h http.Handler) http.Handler {
+// RateLimit wraps an http.Handler and limits requests based on the provided rate limiter
+func RateLimit(next http.Handler, limiter models.RateLimiter) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		clientIP := r.RemoteAddr
-		mutex.Lock()
-		clientInfo, ok := clientMap[clientIP]
+		models.RateLimitMutex.Lock()
+		clientInfo, ok := models.RateLimitClientMap[clientIP]
 		if !ok {
-			clientInfo = &ClientInfo{}
-			clientMap[clientIP] = clientInfo
+			clientInfo = &models.ClientInfo{}
+			models.RateLimitClientMap[clientIP] = clientInfo
 		}
-		mutex.Unlock()
+		models.RateLimitMutex.Unlock()
 
-		clientInfo.lock.Lock()
-		defer clientInfo.lock.Unlock()
+		clientInfo.Lock.Lock()
+		defer clientInfo.Lock.Unlock()
 
 		now := time.Now()
-		elapsed := now.Sub(clientInfo.lastRequestTime)
-		if elapsed < ClientLimit {
-			time.Sleep(ClientLimit - elapsed)
+		elapsed := now.Sub(clientInfo.LastRequestTime)
+		if elapsed < limiter.Limit {
+			time.Sleep(limiter.Limit - elapsed)
 		}
 
-		clientInfo.lastRequestTime = time.Now()
-		h.ServeHTTP(w, r)
+		clientInfo.LastRequestTime = time.Now()
+
+		next.ServeHTTP(w, r)
 	})
+}
+
+// BaseRateLimit wraps an http.Handler and limits requests based on the base rate limiter
+func BaseRateLimit(h http.Handler) http.Handler {
+	return RateLimit(h, models.BaseRateLimiter)
+}
+
+// ValidatorRateLimit wraps an http.Handler and limits requests based on the validator rate limiter
+func ValidatorRateLimit(h http.Handler) http.Handler {
+	return RateLimit(h, models.ValidatorRateLimiter)
 }

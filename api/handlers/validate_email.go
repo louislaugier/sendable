@@ -1,6 +1,7 @@
 package handlers
 
 import (
+	"email-validator/handlers/middleware"
 	"email-validator/internal/pkg/email"
 	"email-validator/internal/pkg/file"
 	"email-validator/internal/pkg/format"
@@ -47,7 +48,7 @@ func ValidateEmailHandler(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 
-		err = file.SaveStringsToNewCSV([]string{*req.Email}, fmt.Sprintf("./uploads/%s.csv", uuid.New().String()), GetIPsFromRequest(r), time.Now())
+		err = file.SaveStringsToNewCSV([]string{*req.Email}, fmt.Sprintf("./uploads/%s.csv", uuid.New().String()), middleware.GetIPsFromRequest(r), time.Now())
 		if err != nil {
 			log.Printf("Failed to save request data: %v", err)
 		}

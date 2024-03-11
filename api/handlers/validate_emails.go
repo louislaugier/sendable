@@ -29,13 +29,6 @@ func ValidateEmailsHandler(w http.ResponseWriter, r *http.Request) {
 	if r.Method == http.MethodPost {
 		req := ValidateEmailsRequest{}
 
-		err := r.ParseMultipartForm(30 << 20) // 30 MB maximum per request
-		if err != nil {
-			w.WriteHeader(http.StatusInternalServerError)
-			log.Printf("Error parsing multipart form: %v", err)
-			return
-		}
-
 		uploadedFile, uploadedFileHeader, err := r.FormFile("file")
 
 		reqHasFile := err == nil && uploadedFileHeader != nil
@@ -73,7 +66,7 @@ func ValidateEmailsHandler(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 
-		err = file.SaveStringsToNewCSV(req.Emails, fmt.Sprintf("./uploads/%s.csv", uuid.New().String()), GetIPsFromRequest(r), time.Now())
+		err = file.SaveStringsToNewCSV(req.Emails, fmt.Sprintf("./uploads/%s.csv", uuid.New().String()), middleware.GetIPsFromRequest(r), time.Now())
 		if err != nil {
 			log.Printf("Failed to save request data: %v", err)
 		}
