@@ -16,8 +16,6 @@ RUN CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -a -installsuffix cgo -o main
 ######## Start a new stage from scratch #######
 FROM alpine:latest
 
-ENV GIN_MODE=release
-
 # Set the Current Working Directory inside the container
 WORKDIR /go/src/email-validator
 

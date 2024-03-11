@@ -10,7 +10,7 @@ func NewBrevoClient() *brevo.APIClient {
 	cfg := brevo.NewConfiguration()
 	cfg.AddDefaultHeader("api-key", os.Getenv("BREVO_API_KEY"))
 
-	br := brevo.NewAPIClient(cfg)
+	bc := brevo.NewAPIClient(cfg)
 
-	return br
+	return bc
 }

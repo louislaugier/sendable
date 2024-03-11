@@ -2,6 +2,8 @@ package middleware
 
 import (
 	"bytes"
+	"email-validator/internal/models"
+	"email-validator/internal/pkg/format"
 	"fmt"
 	"io"
 	"net/http"
@@ -20,11 +22,13 @@ func Log(next http.Handler) http.Handler {
 		}
 		r.Body = io.NopCloser(&buf)
 
-		// Log request details
-		fmt.Printf("Request: %s %s - Headers: %v - Body: %s - IP: %s\n",
-			r.Method, r.URL.Path, r.Header, string(body), GetIPsFromRequest(r))
+		// Call the next handler and record status code
+		rec := &models.StatusCodeRecorder{ResponseWriter: w}
+		next.ServeHTTP(rec, r)
 
-		// Call the next handler
-		next.ServeHTTP(w, r)
+		// Log request details with colored status code
+		statusColor := format.ColorizeStatusCode(rec.Status)
+		fmt.Printf("Request: %s %s - Headers: %v - Body: %s - IP: %s - Status: %s%d%s\n",
+			r.Method, r.URL.Path, r.Header, string(body), GetIPsFromRequest(r), statusColor, rec.Status, "\x1b[0m")
 	})
 }
