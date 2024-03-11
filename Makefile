@@ -9,7 +9,7 @@ recreate-dev:
 #################################################################
 
 .PHONY: build-api-dev
-build-dev:
+build-api-dev:
 	docker build -t app -f ./api/Dockerfile.dev --no-cache .
 
 .PHONY: recreate-api-dev

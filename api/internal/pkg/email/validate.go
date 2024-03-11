@@ -110,7 +110,7 @@ func ValidateMany(emails []string) ([]models.ReacherResponse, error) {
 					}
 					resp, err := Validate(email)
 					if err != nil {
-						if !errors.Is(err, format.ErrInvalidEmail) { // Ensure that format.ErrInvalidEmail is defined
+						if !errors.Is(err, format.ErrInvalidEmail) {
 							select {
 							case errChannel <- err:
 								cancel() // Signal all goroutines to stop by canceling the context
@@ -161,6 +161,8 @@ func ValidateManyBulk(emails []string) ([]models.ReacherResponse, error) {
 		return nil, ErrNoEmailsToValidate
 	}
 
+	// TODO
 	// https://help.reacher.email/bulk-email-verification
+
 	return nil, nil
 }

@@ -6,6 +6,7 @@ import (
 	"log"
 	"net"
 	"net/http"
+	"os"
 	"regexp"
 	"strings"
 )
@@ -22,20 +23,20 @@ func defineRoutes() {
 func StartHTTPSServer() {
 	defineRoutes()
 
-	// if os.Getenv("env") == "DEV" {
-	// 	fmt.Println("HTTP server is listening on port 80...")
-	// 	err := http.ListenAndServe(":80", nil)
-	// 	if err != nil {
-	// 		log.Fatal("ListenAndServe: ", err)
-	// 	}
-	// }
-
-	fmt.Println("HTTPS server is listening on port 443...")
-	if err := http.ListenAndServeTLS(":443", "../cert.pem", "../key.pem", nil); err != nil {
-		if err = http.ListenAndServeTLS(":443", "cert.pem", "key.pem", nil); err != nil {
+	if os.Getenv("env") == "DEV" {
+		fmt.Println("HTTP server is listening on port 80...")
+		err := http.ListenAndServe(":80", nil)
+		if err != nil {
 			log.Fatal("ListenAndServe: ", err)
 		}
 	}
+
+	// fmt.Println("HTTPS server is listening on port 443...")
+	// if err := http.ListenAndServeTLS(":443", "../cert.pem", "../key.pem", nil); err != nil {
+	// 	if err = http.ListenAndServeTLS(":443", "cert.pem", "key.pem", nil); err != nil {
+	// 		log.Fatal("ListenAndServe: ", err)
+	// 	}
+	// }
 }
 
 // helper function to retrieve IPs from request

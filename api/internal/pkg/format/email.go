@@ -52,3 +52,21 @@ func isEmailValidRegex(email string) bool {
 	emailRegex := regexp.MustCompile(regexPattern)
 	return emailRegex.MatchString(email)
 }
+
+// helper function to extract the email from strings containing "mailto:"
+func ExtractEmail(cell string) string {
+	// Remove "mailto:" part if it exists
+	if strings.Contains(cell, "mailto:") {
+		cell = strings.Split(cell, "mailto:")[1]
+	}
+
+	// Further cleanup to remove any unwanted characters after the email (e.g., special characters or whitespaces)
+	index := strings.IndexFunc(cell, func(r rune) bool {
+		return !(r == '@' || r == '.' || r == '-' || r == '_' || (r >= 'a' && r <= 'z') || (r >= 'A' && r <= 'Z') || (r >= '0' && r <= '9'))
+	})
+	if index != -1 {
+		return cell[:index]
+	}
+
+	return cell
+}

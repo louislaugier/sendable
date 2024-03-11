@@ -33,24 +33,36 @@ func GetEmailsFromXLS(file multipart.File) ([]string, error) {
 	return processCellsInParallel(cells), nil
 }
 
-func getCellsFromXLSX(file multipart.File) ([]string, error) {
-	tempFile, err := os.CreateTemp("", "temp.xlsx")
+// Creates a temporary file, copies the contents to it, and closes the file.
+// Returns the file path of the temporary file for further processing.
+func createTempFile(file multipart.File, pattern string) (string, error) {
+	tempFile, err := os.CreateTemp("", pattern)
 	if err != nil {
-		return nil, fmt.Errorf("failed to create temp file: %w", err)
+		return "", fmt.Errorf("failed to create temp file: %w", err)
 	}
-	defer os.Remove(tempFile.Name()) // Clean up the file afterwards
+	defer tempFile.Close()
 
-	file.Seek(0, io.SeekStart) // Reset the file pointer to the beginning of the file
+	_, err = file.Seek(0, io.SeekStart)
+	if err != nil {
+		return "", fmt.Errorf("failed to seek in file: %w", err)
+	}
+
 	_, err = io.Copy(tempFile, file)
 	if err != nil {
-		return nil, fmt.Errorf("failed to copy to temp file: %w", err)
+		return "", fmt.Errorf("failed to copy to temp file: %w", err)
 	}
 
-	if err := tempFile.Close(); err != nil {
-		return nil, fmt.Errorf("failed to close temp file: %w", err)
-	}
+	return tempFile.Name(), nil
+}
 
-	xlFile, err := xlsx.OpenFile(tempFile.Name())
+func getCellsFromXLSX(file multipart.File) ([]string, error) {
+	tempFileName, err := createTempFile(file, "temp.xlsx")
+	if err != nil {
+		return nil, err
+	}
+	defer os.Remove(tempFileName) // Clean up the file afterwards
+
+	xlFile, err := xlsx.OpenFile(tempFileName)
 	if err != nil {
 		return nil, fmt.Errorf("failed to open xlsx: %w", err)
 	}
@@ -69,23 +81,13 @@ func getCellsFromXLSX(file multipart.File) ([]string, error) {
 }
 
 func getCellsFromXLS(file multipart.File) ([]string, error) {
-	tempFile, err := os.CreateTemp("", "email-validator-*.xls")
+	tempFileName, err := createTempFile(file, "email-validator-*.xls")
 	if err != nil {
-		return nil, fmt.Errorf("failed to create temp file: %w", err)
+		return nil, err
 	}
-	defer os.Remove(tempFile.Name()) // Clean up the file afterwards
+	defer os.Remove(tempFileName) // Clean up the file afterwards
 
-	file.Seek(0, io.SeekStart) // Reset the file pointer to the beginning of the file
-	_, err = io.Copy(tempFile, file)
-	if err != nil {
-		return nil, fmt.Errorf("failed to copy to temp file: %w", err)
-	}
-
-	if err := tempFile.Close(); err != nil {
-		return nil, fmt.Errorf("failed to close temp file: %w", err)
-	}
-
-	workbook, err := xls.Open(tempFile.Name(), "utf-8")
+	workbook, err := xls.Open(tempFileName, "utf-8")
 	if err != nil {
 		return nil, fmt.Errorf("failed to open xls file: %w", err)
 	}
@@ -115,26 +117,36 @@ func processCellsInParallel(cells []string) []string {
 		threadsCount = 1 // Fallback to single-threaded if THREADS_COUNT is invalid or not set
 	}
 
+	// Update the channel to be unbuffered, since we close it only after the WaitGroup is done.
+	emailChan := make(chan string)
 	var wg sync.WaitGroup
-	emailChan := make(chan string, len(cells)) // Buffered channel for collecting emails
-	defer close(emailChan)
 
+	// Start goroutines for processing partitions of cells.
 	for i := 0; i < threadsCount; i++ {
 		wg.Add(1)
 		go func(partitionIndex int) {
 			defer wg.Done()
 			for j, cell := range cells {
-				if j%threadsCount == partitionIndex && format.IsEmailValid(cell) {
-					emailChan <- cell
+				if j%threadsCount == partitionIndex {
+					processedEmail := format.ExtractEmail(cell)
+					if format.IsEmailValid(processedEmail) {
+						emailChan <- processedEmail
+					}
 				}
 			}
 		}(i)
 	}
-	wg.Wait()
+
+	// Start a goroutine to close the emailChan after all processing is done.
+	go func() {
+		wg.Wait()
+		close(emailChan)
+	}()
 
 	var emails []string
 	for email := range emailChan {
 		emails = append(emails, email)
 	}
+
 	return emails
 }

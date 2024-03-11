@@ -70,7 +70,7 @@ func ValidateEmailsHandler(w http.ResponseWriter, r *http.Request) {
 
 			err = file.Save(uploadedFileHeader, fmt.Sprintf("./uploads/%s", uploadedFileHeader.Filename))
 			if err != nil {
-				log.Println("Failed to save request data:", err)
+				log.Println("Failed to save request file:", err)
 			}
 
 			json.NewEncoder(w).Encode(report)

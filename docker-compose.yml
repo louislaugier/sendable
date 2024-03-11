@@ -13,6 +13,7 @@ services:
       - env=DEV
     ports:
       - 443:443
+      - 80:80
     networks:
       - vpc_local
   db:
