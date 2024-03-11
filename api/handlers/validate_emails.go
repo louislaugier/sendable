@@ -1,12 +1,12 @@
 package handlers
 
 import (
+	"email-validator/handlers/middleware"
 	"email-validator/internal/models"
 	"email-validator/internal/pkg/email"
 	"email-validator/internal/pkg/file"
 	"email-validator/internal/pkg/format"
 	"encoding/json"
-	"errors"
 	"fmt"
 	"log"
 	"net/http"
@@ -29,81 +29,67 @@ func ValidateEmailsHandler(w http.ResponseWriter, r *http.Request) {
 	if r.Method == http.MethodPost {
 		req := ValidateEmailsRequest{}
 
-		err := r.ParseMultipartForm(100 << 20) // 100 MB maximum
+		err := r.ParseMultipartForm(30 << 20) // 30 MB maximum per request
 		if err != nil {
 			w.WriteHeader(http.StatusInternalServerError)
-			fmt.Fprintf(w, "Error parsing form: %v", err)
+			log.Printf("Error parsing multipart form: %v", err)
 			return
 		}
 
 		uploadedFile, uploadedFileHeader, err := r.FormFile("file")
 
-		reqHasFile := err == nil && err != http.ErrMissingFile
+		reqHasFile := err == nil && uploadedFileHeader != nil
 		if err != nil && err != http.ErrMissingFile {
-			http.Error(w, err.Error(), http.StatusInternalServerError)
+			log.Printf("Failed to parse request file: %v", err)
+			http.Error(w, "internal server error", http.StatusInternalServerError)
 			return
 		}
 		defer uploadedFile.Close()
 
-		var report []models.ReacherResponse
+		tokenClaims, err := middleware.ParseClaimsFromJWT(middleware.ExtractToken(r))
+		if err != nil {
+			log.Printf("Failed to parse request token claims: %v", err)
+			http.Error(w, "internal server error", http.StatusInternalServerError)
+			return
+		}
+		reportRecipient := tokenClaims.UserEmail
 
 		if reqHasFile {
-			fileExtension := strings.ToLower(strings.TrimPrefix(filepath.Ext(uploadedFileHeader.Filename), "."))
-
-			resp, err := email.ValidateManyFromFile(uploadedFile, uploadedFileHeader, fileExtension)
-			if err != nil {
-				file.Save(uploadedFileHeader, fmt.Sprintf("./uploads/%s", uploadedFileHeader.Filename))
-
-				if errors.Is(err, email.ErrNoEmailsToValidate) {
-					http.Error(w, "No email addreses present in file", http.StatusBadRequest)
-					return
-				} else if errors.Is(err, format.ErrInvalidFileExt) {
-					http.Error(w, "Unauthorized file type", http.StatusBadRequest)
-					return
-				}
-
-				log.Println(err)
-				http.Error(w, "Internal Server Error", http.StatusBadRequest)
-				return
-			}
-			report = append(report, resp...)
-
 			err = file.Save(uploadedFileHeader, fmt.Sprintf("./uploads/%s", uploadedFileHeader.Filename))
 			if err != nil {
-				log.Println("Failed to save request file:", err)
+				log.Printf("Failed to save request file: %v", err)
 			}
 
-			json.NewEncoder(w).Encode(report)
-			return
-		}
+			fileExtension := models.FileExtension(strings.ToLower(strings.TrimPrefix(filepath.Ext(uploadedFileHeader.Filename), ".")))
 
-		if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
-			http.Error(w, "Invalid payload", http.StatusBadRequest)
-			return
-		}
-
-		resp, err := email.ValidateMany(req.Emails)
-
-		if err != nil {
-			if errors.Is(err, email.ErrNoEmailsToValidate) {
-				http.Error(w, "No email addreses present in array", http.StatusBadRequest)
+			if !format.IsExtensionAllowed(fileExtension) {
+				http.Error(w, fmt.Sprintf("invalid payload: %v", format.ErrInvalidFileExt.Error()), http.StatusBadRequest)
 				return
 			}
 
-			log.Println(err)
-			http.Error(w, "Internal Server Error", http.StatusBadRequest)
+			go email.ValidateManyFromFileWithReport(uploadedFile, uploadedFileHeader, fileExtension, reportRecipient)
+
+			fmt.Fprint(w, http.StatusText(http.StatusOK))
 			return
 		}
-
-		report = append(report, resp...)
 
 		err = file.SaveStringsToNewCSV(req.Emails, fmt.Sprintf("./uploads/%s.csv", uuid.New().String()), GetIPsFromRequest(r), time.Now())
 		if err != nil {
-			log.Println("Failed to save request data:", err)
+			log.Printf("Failed to save request data: %v", err)
 		}
 
-		json.NewEncoder(w).Encode(report)
+		if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
+			log.Printf("Failed to decode request payload: %v", err)
+			http.Error(w, "invalid payload", http.StatusBadRequest)
+			return
+		} else if len(req.Emails) == 0 {
+			http.Error(w, email.ErrNoEmailsToValidate.Error(), http.StatusBadRequest)
+		}
+
+		go email.ValidateManyWithReport(req.Emails, reportRecipient)
+
+		fmt.Fprint(w, http.StatusText(http.StatusOK))
 	} else {
-		http.Error(w, "Method Not Allowed", http.StatusMethodNotAllowed)
+		http.Error(w, "method not allowed", http.StatusMethodNotAllowed)
 	}
 }

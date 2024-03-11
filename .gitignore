@@ -1,17 +1,10 @@
 *.env
 !example.env
 
-freelancechain.json
-tweeter-id.json
-
 .DS_Store
 tmp
-
-*.csv
-*.txt
-!modules.txt
 
 *.pem
 !cert.pem
 
-uploads/*
+uploads

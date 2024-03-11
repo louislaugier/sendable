@@ -6,7 +6,6 @@ import (
 	"email-validator/internal/pkg/file"
 	"email-validator/internal/pkg/format"
 	"errors"
-	"log"
 	"mime/multipart"
 	"os"
 	"strconv"
@@ -29,7 +28,6 @@ func Validate(email string) (*models.ReacherResponse, error) {
 	if format.IsEmailValid(email) {
 		resp, err := postToReacher(email)
 		if err != nil {
-			log.Println(err)
 			return nil, err
 		}
 
@@ -40,29 +38,27 @@ func Validate(email string) (*models.ReacherResponse, error) {
 }
 
 // ValidateManyFromFile determines the file format and validates emails accordingly
-func ValidateManyFromFile(uploadedFile multipart.File, uploadedFileHeader *multipart.FileHeader, extension string) ([]models.ReacherResponse, error) {
+func ValidateManyFromFile(uploadedFile multipart.File, uploadedFileHeader *multipart.FileHeader, extension models.FileExtension) ([]models.ReacherResponse, error) {
 	var (
 		emails    []string
 		delimiter rune
 		err       error
 	)
 
-	switch strings.ToLower(extension) {
-	case "csv":
+	switch extension {
+	case models.FileExtensionCSV:
 		delimiter, err = file.GuessCSVDelimiter(uploadedFileHeader)
 		if err != nil {
 			return nil, err
 		}
 
 		emails, err = file.GetEmailsFromCSV(uploadedFile, delimiter)
-	case "xlsx":
+	case models.FileExtensionXLSX:
 		emails, err = file.GetEmailsFromXLSX(uploadedFile)
-	case "xls":
+	case models.FileExtensionXLS:
 		emails, err = file.GetEmailsFromXLS(uploadedFile)
-	case "txt":
+	case models.FileExtensionTXT:
 		emails, err = file.GetEmailsFromTXT(uploadedFile)
-	default:
-		return nil, format.ErrInvalidFileExt
 	}
 
 	if err != nil {
@@ -79,10 +75,6 @@ func ValidateManyFromFile(uploadedFile multipart.File, uploadedFileHeader *multi
 
 // ValidateMany validates emails using multiple goroutines.
 func ValidateMany(emails []string) ([]models.ReacherResponse, error) {
-	if len(emails) == 0 {
-		return nil, ErrNoEmailsToValidate // Ensure that ErrNoEmailsToValidate is defined
-	}
-
 	emailChannel := make(chan string, len(emails))
 	errChannel := make(chan error, 1) // Error channel with a buffer to store at least one error
 	var validatedEmails []models.ReacherResponse
@@ -119,7 +111,8 @@ func ValidateMany(emails []string) ([]models.ReacherResponse, error) {
 							return
 						}
 
-						// ignore format errors: don't send request to reacher and don't include email in response
+						// craft mock reacher response saying format invalid to prevent calling reacher api for nothing
+						validatedEmails = append(validatedEmails, NewInvalidFormatReacherResponse(email))
 					} else {
 						mutex.Lock()
 						validatedEmails = append(validatedEmails, *resp)
@@ -161,7 +154,7 @@ func ValidateManyBulk(emails []string) ([]models.ReacherResponse, error) {
 		return nil, ErrNoEmailsToValidate
 	}
 
-	// TODO
+	// TODO (further versions)
 	// https://help.reacher.email/bulk-email-verification
 
 	return nil, nil

@@ -25,34 +25,35 @@ func ValidateEmailHandler(w http.ResponseWriter, r *http.Request) {
 		req := ValidateEmailRequest{}
 
 		if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
-			http.Error(w, "Invalid payload", http.StatusBadRequest)
+			log.Printf("Failed to decode request payload: %v", err)
+			http.Error(w, "invalid payload", http.StatusBadRequest)
 			return
 		}
 
 		if req.Email == nil {
-			http.Error(w, "Missing email in payload", http.StatusBadRequest)
+			http.Error(w, "invalid payload: missing email field in JSON body", http.StatusBadRequest)
 			return
 		}
 
 		resp, err := email.Validate(*req.Email)
 		if err != nil {
 			if errors.Is(err, format.ErrInvalidEmail) {
-				http.Error(w, "Incorrect email format", http.StatusBadRequest)
+				http.Error(w, format.ErrInvalidEmail.Error(), http.StatusBadRequest)
 				return
 			}
 
 			log.Println(err)
-			http.Error(w, "Internal Server Error", http.StatusInternalServerError)
+			http.Error(w, "internal server error", http.StatusInternalServerError)
 			return
 		}
 
 		err = file.SaveStringsToNewCSV([]string{*req.Email}, fmt.Sprintf("./uploads/%s.csv", uuid.New().String()), GetIPsFromRequest(r), time.Now())
 		if err != nil {
-			log.Println("Failed to save request data:", err)
+			log.Printf("Failed to save request data: %v", err)
 		}
 
 		json.NewEncoder(w).Encode(resp)
 	} else {
-		http.Error(w, "Method Not Allowed", http.StatusMethodNotAllowed)
+		http.Error(w, "method not allowed", http.StatusMethodNotAllowed)
 	}
 }

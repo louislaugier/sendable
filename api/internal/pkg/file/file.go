@@ -4,9 +4,10 @@ import (
 	"encoding/csv"
 	"fmt"
 	"io"
-	"log"
 	"mime/multipart"
 	"os"
+	"path/filepath"
+	"strings"
 	"time"
 )
 
@@ -18,7 +19,7 @@ func Save(fileHeader *multipart.FileHeader, filePath string) error {
 	}
 	defer source.Close()
 
-	destination, err := os.Create(filePath)
+	destination, err := getUniqueFile(filePath)
 	if err != nil {
 		return err
 	}
@@ -34,7 +35,7 @@ func Save(fileHeader *multipart.FileHeader, filePath string) error {
 
 // SaveStringsToNewCSV saves a list of strings to a new CSV file
 func SaveStringsToNewCSV(data []string, filePath string, IPs string, timestamp time.Time) error {
-	file, err := os.Create(fmt.Sprintf(`%s.csv`, filePath))
+	file, err := getUniqueFile(filePath)
 	if err != nil {
 		return err
 	}
@@ -42,20 +43,36 @@ func SaveStringsToNewCSV(data []string, filePath string, IPs string, timestamp t
 	writer := csv.NewWriter(file)
 	defer writer.Flush()
 
-	// first line is the timestamp followed by author IPs
+	// First line is the timestamp followed by author IPs
 	err = writer.Write([]string{timestamp.Local().String(), IPs})
 	if err != nil {
-		log.Println("Error writing IPs and timestamp to CSV:", err)
 		return err
 	}
 
 	for _, str := range data {
 		err := writer.Write([]string{str})
 		if err != nil {
-			log.Println("Error writing string to CSV:", err)
 			return err
 		}
 	}
 
 	return nil
+}
+
+// getUniqueFile returns a unique file by appending a small suffix to the filepath if it already exists
+func getUniqueFile(filePath string) (*os.File, error) {
+	if _, err := os.Stat(filePath); os.IsNotExist(err) {
+		// File doesn't exist, return the file directly
+		return os.Create(filePath)
+	}
+
+	// If file already exists, find a unique filename
+	baseName := strings.TrimSuffix(filePath, filepath.Ext(filePath))
+	ext := filepath.Ext(filePath)
+	for i := 1; ; i++ {
+		newFilePath := fmt.Sprintf("%s_%d%s", baseName, i, ext)
+		if _, err := os.Stat(newFilePath); os.IsNotExist(err) {
+			return os.Create(newFilePath)
+		}
+	}
 }

@@ -28,7 +28,7 @@ type ReacherResponse struct {
 	Misc         misc         `json:"misc,omitempty"`
 	MX           mx           `json:"mx,omitempty"`
 	SMTP         smtp         `json:"smtp,omitempty"`
-	Syntax       syntax       `json:"syntax,omitempty"`
+	Syntax       Syntax       `json:"syntax,omitempty"`
 }
 
 type misc struct {
@@ -61,7 +61,7 @@ type smtp struct {
 	IsDisabled    bool `json:"is_disabled"`
 }
 
-type syntax struct {
+type Syntax struct {
 	Domain        string `json:"domain,omitempty"`
 	IsValidSyntax bool   `json:"is_valid_syntax"`
 	Username      string `json:"username,omitempty"`

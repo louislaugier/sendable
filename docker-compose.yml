@@ -37,6 +37,8 @@ services:
       - vpc_local
   # rabbitmq:
   #   image: rabbitmq:3.12-management
+  # clamav:
+  #   image: clamav/clamav
 networks:
   vpc_local:
     driver: bridge

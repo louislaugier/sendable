@@ -15,7 +15,8 @@ import (
 
 // CustomClaims includes the custom claims for the JWT.
 type CustomClaims struct {
-	UserID string `json:"user_id"`
+	UserID    string `json:"user_id"`
+	UserEmail string `json:"user_email"`
 	jwt.StandardClaims
 }
 
@@ -24,9 +25,10 @@ type userContextKey string
 const userKey userContextKey = "user_id"
 
 // GenerateJWT creates a new JWT token for the user.
-func GenerateJWT(userID string) (*string, error) {
+func GenerateJWT(userID, userEmail string) (*string, error) {
 	claims := CustomClaims{
-		UserID: userID,
+		UserID:    userID,
+		UserEmail: userEmail,
 		StandardClaims: jwt.StandardClaims{
 			Issuer:    "https://sendable.email",
 			Subject:   userID,
@@ -41,7 +43,7 @@ func GenerateJWT(userID string) (*string, error) {
 	signedToken, err := token.SignedString([]byte(getJWTSecret()))
 
 	if err != nil {
-		log.Println("Error creating JWT:", err)
+		log.Printf("Error creating JWT: %v", err)
 		return nil, err
 	}
 
@@ -51,7 +53,7 @@ func GenerateJWT(userID string) (*string, error) {
 // ValidateJWT middleware validates the JWT token in the request header.
 func ValidateJWT(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		tokenString := extractToken(r)
+		tokenString := ExtractToken(r)
 		if tokenString == "" {
 			http.Error(w, "Missing or Invalid Authorization Header", http.StatusUnauthorized)
 			return
@@ -100,8 +102,8 @@ func ParseClaimsFromJWT(tokenString string) (*CustomClaims, error) {
 	return nil, fmt.Errorf("could not parse claims")
 }
 
-// extractToken extracts the bearer token from the request.
-func extractToken(r *http.Request) string {
+// ExtractToken extracts the bearer token from the request.
+func ExtractToken(r *http.Request) string {
 	bearerToken := r.Header.Get("Authorization")
 	if bearerToken == "" || !strings.HasPrefix(bearerToken, "Bearer ") {
 		return ""

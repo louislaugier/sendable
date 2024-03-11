@@ -5,7 +5,6 @@ import (
 	"email-validator/internal/models"
 	"encoding/json"
 	"fmt"
-	"log"
 	"net/http"
 )
 
@@ -16,7 +15,6 @@ func postToReacher(email string) (*models.ReacherResponse, error) {
 		}
 	`, email))))
 	if err != nil {
-		log.Println("Error requesting reacher:", err)
 		return nil, err
 	}
 	defer req.Body.Close()
@@ -24,7 +22,6 @@ func postToReacher(email string) (*models.ReacherResponse, error) {
 	resp := models.ReacherResponse{}
 	err = json.NewDecoder(req.Body).Decode(&resp)
 	if err != nil {
-		log.Println("Error decoding reacher response:", err)
 		return nil, err
 	}
 
@@ -34,4 +31,14 @@ func postToReacher(email string) (*models.ReacherResponse, error) {
 func postBulkToReacher(email string) ([]models.ReacherResponse, error) {
 
 	return nil, nil
+}
+
+func NewInvalidFormatReacherResponse(email string) models.ReacherResponse {
+	return models.ReacherResponse{
+		Input:        email,
+		Reachability: models.ReachabilityInvalid,
+		Syntax: models.Syntax{
+			IsValidSyntax: false,
+		},
+	}
 }
