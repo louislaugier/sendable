@@ -7,7 +7,7 @@ import (
 // FilterViruses prevents files with viruses to be uploaded
 func FilterViruses(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		filterSizeExceedingFiles(w, r)
+		preventSizeExceedingPayload(w, r)
 
 		// TODO
 		next.ServeHTTP(w, r)

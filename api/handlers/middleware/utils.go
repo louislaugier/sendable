@@ -62,7 +62,7 @@ func GetIPsFromRequest(r *http.Request) string {
 	return strings.Join(ipsSlice, ", ")
 }
 
-func filterSizeExceedingFiles(w http.ResponseWriter, r *http.Request) {
+func preventSizeExceedingPayload(w http.ResponseWriter, r *http.Request) {
 	err := r.ParseMultipartForm(30 << 20) // 30 MB maximum per request
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
