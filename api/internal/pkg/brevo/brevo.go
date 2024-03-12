@@ -5,7 +5,6 @@ import (
 	"email-validator/internal/models"
 	"email-validator/internal/pkg/html"
 	"os"
-	"strconv"
 
 	brevo "github.com/getbrevo/brevo-go/lib"
 )
@@ -34,11 +33,6 @@ func (c *EmailClient) SendEmail(template models.Template, subject, previewConten
 		})
 	}
 
-	senderID, err := strconv.ParseInt(os.Getenv("BREVO_SENDER_ID"), 10, 64)
-	if err != nil {
-		return err
-	}
-
 	// var files []brevo.SendSmtpEmailAttachment
 	// for _, attachment := range attachments {
 	// 	fileContent, err := file.ToBase64(attachment)
@@ -61,7 +55,6 @@ func (c *EmailClient) SendEmail(template models.Template, subject, previewConten
 		Sender: &brevo.SendSmtpEmailSender{
 			Name:  os.Getenv("BREVO_SENDER_NAME"),
 			Email: os.Getenv("BREVO_SENDER_EMAIL"),
-			Id:    senderID,
 		},
 		To:          to,
 		HtmlContent: HTML,

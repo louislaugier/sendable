@@ -12,7 +12,7 @@ var DB *sql.DB
 func Connect() {
 	connectionType, URL := "postgres", os.Getenv("DATABASE_URL")
 
-	if os.Getenv("env") == "dev" {
+	if os.Getenv("ENV") == "dev" {
 		URL = "postgres://postgres:pass@db:5432/db?sslmode=disable"
 	}
 

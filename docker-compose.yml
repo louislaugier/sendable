@@ -10,7 +10,7 @@ services:
     volumes:
       - ./api/:/go/src/email-validator/api
     environment:
-      - env=PRD
+      - ENV=${ENV}
     ports:
       - 443:443
       - 80:80
