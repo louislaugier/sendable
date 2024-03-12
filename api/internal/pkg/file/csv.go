@@ -176,9 +176,9 @@ func CreateCSVReport(report []models.ReacherResponse, ID uuid.UUID) (*os.File, e
 		var reachability string
 		switch item.Reachability {
 		case models.ReachabilitySafe:
-			reachability = "reachable with good reputation"
+			reachability = "reachable with a good reputation"
 		case models.ReachabilityRisky:
-			reachability = "existing with low reputation"
+			reachability = "existing with a low reputation"
 		case models.ReachabilityUnknown:
 			reachability = "unknown (domain protected)"
 		case models.ReachabilityInvalid:

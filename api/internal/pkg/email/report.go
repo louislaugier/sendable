@@ -44,6 +44,12 @@ func sendReport(report []models.ReacherResponse, recipient string) {
 		return
 	}
 
+	token, _, err := file.CreateJSONReportToken(ID)
+	if err != nil {
+		log.Printf("Error creating report token: %v", err)
+		return
+	}
+
 	_, err = file.ToZIP(f)
 	if err != nil {
 		log.Printf("Error creating report: %v", err)
@@ -51,7 +57,8 @@ func sendReport(report []models.ReacherResponse, recipient string) {
 	}
 
 	err = brevo.Client.SendEmail(models.ReportTemplate, "Your email validation report", "Preview text", map[string]string{
-		"id": ID.String(),
+		"id":    ID.String(),
+		"token": token.String(),
 	}, recipient)
 	if err != nil {
 		log.Printf("Error sending report: %v", err)

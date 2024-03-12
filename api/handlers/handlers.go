@@ -15,6 +15,9 @@ func defineRoutes() {
 
 	http.Handle("/validate_email", middleware.ValidateJWT(middleware.ValidatorRateLimit(middleware.Log(http.HandlerFunc(ValidateEmailHandler)))))
 	http.Handle("/validate_emails", middleware.FilterViruses(middleware.SizeLimit(middleware.ValidateJWT(middleware.ValidatorRateLimit(middleware.Log(http.HandlerFunc(ValidateEmailsHandler)))))))
+
+	// Serve all the files under the "reports" subfolder
+	http.Handle("/reports/", http.StripPrefix("/reports/", middleware.DownloadAuth(http.FileServer(http.Dir("./reports")))))
 }
 
 func StartHTTPSServer() {
