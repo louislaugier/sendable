@@ -2,6 +2,10 @@
 start-dev:
 	docker-compose up -d
 
+.PHONY: build-dev
+build-dev:
+	docker-compose build --no-cache
+
 .PHONY: recreate-dev
 recreate-dev:
 	docker-compose up -d --force-recreate
