@@ -1,7 +1,6 @@
 package middleware
 
 import (
-	"log"
 	"net"
 	"net/http"
 	"regexp"
@@ -60,13 +59,4 @@ func GetIPsFromRequest(r *http.Request) string {
 
 	// Join all IPs as a single string
 	return strings.Join(ipsSlice, ", ")
-}
-
-func preventSizeExceedingPayload(w http.ResponseWriter, r *http.Request) {
-	err := r.ParseMultipartForm(30 << 20) // 30 MB maximum per request
-	if err != nil {
-		w.WriteHeader(http.StatusInternalServerError)
-		log.Printf("Error parsing multipart form: %v", err)
-		return
-	}
 }

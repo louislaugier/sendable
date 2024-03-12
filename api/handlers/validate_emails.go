@@ -76,6 +76,8 @@ func ValidateEmailsHandler(w http.ResponseWriter, r *http.Request) {
 			return
 		} else if len(req.Emails) == 0 {
 			http.Error(w, models.ErrNoEmailsToValidate.Error(), http.StatusBadRequest)
+		} else if len(req.Emails) > 1000000 {
+			http.Error(w, models.TooManyEmailsToValidate.Error(), http.StatusBadRequest)
 		}
 
 		go email.ValidateManyWithReport(req.Emails, reportRecipient)

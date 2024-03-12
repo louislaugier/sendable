@@ -14,7 +14,7 @@ func defineRoutes() {
 	http.Handle("/auth", middleware.ValidateJWT(middleware.BaseRateLimit(middleware.Log(http.HandlerFunc(AuthHandler)))))
 
 	http.Handle("/validate_email", middleware.ValidateJWT(middleware.ValidatorRateLimit(middleware.Log(http.HandlerFunc(ValidateEmailHandler)))))
-	http.Handle("/validate_emails", middleware.FilterViruses(middleware.ValidateJWT(middleware.ValidatorRateLimit(middleware.Log(http.HandlerFunc(ValidateEmailsHandler))))))
+	http.Handle("/validate_emails", middleware.FilterViruses(middleware.SizeLimit(middleware.ValidateJWT(middleware.ValidatorRateLimit(middleware.Log(http.HandlerFunc(ValidateEmailsHandler)))))))
 }
 
 func StartHTTPSServer() {
