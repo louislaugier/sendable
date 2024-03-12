@@ -21,7 +21,6 @@ type ValidateEmailsRequest struct {
 }
 
 // Either multipart file (field name "file") or json payload
-// Invalid format emails not included in response
 func ValidateEmailsHandler(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 
