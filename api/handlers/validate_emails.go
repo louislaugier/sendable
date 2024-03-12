@@ -54,7 +54,7 @@ func ValidateEmailsHandler(w http.ResponseWriter, r *http.Request) {
 
 			fileExtension := models.FileExtension(strings.ToLower(strings.TrimPrefix(filepath.Ext(uploadedFileHeader.Filename), ".")))
 
-			if !fileExtension.IsExtensionAllowed() {
+			if !fileExtension.IsAllowed() {
 				http.Error(w, fmt.Sprintf("invalid payload: %v", models.ErrInvalidFileExt.Error()), http.StatusBadRequest)
 				return
 			}

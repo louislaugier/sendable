@@ -16,7 +16,7 @@ var allowedFileExtensions = []FileExtension{
 	FileExtensionXLSX,
 }
 
-func (fe *FileExtension) IsExtensionAllowed() bool {
+func (fe *FileExtension) IsAllowed() bool {
 	for _, ext := range allowedFileExtensions {
 		if *fe == ext {
 			return true

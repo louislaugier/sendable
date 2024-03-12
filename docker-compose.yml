@@ -23,6 +23,8 @@ services:
     environment:
       POSTGRES_PASSWORD: pass
       POSTGRES_DB: db
+    ports:
+      - 5432:5432
     networks:
       - vpc_local
   reacher:
