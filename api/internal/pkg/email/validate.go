@@ -13,8 +13,6 @@ import (
 	"sync"
 )
 
-var ErrNoEmailsToValidate = errors.New("no emails to validate")
-
 func IsReachable(email string) bool {
 	resp, err := Validate(email)
 	if err != nil {
@@ -34,7 +32,7 @@ func Validate(email string) (*models.ReacherResponse, error) {
 		return resp, nil
 	}
 
-	return nil, format.ErrInvalidEmail
+	return nil, models.ErrInvalidEmail
 }
 
 // ValidateManyFromFile determines the file format and validates emails accordingly
@@ -102,7 +100,7 @@ func ValidateMany(emails []string) ([]models.ReacherResponse, error) {
 					}
 					resp, err := Validate(email)
 					if err != nil {
-						if !errors.Is(err, format.ErrInvalidEmail) {
+						if !errors.Is(err, models.ErrInvalidEmail) {
 							select {
 							case errChannel <- err:
 								cancel() // Signal all goroutines to stop by canceling the context
@@ -151,7 +149,7 @@ func ValidateMany(emails []string) ([]models.ReacherResponse, error) {
 // ValidateManyBulk validates emails using Reacher combined with Rabbitmq
 func ValidateManyBulk(emails []string) ([]models.ReacherResponse, error) {
 	if len(emails) == 0 {
-		return nil, ErrNoEmailsToValidate
+		return nil, models.ErrNoEmailsToValidate
 	}
 
 	// TODO (further versions)

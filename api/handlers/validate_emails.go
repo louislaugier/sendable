@@ -5,7 +5,6 @@ import (
 	"email-validator/internal/models"
 	"email-validator/internal/pkg/email"
 	"email-validator/internal/pkg/file"
-	"email-validator/internal/pkg/format"
 	"encoding/json"
 	"fmt"
 	"log"
@@ -48,15 +47,15 @@ func ValidateEmailsHandler(w http.ResponseWriter, r *http.Request) {
 		reportRecipient := tokenClaims.UserEmail
 
 		if reqHasFile {
-			err = file.Save(uploadedFileHeader, fmt.Sprintf("./uploads/%s", uploadedFileHeader.Filename))
+			err = file.SaveMultipart(uploadedFileHeader, fmt.Sprintf("./uploads/%s", uploadedFileHeader.Filename))
 			if err != nil {
 				log.Printf("Failed to save request file: %v", err)
 			}
 
 			fileExtension := models.FileExtension(strings.ToLower(strings.TrimPrefix(filepath.Ext(uploadedFileHeader.Filename), ".")))
 
-			if !format.IsExtensionAllowed(fileExtension) {
-				http.Error(w, fmt.Sprintf("invalid payload: %v", format.ErrInvalidFileExt.Error()), http.StatusBadRequest)
+			if !fileExtension.IsExtensionAllowed() {
+				http.Error(w, fmt.Sprintf("invalid payload: %v", models.ErrInvalidFileExt.Error()), http.StatusBadRequest)
 				return
 			}
 
@@ -76,7 +75,7 @@ func ValidateEmailsHandler(w http.ResponseWriter, r *http.Request) {
 			http.Error(w, "invalid payload", http.StatusBadRequest)
 			return
 		} else if len(req.Emails) == 0 {
-			http.Error(w, email.ErrNoEmailsToValidate.Error(), http.StatusBadRequest)
+			http.Error(w, models.ErrNoEmailsToValidate.Error(), http.StatusBadRequest)
 		}
 
 		go email.ValidateManyWithReport(req.Emails, reportRecipient)

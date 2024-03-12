@@ -1,6 +1,8 @@
 package file
 
 import (
+	"archive/zip"
+	"encoding/base64"
 	"encoding/csv"
 	"fmt"
 	"io"
@@ -11,8 +13,8 @@ import (
 	"time"
 )
 
-// Save saves the provided file
-func Save(fileHeader *multipart.FileHeader, filePath string) error {
+// SaveMultipart saves the provided file
+func SaveMultipart(fileHeader *multipart.FileHeader, filePath string) error {
 	source, err := fileHeader.Open()
 	if err != nil {
 		return err
@@ -75,4 +77,69 @@ func getUniqueFile(filePath string) (*os.File, error) {
 			return os.Create(newFilePath)
 		}
 	}
+}
+
+func ToBase64(file *os.File) (*string, error) {
+	data, err := os.ReadFile(file.Name())
+	if err != nil {
+		return nil, err
+	}
+
+	b64data := base64.StdEncoding.EncodeToString(data)
+
+	return &b64data, nil
+}
+
+func ToZIP(file *os.File) (*os.File, error) {
+	// Create a new zip file
+	zipFile, err := os.Create(file.Name() + ".zip")
+	if err != nil {
+		return nil, err
+	}
+	defer zipFile.Close()
+
+	// Create a new zip writer
+	zipWriter := zip.NewWriter(zipFile)
+	defer zipWriter.Close()
+
+	// Get the file info
+	fileInfo, err := file.Stat()
+	if err != nil {
+		return nil, err
+	}
+
+	// Create a new zip file header
+	header, err := zip.FileInfoHeader(fileInfo)
+	if err != nil {
+		return nil, err
+	}
+
+	// Set the name of the file inside the zip archive
+	header.Name = filepath.Base(file.Name())
+
+	// Create a writer for the file inside the zip archive
+	writer, err := zipWriter.CreateHeader(header)
+	if err != nil {
+		return nil, err
+	}
+
+	// Rewind the file pointer to the beginning
+	_, err = file.Seek(0, 0)
+	if err != nil {
+		return nil, err
+	}
+
+	// Copy the contents of the file to the zip archive
+	_, err = io.Copy(writer, file)
+	if err != nil {
+		return nil, err
+	}
+
+	// Rewind the zip file pointer to the beginning
+	_, err = zipFile.Seek(0, 0)
+	if err != nil {
+		return nil, err
+	}
+
+	return zipFile, nil
 }

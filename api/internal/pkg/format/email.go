@@ -1,14 +1,11 @@
 package format
 
 import (
-	"errors"
 	"net/mail"
 	"regexp"
 	"strings"
 	"unicode"
 )
-
-var ErrInvalidEmail = errors.New("invalid email address format")
 
 func IsEmailValid(email string) bool {
 	_, err := mail.ParseAddress(email)

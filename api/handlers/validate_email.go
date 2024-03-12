@@ -2,9 +2,9 @@ package handlers
 
 import (
 	"email-validator/handlers/middleware"
+	"email-validator/internal/models"
 	"email-validator/internal/pkg/email"
 	"email-validator/internal/pkg/file"
-	"email-validator/internal/pkg/format"
 	"encoding/json"
 	"errors"
 	"fmt"
@@ -38,8 +38,8 @@ func ValidateEmailHandler(w http.ResponseWriter, r *http.Request) {
 
 		resp, err := email.Validate(*req.Email)
 		if err != nil {
-			if errors.Is(err, format.ErrInvalidEmail) {
-				http.Error(w, format.ErrInvalidEmail.Error(), http.StatusBadRequest)
+			if errors.Is(err, models.ErrInvalidEmail) {
+				http.Error(w, models.ErrInvalidEmail.Error(), http.StatusBadRequest)
 				return
 			}
 

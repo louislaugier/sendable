@@ -7,8 +7,3 @@ type StatusCodeRecorder struct {
 	http.ResponseWriter
 	Status int
 }
-
-func (rec *StatusCodeRecorder) WriteHeader(code int) {
-	rec.Status = code
-	rec.ResponseWriter.WriteHeader(code)
-}

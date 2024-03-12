@@ -2,14 +2,19 @@ package file
 
 import (
 	"bufio"
+	"email-validator/internal/models"
 	"email-validator/internal/pkg/format"
 	"encoding/csv"
+	"fmt"
 	"io"
 	"mime/multipart"
 	"os"
+	"reflect"
 	"strconv"
 	"strings"
 	"sync"
+
+	"github.com/google/uuid"
 )
 
 // GetLinesFromCSV reads a CSV file from a multipart.File and returns the lines.
@@ -146,4 +151,69 @@ func detectDelimiter(content string) rune {
 	}
 
 	return guessedDelimiter
+}
+
+// CreateCSVReport generates a CSV report based on the provided data.
+func CreateCSVReport(report []models.ReacherResponse, ID uuid.UUID) (*os.File, error) {
+	file, err := os.Create(fmt.Sprintf("./reports/%s.csv", ID.String()))
+	if err != nil {
+		return nil, err
+	}
+	defer file.Close()
+
+	writer := csv.NewWriter(file)
+	defer writer.Flush()
+
+	// Write header
+	header := generateHeader(models.ReacherResponse{})
+	err = writer.Write(header)
+	if err != nil {
+		return nil, err
+	}
+
+	// Write data
+	for _, item := range report {
+		var reachability string
+		switch item.Reachability {
+		case models.ReachabilitySafe:
+			reachability = "reachable with good reputation"
+		case models.ReachabilityRisky:
+			reachability = "existing with low reputation"
+		case models.ReachabilityUnknown:
+			reachability = "unknown (domain protected)"
+		case models.ReachabilityInvalid:
+			reachability = "non-existing (will bounce)"
+		}
+
+		row := []string{
+			item.Input,
+			reachability,
+			strconv.FormatBool(item.Misc.IsDisposable),
+			strconv.FormatBool(item.Misc.IsRoleAccount),
+			strconv.FormatBool(item.SMTP.HasFullInbox),
+			strconv.FormatBool(item.SMTP.IsCatchAll),
+			strconv.FormatBool(item.SMTP.IsDisabled),
+			strconv.FormatBool(!item.Syntax.IsValidSyntax),
+		}
+		err = writer.Write(row)
+		if err != nil {
+			return nil, err
+		}
+	}
+
+	return file, nil
+}
+
+// generateHeader dynamically generates the header based on the CSV tags of the struct fields.
+func generateHeader(r models.ReacherResponse) []string {
+	var header []string
+	t := reflect.TypeOf(r)
+	for i := 0; i < t.NumField(); i++ {
+		field := t.Field(i)
+		tag := field.Tag.Get("csv")
+		if tag != "" && tag != "-" {
+			header = append(header, tag)
+		}
+	}
+	return header
 }
