@@ -32,7 +32,7 @@ services:
     #   - rabbitmq
     image: reacherhq/backend:latest
     environment:
-      - RCH_WORKER_CONCURRENCY=10
+      - RCH_WORKER_CONCURRENCY=${RCH_WORKER_CONCURRENCY}
       # - RCH_AMQP_ADDR=amqp://localhost
       # - RCH_AMQP_ADDR=amqp://rabbitmq:5672
     networks:
