@@ -63,7 +63,7 @@ func sendReport(report []models.ReacherResponse, recipient string) {
 		domain = "http://localhost"
 	}
 
-	err = brevo.Client.SendEmail(models.ReportTemplate, "Your email validation report", "Preview text", map[string]string{
+	err = brevo.Client.SendEmail(models.ReportTemplate, "Your email validation report is ready", "Preview text", map[string]string{
 		"id":     ID.String(),
 		"token":  token.String(),
 		"domain": domain,
@@ -76,7 +76,7 @@ func sendReport(report []models.ReacherResponse, recipient string) {
 
 // sendReportError sends a report error by email to recipient
 func sendReportError(recipient string) {
-	err := brevo.Client.SendEmail(models.ErrorTemplate, "Your email validation report", "Preview text", map[string]string{}, recipient)
+	err := brevo.Client.SendEmail(models.ErrorTemplate, "Email validation error", "Preview text", map[string]string{}, recipient)
 	if err != nil {
 		log.Printf("Error sending report error: %v", err)
 		return
