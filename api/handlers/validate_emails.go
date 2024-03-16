@@ -5,7 +5,6 @@ import (
 	"email-validator/internal/models"
 	"email-validator/internal/pkg/email"
 	"email-validator/internal/pkg/file"
-	"encoding/json"
 	"fmt"
 	"log"
 	"net/http"
@@ -25,8 +24,6 @@ func ValidateEmailsHandler(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 
 	if r.Method == http.MethodPost {
-		req := ValidateEmailsRequest{}
-
 		uploadedFile, uploadedFileHeader, err := r.FormFile("file")
 
 		reqHasFile := err == nil && uploadedFileHeader != nil
@@ -64,19 +61,14 @@ func ValidateEmailsHandler(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 
+		req, err := email.ValidateRequest(w, r)
+		if err != nil {
+			return
+		}
+
 		err = file.SaveStringsToNewCSV(req.Emails, fmt.Sprintf("./uploads/%s.csv", uuid.New().String()), middleware.GetIPsFromRequest(r), time.Now())
 		if err != nil {
 			log.Printf("Failed to save request data: %v", err)
-		}
-
-		if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
-			log.Printf("Failed to decode request payload: %v", err)
-			http.Error(w, "invalid payload", http.StatusBadRequest)
-			return
-		} else if len(req.Emails) == 0 {
-			http.Error(w, models.ErrNoEmailsToValidate.Error(), http.StatusBadRequest)
-		} else if len(req.Emails) > 1000000 {
-			http.Error(w, models.TooManyEmailsToValidate.Error(), http.StatusBadRequest)
 		}
 
 		go email.ValidateManyWithReport(req.Emails, reportRecipient)

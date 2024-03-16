@@ -15,15 +15,11 @@ import (
 	"github.com/google/uuid"
 )
 
-type ValidateEmailRequest struct {
-	Email *string `json:"email"`
-}
-
 func ValidateEmailHandler(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 
 	if r.Method == http.MethodPost {
-		req := ValidateEmailRequest{}
+		req := models.ValidateEmailRequest{}
 
 		if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
 			log.Printf("Failed to decode request payload: %v", err)

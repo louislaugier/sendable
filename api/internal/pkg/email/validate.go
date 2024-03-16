@@ -5,8 +5,11 @@ import (
 	"email-validator/internal/models"
 	"email-validator/internal/pkg/file"
 	"email-validator/internal/pkg/format"
+	"encoding/json"
 	"errors"
+	"log"
 	"mime/multipart"
+	"net/http"
 	"os"
 	"strconv"
 	"strings"
@@ -156,4 +159,23 @@ func ValidateManyBulk(emails []string) ([]models.ReacherResponse, error) {
 	// https://help.reacher.email/bulk-email-verification
 
 	return nil, nil
+}
+
+func ValidateRequest(w http.ResponseWriter, r *http.Request) (*models.ValidateEmailsRequest, error) {
+	req := models.ValidateEmailsRequest{}
+
+	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
+		log.Printf("Failed to decode request payload: %v", err)
+		http.Error(w, "invalid payload", http.StatusBadRequest)
+
+		return nil, err
+	} else if len(req.Emails) == 0 {
+		http.Error(w, models.ErrNoEmailsToValidate.Error(), http.StatusBadRequest)
+		return nil, models.ErrNoEmailsToValidate
+	} else if len(req.Emails) > 1000000 {
+		http.Error(w, models.TooManyEmailsToValidate.Error(), http.StatusBadRequest)
+		return nil, models.TooManyEmailsToValidate
+	}
+
+	return &req, nil
 }
