@@ -47,10 +47,11 @@
 
 <body>
     <div class="container">
-        <h1>Report result</h1>
-        <p>Your email validation report is ready, you may download it by clicking on the button below:</p>
-        <p><a href="{{domain}}/reports/{{id}}.csv?token={{token}}" class="btn">Download</a></p>
-        
+        <h1>Email validation report</h1>
+        <p>Your email validation report is ready, you may download it by clicking on the button below or by copying this
+            link: {{.domain}}/reports/{{.id}}.csv.zip?token={{.token}}</p>
+        <p><a href="{{.domain}}/reports/{{.id}}.csv.zip?token={{.token}}" class="btn">Download</a></p>
+
         <!-- TODO: explanation of deliverability column in CSV -->
     </div>
 </body>

@@ -7,6 +7,7 @@ import (
 	"encoding/csv"
 	"fmt"
 	"io"
+	"log"
 	"mime/multipart"
 	"os"
 	"reflect"
@@ -154,66 +155,151 @@ func detectDelimiter(content string) rune {
 }
 
 // CreateCSVReport generates a CSV report based on the provided data.
-func CreateCSVReport(report []models.ReacherResponse, ID uuid.UUID) (*os.File, error) {
-	file, err := os.Create(fmt.Sprintf("./reports/%s.csv", ID.String()))
+func CreateCSVReport(report []models.ReacherResponse, ID uuid.UUID) (string, error) {
+	log.Println("the report:", report)
+	filePath := fmt.Sprintf("./reports/%s.csv", ID.String())
+	file, err := os.Create(filePath)
 	if err != nil {
-		return nil, err
+		return "", err
 	}
-	defer file.Close()
-
 	writer := csv.NewWriter(file)
-	defer writer.Flush()
 
 	// Write header
-	header := generateHeader(models.ReacherResponse{})
-	err = writer.Write(header)
-	if err != nil {
-		return nil, err
+	header := generateHeader(reflect.ValueOf(models.ReacherResponse{}))
+	if err := writer.Write(header); err != nil {
+		file.Close() // explicitly handle file.Close() error by ignoring it as err is already set
+		return "", err
 	}
 
 	// Write data
 	for _, item := range report {
-		var reachability string
-		switch item.Reachability {
-		case models.ReachabilitySafe:
-			reachability = "reachable with a good reputation"
-		case models.ReachabilityRisky:
-			reachability = "existing with a low reputation"
-		case models.ReachabilityUnknown:
-			reachability = "unknown (domain protected)"
-		case models.ReachabilityInvalid:
-			reachability = "non-existing (will bounce)"
-		}
-
-		row := []string{
-			item.Input,
-			reachability,
-			strconv.FormatBool(item.Misc.IsDisposable),
-			strconv.FormatBool(item.Misc.IsRoleAccount),
-			strconv.FormatBool(item.SMTP.HasFullInbox),
-			strconv.FormatBool(item.SMTP.IsCatchAll),
-			strconv.FormatBool(item.SMTP.IsDisabled),
-			strconv.FormatBool(!item.Syntax.IsValidSyntax),
-		}
-		err = writer.Write(row)
-		if err != nil {
-			return nil, err
+		record := generateRecord(reflect.ValueOf(item))
+		customFormatRecord(&record, item, header)
+		if err := writer.Write(record); err != nil {
+			writer.Flush() // explicitly handle writer.Flush() error by ignoring it as err is already set
+			file.Close()   // explicitly handle file.Close() error by ignoring it as err is already set
+			return "", err
 		}
 	}
 
-	return file, nil
+	// Flush and check for errors
+	writer.Flush()
+	if err := writer.Error(); err != nil {
+		file.Close() // explicitly handle file.Close() error by ignoring it as err is already set
+		return "", err
+	}
+
+	// Handle the error from closing the file after all operations are complete
+	if err := file.Close(); err != nil {
+		return "", err
+	}
+
+	return filePath, nil
 }
 
-// generateHeader dynamically generates the header based on the CSV tags of the struct fields.
-func generateHeader(r models.ReacherResponse) []string {
+// customFormatRecord formats the record for custom CSV fields.
+func customFormatRecord(record *[]string, item models.ReacherResponse, header []string) {
+	for i, headerItem := range header {
+		switch headerItem {
+		case "Email":
+			(*record)[i] = item.Input
+		case "Reachability":
+			switch item.Reachability {
+			case models.ReachabilitySafe:
+				(*record)[i] = "reachable with good reputation"
+			case models.ReachabilityRisky:
+				(*record)[i] = "existing with low reputation"
+			case models.ReachabilityUnknown:
+				(*record)[i] = "unknown (domain protected)"
+			case models.ReachabilityInvalid:
+				(*record)[i] = "non-existing (will bounce)"
+			}
+		case "Syntax issues":
+			(*record)[i] = strconv.FormatBool(!item.Syntax.IsValidSyntax)
+			// Add more custom formatting logic here if needed
+		default:
+			// Use getFieldByCSVTag for fields that don't require specific formatting.
+			fieldValue := getFieldByCSVTag(reflect.ValueOf(item), headerItem)
+			if fieldValue.IsValid() {
+				switch fieldValue.Kind() {
+				case reflect.Bool:
+					(*record)[i] = strconv.FormatBool(fieldValue.Bool())
+				case reflect.String:
+					(*record)[i] = fieldValue.String()
+					// Handle other types if necessary.
+				}
+			}
+		}
+	}
+}
+
+// Recursively generate record based on the "csv" tags in struct fields.
+func generateRecord(value reflect.Value) []string {
+	var record []string
+
+	// Navigate through the fields of the struct value.
+	for i := 0; i < value.NumField(); i++ {
+		field := value.Field(i)      // Get the field value.
+		typ := value.Type().Field(i) // Get the field type.
+
+		// Check if this field is itself a struct.
+		if field.Kind() == reflect.Struct {
+			// Recursively get records from nested struct.
+			nestedRecords := generateRecord(field)
+			record = append(record, nestedRecords...)
+		} else {
+			tag := typ.Tag.Get("csv")
+			if tag != "" && tag != "-" {
+				record = append(record, fmt.Sprint(field.Interface()))
+			}
+		}
+	}
+	return record
+}
+
+// Recursively generate CSV header based on the "csv" tags in struct fields.
+func generateHeader(value reflect.Value) []string {
 	var header []string
-	t := reflect.TypeOf(r)
-	for i := 0; i < t.NumField(); i++ {
-		field := t.Field(i)
-		tag := field.Tag.Get("csv")
-		if tag != "" && tag != "-" {
-			header = append(header, tag)
+
+	// Navigate through the fields of the struct value.
+	for i := 0; i < value.NumField(); i++ {
+		field := value.Field(i)      // Get the field value.
+		typ := value.Type().Field(i) // Get the field type.
+
+		// Check if this field is itself a struct.
+		if field.Kind() == reflect.Struct {
+			// Recursively get headers from nested struct.
+			nestedHeaders := generateHeader(field)
+			header = append(header, nestedHeaders...)
+		} else {
+			tag := typ.Tag.Get("csv")
+			if tag != "" && tag != "-" {
+				header = append(header, tag)
+			}
 		}
 	}
 	return header
+}
+
+// getFieldByCSVTag finds a field by its CSV tag in the struct or nested structs.
+func getFieldByCSVTag(v reflect.Value, tagToFind string) reflect.Value {
+	if v.Kind() == reflect.Struct {
+		t := v.Type()
+		for i := 0; i < v.NumField(); i++ {
+			field := v.Field(i)
+			fieldType := t.Field(i)
+			csvTag := fieldType.Tag.Get("csv")
+			if csvTag == tagToFind {
+				return field
+			}
+			// Check for nested struct and search recursively
+			if field.Kind() == reflect.Struct {
+				nestedField := getFieldByCSVTag(field, tagToFind)
+				if nestedField.IsValid() {
+					return nestedField
+				}
+			}
+		}
+	}
+	return reflect.Value{}
 }

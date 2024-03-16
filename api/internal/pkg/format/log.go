@@ -1,7 +1,7 @@
 package format
 
-// ColorizeStatusCode returns the ANSI escape code for the color based on the HTTP status code.
-func ColorizeStatusCode(status int) string {
+// ColorizeRequestLog returns the ANSI escape code for the color based on the HTTP status code.
+func ColorizeRequestLog(status int) string {
 	switch {
 	case status >= 200 && status < 300:
 		return "\x1b[32m" // Green for 2xx

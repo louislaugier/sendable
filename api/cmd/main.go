@@ -6,7 +6,7 @@ import (
 )
 
 func main() {
-	config.LoadEnv()
+	config.Load()
 
 	handlers.StartHTTPSServer()
 }

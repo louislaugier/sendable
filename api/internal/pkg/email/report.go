@@ -39,11 +39,18 @@ func ValidateManyFromFileWithReport(uploadedFile multipart.File, uploadedFileHea
 func sendReport(report []models.ReacherResponse, recipient string) {
 	ID := uuid.New()
 
-	f, err := file.CreateCSVReport(report, ID)
+	filePath, err := file.CreateCSVReport(report, ID)
 	if err != nil {
 		log.Printf("Error creating report: %v", err)
 		return
 	}
+
+	zipFile, err := file.ToZIP(filePath)
+	if err != nil {
+		log.Printf("Error converting report to ZIP: %v", err)
+		return
+	}
+	zipFile.Close() // Make sure to close the ZIP file when you're done
 
 	token, _, err := file.CreateJSONReportToken(ID)
 	if err != nil {
@@ -51,14 +58,8 @@ func sendReport(report []models.ReacherResponse, recipient string) {
 		return
 	}
 
-	_, err = file.ToZIP(f)
-	if err != nil {
-		log.Printf("Error creating report: %v", err)
-		return
-	}
-
 	domain := os.Getenv("DOMAIN")
-	if os.Getenv("ENV") == "dev" {
+	if os.Getenv("ENV") == "DEV" {
 		domain = "http://localhost"
 	}
 

@@ -13,7 +13,7 @@ func CreateJSONReportToken(ID uuid.UUID) (*uuid.UUID, *os.File, error) {
 
 	file, err := mapToJSONFile(map[string]interface{}{
 		"token": token,
-	}, fmt.Sprintf("./report_tokens/%s", ID))
+	}, fmt.Sprintf("./report_tokens/%s.json", ID))
 	if err != nil {
 		return nil, nil, err
 	}
@@ -22,7 +22,7 @@ func CreateJSONReportToken(ID uuid.UUID) (*uuid.UUID, *os.File, error) {
 }
 
 func GetJSONReportToken(ID uuid.UUID) (*uuid.UUID, error) {
-	fileData, err := os.ReadFile(fmt.Sprintf("./report_tokens/%s", ID.String()))
+	fileData, err := os.ReadFile(fmt.Sprintf("./report_tokens/%s.json", ID.String()))
 	if err != nil {
 		return nil, err
 	}

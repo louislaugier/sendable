@@ -12,7 +12,7 @@ import (
 
 func GenerateEmail(template models.Template, variables map[string]string) (string, error) {
 	// Open and read HTML file
-	file, err := os.Open(fmt.Sprintf("%s.html", string(template)))
+	file, err := os.Open(fmt.Sprintf("./templates/%s.html", string(template)))
 	if err != nil {
 		log.Fatalf("Error opening HTML file: %v", err)
 	}
@@ -24,12 +24,12 @@ func GenerateEmail(template models.Template, variables map[string]string) (strin
 		log.Fatalf("Error reading HTML file: %v", err)
 	}
 
-	newHTML := replaceVariables(string(content), variables)
+	newHTML := insertVariableValues(string(content), variables)
 
 	return newHTML, nil
 }
 
-func replaceVariables(htmlContent string, variables map[string]string) string {
+func insertVariableValues(htmlContent string, variables map[string]string) string {
 	// Create a new template with the HTML content
 	tmpl, err := template.New("html").Parse(htmlContent)
 	if err != nil {

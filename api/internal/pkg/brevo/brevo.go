@@ -11,9 +11,9 @@ import (
 
 type EmailClient brevo.APIClient
 
-var Client EmailClient = *NewBrevoClient()
+var Client EmailClient
 
-func NewBrevoClient() *EmailClient {
+func NewClient() *EmailClient {
 	cfg := brevo.NewConfiguration()
 	cfg.AddDefaultHeader("api-key", os.Getenv("BREVO_API_KEY"))
 

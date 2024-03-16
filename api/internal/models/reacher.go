@@ -32,7 +32,7 @@ type ReacherResponse struct {
 }
 
 type misc struct {
-	IsDisposable bool `json:"is_disposable" csv:"Email"`
+	IsDisposable bool `json:"is_disposable" csv:"Disposable"`
 
 	// admin or noreply for example
 	IsRoleAccount bool `json:"is_role_account" csv:"Role account"`
@@ -63,7 +63,7 @@ type smtp struct {
 
 type Syntax struct {
 	Domain        string `json:"domain,omitempty"`
-	IsValidSyntax bool   `json:"is_valid_syntax" csv:"Syntax problems"`
+	IsValidSyntax bool   `json:"is_valid_syntax" csv:"Syntax issues"`
 	Username      string `json:"username,omitempty"`
 	Suggestion    string `json:"suggestion,omitempty"`
 }
