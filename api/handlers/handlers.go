@@ -8,20 +8,22 @@ import (
 	"os"
 )
 
-func defineRoutes() {
+func handleHTTP() {
 	http.Handle("/healthz", middleware.BaseRateLimit(middleware.Log(http.HandlerFunc(HealthzHandler))))
 
-	http.Handle("/auth", middleware.ValidateJWT(middleware.BaseRateLimit(middleware.Log(http.HandlerFunc(AuthHandler)))))
+	// http.Handle("/auth", middleware.ValidateJWT(middleware.BaseRateLimit(middleware.Log(http.HandlerFunc(AuthHandler)))))
+	http.Handle("/auth", middleware.BaseRateLimit(middleware.Log(http.HandlerFunc(AuthHandler))))
+	http.Handle("/auth/google_callback", middleware.BaseRateLimit(middleware.Log(http.HandlerFunc(AuthHandler))))
 
 	http.Handle("/validate_email", middleware.ValidateJWT(middleware.ValidatorRateLimit(middleware.Log(http.HandlerFunc(ValidateEmailHandler)))))
-	http.Handle("/validate_emails", middleware.FilterViruses(middleware.SizeLimit(middleware.ValidateJWT(middleware.ValidatorRateLimit(middleware.Log(http.HandlerFunc(ValidateEmailsHandler)))))))
+	http.Handle("/validate_emails", middleware.SizeLimit(middleware.ValidateJWT(middleware.ValidatorRateLimit(middleware.Log(http.HandlerFunc(ValidateEmailsHandler))))))
 
 	// Serve all the files under the "reports" subfolder
 	http.Handle("/reports/", http.StripPrefix("/reports/", middleware.DownloadAuth(http.FileServer(http.Dir("./reports")))))
 }
 
 func StartHTTPSServer() {
-	defineRoutes()
+	handleHTTP()
 
 	if os.Getenv("ENV") == "DEV" {
 		fmt.Println("HTTP server is listening on port 80...")
@@ -29,6 +31,7 @@ func StartHTTPSServer() {
 		if err != nil {
 			log.Fatal("ListenAndServe: ", err)
 		}
+		return
 	}
 
 	fmt.Println("HTTPS server is listening on port 443...")

@@ -16,14 +16,14 @@ func Connect() {
 		URL = "postgres://postgres:pass@db:5432/db?sslmode=disable"
 	}
 
-	db, err := sql.Open(connectionType, URL)
+	d, err := sql.Open(connectionType, URL)
 	if err != nil {
 		panic(err)
 	}
 
-	if err := db.Ping(); err != nil {
+	if err := d.Ping(); err != nil {
 		panic(err)
 	}
 
-	DB = db
+	DB = d
 }

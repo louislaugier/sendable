@@ -19,7 +19,7 @@ type ValidateEmailsRequest struct {
 	Emails []string `json:"emails,omitempty"`
 }
 
-// Either multipart file (field name "file") or json payload
+// Payload: either multipart file (field name "file") or JSON body
 func ValidateEmailsHandler(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 

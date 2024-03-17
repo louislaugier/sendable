@@ -41,6 +41,19 @@ services:
   #   image: rabbitmq:3.12-management
   # clamav:
   #   image: clamav/clamav:1.3.0-41
+  frontend:
+    depends_on:
+      - api
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile.dev
+    volumes:
+      - ./frontend/:/frontend
+      - /frontend/node_modules
+    ports:
+      - 3000:5173
+    networks:
+      - vpc_local
 networks:
   vpc_local:
     driver: bridge

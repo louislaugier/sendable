@@ -11,7 +11,7 @@ import (
 
 type EmailClient brevo.APIClient
 
-var Client EmailClient
+var Client *EmailClient
 
 func NewClient() *EmailClient {
 	cfg := brevo.NewConfiguration()

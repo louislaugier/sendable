@@ -1,5 +1,6 @@
 .PHONY: start-dev
 start-dev:
+	cd frontend && npm i && cd ..
 	docker-compose up -d
 
 .PHONY: build-dev
