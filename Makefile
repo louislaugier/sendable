@@ -1,7 +1,7 @@
 .PHONY: start-dev
 start-dev:
 	docker-compose up -d
-	postinstall-frontend
+	postinstall-frontend-dev
 
 .PHONY: build-dev
 build-dev:
@@ -13,9 +13,14 @@ recreate-dev:
 
 #################################################################
 
-.PHONY: postinstall-frontend
-postinstall-frontend:
+.PHONY: postinstall-frontend-dev
+postinstall-frontend-dev:
 	sh frontend/postinstall.sh
+
+.PHONY: install-pkg-frontend-dev
+install-pkg-frontend-dev:
+	npm i $(p)
+	postinstall-frontend-dev
 
 #################################################################
 
@@ -37,7 +42,7 @@ ssh-api-dev:
 
 .PHONY: ssh-frontend-dev
 ssh-frontend-dev:
-	docker-compose exec frontend sh
+	docker-compose exec frontend bash
 
 #################################################################
 

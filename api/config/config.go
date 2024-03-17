@@ -15,5 +15,7 @@ func Load() {
 
 	LoadEnv()
 
+	LoadOauthClients()
+
 	brevo.Client = brevo.NewClient()
 }

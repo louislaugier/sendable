@@ -1,5 +1,6 @@
 package models
 
 type GoogleAuthRequest struct {
-	Token string `json:"token"`
+	AccessToken string `json:"access_token"`
+	Credential  string `json:"credential"`
 }

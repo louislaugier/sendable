@@ -9,7 +9,9 @@ import (
 type User struct {
 	ID uuid.UUID `json:"id"`
 
-	Email    string `json:"email"`
+	Email            string `json:"email"`
+	IsEmailConfirmed bool   `json:"is_email_confirmed"`
+
 	Password string `json:"password,omitempty"`
 
 	IPAddresses string `json:"ip_addresses,omitempty"`

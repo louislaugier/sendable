@@ -9,25 +9,44 @@ import (
 )
 
 func GoogleAuthHandler(w http.ResponseWriter, r *http.Request) {
-	body := models.GoogleAuthRequest{}
+	var body models.GoogleAuthRequest
 
-	err := json.NewDecoder(r.Body).Decode(&body)
-	if err != nil {
+	if err := json.NewDecoder(r.Body).Decode(&body); err != nil {
+		log.Printf("Error decoding JSON: %v", err)
 		http.Error(w, "Error decoding JSON", http.StatusBadRequest)
 		return
 	}
 
-	tokenInfo, err := oauth.VerifyGoogleClientID(r.Context(), body.Token)
-	if err != nil {
-		http.Error(w, "Invalid token", http.StatusUnauthorized)
+	if body.Credential == "" || body.AccessToken == "" {
+		http.Error(w, "No token provided", http.StatusBadRequest)
 		return
 	}
 
-	log.Println(tokenInfo.Email)
+	var email string
+	if body.Credential != "" {
+		tokenInfo, err := oauth.VerifyCredential(r.Context(), body.Credential)
+		if err != nil || tokenInfo == nil {
+			if err != nil {
+				log.Printf("Error verifying credential: %v", err)
+			}
+			http.Error(w, "Invalid credential", http.StatusUnauthorized)
+			return
+		}
+		email = tokenInfo.Email
+	} else if body.AccessToken != "" {
+		userInfo, err := oauth.VerifyAccessToken(r.Context(), body.AccessToken)
+		if err != nil || userInfo == nil {
+			if err != nil {
+				log.Printf("Error verifying access token: %v", err)
+			}
+			http.Error(w, "Invalid access token", http.StatusUnauthorized)
+			return
+		}
+		email = userInfo.Email
+	}
 
-	// Use tokenInfo to find or create a user in your database.
-
-	// Issue a JWT
-
-	// Return that information to the client as needed.
+	log.Println(email)
+	// TODO: get user by email
+	// if nil, insert
+	// return jwt
 }
