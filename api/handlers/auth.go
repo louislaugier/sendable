@@ -9,7 +9,7 @@ import (
 )
 
 func GoogleAuthHandler(w http.ResponseWriter, r *http.Request) {
-	var body models.GoogleAuthRequest
+	body := models.GoogleAuthRequest{}
 
 	if err := json.NewDecoder(r.Body).Decode(&body); err != nil {
 		log.Printf("Error decoding JSON: %v", err)
@@ -48,5 +48,5 @@ func GoogleAuthHandler(w http.ResponseWriter, r *http.Request) {
 	log.Println(email)
 	// TODO: get user by email
 	// if nil, insert
-	// return jwt
+	// return jwt + user
 }
