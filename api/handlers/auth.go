@@ -3,12 +3,14 @@ package handlers
 import (
 	"context"
 	"crypto/rand"
+	"email-validator/config"
 	"encoding/base64"
 	"errors"
 	"fmt"
 	"io"
 	"log"
 	"net/http"
+	"os"
 	"time"
 
 	"golang.org/x/oauth2"
@@ -16,14 +18,14 @@ import (
 )
 
 var googleOauthConfig = &oauth2.Config{
-	RedirectURL:  "http://localhost/auth/google_callback",
-	ClientID:     "YOUR_CLIENT_ID.apps.googleusercontent.com",
-	ClientSecret: "YOUR_CLIENT_SECRET",
+	RedirectURL:  fmt.Sprintf("%s/auth/google_callback", config.Domain),
+	ClientID:     fmt.Sprintf("%s.apps.googleusercontent.com", os.Getenv("GOOGLE_OAUTH_CLIENT_ID")),
+	ClientSecret: os.Getenv("GOOGLE_OAUTH_CLIENT_SECRET"),
 	Scopes:       []string{"https://www.googleapis.com/auth/userinfo.email"},
 	Endpoint:     google.Endpoint,
 }
 
-func AuthHandler(w http.ResponseWriter, r *http.Request) {
+func GoogleAuthHandler(w http.ResponseWriter, r *http.Request) {
 	// Generate a new state string for this login attempt and set it as a cookie
 	oauthState, err := generateStateOauthCookie(w)
 	if err != nil {
@@ -35,7 +37,7 @@ func AuthHandler(w http.ResponseWriter, r *http.Request) {
 	http.Redirect(w, r, url, http.StatusTemporaryRedirect)
 }
 
-func Callback(w http.ResponseWriter, r *http.Request) {
+func GoogleCallbackHandler(w http.ResponseWriter, r *http.Request) {
 	// Read oauthstate from cookie
 	oauthState, err := r.Cookie("oauthstate")
 	if err != nil {

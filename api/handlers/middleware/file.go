@@ -5,11 +5,10 @@ import (
 	"net/http"
 )
 
-// TODO: transfer extension check here
+// TODO: transfer extension check from api/handlers/validate_emails.go here
 // TODO: clamav
 
 // TODO: rename (ValidateFile?)
-// SizeLimit ...
 func SizeLimit(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		preventSizeExceedingFile(w, r)

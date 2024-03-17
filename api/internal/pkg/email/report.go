@@ -1,12 +1,12 @@
 package email
 
 import (
+	"email-validator/config"
 	"email-validator/internal/models"
 	"email-validator/internal/pkg/brevo"
 	"email-validator/internal/pkg/file"
 	"log"
 	"mime/multipart"
-	"os"
 
 	"github.com/google/uuid"
 )
@@ -58,15 +58,10 @@ func sendReport(report []models.ReacherResponse, recipient string) {
 		return
 	}
 
-	domain := os.Getenv("DOMAIN")
-	if os.Getenv("ENV") == "DEV" {
-		domain = "http://localhost"
-	}
-
 	err = brevo.Client.SendEmail(models.ReportTemplate, "Email validation report", "Your email validation report is ready!", map[string]string{
 		"id":     ID.String(),
 		"token":  token.String(),
-		"domain": domain,
+		"domain": config.Domain,
 	}, recipient)
 	if err != nil {
 		log.Printf("Error sending report: %v", err)
