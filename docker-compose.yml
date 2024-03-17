@@ -48,7 +48,9 @@ services:
       context: ./frontend
       dockerfile: Dockerfile.dev
     volumes:
-      - ./frontend/:/frontend
+      - ./frontend/app/:/frontend/app
+      - ./frontend/public/:/frontend/public
+      - ./frontend/package.json/:/frontend/package.json
       - node_modules:/frontend/node_modules
     ports:
       - 3000:5173
