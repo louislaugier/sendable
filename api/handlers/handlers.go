@@ -6,36 +6,47 @@ import (
 	"log"
 	"net/http"
 	"os"
+
+	"github.com/rs/cors"
 )
 
-func handleHTTP() {
-	http.Handle("/healthz", middleware.BaseRateLimit(middleware.Log(http.HandlerFunc(HealthzHandler))))
-
-	http.Handle("/auth/google", middleware.BaseRateLimit(middleware.Log(http.HandlerFunc(GoogleAuthHandler))))
-
-	http.Handle("/validate_email", middleware.ValidateJWT(middleware.ValidatorRateLimit(middleware.Log(http.HandlerFunc(ValidateEmailHandler)))))
-	http.Handle("/validate_emails", middleware.SizeLimit(middleware.ValidateJWT(middleware.ValidatorRateLimit(middleware.Log(http.HandlerFunc(ValidateEmailsHandler))))))
+func handleHTTP(mux *http.ServeMux) {
+	// Configure the handlers without CORS first
+	mux.Handle("/healthz", middleware.BaseRateLimit(middleware.Log(http.HandlerFunc(HealthzHandler))))
+	mux.Handle("/auth/google", middleware.BaseRateLimit(middleware.Log(http.HandlerFunc(GoogleAuthHandler))))
+	mux.Handle("/validate_email", middleware.ValidateJWT(middleware.ValidatorRateLimit(middleware.Log(http.HandlerFunc(ValidateEmailHandler)))))
+	mux.Handle("/validate_emails", middleware.SizeLimit(middleware.ValidateJWT(middleware.ValidatorRateLimit(middleware.Log(http.HandlerFunc(ValidateEmailsHandler))))))
 
 	// Serve all the files under the "reports" subfolder
-	http.Handle("/reports/", http.StripPrefix("/reports/", middleware.DownloadAuth(http.FileServer(http.Dir("./reports")))))
+	mux.Handle("/reports/", http.StripPrefix("/reports/", middleware.DownloadAuth(http.FileServer(http.Dir("./reports")))))
 }
 
 func StartHTTPSServer() {
-	handleHTTP()
+	mux := http.NewServeMux()
+	handleHTTP(mux) // Configure the routes
 
+	// New CORS handler wrapping the mux with configured routes
+	corsOptions := cors.New(cors.Options{
+		AllowedOrigins:   []string{"http://localhost:3000"}, // The allowed domains
+		AllowedMethods:   []string{"GET", "POST", "OPTIONS", "PUT", "DELETE"},
+		AllowedHeaders:   []string{"Accept", "Content-Type", "Content-Length", "Accept-Encoding", "X-CSRF-Token", "Authorization"},
+		AllowCredentials: true,
+		MaxAge:           300,
+	})
+	corsHandler := corsOptions.Handler(mux)
+
+	// Use the corsHandler when starting the server
 	if os.Getenv("ENV") == "DEV" {
 		fmt.Println("HTTP server is listening on port 80...")
-		err := http.ListenAndServe(":80", nil)
-		if err != nil {
+		if err := http.ListenAndServe(":80", corsHandler); err != nil {
 			log.Fatal("ListenAndServe: ", err)
 		}
-		return
-	}
-
-	fmt.Println("HTTPS server is listening on port 443...")
-	if err := http.ListenAndServeTLS(":443", "../cert.pem", "../key.pem", nil); err != nil {
-		if err = http.ListenAndServeTLS(":443", "cert.pem", "key.pem", nil); err != nil {
-			log.Fatal("ListenAndServe: ", err)
+	} else {
+		fmt.Println("HTTPS server is listening on port 443...")
+		if err := http.ListenAndServeTLS(":443", "../cert.pem", "../key.pem", corsHandler); err != nil {
+			if err = http.ListenAndServeTLS(":443", "cert.pem", "key.pem", corsHandler); err != nil {
+				log.Fatal("ListenAndServeTLS: ", err)
+			}
 		}
 	}
 }

@@ -4,6 +4,7 @@ import (
 	"email-validator/internal/models"
 	"email-validator/internal/pkg/oauth"
 	"encoding/json"
+	"fmt"
 	"log"
 	"net/http"
 )
@@ -17,7 +18,7 @@ func GoogleAuthHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if body.Credential == "" || body.AccessToken == "" {
+	if body.Credential == "" && body.AccessToken == "" {
 		http.Error(w, "No token provided", http.StatusBadRequest)
 		return
 	}
@@ -46,6 +47,8 @@ func GoogleAuthHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	log.Println(email)
+	fmt.Fprint(w, http.StatusText(http.StatusOK))
+
 	// TODO: get user by email
 	// if nil, insert
 	// return jwt + user
