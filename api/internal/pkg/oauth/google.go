@@ -32,7 +32,7 @@ func VerifyAccessToken(ctx context.Context, accessToken string) (*oauth2v2.Useri
 	return userInfo, nil
 }
 
-func VerifyCredential(ctx context.Context, credential string) (*oauth2v2.Tokeninfo, error) {
+func VerifyJWT(ctx context.Context, JWT string) (*oauth2v2.Tokeninfo, error) {
 	// Use a custom HTTP client, associated with your context
 	httpClient := &http.Client{}
 
@@ -42,9 +42,9 @@ func VerifyCredential(ctx context.Context, credential string) (*oauth2v2.Tokenin
 		return nil, fmt.Errorf("oauth2v2.NewService: %v", err)
 	}
 
-	// Verify the credential using the tokeninfo endpoint and the OAuth2 service
+	// Verify the JWT using the tokeninfo endpoint and the OAuth2 service
 	tokenInfoCall := service.Tokeninfo()
-	tokenInfoCall.IdToken(credential)
+	tokenInfoCall.IdToken(JWT)
 	tokenInfo, err := tokenInfoCall.Do()
 	if err != nil {
 		return nil, fmt.Errorf("tokenInfoCall.Do: %v", err)

@@ -18,19 +18,19 @@ func GoogleAuthHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if body.Credential == "" && body.AccessToken == "" {
+	if body.JWT == "" && body.AccessToken == "" {
 		http.Error(w, "No token provided", http.StatusBadRequest)
 		return
 	}
 
 	var email string
-	if body.Credential != "" {
-		tokenInfo, err := oauth.VerifyCredential(r.Context(), body.Credential)
+	if body.JWT != "" {
+		tokenInfo, err := oauth.VerifyJWT(r.Context(), body.JWT)
 		if err != nil || tokenInfo == nil {
 			if err != nil {
-				log.Printf("Error verifying credential: %v", err)
+				log.Printf("Error verifying JWT: %v", err)
 			}
-			http.Error(w, "Invalid credential", http.StatusUnauthorized)
+			http.Error(w, "Invalid JWT", http.StatusUnauthorized)
 			return
 		}
 		email = tokenInfo.Email
