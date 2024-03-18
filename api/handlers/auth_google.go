@@ -25,7 +25,7 @@ func GoogleAuthHandler(w http.ResponseWriter, r *http.Request) {
 
 	var email string
 	if body.JWT != "" {
-		tokenInfo, err := oauth.VerifyJWT(r.Context(), body.JWT)
+		tokenInfo, err := oauth.VerifyGoogleJWT(r.Context(), body.JWT)
 		if err != nil || tokenInfo == nil {
 			if err != nil {
 				log.Printf("Error verifying JWT: %v", err)
@@ -35,7 +35,7 @@ func GoogleAuthHandler(w http.ResponseWriter, r *http.Request) {
 		}
 		email = tokenInfo.Email
 	} else if body.AccessToken != "" {
-		userInfo, err := oauth.VerifyAccessToken(r.Context(), body.AccessToken)
+		userInfo, err := oauth.VerifyGoogleAccessToken(r.Context(), body.AccessToken)
 		if err != nil || userInfo == nil {
 			if err != nil {
 				log.Printf("Error verifying access token: %v", err)

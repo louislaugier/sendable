@@ -12,7 +12,7 @@ import (
 	"google.golang.org/api/option"
 )
 
-func VerifyAccessToken(ctx context.Context, accessToken string) (*oauth2v2.Userinfo, error) {
+func VerifyGoogleAccessToken(ctx context.Context, accessToken string) (*oauth2v2.Userinfo, error) {
 	// Initialize the OAuth2 service client with the access token
 	config := &oauth2.Config{}
 	httpClient := config.Client(ctx, &oauth2.Token{AccessToken: accessToken})
@@ -32,7 +32,7 @@ func VerifyAccessToken(ctx context.Context, accessToken string) (*oauth2v2.Useri
 	return userInfo, nil
 }
 
-func VerifyJWT(ctx context.Context, JWT string) (*oauth2v2.Tokeninfo, error) {
+func VerifyGoogleJWT(ctx context.Context, JWT string) (*oauth2v2.Tokeninfo, error) {
 	// Use a custom HTTP client, associated with your context
 	httpClient := &http.Client{}
 

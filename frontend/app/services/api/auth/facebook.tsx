@@ -1,8 +1,8 @@
 import apiClientInstance from "..";
 
-const googleAuth = async (data: any) => {
+export const facebookAuth = async (data: any) => {
     try {
-        const response = await apiClientInstance.post('auth/google', data);
+        const response = await apiClientInstance.post('auth/facebook', data);
         return response.data;
     } catch (error) {
         console.error('Error:', error);
@@ -10,4 +10,4 @@ const googleAuth = async (data: any) => {
     }
 };
 
-export default googleAuth;
+export default facebookAuth;

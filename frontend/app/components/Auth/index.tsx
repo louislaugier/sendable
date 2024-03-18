@@ -1,6 +1,7 @@
 import { useEffect } from 'react';
 import { useGoogleLogin, useGoogleOneTapLogin } from '@react-oauth/google';
 import googleAuth from '~/services/api/auth/google';
+import facebookAuth from '~/services/api/auth/facebook';
 
 // Extend the Window interface for the Facebook SDK
 declare global {
@@ -57,12 +58,15 @@ export default function Auth() {
     }, []);
 
     // Define the function to handle the Facebook login process here
-    const handleFBLogin = () => {
-        window.FB.login((response: any) => {
+    const facebookLogin = () => {
+        window.FB.login(async (response: any) => {
             if (response.status === 'connected') {
                 // The user is logged in and has authenticated your app
                 console.log("Connected to Facebook!", response);
                 // Additional logic can be added here such as fetching the user profile
+
+                let resp = await facebookAuth({ access_token: response.accessToken });
+                console.log(resp);
             } else {
                 // The user is not logged in or hasn't authenticated your app
                 console.warn("User cancelled login or did not fully authorize.");
@@ -73,7 +77,7 @@ export default function Auth() {
     return (
         <>
             <button onClick={() => googleLogin()}>Login in with Google</button>
-            <button onClick={handleFBLogin}>Login with Facebook</button>
+            <button onClick={facebookLogin}>Login with Facebook</button>
         </>
     );
 }
