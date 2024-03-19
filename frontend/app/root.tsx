@@ -6,7 +6,7 @@ import {
   Scripts,
   ScrollRestoration,
 } from "@remix-run/react";
-import { googleClientId } from "./constants/oauth";
+import { googleOauthClientId } from "./constants/oauth";
 
 export function Layout({ children }: { children: React.ReactNode }) {
   return (
@@ -18,7 +18,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
         <Links />
       </head>
       <body>
-        <GoogleOAuthProvider clientId={googleClientId}>
+        <GoogleOAuthProvider clientId={googleOauthClientId}>
           {children}
         </GoogleOAuthProvider>
 
