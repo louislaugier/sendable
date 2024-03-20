@@ -1,5 +1,4 @@
-import { sha256 } from 'js-sha256';
-import { useEffect, useState } from 'react';
+import { useEffect } from 'react';
 // import { generateCodeChallenge } from '~/components/utils/pkce';
 import { domain, salesforceOauthClientId } from '~/constants/oauth';
 import salesforceAuth from '~/services/api/auth/salesforce';
