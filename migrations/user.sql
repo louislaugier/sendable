@@ -6,6 +6,7 @@ CREATE TABLE IF NOT EXISTS "public"."user" (
     "ip_addresses" VARCHAR NOT NULL,
     "twoFaPrivateKeyHash" VARCHAR,
     "provider" provider,
+    "facebook_user_id" VARCHAR,
     "createdAt" TIMESTAMP NOT NULL DEFAULT now(),
     "updatedAt" TIMESTAMP NOT NULL DEFAULT now(),
     "deletedAt" TIMESTAMP

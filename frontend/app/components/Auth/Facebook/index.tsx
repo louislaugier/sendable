@@ -45,8 +45,10 @@ export default function FacebookAuthButton() {
             // The user is logged in and has authenticated your app
             console.log("Connected to Facebook!", response);
             // Additional logic can be added here such as fetching the user profile
-            let resp = await facebookAuth({ access_token: response.authResponse.accessToken });
-            console.log(resp);
+            try {
+                let resp = await facebookAuth({ access_token: response.authResponse.accessToken });
+                console.log(resp);
+            } catch { }
         } else {
             // The user is not logged in or hasn't authenticated your app
             console.warn("User cancelled login or did not fully authorize.");

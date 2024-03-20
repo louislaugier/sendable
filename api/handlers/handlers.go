@@ -14,6 +14,7 @@ func handleHTTP(mux *http.ServeMux) {
 	// Configure the handlers without CORS first
 	mux.Handle("/healthz", middleware.BaseRateLimit(middleware.Log(http.HandlerFunc(HealthzHandler))))
 
+	mux.Handle("/auth/salesforce", middleware.BaseRateLimit(middleware.Log(http.HandlerFunc(SalesforceAuthHandler))))
 	mux.Handle("/auth/google", middleware.BaseRateLimit(middleware.Log(http.HandlerFunc(GoogleAuthHandler))))
 	mux.Handle("/auth/facebook", middleware.BaseRateLimit(middleware.Log(http.HandlerFunc(FacebookAuthHandler))))
 
@@ -30,7 +31,7 @@ func StartHTTPSServer() {
 
 	// New CORS handler wrapping the mux with configured routes
 	corsOptions := cors.New(cors.Options{
-		AllowedOrigins:   []string{"http://localhost:3000"}, // The allowed domains
+		AllowedOrigins:   []string{"http://localhost:3000", "https://d854-143-244-44-162.ngrok-free.app"}, // The allowed domains
 		AllowedMethods:   []string{"GET", "POST", "OPTIONS", "PUT", "DELETE"},
 		AllowedHeaders:   []string{"Accept", "Content-Type", "Content-Length", "Accept-Encoding", "X-CSRF-Token", "Authorization"},
 		AllowCredentials: true,

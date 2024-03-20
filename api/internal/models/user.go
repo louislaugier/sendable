@@ -9,7 +9,7 @@ import (
 type User struct {
 	ID uuid.UUID `json:"id"`
 
-	Email            string `json:"email"`
+	Email            string `json:"email,omitempty"`
 	IsEmailConfirmed bool   `json:"is_email_confirmed"`
 
 	Password string `json:"password,omitempty"`
@@ -20,7 +20,8 @@ type User struct {
 
 	JWT string `json:"jwt,omitempty"`
 
-	Provider Provider `json:"provider,omitempty"`
+	Provider       Provider `json:"provider,omitempty"`
+	FacebookUserID string   `json:"facebook_user_id,omitempty"`
 
 	Orders []Order `json:"orders,omitempty"`
 

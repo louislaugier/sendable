@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
+	"log"
 	"net/http"
 )
 
@@ -29,11 +30,14 @@ func VerifyFacebookAccessToken(accessToken string) (*models.FacebookUser, error)
 		return nil, fmt.Errorf("error: got status code %d from Facebook Graph API: %s", response.StatusCode, string(responseBody))
 	}
 
+	log.Println(string(responseBody))
+
 	// Unmarshal the JSON data into the FacebookUser struct
 	user := models.FacebookUser{}
 	if err := json.Unmarshal(responseBody, &user); err != nil {
 		return nil, fmt.Errorf("error unmarshalling response JSON: %v", err)
 	}
+	log.Println(user)
 
 	return &user, nil
 }

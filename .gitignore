@@ -7,3 +7,4 @@ tmp
 *.pem
 !cert.pem
 node_modules
+vendor

@@ -31,12 +31,12 @@ func FacebookAuthHandler(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "Invalid access token", http.StatusUnauthorized)
 		return
 	}
-	email := userInfo.Email
 
-	log.Println(email)
+	log.Println(userInfo.ID)
+	log.Println(userInfo.Email)
 	fmt.Fprint(w, http.StatusText(http.StatusOK))
 
-	// TODO: get user by email
+	// TODO: get user by email / facebook_user_id
 	// if nil, insert
 	// return jwt + user
 }
