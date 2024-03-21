@@ -1,7 +1,8 @@
 import axios from 'axios';
+import { apiBaseUrl } from '~/constants/oauth';
 
 export const apiClientInstance = axios.create({
-  baseURL: 'http://localhost', // Set your base URL here
+  baseURL: apiBaseUrl, // Set your base URL here
   timeout: 10000, // Specify a timeout (in milliseconds) for requests
   headers: {
     'Content-Type': 'application/json', // Example of default headers
@@ -17,7 +18,7 @@ apiClientInstance.interceptors.request.use(
   },
   (error) => {
     return Promise.reject(error);
-}
+  }
 );
 
 apiClientInstance.interceptors.response.use(

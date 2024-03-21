@@ -1,4 +1,4 @@
-import AppleAuthButton from "./Apple";
+import EmailAuthButton from "./Email";
 import FacebookAuthButton from "./Facebook";
 import GoogleAuthButton from "./Google";
 import SalesforceAuthButton from "./Salesforce";
@@ -8,7 +8,8 @@ export default function Auth() {
         <div style={{ display: 'flex', flexDirection: 'column', width: '200px' }}>
             <SalesforceAuthButton />
             <GoogleAuthButton />
-            <FacebookAuthButton />
+            <EmailAuthButton />
+            {/* <FacebookAuthButton /> */}
             {/* <AppleAuthButton /> */}
         </div>
     );

@@ -3,6 +3,7 @@ package handlers
 import (
 	"email-validator/internal/models"
 	"email-validator/internal/pkg/oauth"
+	"email-validator/internal/pkg/salesforce"
 	"encoding/json"
 	"fmt"
 	"log"
@@ -19,20 +20,25 @@ func SalesforceAuthHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	if body.Code == "" || body.CodeVerifier == "" {
-		http.Error(w, "Missing code + code_verifier pair", http.StatusBadRequest)
+		http.Error(w, "Missing code & code_verifier pair", http.StatusBadRequest)
 		return
 	}
 
-	tokenInfo, err := oauth.VerifySalesforceCode(body.Code, body.CodeVerifier)
-	// if err != nil || tokenInfo == nil {
-	// 	if err != nil {
-	// 		log.Printf("Error verifying JWT: %v", err)
-	// 	}
-	// 	http.Error(w, "Invalid JWT", http.StatusUnauthorized)
-	// 	return
-	// }
+	accessToken, userInfo, err := oauth.VerifySalesforceCode(body.Code, body.CodeVerifier)
+	if err != nil || accessToken == "" || userInfo == nil {
+		if err != nil {
+			log.Printf("Error verifying code & code_verifier: %v", err)
+		}
+		http.Error(w, "Invalid JWT", http.StatusUnauthorized)
+		return
+	}
 
-	log.Println(tokenInfo, err)
+	contacts, err := salesforce.FetchContacts(accessToken)
+	if err != nil {
+		log.Fatalf("Error fetching Salesforce contacts: %s", err)
+	}
+	log.Println(contacts)
+
 	fmt.Fprint(w, http.StatusText(http.StatusOK))
 
 	// TODO: get user by email

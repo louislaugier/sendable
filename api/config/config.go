@@ -6,6 +6,7 @@ import (
 )
 
 var Domain string
+var FrontendURL string
 
 func Load() {
 	Domain = os.Getenv("DOMAIN")
@@ -14,6 +15,8 @@ func Load() {
 	}
 
 	LoadEnv()
+
+	FrontendURL = os.Getenv("FRONTEND_URL")
 
 	LoadOauthClients()
 
