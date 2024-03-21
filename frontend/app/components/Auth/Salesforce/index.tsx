@@ -1,3 +1,4 @@
+
 import { useEffect, useState } from 'react';
 import { salesforceOauthClientId, salesforceOauthRedirectUri } from '~/constants/oauth';
 import salesforceAuth from '~/services/api/auth/salesforce';
@@ -6,49 +7,46 @@ import { fetchSalesforcePKCE } from '~/services/salesforce/pkce';
 const SALESFORCE_STATE_KEY = 'salesforceOauthState';
 const SALESFORCE_CODE_VERIFIER_KEY = 'salesforceCodeVerifier';
 
+interface SalesforceAuthCodeEvent {
+  type: string;
+  code?: string;
+  state?: string;
+}
+
 export default function SalesforceAuthButton() {
   const [isLoading, setLoading] = useState(false);
 
   useEffect(() => {
-    // Function to handle message event
-    const handleAuthCode = (event: any) => {
+    const handleAuthCode = (event: MessageEvent<SalesforceAuthCodeEvent>) => {
       if (event.origin !== window.location.origin) {
-        // Optionally check the origin if you want to be more secure
         return;
       }
-
-      if (event.data?.type === 'salesforce-auth-code') {
+      if (event.data.type === 'salesforce-auth-code') {
         const { code, state } = event.data;
         const storedState = sessionStorage.getItem(SALESFORCE_STATE_KEY);
 
         if (code && state && storedState === state) {
           setLoading(true);
-          sessionStorage.removeItem(SALESFORCE_STATE_KEY); // Clean up
-
-          const codeVerifier = sessionStorage.getItem(SALESFORCE_CODE_VERIFIER_KEY);
-          sessionStorage.removeItem(SALESFORCE_CODE_VERIFIER_KEY); // Remove the code verifier as well
-
-          // Call the Salesforce auth function with the code
+          sessionStorage.removeItem(SALESFORCE_STATE_KEY);
+          const codeVerifier = sessionStorage.getItem(SALESFORCE_CODE_VERIFIER_KEY) || ''; // Handle potential null
+          sessionStorage.removeItem(SALESFORCE_CODE_VERIFIER_KEY);
           salesforceAuth({ code, code_verifier: codeVerifier })
             .then(() => {
-              // Set localStorage or handle auth success
-              window.close(); // Close the popup once done
-            }).catch(error => {
+              window.close();
+            })
+            .catch(error => {
               console.error('Salesforce login error:', error);
-            }).finally(() => {
+            })
+            .finally(() => {
               setLoading(false);
             });
         }
       }
     };
 
-    // Listen for messages from the popup
     window.addEventListener('message', handleAuthCode);
-
-    // Cleanup listener on unmount
     return () => window.removeEventListener('message', handleAuthCode);
   }, []);
-
   const salesforceLogin = async () => {
     setLoading(true);
     // Prepare PKCE and state parameters

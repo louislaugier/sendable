@@ -4,45 +4,44 @@ import hubspotAuth from "~/services/api/auth/hubspot";
 
 const HUBSPOT_STATE_KEY = 'hubspotOauthState';
 
+interface HubspotAuthCodeEvent {
+  type: string;
+  code?: string;
+  state?: string;
+}
+
 export default function HubspotAuthButton() {
-    const [isLoading, setLoading] = useState(false);
+  const [isLoading, setLoading] = useState(false);
 
-    useEffect(() => {
-        // Function to handle message event
-        const handleAuthCode = (event: any) => {
-            if (event.origin !== window.location.origin) {
-                // Optionally check the origin if you want to be more secure
-                return;
-            }
+  useEffect(() => {
+    const handleAuthCode = (event: MessageEvent<HubspotAuthCodeEvent>) => {
+      if (event.origin !== window.location.origin) {
+        return;
+      }
+      if (event.data.type === 'hubspot-auth-code') {
+        const { code, state } = event.data;
+        const storedState = sessionStorage.getItem(HUBSPOT_STATE_KEY);
 
-            if (event.data?.type === 'hubspot-auth-code') {
-                const { code, state } = event.data;
-                const storedState = sessionStorage.getItem(HUBSPOT_STATE_KEY);
+        if (code && state && storedState === state) {
+          setLoading(true);
+          sessionStorage.removeItem(HUBSPOT_STATE_KEY);
+          hubspotAuth({ code: code! }) // Assuming code is non-nullable in the auth function
+            .then(() => {
+              window.close();
+            })
+            .catch(error => {
+              console.error('HubSpot login error:', error);
+            })
+            .finally(() => {
+              setLoading(false);
+            });
+        }
+      }
+    };
 
-                if (code && state && storedState === state) {
-                    setLoading(true);
-                    sessionStorage.removeItem(HUBSPOT_STATE_KEY); // Clean up
-
-                    // Call the HubSpot auth function with the code
-                    hubspotAuth({ code })
-                        .then(() => {
-                            // Set localStorage or handle auth success
-                            window.close(); // Close the popup once done
-                        }).catch(error => {
-                            console.error('HubSpot login error:', error);
-                        }).finally(() => {
-                            setLoading(false);
-                        });
-                }
-            }
-        };
-
-        // Listen for messages from the popup
-        window.addEventListener('message', handleAuthCode);
-
-        // Cleanup listener on unmount
-        return () => window.removeEventListener('message', handleAuthCode);
-    }, []);
+    window.addEventListener('message', handleAuthCode);
+    return () => window.removeEventListener('message', handleAuthCode);
+  }, []);
 
     const hubspotLogin = () => {
         setLoading(true);
