@@ -1,76 +1,66 @@
-import { useEffect, useState } from 'react';
-// import { generateCodeChallenge } from '~/components/utils/pkce';
+import React, { useEffect, useState } from 'react';
 import { domain, salesforceOauthClientId, salesforceOauthRedirectUri } from '~/constants/oauth';
 import salesforceAuth from '~/services/api/auth/salesforce';
 import { fetchSalesforcePKCE } from '~/services/salesforce/pkce';
 
+const SALESFORCE_STATE_KEY = 'salesforceOauthState';
+const SALESFORCE_CODE_VERIFIER_KEY = 'salesforceCodeVerifier';
 
-export default function SalesforceAuthButton(): JSX.Element {
+export default function SalesforceAuthButton() {
     const [isLoading, setLoading] = useState(false);
-
-    let isLoggedAttemptProcessed = false; // flag to track if the postMessage has been processed
 
     useEffect(() => {
         const queryParams = new URLSearchParams(window.location.search);
-        const codeFromUrl = queryParams.get('code');
-        const errorFromUrl = queryParams.get('error');
+        const code = queryParams.get('code');
+        const state = queryParams.get('state');
+        const storedState = sessionStorage.getItem(SALESFORCE_STATE_KEY);
 
-        // If an error is present in the URL params and the window was opened by another window,
-        // close it to indicate the process has been cancelled or failed.
-        if (errorFromUrl && window.opener) {
-            window.close();
-            return; // Do not process further since there's an error
+        if (code && state && storedState === state) {
+            setLoading(true);
+            sessionStorage.removeItem(SALESFORCE_STATE_KEY); // Clean up
+
+            const codeVerifier = sessionStorage.getItem(SALESFORCE_CODE_VERIFIER_KEY);
+            sessionStorage.removeItem(SALESFORCE_CODE_VERIFIER_KEY); // Remove the code verifier as well
+
+            salesforceAuth({ code, code_verifier: codeVerifier }) // Call the Salesforce auth function
+                // Assuming salesforceAuth resolves to indicate success or the final promise chain state
+                .then(() => {
+                    window.close(); // Close the popup once done, correct implementation
+                })
+                .catch(error => {
+                    console.error('Salesforce login error:', error);
+                })
+                .finally(() => {
+                    setLoading(false);
+                });
         }
-
-        // Process the authorization code if it exists and the window has a parent window
-        if (codeFromUrl && window.opener) {
-            window.opener.postMessage({ type: 'salesforce_auth_code', code: codeFromUrl }, domain);
-            // Remove code param from URL by updating state
-            window.history.replaceState({}, '', window.location.pathname);
-            window.close();
-        }
-
-        const handleMessage = async (event: MessageEvent) => {
-            if (!isLoggedAttemptProcessed && event.origin === domain && event.data?.type === 'salesforce_auth_code') {
-                isLoggedAttemptProcessed = true; // Set flag to true after processing message
-                const { code } = event.data;
-
-                // Update URL to reflect the code parameter
-                window.history.replaceState({}, '', `${window.location.pathname}?code=${code}`);
-
-                const codeVerifier = sessionStorage.getItem("salesforceCodeVerifier");
-                try { await salesforceAuth({ code, code_verifier: codeVerifier }) } catch { }
-            }
-        };
-
-        window.addEventListener('message', handleMessage);
-
-        return () => {
-            window.removeEventListener('message', handleMessage);
-            isLoggedAttemptProcessed = false; // Reset flag during cleanup
-        };
     }, []);
 
     const salesforceLogin = async () => {
         setLoading(true);
-        sessionStorage.removeItem("salesforceCodeVerifier");
 
         const pkceParams = await fetchSalesforcePKCE();
-        sessionStorage.setItem("salesforceCodeVerifier", pkceParams.code_verifier);
+        sessionStorage.setItem(SALESFORCE_CODE_VERIFIER_KEY, pkceParams.code_verifier);
 
-        // Construct the Salesforce login URL
-        const loginUrl = `https://login.salesforce.com/services/oauth2/authorize?`
-            + `response_type=code&client_id=${encodeURIComponent(salesforceOauthClientId)}`
-            + `&redirect_uri=${encodeURIComponent(salesforceOauthRedirectUri)}`
-            + `&code_challenge=${encodeURIComponent(pkceParams.code_challenge)}`
-            + `&code_challenge_method=S256`;
+        // The stateValue could be any unique string. For enhanced security, this should be less predictable.
+        const stateValue = 'salesforce_unique_state_value';
+        sessionStorage.setItem(SALESFORCE_STATE_KEY, stateValue);
 
-        // Open Salesforce login in a new popup
-        window.open(loginUrl, '_blank', 'width=500,height=600');
+        const loginUrl = new URL('https://login.salesforce.com/services/oauth2/authorize');
+        loginUrl.searchParams.append('response_type', 'code');
+        loginUrl.searchParams.append('client_id', salesforceOauthClientId);
+        loginUrl.searchParams.append('redirect_uri', salesforceOauthRedirectUri);
+        loginUrl.searchParams.append('code_challenge', pkceParams.code_challenge);
+        loginUrl.searchParams.append('code_challenge_method', 'S256');
+        loginUrl.searchParams.append('state', stateValue);
+
+        window.open(loginUrl.href, '_blank', 'width=500,height=600');
         setLoading(false);
     };
 
     return (
-        <button disabled={isLoading} onClick={salesforceLogin}>Log in with Salesforce</button>
+        <button disabled={isLoading} onClick={salesforceLogin}>
+            Log in with Salesforce
+        </button>
     );
 }
