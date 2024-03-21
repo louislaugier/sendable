@@ -1,5 +1,5 @@
-import React, { useEffect, useState } from 'react';
-import { domain, salesforceOauthClientId, salesforceOauthRedirectUri } from '~/constants/oauth';
+import { useEffect, useState } from 'react';
+import { salesforceOauthClientId, salesforceOauthRedirectUri } from '~/constants/oauth';
 import salesforceAuth from '~/services/api/auth/salesforce';
 import { fetchSalesforcePKCE } from '~/services/salesforce/pkce';
 

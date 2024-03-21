@@ -1,5 +1,5 @@
-import React, { useEffect, useState } from "react";
-import { domain, hubspotOauthClientId, hubspotOauthRedirectUri } from "~/constants/oauth";
+import { useEffect, useState } from "react";
+import { hubspotOauthClientId, hubspotOauthRedirectUri } from "~/constants/oauth";
 import hubspotAuth from "~/services/api/auth/hubspot";
 
 const HUBSPOT_STATE_KEY = 'hubspotOauthState';

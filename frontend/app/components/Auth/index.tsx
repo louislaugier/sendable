@@ -1,7 +1,6 @@
 import { useEffect } from "react";
 import { domain } from "~/constants/oauth";
 import EmailAuthButton from "./Email";
-import FacebookAuthButton from "./Facebook";
 import GoogleAuthButton from "./Google";
 import HubspotAuthButton from "./Hubspot";
 import SalesforceAuthButton from "./Salesforce";
