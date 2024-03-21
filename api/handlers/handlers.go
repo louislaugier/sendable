@@ -16,8 +16,9 @@ func handleHTTP(mux *http.ServeMux) {
 	mux.Handle("/healthz", middleware.BaseRateLimit(middleware.Log(http.HandlerFunc(HealthzHandler))))
 
 	mux.Handle("/auth/salesforce", middleware.BaseRateLimit(middleware.Log(http.HandlerFunc(SalesforceAuthHandler))))
+	mux.Handle("/auth/hubspot", middleware.BaseRateLimit(middleware.Log(http.HandlerFunc(HubspotAuthHandler))))
 	mux.Handle("/auth/google", middleware.BaseRateLimit(middleware.Log(http.HandlerFunc(GoogleAuthHandler))))
-	mux.Handle("/auth/facebook", middleware.BaseRateLimit(middleware.Log(http.HandlerFunc(FacebookAuthHandler))))
+	// mux.Handle("/auth/facebook", middleware.BaseRateLimit(middleware.Log(http.HandlerFunc(FacebookAuthHandler))))
 
 	mux.Handle("/validate_email", middleware.ValidateJWT(middleware.ValidatorRateLimit(middleware.Log(http.HandlerFunc(ValidateEmailHandler)))))
 	mux.Handle("/validate_emails", middleware.SizeLimit(middleware.ValidateJWT(middleware.ValidatorRateLimit(middleware.Log(http.HandlerFunc(ValidateEmailsHandler))))))

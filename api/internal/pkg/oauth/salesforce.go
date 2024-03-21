@@ -13,19 +13,12 @@ import (
 	"golang.org/x/oauth2"
 )
 
-// Replace these with your Salesforce client credentials and endpoint details
-const (
-	authURL     = "https://login.salesforce.com/services/oauth2/authorize"
-	tokenURL    = "https://login.salesforce.com/services/oauth2/token"
-	userInfoURL = "https://login.salesforce.com/services/oauth2/userinfo"
-)
-
 func VerifySalesforceCode(code string, codeVerifier string) (string, *models.SalesforceUser, error) {
 	conf := &oauth2.Config{
 		ClientID:     config.SalesforceOauthClientID,
 		ClientSecret: config.SalesforceOauthClientSecret,
 		Endpoint: oauth2.Endpoint{
-			TokenURL: tokenURL,
+			TokenURL: "https://login.salesforce.com/services/oauth2/token",
 		},
 	}
 
@@ -67,7 +60,7 @@ func VerifySalesforceCode(code string, codeVerifier string) (string, *models.Sal
 		return "", nil, fmt.Errorf("json.Decode() error: %v", err)
 	}
 
-	resp, err = client.Get(userInfoURL + "?oauth_token=" + token.AccessToken)
+	resp, err = client.Get("https://login.salesforce.com/services/oauth2/userinfo" + "?oauth_token=" + token.AccessToken)
 	if err != nil {
 		return "", nil, fmt.Errorf("client.Get() error: %v", err)
 	}

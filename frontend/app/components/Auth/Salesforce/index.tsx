@@ -1,11 +1,12 @@
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 // import { generateCodeChallenge } from '~/components/utils/pkce';
-import { domain, salesforceOauthClientId } from '~/constants/oauth';
+import { domain, salesforceOauthClientId, salesforceOauthRedirectUri } from '~/constants/oauth';
 import salesforceAuth from '~/services/api/auth/salesforce';
 import { fetchSalesforcePKCE } from '~/services/salesforce/pkce';
 
 
 export default function SalesforceAuthButton(): JSX.Element {
+    const [isLoading, setLoading] = useState(false);
 
     let isLoggedAttemptProcessed = false; // flag to track if the postMessage has been processed
 
@@ -37,7 +38,7 @@ export default function SalesforceAuthButton(): JSX.Element {
                 // Update URL to reflect the code parameter
                 window.history.replaceState({}, '', `${window.location.pathname}?code=${code}`);
 
-                const codeVerifier = sessionStorage.getItem("codeVerifier");
+                const codeVerifier = sessionStorage.getItem("salesforceCodeVerifier");
                 try { await salesforceAuth({ code, code_verifier: codeVerifier }) } catch { }
             }
         };
@@ -51,26 +52,25 @@ export default function SalesforceAuthButton(): JSX.Element {
     }, []);
 
     const salesforceLogin = async () => {
-        sessionStorage.removeItem("key");
+        setLoading(true);
+        sessionStorage.removeItem("salesforceCodeVerifier");
 
         const pkceParams = await fetchSalesforcePKCE();
-        sessionStorage.setItem("codeVerifier", pkceParams.code_verifier);
-
-        // This should be a callback URL where you handle the OAuth response
-        const redirectUri = `${domain}`;
+        sessionStorage.setItem("salesforceCodeVerifier", pkceParams.code_verifier);
 
         // Construct the Salesforce login URL
         const loginUrl = `https://login.salesforce.com/services/oauth2/authorize?`
             + `response_type=code&client_id=${encodeURIComponent(salesforceOauthClientId)}`
-            + `&redirect_uri=${encodeURIComponent(redirectUri)}`
+            + `&redirect_uri=${encodeURIComponent(salesforceOauthRedirectUri)}`
             + `&code_challenge=${encodeURIComponent(pkceParams.code_challenge)}`
             + `&code_challenge_method=S256`;
 
         // Open Salesforce login in a new popup
         window.open(loginUrl, '_blank', 'width=500,height=600');
+        setLoading(false);
     };
 
     return (
-        <button onClick={salesforceLogin}>Log in with Salesforce</button>
+        <button disabled={isLoading} onClick={salesforceLogin}>Log in with Salesforce</button>
     );
 }

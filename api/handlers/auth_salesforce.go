@@ -14,7 +14,7 @@ func SalesforceAuthHandler(w http.ResponseWriter, r *http.Request) {
 	body := models.SalesforceAuthRequest{}
 
 	if err := json.NewDecoder(r.Body).Decode(&body); err != nil {
-		log.Printf("Error decoding JSON: %v", err)
+		log.Printf("SalesforceAuthHandler: Error decoding JSON: %v", err)
 		http.Error(w, "Error decoding JSON", http.StatusBadRequest)
 		return
 	}
@@ -27,15 +27,17 @@ func SalesforceAuthHandler(w http.ResponseWriter, r *http.Request) {
 	accessToken, userInfo, err := oauth.VerifySalesforceCode(body.Code, body.CodeVerifier)
 	if err != nil || accessToken == "" || userInfo == nil {
 		if err != nil {
-			log.Printf("Error verifying code & code_verifier: %v", err)
+			log.Printf("Error verifying Salesforce code & code_verifier: %v", err)
 		}
-		http.Error(w, "Invalid JWT", http.StatusUnauthorized)
+		http.Error(w, "Invalid code & code_verifier", http.StatusUnauthorized)
 		return
 	}
 
 	contacts, err := salesforce.FetchContacts(accessToken)
 	if err != nil {
-		log.Fatalf("Error fetching Salesforce contacts: %s", err)
+		log.Printf("Error fetching Salesforce contacts: %s", err)
+		http.Error(w, "Internal Server Error", http.StatusInternalServerError)
+		return
 	}
 	log.Println(contacts)
 
