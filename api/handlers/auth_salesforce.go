@@ -39,6 +39,7 @@ func SalesforceAuthHandler(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "Internal Server Error", http.StatusInternalServerError)
 		return
 	}
+	log.Println(userInfo)
 	log.Println(contacts)
 
 	fmt.Fprint(w, http.StatusText(http.StatusOK))
