@@ -23,7 +23,7 @@ export default function Auth() {
                 }
 
                 // Redirect to a certain page if necessary, for example, a user dashboard
-                window.location.href = '/'; // Replace with your dashboard URL
+                // window.location.href = '/'; // Replace with your dashboard URL
             }
         }
 
