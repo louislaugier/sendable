@@ -13,5 +13,6 @@ export const salesforceOauthRedirectUri = 'http://localhost:3000'
 export const hubspotOauthClientId = 'c8598ff3-14de-4223-87d2-39baa078ccf7'
 export const hubspotOauthRedirectUri = 'http://localhost:3000'
 
-export const zohoOauthClientId = '1000.8PH4A8FAWACII0FY821N7FTXJASQUY'
+// export const zohoOauthClientId = '1000.8PH4A8FAWACII0FY821N7FTXJASQUY'
+export const zohoOauthClientId = '1000.P034JX86QTSF7KQQ8OF03LMH7RJILU'
 export const zohoOauthRedirectUri = 'http://localhost:3000'

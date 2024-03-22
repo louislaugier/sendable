@@ -5,6 +5,7 @@ import GoogleAuthButton from "./Google";
 import HubspotAuthButton from "./Hubspot";
 import SalesforceAuthButton from "./Salesforce";
 import ZohoforceAuthButton from "./Zoho";
+import MailchimpforceAuthButton from "./Mailchimp";
 
 export default function Auth() {
     useEffect(() => {
@@ -37,6 +38,7 @@ export default function Auth() {
             <SalesforceAuthButton />
             <HubspotAuthButton />
             <ZohoforceAuthButton />
+            <MailchimpforceAuthButton />
             <GoogleAuthButton />
             <EmailAuthButton />
             {/* <FacebookAuthButton /> */}
