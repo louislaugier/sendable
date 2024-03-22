@@ -173,8 +173,8 @@ func ValidateRequest(w http.ResponseWriter, r *http.Request) (*models.ValidateEm
 		http.Error(w, models.ErrNoEmailsToValidate.Error(), http.StatusBadRequest)
 		return nil, models.ErrNoEmailsToValidate
 	} else if len(req.Emails) > 1000000 {
-		http.Error(w, models.TooManyEmailsToValidate.Error(), http.StatusBadRequest)
-		return nil, models.TooManyEmailsToValidate
+		http.Error(w, models.ErrTooManyEmailsToValidate.Error(), http.StatusBadRequest)
+		return nil, models.ErrTooManyEmailsToValidate
 	}
 
 	return &req, nil

@@ -38,7 +38,7 @@ func VerifyHubspotCode(code string) (string, *models.HubspotUser, error) {
 		return "", nil, err
 	}
 
-	userInfo, err := getUserInfo(accessTokenResp.AccessToken)
+	userInfo, err := getHubspotUserInfo(accessTokenResp.AccessToken)
 	if err != nil {
 		return "", nil, err
 	}
@@ -46,7 +46,7 @@ func VerifyHubspotCode(code string) (string, *models.HubspotUser, error) {
 	return accessTokenResp.AccessToken, userInfo, nil
 }
 
-func getUserInfo(accessToken string) (*models.HubspotUser, error) {
+func getHubspotUserInfo(accessToken string) (*models.HubspotUser, error) {
 	// Correct URL based on Hubspot documentation
 	req, err := http.NewRequest("GET", "https://api.hubapi.com/oauth/v1/access-tokens/"+accessToken, nil)
 	if err != nil {
