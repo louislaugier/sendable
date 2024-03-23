@@ -1,3 +1,3 @@
-import { getEnv } from "~/utils/env";
+import { getEnv } from "~/services/env";
 
-export const apiBaseUrl = getEnv("API_URL")
+export const apiBaseUrl = getEnv("API_URL");

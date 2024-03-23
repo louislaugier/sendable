@@ -57,8 +57,8 @@ services:
     ports:
       - 3000:5173
     environment:
-      - REACT_APP_APP_URL=${FRONTEND_URL}
-      - REACT_APP_API_URL=${API_URL}
+      - VITE_APP_URL=${FRONTEND_URL}
+      - VITE_API_URL=${API_URL}
     networks:
       - vpc_local
 volumes:
