@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
-import { HubspotAuthCodeEvent } from "~/components/types/oauth";
+import { AuthCodeEvent } from "~/components/types/oauth";
 import { hubspotOauthClientId } from "~/constants/oauth/clientIds";
-import { hubspotStateKey } from "~/constants/oauth/stateKeys";
+import { hubspotAuthCodeKey, hubspotStateKey, hubspotUniqueStateValue } from "~/constants/oauth/stateKeys";
 import { hubspotOauthRedirectUri } from "~/constants/oauth/urls";
 import hubspotAuth from "~/services/api/auth/hubspot";
 
@@ -9,11 +9,11 @@ export default function HubspotAuthButton() {
     const [isLoading, setLoading] = useState(false);
 
     useEffect(() => {
-        const handleAuthCode = (event: MessageEvent<HubspotAuthCodeEvent>) => {
+        const handleAuthCode = (event: MessageEvent<AuthCodeEvent>) => {
             if (event.origin !== window.location.origin) {
                 return;
             }
-            if (event.data.type === 'hubspot-auth-code') {
+            if (event.data.type === hubspotAuthCodeKey) {
                 const { code, state } = event.data;
                 const storedState = sessionStorage.getItem(hubspotStateKey);
 
@@ -41,7 +41,7 @@ export default function HubspotAuthButton() {
     const hubspotLogin = () => {
         setLoading(true);
 
-        const stateValue = 'hubspot_unique_state_value';
+        const stateValue = hubspotUniqueStateValue;
         sessionStorage.setItem(hubspotStateKey, stateValue);
 
         const loginUrl = new URL('https://app-eu1.hubspot.com/oauth/authorize');

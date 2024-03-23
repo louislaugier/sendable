@@ -1,8 +1,8 @@
 
 import { useEffect, useState } from 'react';
-import { SalesforceAuthCodeEvent } from '~/components/types/oauth';
+import { AuthCodeEvent } from '~/components/types/oauth';
 import { salesforceOauthClientId } from '~/constants/oauth/clientIds';
-import { salesforceCodeVerifierKey, salesforceStateKey } from '~/constants/oauth/stateKeys';
+import { salesforceAuthCodeKey, salesforceCodeVerifierKey, salesforceStateKey, salesforceUniqueStateValue } from '~/constants/oauth/stateKeys';
 import { salesforceOauthRedirectUri } from '~/constants/oauth/urls';
 import salesforceAuth from '~/services/api/auth/salesforce';
 import { fetchSalesforcePKCE } from '~/services/salesforce/pkce';
@@ -11,11 +11,11 @@ export default function SalesforceAuthButton() {
   const [isLoading, setLoading] = useState(false);
 
   useEffect(() => {
-    const handleAuthCode = (event: MessageEvent<SalesforceAuthCodeEvent>) => {
+    const handleAuthCode = (event: MessageEvent<AuthCodeEvent>) => {
       if (event.origin !== window.location.origin) {
         return;
       }
-      if (event.data.type === 'salesforce-auth-code') {
+      if (event.data.type === salesforceAuthCodeKey) {
         const { code, state } = event.data;
         const storedState = sessionStorage.getItem(salesforceStateKey);
 
@@ -48,7 +48,7 @@ export default function SalesforceAuthButton() {
     sessionStorage.setItem(salesforceCodeVerifierKey, pkceParams.code_verifier);
 
     // Generate a unique state value
-    const stateValue = 'salesforce_unique_state_value';
+    const stateValue = salesforceUniqueStateValue;
     sessionStorage.setItem(salesforceStateKey, stateValue);
 
     // Build the Salesforce login URL with query parameters
@@ -75,7 +75,7 @@ export default function SalesforceAuthButton() {
         if (popupUrl.origin === window.location.origin && popupUrl.searchParams.get('code')) {
           const code = popupUrl.searchParams.get('code');
           const state = popupUrl.searchParams.get('state');
-          window.postMessage({ type: 'salesforce-auth-code', code, state }, window.location.origin);
+          window.postMessage({ type: salesforceAuthCodeKey, code, state }, window.location.origin);
           popup!.close();
         }
       } catch (error) {
