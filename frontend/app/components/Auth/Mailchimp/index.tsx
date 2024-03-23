@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { AuthCodeEvent } from '~/components/types/oauth';
+import { AuthCodeEvent } from '~/types/oauth';
 import { mailchimpOauthClientId } from '~/constants/oauth/clientIds';
 import { mailchimpAuthCodeKey, mailchimpStateKey, mailchimpUniqueStateValue } from '~/constants/oauth/stateKeys';
 import { mailchimpOauthRedirectUri } from '~/constants/oauth/urls';

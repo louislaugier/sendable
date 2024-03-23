@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { AuthCodeEvent } from '~/components/types/oauth';
+import { AuthCodeEvent } from '~/types/oauth';
 import { zohoOauthClientId } from '~/constants/oauth/clientIds';
 import { zohoAuthCodeKey, zohoStateKey, zohoUniqueStateValue } from '~/constants/oauth/stateKeys';
 import { zohoOauthRedirectUri } from '~/constants/oauth/urls';

@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { AuthCodeEvent } from "~/components/types/oauth";
+import { AuthCodeEvent } from "~/types/oauth";
 import { hubspotOauthClientId } from "~/constants/oauth/clientIds";
 import { hubspotAuthCodeKey, hubspotStateKey, hubspotUniqueStateValue } from "~/constants/oauth/stateKeys";
 import { hubspotOauthRedirectUri } from "~/constants/oauth/urls";

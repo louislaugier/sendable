@@ -1,4 +1,4 @@
-import { AuthCodeEvent } from "~/components/types/oauth";
+import { AuthCodeEvent } from "~/types/oauth";
 import { fetchSalesforcePKCE } from "../salesforce/pkce";
 
 export const handleAuthCode = (event: MessageEvent<AuthCodeEvent>, auth: (data: any) => Promise<any>, setLoading: React.Dispatch<React.SetStateAction<boolean>>, authCodeKey: string, stateKey: string, codeVerifierKey?: string) => {

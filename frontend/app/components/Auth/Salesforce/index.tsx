@@ -1,6 +1,6 @@
 
 import { useEffect, useState } from 'react';
-import { AuthCodeEvent } from '~/components/types/oauth';
+import { AuthCodeEvent } from '~/types/oauth';
 import { salesforceOauthClientId } from '~/constants/oauth/clientIds';
 import { salesforceAuthCodeKey, salesforceCodeVerifierKey, salesforceStateKey, salesforceUniqueStateValue } from '~/constants/oauth/stateKeys';
 import { salesforceOauthRedirectUri } from '~/constants/oauth/urls';
