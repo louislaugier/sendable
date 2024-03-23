@@ -1,0 +1,114 @@
+
+
+{
+    "info": {
+        "count": 2,
+        "more_records": false,
+        "page": 1,
+        "per_page": 200
+    },
+    "users": [
+        {
+            "confirm": true,
+            "email": "louis.laugier12@gmail.com",
+            "first_name": "Louis",
+            "full_name": "Louis Laugier",
+            "id": "6165602000000457001",
+            "last_name": "Laugier",
+            "profile": {
+                "id": "6165602000000026011",
+                "name": "Administrator"
+            },
+            "role": {
+                "id": "6165602000000026005",
+                "name": "CEO"
+            },
+            "status": "active",
+            "territories": [],
+            "zuid": "848946323"
+        },
+        {
+            "Current_Shift": null,
+            "Isonline": true,
+            "Modified_By": {
+                "id": "6165602000000457001",
+                "name": "Louis Laugier"
+            },
+            "Modified_Time": "2024-03-23T20:48:12+01:00",
+            "Next_Shift": null,
+            "Reporting_To": null,
+            "Shift_Effective_From": null,
+            "Source__s": null,
+            "alias": null,
+            "city": null,
+            "confirm": true,
+            "country": null,
+            "country_locale": "US",
+            "created_by": {
+                "id": "6165602000000457001",
+                "name": "Louis Laugier"
+            },
+            "created_time": "2024-03-23T20:47:08+01:00",
+            "customize_info": {
+                "bc_view": null,
+                "notes_desc": null,
+                "show_detail_view": true,
+                "show_home": false,
+                "show_right_panel": null,
+                "unpin_recent_item": null
+            },
+            "date_format": "MM/dd/yyyy",
+            "decimal_separator": "en_US",
+            "default_tab_group": "0",
+            "dob": null,
+            "email": "l.laugier@pm.me",
+            "fax": null,
+            "first_name": "testtt",
+            "full_name": "testtt",
+            "id": "6165602000000476072",
+            "language": "en_US",
+            "last_name": null,
+            "locale": "en_US",
+            "microsoft": false,
+            "mobile": null,
+            "name_format": "Salutation,First Name,Last Name",
+            "offset": 3600000,
+            "personal_account": false,
+            "phone": null,
+            "profile": {
+                "id": "6165602000000026014",
+                "name": "Standard"
+            },
+            "role": {
+                "id": "6165602000000026008",
+                "name": "Manager"
+            },
+            "sandboxDeveloper": false,
+            "signature": null,
+            "state": null,
+            "status": "active",
+            "status_reason__s": null,
+            "street": null,
+            "territories": [],
+            "theme": {
+                "background": "#F3F0EB",
+                "new_background": null,
+                "normal_tab": {
+                    "background": "#222222",
+                    "font_color": "#FFFFFF"
+                },
+                "screen": "fixed",
+                "selected_tab": {
+                    "background": "#222222",
+                    "font_color": "#FFFFFF"
+                },
+                "type": "default"
+            },
+            "time_format": "hh:mm a",
+            "time_zone": "Europe/Paris",
+            "website": null,
+            "zip": null,
+            "zuid": "849068931"
+        }
+    ]
+}

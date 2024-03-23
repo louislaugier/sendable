@@ -27,7 +27,7 @@ export default function SalesforceAuthButton() {
 
   return (
     <button disabled={isLoading} onClick={salesforceLogin}>
-      Log in with Salesforce
+      {isLoading ? 'Logging in...' : 'Log in with Salesforce'}
     </button>
   );
 }

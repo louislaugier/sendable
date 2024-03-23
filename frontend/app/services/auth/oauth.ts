@@ -56,7 +56,7 @@ export const login = async (setLoading: React.Dispatch<React.SetStateAction<bool
     loginUrl.searchParams.append('response_type', 'code');
     loginUrl.searchParams.append('state', uniqueStateValue);
 
-    if (scope) loginUrl.searchParams.append('scope', 'crm.objects.contacts.read');
+    if (scope) loginUrl.searchParams.append('scope', scope);
 
     const popup = window.open(loginUrl.href, '_blank', 'width=500,height=600');
 

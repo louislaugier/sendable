@@ -11,11 +11,13 @@ import (
 )
 
 func handleHTTP(mux *http.ServeMux) {
-	// Configure the handlers without CORS first
 	mux.Handle("/healthz", middleware.BaseRateLimit(middleware.Log(http.HandlerFunc(healthzHandler))))
 
 	mux.Handle("/auth/salesforce", middleware.BaseRateLimit(middleware.Log(http.HandlerFunc(salesforceAuthHandler))))
 	mux.Handle("/auth/hubspot", middleware.BaseRateLimit(middleware.Log(http.HandlerFunc(hubspotAuthHandler))))
+	mux.Handle("/auth/zoho", middleware.BaseRateLimit(middleware.Log(http.HandlerFunc(zohoAuthHandler))))
+	mux.Handle("/auth/zoho/confirm_email", middleware.BaseRateLimit(middleware.Log(http.HandlerFunc(zohoAuthConfirmEmailHandler))))
+	mux.Handle("/auth/mailchimp", middleware.BaseRateLimit(middleware.Log(http.HandlerFunc(mailchimpAuthHandler))))
 	mux.Handle("/auth/google", middleware.BaseRateLimit(middleware.Log(http.HandlerFunc(googleAuthHandler))))
 	// mux.Handle("/auth/facebook", middleware.BaseRateLimit(middleware.Log(http.HandlerFunc(FacebookAuthHandler))))
 

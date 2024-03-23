@@ -13,7 +13,9 @@ var HubspotOauthClientID string
 var HubspotOauthClientSecret string
 var HubspotOauthRedirectURI string
 
-// Zoho
+var ZohoOauthClientID string
+var ZohoOauthClientSecret string
+var ZohoOauthRedirectURI string
 
 func loadOauthClients() {
 	GoogleOauthClientID = os.Getenv("GOOGLE_OAUTH_CLIENT_ID")
@@ -26,4 +28,8 @@ func loadOauthClients() {
 	HubspotOauthClientID = os.Getenv("HUBSPOT_OAUTH_CLIENT_ID")
 	HubspotOauthClientSecret = os.Getenv("HUBSPOT_OAUTH_CLIENT_SECRET")
 	HubspotOauthRedirectURI = os.Getenv("HUBSPOT_OAUTH_REDIRECT_URI")
+
+	ZohoOauthClientID = os.Getenv("ZOHO_OAUTH_CLIENT_ID")
+	ZohoOauthClientSecret = os.Getenv("ZOHO_OAUTH_CLIENT_SECRET")
+	ZohoOauthRedirectURI = os.Getenv("ZOHO_OAUTH_REDIRECT_URI")
 }

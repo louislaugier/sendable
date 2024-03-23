@@ -27,7 +27,7 @@ export default function HubspotAuthButton() {
 
     return (
         <button disabled={isLoading} onClick={hubspotLogin}>
-            Log in with HubSpot
+            {isLoading ? 'Logging in...' : 'Log in with HubSpot'}
         </button>
     );
 }

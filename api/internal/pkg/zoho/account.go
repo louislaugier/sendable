@@ -1,15 +1,14 @@
 package zoho
 
 import (
-	"email-validator/internal/models"
 	"encoding/json"
 	"fmt"
 	"net/http"
 )
 
-func GetContacts(accessToken string) ([]models.ZohoContact, error) {
+func GetAccounts(accessToken string) (map[string]interface{}, error) {
 	client := &http.Client{}
-	req, err := http.NewRequest("GET", "https://www.zohoapis.com/crm/v2/Contacts", nil)
+	req, err := http.NewRequest("GET", "https://www.zohoapis.com/crm/v2/Accounts", nil)
 	if err != nil {
 		return nil, err
 	}
@@ -23,9 +22,9 @@ func GetContacts(accessToken string) ([]models.ZohoContact, error) {
 
 	defer resp.Body.Close()
 
-	var result models.ZohoContactsResponse
+	var result map[string]interface{}
 
 	json.NewDecoder(resp.Body).Decode(&result)
 
-	return result.Data, nil
+	return result, nil
 }

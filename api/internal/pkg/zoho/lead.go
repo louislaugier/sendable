@@ -7,9 +7,9 @@ import (
 	"net/http"
 )
 
-func GetContacts(accessToken string) ([]models.ZohoContact, error) {
+func GetLeads(accessToken string) ([]models.ZohoLead, error) {
 	client := &http.Client{}
-	req, err := http.NewRequest("GET", "https://www.zohoapis.com/crm/v2/Contacts", nil)
+	req, err := http.NewRequest("GET", "https://www.zohoapis.com/crm/v2/Leads", nil)
 	if err != nil {
 		return nil, err
 	}
@@ -23,7 +23,7 @@ func GetContacts(accessToken string) ([]models.ZohoContact, error) {
 
 	defer resp.Body.Close()
 
-	var result models.ZohoContactsResponse
+	var result models.ZohoLeadsResponse
 
 	json.NewDecoder(resp.Body).Decode(&result)
 

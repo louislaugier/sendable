@@ -1,24 +1,27 @@
 import { useEffect, useState } from 'react';
+import { AuthCodeEvent } from '~/components/types/oauth';
 import { mailchimpOauthClientId } from '~/constants/oauth/clientIds';
+import { mailchimpAuthCodeKey, mailchimpStateKey, mailchimpUniqueStateValue } from '~/constants/oauth/stateKeys';
 import { mailchimpOauthRedirectUri } from '~/constants/oauth/urls';
+import mailchimpAuth from '~/services/api/auth/mailchimp';
+import { handleAuthCode, login } from '~/services/auth/oauth';
+
+const url = 'https://login.mailchimp.com/oauth2/authorize'
 
 export default function MailchimpAuthButton() {
   const [isLoading, setLoading] = useState(false);
 
   useEffect(() => {
-    // Code for handling authentication callback can be added here
+    const handle = (event: MessageEvent<AuthCodeEvent>) => {
+      handleAuthCode(event, mailchimpAuth, setLoading, mailchimpAuthCodeKey, mailchimpStateKey);
+    };
+
+    window.addEventListener('message', handle);
+    return () => window.removeEventListener('message', handle);
   }, []);
 
   const mailchimpLogin = async () => {
-    try {
-      setLoading(true);
-      // Redirect user to Mailchimp authentication URL
-      window.location.href = `https://login.mailchimp.com/oauth2/authorize?response_type=code&client_id=${mailchimpOauthClientId}&redirect_uri=${mailchimpOauthRedirectUri}`;
-    } catch (error) {
-      console.error('Error occurred during Mailchimp login:', error);
-    } finally {
-      setLoading(false);
-    }
+    await login(setLoading, mailchimpUniqueStateValue, mailchimpStateKey, mailchimpAuthCodeKey, mailchimpOauthClientId, mailchimpOauthRedirectUri, url);
   };
 
   return (
