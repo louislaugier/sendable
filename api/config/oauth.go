@@ -17,6 +17,10 @@ var ZohoOauthClientID string
 var ZohoOauthClientSecret string
 var ZohoOauthRedirectURI string
 
+var MailchimpOauthClientID string
+var MailchimpOauthClientSecret string
+var MailchimpOauthRedirectURI string
+
 func loadOauthClients() {
 	GoogleOauthClientID = os.Getenv("GOOGLE_OAUTH_CLIENT_ID")
 
@@ -32,4 +36,8 @@ func loadOauthClients() {
 	ZohoOauthClientID = os.Getenv("ZOHO_OAUTH_CLIENT_ID")
 	ZohoOauthClientSecret = os.Getenv("ZOHO_OAUTH_CLIENT_SECRET")
 	ZohoOauthRedirectURI = os.Getenv("ZOHO_OAUTH_REDIRECT_URI")
+
+	MailchimpOauthClientID = os.Getenv("MAILCHIMP_OAUTH_CLIENT_ID")
+	MailchimpOauthClientSecret = os.Getenv("MAILCHIMP_OAUTH_CLIENT_SECRET")
+	MailchimpOauthRedirectURI = os.Getenv("MAILCHIMP_OAUTH_REDIRECT_URI")
 }

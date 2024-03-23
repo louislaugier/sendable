@@ -34,7 +34,7 @@ func StartHTTPSServer() {
 
 	// New CORS handler wrapping the mux with configured routes
 	corsOptions := cors.New(cors.Options{
-		AllowedOrigins:   []string{config.FrontendURL}, // The allowed domains
+		AllowedOrigins:   []string{config.FrontendURL, "http://127.0.0.1:3000"}, // The allowed domains
 		AllowedMethods:   []string{"GET", "POST", "OPTIONS", "PUT", "DELETE"},
 		AllowedHeaders:   []string{"Accept", "Content-Type", "Content-Length", "Accept-Encoding", "X-CSRF-Token", "Authorization"},
 		AllowCredentials: true,

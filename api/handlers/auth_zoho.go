@@ -14,7 +14,7 @@ func zohoAuthHandler(w http.ResponseWriter, r *http.Request) {
 	body := models.ZohoAuthRequest{}
 
 	if err := json.NewDecoder(r.Body).Decode(&body); err != nil {
-		log.Printf("ZohoAuthHandler: Error decoding JSON: %v", err)
+		log.Printf("zohoAuthHandler: Error decoding JSON: %v", err)
 		http.Error(w, "Error decoding JSON", http.StatusBadRequest)
 		return
 	}

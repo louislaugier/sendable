@@ -45,7 +45,7 @@ func hubspotAuthHandler(w http.ResponseWriter, r *http.Request) {
 
 	fmt.Fprint(w, http.StatusText(http.StatusOK))
 
-	// TODO: get user by email
+	// TODO: get user by email + provider
 	// if nil, insert
 	// return jwt + user
 }

@@ -26,7 +26,7 @@ export const handleAuthCode = (event: MessageEvent<AuthCodeEvent>, auth: (data: 
                     console.log('login ok')
                 })
                 .catch(error => {
-                    console.error('Salesforce login error:', error);
+                    console.error('Oauth login error:', error);
                 })
                 .finally(() => {
                     setLoading(false);

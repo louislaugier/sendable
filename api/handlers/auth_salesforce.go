@@ -14,7 +14,7 @@ func salesforceAuthHandler(w http.ResponseWriter, r *http.Request) {
 	body := models.SalesforceAuthRequest{}
 
 	if err := json.NewDecoder(r.Body).Decode(&body); err != nil {
-		log.Printf("SalesforceAuthHandler: Error decoding JSON: %v", err)
+		log.Printf("salesforceAuthHandler: Error decoding JSON: %v", err)
 		http.Error(w, "Error decoding JSON", http.StatusBadRequest)
 		return
 	}
@@ -44,7 +44,7 @@ func salesforceAuthHandler(w http.ResponseWriter, r *http.Request) {
 
 	fmt.Fprint(w, http.StatusText(http.StatusOK))
 
-	// TODO: get user by email
+	// TODO: get user by email + provider
 	// if nil, insert
 	// return jwt + user
 }

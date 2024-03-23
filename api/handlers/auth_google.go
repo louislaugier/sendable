@@ -13,7 +13,7 @@ func googleAuthHandler(w http.ResponseWriter, r *http.Request) {
 	body := models.GoogleAuthRequest{}
 
 	if err := json.NewDecoder(r.Body).Decode(&body); err != nil {
-		log.Printf("Error decoding JSON: %v", err)
+		log.Printf("googleAuthHandler: Error decoding JSON: %v", err)
 		http.Error(w, "Error decoding JSON", http.StatusBadRequest)
 		return
 	}
@@ -49,7 +49,7 @@ func googleAuthHandler(w http.ResponseWriter, r *http.Request) {
 	log.Println(email)
 	fmt.Fprint(w, http.StatusText(http.StatusOK))
 
-	// TODO: get user by email
+	// TODO: get user by email + provider
 	// if nil, insert
 	// return jwt + user
 }
