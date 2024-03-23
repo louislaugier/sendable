@@ -10,7 +10,7 @@ import (
 	"net/http"
 )
 
-func SalesforceAuthHandler(w http.ResponseWriter, r *http.Request) {
+func salesforceAuthHandler(w http.ResponseWriter, r *http.Request) {
 	body := models.SalesforceAuthRequest{}
 
 	if err := json.NewDecoder(r.Body).Decode(&body); err != nil {

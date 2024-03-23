@@ -1,8 +1,8 @@
-import apiClientInstance from "..";
+import apiClient from "..";
 
 const googleAuth = async (data: any) => {
     try {
-        const response = await apiClientInstance.post('auth/google', data);
+        const response = await apiClient.post('auth/google', data);
         return response.data;
     } catch (error) {
         console.error('Error:', error);

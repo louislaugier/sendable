@@ -1,53 +1,48 @@
 import { useEffect, useState } from "react";
-import { hubspotOauthClientId, hubspotOauthRedirectUri } from "~/constants/oauth";
+import { HubspotAuthCodeEvent } from "~/components/types/oauth";
+import { hubspotOauthClientId } from "~/constants/oauth/clientIds";
+import { hubspotStateKey } from "~/constants/oauth/stateKeys";
+import { hubspotOauthRedirectUri } from "~/constants/oauth/urls";
 import hubspotAuth from "~/services/api/auth/hubspot";
 
-const HUBSPOT_STATE_KEY = 'hubspotOauthState';
-
-interface HubspotAuthCodeEvent {
-  type: string;
-  code?: string;
-  state?: string;
-}
-
 export default function HubspotAuthButton() {
-  const [isLoading, setLoading] = useState(false);
+    const [isLoading, setLoading] = useState(false);
 
-  useEffect(() => {
-    const handleAuthCode = (event: MessageEvent<HubspotAuthCodeEvent>) => {
-      if (event.origin !== window.location.origin) {
-        return;
-      }
-      if (event.data.type === 'hubspot-auth-code') {
-        const { code, state } = event.data;
-        const storedState = sessionStorage.getItem(HUBSPOT_STATE_KEY);
+    useEffect(() => {
+        const handleAuthCode = (event: MessageEvent<HubspotAuthCodeEvent>) => {
+            if (event.origin !== window.location.origin) {
+                return;
+            }
+            if (event.data.type === 'hubspot-auth-code') {
+                const { code, state } = event.data;
+                const storedState = sessionStorage.getItem(hubspotStateKey);
 
-        if (code && state && storedState === state) {
-          setLoading(true);
-          sessionStorage.removeItem(HUBSPOT_STATE_KEY);
-          hubspotAuth({ code: code! }) // Assuming code is non-nullable in the auth function
-            .then(() => {
-              window.close();
-            })
-            .catch(error => {
-              console.error('HubSpot login error:', error);
-            })
-            .finally(() => {
-              setLoading(false);
-            });
-        }
-      }
-    };
+                if (code && state && storedState === state) {
+                    setLoading(true);
+                    sessionStorage.removeItem(hubspotStateKey);
+                    hubspotAuth({ code: code! }) // Assuming code is non-nullable in the auth function
+                        .then(() => {
+                            console.log('login ok')
+                        })
+                        .catch(error => {
+                            console.error('HubSpot login error:', error);
+                        })
+                        .finally(() => {
+                            setLoading(false);
+                        });
+                }
+            }
+        };
 
-    window.addEventListener('message', handleAuthCode);
-    return () => window.removeEventListener('message', handleAuthCode);
-  }, []);
+        window.addEventListener('message', handleAuthCode);
+        return () => window.removeEventListener('message', handleAuthCode);
+    }, []);
 
     const hubspotLogin = () => {
         setLoading(true);
 
         const stateValue = 'hubspot_unique_state_value';
-        sessionStorage.setItem(HUBSPOT_STATE_KEY, stateValue);
+        sessionStorage.setItem(hubspotStateKey, stateValue);
 
         const loginUrl = new URL('https://app-eu1.hubspot.com/oauth/authorize');
         loginUrl.searchParams.append('client_id', hubspotOauthClientId);

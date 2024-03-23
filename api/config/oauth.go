@@ -15,7 +15,7 @@ var HubspotOauthRedirectURI string
 
 // Zoho
 
-func LoadOauthClients() {
+func loadOauthClients() {
 	GoogleOauthClientID = os.Getenv("GOOGLE_OAUTH_CLIENT_ID")
 
 	SalesforceOauthClientID = os.Getenv("SALESFORCE_OAUTH_CLIENT_ID")

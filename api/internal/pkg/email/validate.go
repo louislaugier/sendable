@@ -161,7 +161,7 @@ func ValidateManyBulk(emails []string) ([]models.ReacherResponse, error) {
 	return nil, nil
 }
 
-func ValidateRequest(w http.ResponseWriter, r *http.Request) (*models.ValidateEmailsRequest, error) {
+func ValidateValidationRequest(w http.ResponseWriter, r *http.Request) (*models.ValidateEmailsRequest, error) {
 	req := models.ValidateEmailsRequest{}
 
 	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {

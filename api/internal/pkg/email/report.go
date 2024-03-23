@@ -3,7 +3,6 @@ package email
 import (
 	"email-validator/config"
 	"email-validator/internal/models"
-	"email-validator/internal/pkg/brevo"
 	"email-validator/internal/pkg/file"
 	"log"
 	"mime/multipart"
@@ -58,10 +57,10 @@ func sendReport(report []models.ReacherResponse, recipient string) {
 		return
 	}
 
-	err = brevo.Client.SendEmail(models.ReportTemplate, "Email validation report", "Your email validation report is ready!", map[string]string{
+	err = config.EmailClient.SendEmail(models.ReportTemplate, "Email validation report", "Your email validation report is ready!", map[string]string{
 		"id":     ID.String(),
 		"token":  token.String(),
-		"domain": config.Domain,
+		"domain": config.DomainURL,
 	}, recipient)
 	if err != nil {
 		log.Printf("Error sending report: %v", err)
@@ -71,7 +70,7 @@ func sendReport(report []models.ReacherResponse, recipient string) {
 
 // sendReportError sends a report error by email to recipient
 func sendReportError(recipient string) {
-	err := brevo.Client.SendEmail(models.ErrorTemplate, "Email validation error", "Issues while attempting to validate emails.", map[string]string{}, recipient)
+	err := config.EmailClient.SendEmail(models.ErrorTemplate, "Email validation error", "Issues while attempting to validate emails.", nil, recipient)
 	if err != nil {
 		log.Printf("Error sending report error: %v", err)
 		return

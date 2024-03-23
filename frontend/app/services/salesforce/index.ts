@@ -1,8 +1,8 @@
 import axios from 'axios';
-import { salesforceAppUrl } from '~/constants/oauth';
+import { salesforceAppUrl } from '~/constants/oauth/urls';
 
-export const salesforceApiClientInstance = axios.create({
-    baseURL: `https://bypass-all-cors-sf7k.onrender.com/${salesforceAppUrl}`, // Replace with your Salesforce domain
+export const salesforceApiClient = axios.create({
+    baseURL: `https://bypass-all-cors-sf7k.onrender.com/${salesforceAppUrl}`,
     timeout: 10000,
     headers: {
         'Content-Type': 'application/json',
@@ -10,7 +10,7 @@ export const salesforceApiClientInstance = axios.create({
     },
 });
 
-salesforceApiClientInstance.interceptors.request.use(
+salesforceApiClient.interceptors.request.use(
     (config) => {
         // Modify the request config here if needed
         return config;
@@ -20,7 +20,7 @@ salesforceApiClientInstance.interceptors.request.use(
     }
 );
 
-salesforceApiClientInstance.interceptors.response.use(
+salesforceApiClient.interceptors.response.use(
     (response) => {
         // Handle successful responses here
         return response;
@@ -31,4 +31,4 @@ salesforceApiClientInstance.interceptors.response.use(
     }
 );
 
-export default salesforceApiClientInstance;
+export default salesforceApiClient;

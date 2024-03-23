@@ -1,8 +1,8 @@
-import apiClientInstance from "..";
+import apiClient from "..";
 
 export const facebookAuth = async (data: any) => {
     try {
-        const response = await apiClientInstance.post('auth/facebook', data);
+        const response = await apiClient.post('auth/facebook', data);
         return response.data;
     } catch (error) {
         console.error('Error:', error);

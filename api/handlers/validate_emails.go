@@ -15,12 +15,8 @@ import (
 	"github.com/google/uuid"
 )
 
-type ValidateEmailsRequest struct {
-	Emails []string `json:"emails,omitempty"`
-}
-
 // Payload: either multipart file (field name "file") or JSON body
-func ValidateEmailsHandler(w http.ResponseWriter, r *http.Request) {
+func validateEmailsHandler(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 
 	if r.Method == http.MethodPost {
@@ -61,7 +57,7 @@ func ValidateEmailsHandler(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 
-		req, err := email.ValidateRequest(w, r)
+		req, err := email.ValidateValidationRequest(w, r)
 		if err != nil {
 			return
 		}

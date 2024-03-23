@@ -10,7 +10,7 @@ import (
 	"net/http"
 )
 
-func HubspotAuthHandler(w http.ResponseWriter, r *http.Request) {
+func hubspotAuthHandler(w http.ResponseWriter, r *http.Request) {
 	body := models.HubspotAuthRequest{}
 
 	if err := json.NewDecoder(r.Body).Decode(&body); err != nil {

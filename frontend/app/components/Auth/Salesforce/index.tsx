@@ -1,17 +1,11 @@
 
 import { useEffect, useState } from 'react';
-import { salesforceOauthClientId, salesforceOauthRedirectUri } from '~/constants/oauth';
+import { SalesforceAuthCodeEvent } from '~/components/types/oauth';
+import { salesforceOauthClientId } from '~/constants/oauth/clientIds';
+import { salesforceCodeVerifierKey, salesforceStateKey } from '~/constants/oauth/stateKeys';
+import { salesforceOauthRedirectUri } from '~/constants/oauth/urls';
 import salesforceAuth from '~/services/api/auth/salesforce';
 import { fetchSalesforcePKCE } from '~/services/salesforce/pkce';
-
-const SALESFORCE_STATE_KEY = 'salesforceOauthState';
-const SALESFORCE_CODE_VERIFIER_KEY = 'salesforceCodeVerifier';
-
-interface SalesforceAuthCodeEvent {
-  type: string;
-  code?: string;
-  state?: string;
-}
 
 export default function SalesforceAuthButton() {
   const [isLoading, setLoading] = useState(false);
@@ -23,16 +17,16 @@ export default function SalesforceAuthButton() {
       }
       if (event.data.type === 'salesforce-auth-code') {
         const { code, state } = event.data;
-        const storedState = sessionStorage.getItem(SALESFORCE_STATE_KEY);
+        const storedState = sessionStorage.getItem(salesforceStateKey);
 
         if (code && state && storedState === state) {
           setLoading(true);
-          sessionStorage.removeItem(SALESFORCE_STATE_KEY);
-          const codeVerifier = sessionStorage.getItem(SALESFORCE_CODE_VERIFIER_KEY) || ''; // Handle potential null
-          sessionStorage.removeItem(SALESFORCE_CODE_VERIFIER_KEY);
+          sessionStorage.removeItem(salesforceStateKey);
+          const codeVerifier = sessionStorage.getItem(salesforceCodeVerifierKey) || ''; // Handle potential null
+          sessionStorage.removeItem(salesforceCodeVerifierKey);
           salesforceAuth({ code, code_verifier: codeVerifier })
             .then(() => {
-              window.close();
+              console.log('login ok')
             })
             .catch(error => {
               console.error('Salesforce login error:', error);
@@ -51,11 +45,11 @@ export default function SalesforceAuthButton() {
     setLoading(true);
     // Prepare PKCE and state parameters
     const pkceParams = await fetchSalesforcePKCE();
-    sessionStorage.setItem(SALESFORCE_CODE_VERIFIER_KEY, pkceParams.code_verifier);
+    sessionStorage.setItem(salesforceCodeVerifierKey, pkceParams.code_verifier);
 
     // Generate a unique state value
     const stateValue = 'salesforce_unique_state_value';
-    sessionStorage.setItem(SALESFORCE_STATE_KEY, stateValue);
+    sessionStorage.setItem(salesforceStateKey, stateValue);
 
     // Build the Salesforce login URL with query parameters
     const loginUrl = new URL('https://login.salesforce.com/services/oauth2/authorize');

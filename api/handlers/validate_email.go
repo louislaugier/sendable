@@ -15,7 +15,7 @@ import (
 	"github.com/google/uuid"
 )
 
-func ValidateEmailHandler(w http.ResponseWriter, r *http.Request) {
+func validateEmailHandler(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 
 	if r.Method == http.MethodPost {

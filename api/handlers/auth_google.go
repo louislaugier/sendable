@@ -9,7 +9,7 @@ import (
 	"net/http"
 )
 
-func GoogleAuthHandler(w http.ResponseWriter, r *http.Request) {
+func googleAuthHandler(w http.ResponseWriter, r *http.Request) {
 	body := models.GoogleAuthRequest{}
 
 	if err := json.NewDecoder(r.Body).Decode(&body); err != nil {

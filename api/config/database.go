@@ -9,14 +9,17 @@ import (
 
 var DB *sql.DB
 
-func Connect() {
-	connectionType, URL := "postgres", os.Getenv("DATABASE_URL")
+func initDatabaseConnection() {
+	var URL string
 
-	if os.Getenv("ENV") == "dev" {
+	switch OSEnv {
+	case ProdEnv:
+		URL = os.Getenv("DATABASE_URL")
+	case DevEnv:
 		URL = "postgres://postgres:pass@db:5432/db?sslmode=disable"
 	}
 
-	d, err := sql.Open(connectionType, URL)
+	d, err := sql.Open("postgres", URL)
 	if err != nil {
 		panic(err)
 	}

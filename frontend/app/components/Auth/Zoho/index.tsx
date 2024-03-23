@@ -1,6 +1,7 @@
 
 import { useEffect, useState } from 'react';
-import { zohoOauthClientId, zohoOauthRedirectUri } from '~/constants/oauth';
+import { zohoOauthClientId } from '~/constants/oauth/clientIds';
+import { zohoOauthRedirectUri } from '~/constants/oauth/urls';
 
 
 export default function ZohoforceAuthButton() {

@@ -11,6 +11,8 @@ services:
       - ./api/:/go/src/email-validator/api
     environment:
       - ENV=${ENV}
+      - FRONTEND_URL=${FRONTEND_URL}
+      - DOMAIN_URL=${API_URL}
     ports:
       - 443:443
       - 80:80
@@ -54,10 +56,13 @@ services:
       - node_modules:/frontend/node_modules
     ports:
       - 3000:5173
+    environment:
+      - REACT_APP_APP_URL=${FRONTEND_URL}
+      - REACT_APP_API_URL=${API_URL}
     networks:
       - vpc_local
+volumes:
+  node_modules:
 networks:
   vpc_local:
     driver: bridge
-volumes:
-  node_modules:

@@ -8,8 +8,7 @@ import (
 // TODO: transfer extension check from api/handlers/validate_emails.go here
 // TODO: clamav
 
-// TODO: rename (ValidateFile?)
-func SizeLimit(next http.Handler) http.Handler {
+func ValidateFile(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		preventSizeExceedingFile(w, r)
 

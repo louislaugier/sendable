@@ -6,7 +6,7 @@ import {
   Scripts,
   ScrollRestoration,
 } from "@remix-run/react";
-import { googleOauthClientId } from "./constants/oauth";
+import { googleOauthClientId } from "./constants/oauth/clientIds";
 
 export function Layout({ children }: { children: React.ReactNode }) {
   return (

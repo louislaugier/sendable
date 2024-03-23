@@ -9,9 +9,7 @@ import (
 	brevo "github.com/getbrevo/brevo-go/lib"
 )
 
-func (c *EmailClient) SendEmail(template models.Template, subject, previewContent string, variables map[string]string,
-	// attachments []*os.File,
-	recipients ...string) error {
+func (c *EmailClient) SendEmail(template models.Template, subject, previewContent string, variables map[string]string, recipients ...string) error {
 
 	var to []brevo.SendSmtpEmailTo
 	for _, recipient := range recipients {
@@ -19,19 +17,6 @@ func (c *EmailClient) SendEmail(template models.Template, subject, previewConten
 			Email: recipient,
 		})
 	}
-
-	// var files []brevo.SendSmtpEmailAttachment
-	// for _, attachment := range attachments {
-	// 	fileContent, err := file.ToBase64(attachment)
-	// 	if err != nil {
-	// 		return err
-	// 	}
-
-	// 	files = append(files, brevo.SendSmtpEmailAttachment{
-	// 		Name:    attachment.Name(),
-	// 		Content: *fileContent,
-	// 	})
-	// }
 
 	HTML, err := html.GenerateEmail(template, variables)
 	if err != nil {

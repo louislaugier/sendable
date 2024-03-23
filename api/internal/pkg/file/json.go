@@ -8,12 +8,12 @@ import (
 	"github.com/google/uuid"
 )
 
-func CreateJSONReportToken(ID uuid.UUID) (*uuid.UUID, *os.File, error) {
+func CreateJSONReportToken(reportID uuid.UUID) (*uuid.UUID, *os.File, error) {
 	token := uuid.New()
 
 	file, err := mapToJSONFile(map[string]interface{}{
 		"token": token,
-	}, fmt.Sprintf("./report_tokens/%s.json", ID))
+	}, fmt.Sprintf("./report_tokens/%s.json", reportID))
 	if err != nil {
 		return nil, nil, err
 	}
@@ -21,8 +21,8 @@ func CreateJSONReportToken(ID uuid.UUID) (*uuid.UUID, *os.File, error) {
 	return &token, file, nil
 }
 
-func GetJSONReportToken(ID uuid.UUID) (*uuid.UUID, error) {
-	fileData, err := os.ReadFile(fmt.Sprintf("./report_tokens/%s.json", ID.String()))
+func GetJSONReportToken(reportID uuid.UUID) (*uuid.UUID, error) {
+	fileData, err := os.ReadFile(fmt.Sprintf("./report_tokens/%s.json", reportID.String()))
 	if err != nil {
 		return nil, err
 	}

@@ -1,7 +1,7 @@
 import axios from 'axios';
-import { apiBaseUrl } from '~/constants/oauth';
+import { apiBaseUrl } from '~/constants/api';
 
-export const apiClientInstance = axios.create({
+export const apiClient = axios.create({
   baseURL: apiBaseUrl, // Set your base URL here
   timeout: 10000, // Specify a timeout (in milliseconds) for requests
   headers: {
@@ -11,7 +11,7 @@ export const apiClientInstance = axios.create({
 });
 
 // Optional: Add interceptors for request and response
-apiClientInstance.interceptors.request.use(
+apiClient.interceptors.request.use(
   (config) => {
     // You can modify the request config here, e.g., adding authorization headers
     return config;
@@ -21,7 +21,7 @@ apiClientInstance.interceptors.request.use(
   }
 );
 
-apiClientInstance.interceptors.response.use(
+apiClient.interceptors.response.use(
   (response) => {
     // You can handle successful responses here
     return response;
@@ -32,4 +32,4 @@ apiClientInstance.interceptors.response.use(
   }
 );
 
-export default apiClientInstance;
+export default apiClient;
