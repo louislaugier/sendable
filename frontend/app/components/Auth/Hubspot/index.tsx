@@ -4,38 +4,18 @@ import { hubspotOauthClientId } from "~/constants/oauth/clientIds";
 import { hubspotAuthCodeKey, hubspotStateKey, hubspotUniqueStateValue } from "~/constants/oauth/stateKeys";
 import { hubspotOauthRedirectUri } from "~/constants/oauth/urls";
 import hubspotAuth from "~/services/api/auth/hubspot";
+import { handleAuthCode } from "~/services/auth/oauth";
 
 export default function HubspotAuthButton() {
     const [isLoading, setLoading] = useState(false);
 
     useEffect(() => {
-        const handleAuthCode = (event: MessageEvent<AuthCodeEvent>) => {
-            if (event.origin !== window.location.origin) {
-                return;
-            }
-            if (event.data.type === hubspotAuthCodeKey) {
-                const { code, state } = event.data;
-                const storedState = sessionStorage.getItem(hubspotStateKey);
-
-                if (code && state && storedState === state) {
-                    setLoading(true);
-                    sessionStorage.removeItem(hubspotStateKey);
-                    hubspotAuth({ code: code! }) // Assuming code is non-nullable in the auth function
-                        .then(() => {
-                            console.log('login ok')
-                        })
-                        .catch(error => {
-                            console.error('HubSpot login error:', error);
-                        })
-                        .finally(() => {
-                            setLoading(false);
-                        });
-                }
-            }
+        const handle = (event: MessageEvent<AuthCodeEvent>) => {
+            handleAuthCode(event, hubspotAuth, setLoading, hubspotAuthCodeKey, hubspotStateKey);
         };
 
-        window.addEventListener('message', handleAuthCode);
-        return () => window.removeEventListener('message', handleAuthCode);
+        window.addEventListener('message', handle);
+        return () => window.removeEventListener('message', handle);
     }, []);
 
     const hubspotLogin = () => {

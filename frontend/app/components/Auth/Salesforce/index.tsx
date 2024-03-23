@@ -5,42 +5,21 @@ import { salesforceOauthClientId } from '~/constants/oauth/clientIds';
 import { salesforceAuthCodeKey, salesforceCodeVerifierKey, salesforceStateKey, salesforceUniqueStateValue } from '~/constants/oauth/stateKeys';
 import { salesforceOauthRedirectUri } from '~/constants/oauth/urls';
 import salesforceAuth from '~/services/api/auth/salesforce';
+import { handleAuthCode } from '~/services/auth/oauth';
 import { fetchSalesforcePKCE } from '~/services/salesforce/pkce';
 
 export default function SalesforceAuthButton() {
   const [isLoading, setLoading] = useState(false);
 
   useEffect(() => {
-    const handleAuthCode = (event: MessageEvent<AuthCodeEvent>) => {
-      if (event.origin !== window.location.origin) {
-        return;
-      }
-      if (event.data.type === salesforceAuthCodeKey) {
-        const { code, state } = event.data;
-        const storedState = sessionStorage.getItem(salesforceStateKey);
-
-        if (code && state && storedState === state) {
-          setLoading(true);
-          sessionStorage.removeItem(salesforceStateKey);
-          const codeVerifier = sessionStorage.getItem(salesforceCodeVerifierKey) || ''; // Handle potential null
-          sessionStorage.removeItem(salesforceCodeVerifierKey);
-          salesforceAuth({ code, code_verifier: codeVerifier })
-            .then(() => {
-              console.log('login ok')
-            })
-            .catch(error => {
-              console.error('Salesforce login error:', error);
-            })
-            .finally(() => {
-              setLoading(false);
-            });
-        }
-      }
+    const handle = (event: MessageEvent<AuthCodeEvent>) => {
+      handleAuthCode(event, salesforceAuth, setLoading, salesforceAuthCodeKey, salesforceStateKey, salesforceCodeVerifierKey);
     };
 
-    window.addEventListener('message', handleAuthCode);
-    return () => window.removeEventListener('message', handleAuthCode);
+    window.addEventListener('message', handle);
+    return () => window.removeEventListener('message', handle);
   }, []);
+
   const salesforceLogin = async () => {
     setLoading(true);
     // Prepare PKCE and state parameters
