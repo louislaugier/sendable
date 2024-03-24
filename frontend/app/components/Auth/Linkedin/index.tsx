@@ -9,7 +9,7 @@ import { handleAuthCode, login } from "~/services/auth/oauth";
 import { AuthCodeEvent } from "~/types/oauth";
 
 const url = 'https://www.linkedin.com/oauth/v2/authorization'
-const scope = 'email'
+const scope = 'email openid'
 
 export default function LinkedinAuthButton() {
     const [isLoading, setLoading] = useState(false);

@@ -21,6 +21,10 @@ var MailchimpOauthClientID string
 var MailchimpOauthClientSecret string
 var MailchimpOauthRedirectURI string
 
+var LinkedinOauthClientID string
+var LinkedinOauthClientSecret string
+var LinkedinOauthRedirectURI string
+
 func loadOauthClients() {
 	GoogleOauthClientID = os.Getenv("GOOGLE_OAUTH_CLIENT_ID")
 
@@ -40,4 +44,8 @@ func loadOauthClients() {
 	MailchimpOauthClientID = os.Getenv("MAILCHIMP_OAUTH_CLIENT_ID")
 	MailchimpOauthClientSecret = os.Getenv("MAILCHIMP_OAUTH_CLIENT_SECRET")
 	MailchimpOauthRedirectURI = os.Getenv("MAILCHIMP_OAUTH_REDIRECT_URI")
+
+	LinkedinOauthClientID = os.Getenv("LINKEDIN_OAUTH_CLIENT_ID")
+	LinkedinOauthClientSecret = os.Getenv("LINKEDIN_OAUTH_CLIENT_SECRET")
+	LinkedinOauthRedirectURI = os.Getenv("LINKEDIN_OAUTH_REDIRECT_URI")
 }

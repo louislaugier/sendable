@@ -19,6 +19,7 @@ func handleHTTP(mux *http.ServeMux) {
 	mux.Handle("/auth/zoho/confirm_email", middleware.BaseRateLimit(middleware.Log(http.HandlerFunc(zohoAuthConfirmEmailHandler))))
 	mux.Handle("/auth/mailchimp", middleware.BaseRateLimit(middleware.Log(http.HandlerFunc(mailchimpAuthHandler))))
 	mux.Handle("/auth/google", middleware.BaseRateLimit(middleware.Log(http.HandlerFunc(googleAuthHandler))))
+	mux.Handle("/auth/linkedin", middleware.BaseRateLimit(middleware.Log(http.HandlerFunc(linkedinAuthHandler))))
 	// mux.Handle("/auth/facebook", middleware.BaseRateLimit(middleware.Log(http.HandlerFunc(FacebookAuthHandler))))
 
 	mux.Handle("/validate_email", middleware.ValidateJWT(middleware.ValidatorRateLimit(middleware.Log(http.HandlerFunc(validateEmailHandler)))))

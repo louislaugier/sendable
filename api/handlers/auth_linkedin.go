@@ -2,7 +2,6 @@ package handlers
 
 import (
 	"email-validator/internal/models"
-	"email-validator/internal/pkg/hubspot"
 	"email-validator/internal/pkg/oauth"
 	"encoding/json"
 	"fmt"
@@ -10,11 +9,11 @@ import (
 	"net/http"
 )
 
-func hubspotAuthHandler(w http.ResponseWriter, r *http.Request) {
-	body := models.HubspotAuthRequest{}
+func linkedinAuthHandler(w http.ResponseWriter, r *http.Request) {
+	body := models.LinkedinAuthRequest{}
 
 	if err := json.NewDecoder(r.Body).Decode(&body); err != nil {
-		log.Printf("hubspotAuthHandler: Error decoding JSON: %v", err)
+		log.Printf("linkedinAuthHandler: Error decoding JSON: %v", err)
 		http.Error(w, "Error decoding JSON", http.StatusBadRequest)
 		return
 	}
@@ -24,24 +23,16 @@ func hubspotAuthHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	accessToken, userInfo, err := oauth.VerifyHubspotCode(body.Code)
+	accessToken, userInfo, err := oauth.VerifyLinkedinCode(body.Code)
 	if err != nil || accessToken == "" || userInfo == nil {
 		if err != nil {
-			log.Printf("Error verifying Hubspot code: %v", err)
+			log.Printf("Error verifying Linkedin code: %v", err)
 		}
 		http.Error(w, "Invalid code", http.StatusUnauthorized)
 		return
 	}
 
-	contacts, err := hubspot.GetContacts(accessToken)
-	if err != nil {
-		log.Printf("Error fetching Hubspot contacts: %v", err)
-		http.Error(w, "Internal Server Error", http.StatusInternalServerError)
-		return
-	}
-
 	log.Println(userInfo)
-	log.Println(contacts)
 
 	fmt.Fprint(w, http.StatusText(http.StatusOK))
 

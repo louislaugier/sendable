@@ -30,7 +30,7 @@ function GoogleAuthButtonComponent() {
     });
 
     const onSuccess = async (tokenResponse: any) => {
-        console.log(tokenResponse.access_token);
+        setLoading(true);
 
         try {
             let resp = await googleAuth({ access_token: tokenResponse.access_token });
@@ -57,7 +57,7 @@ function GoogleAuthButtonComponent() {
                 style={{ justifyContent: 'flex-start' }}
                 isDisabled={isLoading}
                 onClick={() => {
-                    setLoading(true); // set loading state as soon as the button is clicked
+                    // setLoading(true);
                     googleLogin();
                 }}
                 variant="bordered"
