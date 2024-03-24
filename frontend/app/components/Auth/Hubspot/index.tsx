@@ -29,7 +29,7 @@ export default function HubspotAuthButton() {
 
     return (
         <Button style={{ justifyContent: 'flex-start' }} isDisabled={isLoading} onClick={hubspotLogin} variant="bordered" startContent={<HubspotIcon />}>
-            {isLoading ? 'Loading' : 'Log in with HubSpot'}
+            {isLoading ? 'Loading...' : 'Log in with HubSpot'}
         </Button>
     );
 }
