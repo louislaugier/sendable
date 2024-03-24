@@ -1,7 +1,20 @@
-import { useGoogleLogin, useGoogleOneTapLogin } from "@react-oauth/google";
+import { Button } from "@nextui-org/button";
+import { GoogleOAuthProvider, useGoogleLogin, useGoogleOneTapLogin } from "@react-oauth/google";
+import { MouseEventHandler, useState } from "react";
+import GoogleIcon from "~/components/icons/logos/Google";
+import { googleOauthClientId } from "~/constants/oauth/clientIds";
 import googleAuth from "~/services/api/auth/google";
 
 export default function GoogleAuthButton() {
+    return (
+        <GoogleOAuthProvider clientId={googleOauthClientId}>
+            <GoogleAuthButtonComponent />
+        </GoogleOAuthProvider>
+    )
+}
+
+function GoogleAuthButtonComponent() {
+    const [isLoading, setLoading] = useState(false);
 
     useGoogleOneTapLogin({
         onSuccess: async (jwtResponse) => {
@@ -16,23 +29,43 @@ export default function GoogleAuthButton() {
         },
     });
 
-    const googleLogin = useGoogleLogin({
-        onSuccess: async (tokenResponse) => {
-            console.log(tokenResponse.access_token);
+    const onSuccess = async (tokenResponse: any) => {
+        console.log(tokenResponse.access_token);
 
-            try {
-                let resp = await googleAuth({ access_token: tokenResponse.access_token });
-                console.log(resp);
-            } catch { }
-        },
-        onError: (e) => {
-            console.log('Login Failed', e);
-        },
+        try {
+            let resp = await googleAuth({ access_token: tokenResponse.access_token });
+            console.log(resp);
+        } catch { }
+
+        setLoading(false)
+    }
+
+    const onError = () => {
+        console.log('Login failed');
+        setLoading(false)
+    }
+
+    const googleLogin: any = useGoogleLogin({
+        onSuccess,
+        onError,
     });
+
 
     return (
         <>
-            <button onClick={() => googleLogin()}>Login in with Google</button>
+            <Button
+                style={{ justifyContent: 'flex-start' }}
+                isDisabled={isLoading}
+                onClick={() => {
+                    setLoading(true); // set loading state as soon as the button is clicked
+                    googleLogin();
+                }}
+                variant="bordered"
+                startContent={<GoogleIcon />}
+            >
+                <p>{isLoading ? 'Loading...' : 'Log in with Google'}</p>
+            </Button>
         </>
     )
+
 }

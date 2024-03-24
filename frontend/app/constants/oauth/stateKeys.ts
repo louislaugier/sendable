@@ -14,3 +14,7 @@ export const zohoUniqueStateValue = 'zoho_state'
 export const mailchimpStateKey = 'mailchimpOauthState';
 export const mailchimpAuthCodeKey = 'mailchimp-auth-code';
 export const mailchimpUniqueStateValue = 'mailchimp_state'
+
+export const linkedinStateKey = 'linkedinOauthState';
+export const linkedinAuthCodeKey = 'linkedin-auth-code';
+export const linkedinUniqueStateValue = 'linkedin_state'

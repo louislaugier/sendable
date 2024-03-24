@@ -10,12 +10,8 @@ import (
 var DB *sql.DB
 
 func initDatabaseConnection() {
-	var URL string
-
-	switch OSEnv {
-	case ProdEnv:
-		URL = os.Getenv("DATABASE_URL")
-	case DevEnv:
+	URL := os.Getenv("DATABASE_URL")
+	if URL == "" {
 		URL = "postgres://postgres:pass@db:5432/db?sslmode=disable"
 	}
 

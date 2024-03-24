@@ -5,6 +5,8 @@ import { mailchimpAuthCodeKey, mailchimpStateKey, mailchimpUniqueStateValue } fr
 import { mailchimpOauthRedirectUri } from '~/constants/oauth/urls';
 import mailchimpAuth from '~/services/api/auth/mailchimp';
 import { handleAuthCode, login } from '~/services/auth/oauth';
+import { Button } from '@nextui-org/button';
+import MailchimpIcon from '~/components/icons/logos/Mailchimp';
 
 const url = 'https://login.mailchimp.com/oauth2/authorize'
 
@@ -25,8 +27,8 @@ export default function MailchimpAuthButton() {
   };
 
   return (
-    <button disabled={isLoading} onClick={mailchimpLogin}>
-      {isLoading ? 'Logging in...' : 'Log in with Mailchimp'}
-    </button>
+    <Button style={{ justifyContent: 'flex-start' }} isDisabled={isLoading} onClick={mailchimpLogin} variant="bordered" startContent={<MailchimpIcon />}>
+      <p style={{ marginLeft: "7px" }}>{isLoading ? 'Loading...' : 'Log in with Mailchimp'}</p>
+    </Button>
   );
 }

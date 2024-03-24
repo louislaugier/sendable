@@ -1,4 +1,3 @@
-import { GoogleOAuthProvider } from "@react-oauth/google";
 import {
   Links,
   Meta,
@@ -6,7 +5,13 @@ import {
   Scripts,
   ScrollRestoration,
 } from "@remix-run/react";
-import { googleOauthClientId } from "./constants/oauth/clientIds";
+import type { LinksFunction } from "@remix-run/node";
+import stylesheet from "~/tailwind.css?url";
+import { NextUIProvider } from "@nextui-org/react";
+
+export const links: LinksFunction = () => [
+  { rel: "stylesheet", href: stylesheet },
+];
 
 export function Layout({ children }: { children: React.ReactNode }) {
   return (
@@ -18,10 +23,9 @@ export function Layout({ children }: { children: React.ReactNode }) {
         <Links />
       </head>
       <body>
-        <GoogleOAuthProvider clientId={googleOauthClientId}>
+        <NextUIProvider>
           {children}
-        </GoogleOAuthProvider>
-
+        </NextUIProvider>
         <ScrollRestoration />
         <Scripts />
       </body>

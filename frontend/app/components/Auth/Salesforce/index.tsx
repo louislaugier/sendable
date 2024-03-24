@@ -6,6 +6,8 @@ import { salesforceAuthCodeKey, salesforceCodeVerifierKey, salesforceStateKey, s
 import { salesforceOauthRedirectUri } from '~/constants/oauth/urls';
 import salesforceAuth from '~/services/api/auth/salesforce';
 import { handleAuthCode, login } from '~/services/auth/oauth';
+import { Button } from '@nextui-org/button';
+import SalesforceIcon from '~/components/icons/logos/Salesforce';
 
 const url = 'https://login.salesforce.com/services/oauth2/authorize'
 
@@ -26,8 +28,8 @@ export default function SalesforceAuthButton() {
   };
 
   return (
-    <button disabled={isLoading} onClick={salesforceLogin}>
-      {isLoading ? 'Logging in...' : 'Log in with Salesforce'}
-    </button>
+    <Button style={{ justifyContent: 'flex-start' }} isDisabled={isLoading} onClick={salesforceLogin} variant="bordered" startContent={<SalesforceIcon />}>
+      <p className='text-red'>{isLoading ? 'Loading' : 'Log in with Salesforce'}</p>
+    </Button>
   );
 }

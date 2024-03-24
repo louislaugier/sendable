@@ -1,1 +1,10 @@
-CREATE TYPE provider AS ENUM ('google', 'facebook', 'apple', 'salesforce', 'zoho', 'hubspot', 'mailchimp', 'sendgrid', 'brevo');
+CREATE TYPE provider AS ENUM (
+    'google',
+    'linkedin',
+    -- 'facebook',
+    -- 'apple',
+    'salesforce',
+    'zoho',
+    'hubspot',
+    'mailchimp',
+);

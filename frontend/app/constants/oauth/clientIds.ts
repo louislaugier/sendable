@@ -9,3 +9,5 @@ export const hubspotOauthClientId = 'c8598ff3-14de-4223-87d2-39baa078ccf7'
 export const zohoOauthClientId = '1000.8PH4A8FAWACII0FY821N7FTXJASQUY'
 
 export const mailchimpOauthClientId = '622673351648'
+
+export const linkedinOauthClientId = '78s6ppymn7bdlx'

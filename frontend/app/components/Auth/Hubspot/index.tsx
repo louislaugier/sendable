@@ -5,6 +5,8 @@ import { hubspotAuthCodeKey, hubspotStateKey, hubspotUniqueStateValue } from "~/
 import { hubspotOauthRedirectUri } from "~/constants/oauth/urls";
 import hubspotAuth from "~/services/api/auth/hubspot";
 import { handleAuthCode, login } from "~/services/auth/oauth";
+import { Button } from "@nextui-org/button";
+import HubspotIcon from "~/components/icons/logos/Hubspot";
 
 const url = 'https://app-eu1.hubspot.com/oauth/authorize'
 const scope = 'crm.objects.contacts.read'
@@ -26,8 +28,8 @@ export default function HubspotAuthButton() {
     };
 
     return (
-        <button disabled={isLoading} onClick={hubspotLogin}>
-            {isLoading ? 'Logging in...' : 'Log in with HubSpot'}
-        </button>
+        <Button style={{ justifyContent: 'flex-start' }} isDisabled={isLoading} onClick={hubspotLogin} variant="bordered" startContent={<HubspotIcon />}>
+            {isLoading ? 'Loading' : 'Log in with HubSpot'}
+        </Button>
     );
 }

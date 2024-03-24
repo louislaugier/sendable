@@ -1,5 +1,5 @@
 import { useEffect } from "react";
-import { facebookOauthClientId } from "~/constants/oauth/urls";
+import { facebookOauthClientId } from "~/constants/oauth/clientIds";
 import facebookAuth from "~/services/api/auth/facebook";
 
 // Extend the Window interface for the Facebook SDK

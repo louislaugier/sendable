@@ -26,12 +26,22 @@ install-pkg-frontend-dev:
 
 .PHONY: build-api-dev
 build-api-dev:
-	docker build -t app -f ./api/Dockerfile.dev --no-cache .
+	docker-compose build api --no-cache
 
 .PHONY: recreate-api-dev
 recreate-api-dev:
 	docker-compose rm -sfv api
 	make build-api-dev
+	make start-dev
+
+.PHONY: build-frontend-dev
+build-frontend-dev:
+	docker-compose build frontend --no-cache
+
+.PHONY: recreate-frontend-dev
+recreate-frontend-dev:
+	docker-compose rm -sfv frontend
+	make build-frontend-dev
 	make start-dev
 
 #################################################################
