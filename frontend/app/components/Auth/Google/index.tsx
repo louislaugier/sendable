@@ -1,6 +1,6 @@
 import { Button } from "@nextui-org/button";
 import { GoogleOAuthProvider, useGoogleLogin, useGoogleOneTapLogin } from "@react-oauth/google";
-import { MouseEventHandler, useState } from "react";
+import { useState } from "react";
 import GoogleIcon from "~/components/icons/logos/Google";
 import { googleOauthClientId } from "~/constants/oauth/clientIds";
 import googleAuth from "~/services/api/auth/google";

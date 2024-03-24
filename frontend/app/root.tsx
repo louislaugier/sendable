@@ -8,6 +8,7 @@ import {
 import type { LinksFunction } from "@remix-run/node";
 import stylesheet from "~/tailwind.css?url";
 import { NextUIProvider } from "@nextui-org/react";
+import { UserProvider } from "./contexts/UserContext";
 
 export const links: LinksFunction = () => [
   { rel: "stylesheet", href: stylesheet },
@@ -23,9 +24,11 @@ export function Layout({ children }: { children: React.ReactNode }) {
         <Links />
       </head>
       <body>
-        <NextUIProvider>
-          {children}
-        </NextUIProvider>
+        <UserProvider>
+          <NextUIProvider>
+            {children}
+          </NextUIProvider>
+        </UserProvider>
         <ScrollRestoration />
         <Scripts />
       </body>
