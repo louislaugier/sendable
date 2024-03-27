@@ -6,7 +6,7 @@ import { mailchimpOauthRedirectUri } from '~/constants/oauth/urls';
 import mailchimpAuth from '~/services/api/auth/mailchimp';
 import { handleAuthCode, login } from '~/services/auth/oauth';
 import { Button } from '@nextui-org/button';
-import MailchimpIcon from '~/components/icons/logos/Mailchimp';
+import MailchimpIcon from '~/icons/logos/Mailchimp';
 
 const url = 'https://login.mailchimp.com/oauth2/authorize'
 

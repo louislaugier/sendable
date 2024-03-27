@@ -6,7 +6,7 @@ import { hubspotOauthRedirectUri } from "~/constants/oauth/urls";
 import hubspotAuth from "~/services/api/auth/hubspot";
 import { handleAuthCode, login } from "~/services/auth/oauth";
 import { Button } from "@nextui-org/button";
-import HubspotIcon from "~/components/icons/logos/Hubspot";
+import HubspotIcon from "~/icons/logos/Hubspot";
 
 const url = 'https://app-eu1.hubspot.com/oauth/authorize'
 const scope = 'crm.objects.contacts.read'

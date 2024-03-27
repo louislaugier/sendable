@@ -1,4 +1,4 @@
-export default (props: any) => (
+export const MailIcon = (props: any) => (
     <svg
         style={{ marginLeft: 5, marginRight: 5 }}
         aria-hidden="true"

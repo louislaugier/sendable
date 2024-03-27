@@ -1,5 +1,5 @@
 import { Button } from "@nextui-org/button"
-import MailIcon from "~/components/icons/Mail"
+import { MailIcon } from "~/icons/MailIcon"
 
 export default function EmailAuthButton() {
     const emailLogin = () => {

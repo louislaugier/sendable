@@ -7,8 +7,9 @@ import {
 } from "@remix-run/react";
 import type { LinksFunction } from "@remix-run/node";
 import stylesheet from "~/tailwind.css?url";
-import { NextUIProvider } from "@nextui-org/react";
+import { BreadcrumbItem, Breadcrumbs, NextUIProvider } from "@nextui-org/react";
 import { UserProvider } from "./contexts/UserContext";
+import Nav from "./components/Nav";
 
 export const links: LinksFunction = () => [
   { rel: "stylesheet", href: stylesheet },
@@ -26,7 +27,15 @@ export function Layout({ children }: { children: React.ReactNode }) {
       <body>
         <UserProvider>
           <NextUIProvider>
-            {children}
+              <Nav />
+              <Breadcrumbs>
+                <BreadcrumbItem>Home</BreadcrumbItem>
+                <BreadcrumbItem>Music</BreadcrumbItem>
+                <BreadcrumbItem>Artist</BreadcrumbItem>
+                <BreadcrumbItem>Album</BreadcrumbItem>
+                <BreadcrumbItem>Song</BreadcrumbItem>
+              </Breadcrumbs>
+              {children}
           </NextUIProvider>
         </UserProvider>
         <ScrollRestoration />
