@@ -1,6 +1,6 @@
 export const MailIcon = (props: any) => (
     <svg
-        style={{ marginLeft: 5, marginRight: 5 }}
+        style={!props.nomargin ? { marginLeft: 5, marginRight: 5 } : undefined}
         aria-hidden="true"
         fill="none"
         focusable="false"

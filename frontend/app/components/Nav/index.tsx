@@ -1,54 +1,68 @@
-import { Navbar, NavbarBrand, NavbarContent, NavbarItem, Link, Button, useDisclosure } from "@nextui-org/react";
-import SignupLogin from "./SignupLogin";
+import { Navbar, NavbarBrand, NavbarContent, NavbarItem, Link, Button, useDisclosure, menu } from "@nextui-org/react";
+import SignupLogin from "../SignupLogin";
+import { isCurrentUrl } from "~/utils/url";
+import { useLocation } from "@remix-run/react";
+import { Link as RemixLink } from "@remix-run/react";
+
+const menuItems = [
+    { url: "/about", label: "About" },
+    { url: "/services", label: "Services" },
+    { url: "/enterprise-api", label: "Enterprise API" },
+    { url: "/pricing", label: "Pricing" },
+    { url: "/resources", label: "Resources" }
+];
 
 export default function Nav() {
-    const modal = useDisclosure();
+    const authModal = useDisclosure();
+
+    const location = useLocation();
 
     return (
         <>
             <Navbar>
                 <NavbarBrand>
-                    <a href="/" className="font-bold text-inherit">LOGO</a>
+                    {/* <Link href={menuItem.url}> */}
+                    <RemixLink prefetch="intent" to={"/"}>
+                        LOGO
+                    </RemixLink>
+                    {/* </Link> */}
                 </NavbarBrand>
                 <NavbarContent className="hidden sm:flex gap-4" justify="center">
-                    <NavbarItem>
-                        <Link color="foreground" href="#" aria-current="page">
-                            About
-                        </Link>
-                    </NavbarItem>
-                    <NavbarItem>
-                        <Link color="foreground" href="#" aria-current="page">
-                            Services
-                        </Link>
-                    </NavbarItem>
-                    <NavbarItem isActive>
-                        <Link href="#">
-                            Enterprise API
-                        </Link>
-                    </NavbarItem>
-                    <NavbarItem>
-                        <Link color="foreground" href="#">
-                            Pricing
-                        </Link>
-                    </NavbarItem>
-                    <NavbarItem>
-                        <Link color="foreground" href="#">
-                            Resources
-                        </Link>
-                    </NavbarItem>
+                    {menuItems.map((menuItem, index) => (
+                        <NavbarItem
+                            key={index}
+                            isActive={isCurrentUrl(location, menuItem.url)}
+                            aria-current={isCurrentUrl(location, menuItem.url) && "page"}
+                        >
+                            {/* <Link href={menuItem.url}> */}
+                            <RemixLink prefetch="intent" to={menuItem.url}>
+                                <p className={isCurrentUrl(location, menuItem.url) ? "text-primary" : undefined}>
+                                    {menuItem.label}
+                                </p>
+                            </RemixLink>
+                            {/* </Link> */}
+                        </NavbarItem>
+                    ))}
                 </NavbarContent>
+
                 <NavbarContent justify="end">
+
                     <NavbarItem className="hidden lg:flex">
-                        <Link onClick={modal.onOpen}>Login</Link>
+                        <Link style={{ cursor: 'pointer' }} onClick={authModal.onOpen}>
+                            Login
+                        </Link>
                     </NavbarItem>
+
                     <NavbarItem>
-                        <Button as={Link} color="primary" variant="ghost" href="#">
-                            Sign Up <b>Free</b>
+                        <Button onClick={authModal.onOpen} as={Link} color="primary" variant="shadow">
+                            Sign up Free
                         </Button>
                     </NavbarItem>
+
                 </NavbarContent>
+
             </Navbar>
-            <SignupLogin isOpen={modal.isOpen} onOpen={modal.onOpen} onOpenChange={modal.onOpenChange} />
+            <SignupLogin isOpen={authModal.isOpen} onOpen={authModal.onOpen} onOpenChange={authModal.onOpenChange} />
         </>
     );
 }

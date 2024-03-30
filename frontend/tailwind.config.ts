@@ -9,6 +9,18 @@ export default {
   theme: {
     extend: {},
   },
-  plugins: [nextui()],
+  plugins: [nextui({
+    themes: {
+      light: {
+        colors: {
+          primary: {
+            500: "#BEF264",
+            DEFAULT: "black",
+            foreground: "white",
+          },
+          // focus: "black",
+        },
+      },
+    },
+  })],
 } satisfies Config
-

@@ -53,6 +53,7 @@ services:
       - ./frontend/app/:/frontend/app
       - ./frontend/public/:/frontend/public
       - ./frontend/package.json/:/frontend/package.json
+      - ./frontend/tailwind.config.ts/:/frontend/tailwind.config.ts
       - node_modules:/frontend/node_modules
     ports:
       - 3000:5173
