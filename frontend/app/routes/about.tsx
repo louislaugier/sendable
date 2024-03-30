@@ -3,12 +3,12 @@ import { siteName } from "~/constants/app";
 
 export const meta: MetaFunction = () => {
   return [
-    { title: `${siteName}` },
-    { name: "description", content: "Welcome to Remix!" },
+    { title: `${siteName} - About` },
+    { name: "description", content: "Welcome to Remix! - About" },
   ];
 };
 
-export default function Index() {
+export default function About() {
 
   return (
     <>
