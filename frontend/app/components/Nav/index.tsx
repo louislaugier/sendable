@@ -1,25 +1,34 @@
-import { Navbar, NavbarBrand, NavbarContent, NavbarItem, Link, Button, useDisclosure, menu } from "@nextui-org/react";
+import { Navbar, NavbarBrand, NavbarContent, NavbarItem, Link, Button, useDisclosure } from "@nextui-org/react";
 import SignupLogin from "../SignupLogin";
 import { isCurrentUrl } from "~/utils/url";
 import { useLocation } from "@remix-run/react";
 import { Link as RemixLink } from "@remix-run/react";
+import { useContext, useState } from "react";
+import { AuthModalType } from "~/types/modal";
+import { GoogleOneTap } from "../Auth/Google";
+import UserContext from "~/contexts/UserContext";
+import AuthModalContext from "~/contexts/AuthModalContext";
 
 const menuItems = [
     { url: "/about", label: "About" },
-    { url: "/services", label: "Services" },
+    // { url: "/services", label: "Services" },
     { url: "/enterprise-api", label: "Enterprise API" },
     { url: "/pricing", label: "Pricing" },
     { url: "/resources", label: "Resources" }
 ];
 
 export default function Nav() {
-    const authModal = useDisclosure();
+    const { authModal, modalType, setModalType } = useContext(AuthModalContext);
 
-    const location = useLocation();
+    const location = useLocation()
+
+    const { user, setUser } = useContext(UserContext)
 
     return (
         <>
-            <Navbar>
+            {!user && <GoogleOneTap />}
+
+            <Navbar isBordered style={{ borderColor: '#E4E4E7' }}>
                 <NavbarBrand>
                     {/* <Link href={menuItem.url}> */}
                     <RemixLink prefetch="intent" to={"/"}>
@@ -48,21 +57,28 @@ export default function Nav() {
                 <NavbarContent justify="end">
 
                     <NavbarItem className="hidden lg:flex">
-                        <Link style={{ cursor: 'pointer' }} onClick={authModal.onOpen}>
+                        <Link style={{ cursor: 'pointer' }} onClick={() => {
+                            setModalType(AuthModalType.Login)
+                            authModal.onOpen()
+                        }}>
                             Login
                         </Link>
                     </NavbarItem>
 
                     <NavbarItem>
-                        <Button onClick={authModal.onOpen} as={Link} color="primary" variant="shadow">
-                            Sign up Free
+                        <Button onClick={() => {
+                            setModalType(AuthModalType.Signup)
+                            authModal.onOpen()
+                        }} color="primary" variant="shadow">
+                            Sign Up Free
                         </Button>
                     </NavbarItem>
 
                 </NavbarContent>
 
             </Navbar>
-            <SignupLogin isOpen={authModal.isOpen} onOpen={authModal.onOpen} onOpenChange={authModal.onOpenChange} />
+
+            <SignupLogin modalType={modalType} isOpen={authModal.isOpen} onClose={authModal.onClose} onOpen={authModal.onOpen} onOpenChange={authModal.onOpenChange} />
         </>
     );
 }

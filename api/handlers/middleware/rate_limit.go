@@ -42,3 +42,7 @@ func BaseRateLimit(h http.Handler) http.Handler {
 func ValidatorRateLimit(h http.Handler) http.Handler {
 	return RateLimit(h, models.ValidatorRateLimiter)
 }
+
+func BulkValidatorRateLimit(h http.Handler) http.Handler {
+	return RateLimit(h, models.ValidatorRateLimiter)
+}

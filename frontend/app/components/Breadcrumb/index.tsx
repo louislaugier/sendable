@@ -1,17 +1,21 @@
 import { Breadcrumbs, BreadcrumbItem } from "@nextui-org/react";
+import { useLocation } from "@remix-run/react";
 
 export default function Breadcrumb(props: any) {
-    const { isOpen, onOpen, onOpenChange } = props;
+    const { pathname } = useLocation()
 
     return (
         <>
-            <Breadcrumbs>
-                <BreadcrumbItem>Home</BreadcrumbItem>
-                <BreadcrumbItem>Music</BreadcrumbItem>
-                <BreadcrumbItem>Artist</BreadcrumbItem>
-                <BreadcrumbItem>Album</BreadcrumbItem>
-                <BreadcrumbItem>Song</BreadcrumbItem>
-            </Breadcrumbs>
+            {pathname !== '/' &&
+                <Breadcrumbs>
+                    <BreadcrumbItem>Home</BreadcrumbItem>
+                    <BreadcrumbItem>Music</BreadcrumbItem>
+                    <BreadcrumbItem>Artist</BreadcrumbItem>
+                    <BreadcrumbItem>Album</BreadcrumbItem>
+                    <BreadcrumbItem>Song</BreadcrumbItem>
+                </Breadcrumbs>
+            }
+
         </>
     );
 }

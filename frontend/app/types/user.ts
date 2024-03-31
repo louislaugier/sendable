@@ -9,3 +9,8 @@ export interface UserContext {
     user: User | null;
     setUser: Dispatch<SetStateAction<User | null>>;
 }
+
+export interface UserContext {
+    user: User | null;
+    setUser: Dispatch<SetStateAction<User | null>>;
+}

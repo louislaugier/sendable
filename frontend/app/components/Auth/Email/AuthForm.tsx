@@ -1,28 +1,42 @@
 import { Checkbox, Input, Link } from "@nextui-org/react"
-import { LockIcon } from "~/icons/LockIcon"
+import { useState } from "react";
+import { EyeFilledIcon } from "~/icons/EyeFilledIcon";
+import { EyeSlashFilledIcon } from "~/icons/EyeSlashFilledIcon";
 import { MailIcon } from "~/icons/MailIcon"
 
 export default function EmailAuthForm(props: any) {
+    const [isPasswordVisible, setPasswordVisible] = useState(false);
+
+    const toggleVisibility = () => setPasswordVisible(!isPasswordVisible);
+
     return (
         <>
             <Input
                 autoFocus
-                endContent={
-                    <MailIcon nomargin className="text-2xl text-default-400 pointer-events-none flex-shrink-0" />
-                }
+                // endContent={
+                //     <MailIcon nomargin className="text-2xl text-default-400 pointer-events-none flex-shrink-0" />
+                // }
                 label="Email"
                 placeholder="Enter your email"
                 variant="bordered"
             />
+
             <Input
-                endContent={
-                    <LockIcon className="text-2xl text-default-400 pointer-events-none flex-shrink-0" />
-                }
                 label="Password"
-                placeholder="Enter your password"
-                type="password"
                 variant="bordered"
+                placeholder="Enter your password"
+                endContent={
+                    <button className="focus:outline-none" type="button" onClick={toggleVisibility}>
+                        {isPasswordVisible ? (
+                            <EyeSlashFilledIcon className="text-2xl text-default-400 pointer-events-none" />
+                        ) : (
+                            <EyeFilledIcon className="text-2xl text-default-400 pointer-events-none" />
+                        )}
+                    </button>
+                }
+                type={isPasswordVisible ? "text" : "password"}
             />
+            
             <div className="flex py-2 px-1 justify-between">
                 <Checkbox
                     classNames={{

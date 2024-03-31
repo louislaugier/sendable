@@ -7,15 +7,13 @@ import googleAuth from "~/services/api/auth/google";
 
 export default function GoogleAuthButton() {
     return (
-        <GoogleOAuthProvider clientId={googleOauthClientId}>
+        // <GoogleOAuthProvider clientId={googleOauthClientId}>
             <GoogleAuthButtonComponent />
-        </GoogleOAuthProvider>
+        // </GoogleOAuthProvider>
     )
 }
 
-function GoogleAuthButtonComponent() {
-    const [isLoading, setLoading] = useState(false);
-
+export function GoogleOneTap() {
     useGoogleOneTapLogin({
         onSuccess: async (jwtResponse) => {
             console.log(jwtResponse.credential);
@@ -28,6 +26,12 @@ function GoogleAuthButtonComponent() {
             console.log('Login Failed');
         },
     });
+
+    return <></>
+}
+
+function GoogleAuthButtonComponent() {
+    const [isLoading, setLoading] = useState(false);
 
     const onSuccess = async (tokenResponse: any) => {
         setLoading(true);
@@ -53,6 +57,7 @@ function GoogleAuthButtonComponent() {
 
     return (
         <>
+            <GoogleOneTap />
             <Button
                 style={{ justifyContent: 'flex-start' }}
                 isDisabled={isLoading}

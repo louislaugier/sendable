@@ -11,11 +11,11 @@ import { ArrowBackIcon } from "~/icons/ArrowBackIcon";
 import { Button } from "@nextui-org/react";
 
 export default function Auth(props: any) {
-    const { isSignInButtonVisible, setSignInButtonVisible } = props
+    const { isSubmitButtonVisible, setSubmitButtonVisible } = props
 
     return (
-        isSignInButtonVisible ? <>
-            <Button onClick={() => setSignInButtonVisible(false)} className="border-none" isIconOnly variant="ghost" aria-label="Back">
+        isSubmitButtonVisible ? <>
+            <Button onClick={() => setSubmitButtonVisible(false)} className="border-none" isIconOnly variant="ghost" aria-label="Back">
                 <ArrowBackIcon />
             </Button>
 
@@ -42,7 +42,7 @@ export default function Auth(props: any) {
 
                 <Divider className="my-6" />
                 <div className="gap-2 flex flex-col" style={{ width: '220px' }}>
-                    <EmailAuthButton onClick={() => setSignInButtonVisible(true)} />
+                    <EmailAuthButton onClick={() => setSubmitButtonVisible(true)} />
                 </div>
             </div>
     )

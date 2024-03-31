@@ -11,6 +11,9 @@ import { NextUIProvider } from "@nextui-org/react";
 import { UserProvider } from "./contexts/UserContext";
 import Nav from "./components/Nav";
 import Breadcrumb from "./components/Breadcrumb";
+import { GoogleOAuthProvider } from "@react-oauth/google";
+import { googleOauthClientId } from "./constants/oauth/clientIds";
+import { AuthModalProvider } from "./contexts/AuthModalContext";
 
 export const links: LinksFunction = () => [
   { rel: "stylesheet", href: stylesheet },
@@ -27,18 +30,27 @@ export function Layout({ children }: { children: React.ReactNode }) {
       </head>
       <body>
         <UserProvider>
-          <NextUIProvider>
-            {/* <main style={{ minHeight: '100vh' }} className="dark text-foreground bg-background"> */}
-            <main style={{ minHeight: '100vh' }} className="text-foreground bg-background">
-              <Nav />
+          <AuthModalProvider>
 
-              <div style={{ maxWidth: 1024, margin: 'auto' }}>
-                <Breadcrumb />
-                {children}
-              </div>
+            <NextUIProvider>
+              {/* <main style={{ minHeight: '100vh' }} className="dark text-foreground bg-background"> */}
+              <main style={{ minHeight: '100vh' }} className="text-foreground bg-background">
 
-            </main>
-          </NextUIProvider>
+                <GoogleOAuthProvider clientId={googleOauthClientId}>
+
+                  <Nav />
+
+                  <div style={{ maxWidth: 1024, margin: 'auto' }}>
+                    <Breadcrumb />
+                    {children}
+                  </div>
+
+                </GoogleOAuthProvider>
+
+              </main>
+            </NextUIProvider>
+
+          </AuthModalProvider>
         </UserProvider>
         <ScrollRestoration />
         <Scripts />

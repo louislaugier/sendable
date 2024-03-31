@@ -1,15 +1,21 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import { Modal, ModalContent, ModalHeader, ModalBody, ModalFooter, Button, useDisclosure, Checkbox, Input, Link } from "@nextui-org/react";
 import Auth from "~/components/Auth";
 
 export default function App(props: any) {
-    const { isOpen, onOpen, onOpenChange } = props;
+    const { isOpen, onClose, onOpenChange, modalType } = props;
 
-    const [isSignInButtonVisible, setSignInButtonVisible] = useState(false)
+    const [isSubmitButtonVisible, setSubmitButtonVisible] = useState(false)
+
+    const close = () => {
+        setSubmitButtonVisible(false);
+        onClose()
+    }
 
     return (
         <>
             <Modal
+                onClose={close}
                 style={{ maxWidth: "375px" }}
                 isOpen={isOpen}
                 onOpenChange={onOpenChange}
@@ -18,16 +24,16 @@ export default function App(props: any) {
                 <ModalContent>
                     {(onClose) => (
                         <>
-                            <ModalHeader className="flex flex-col gap-1">Sign up / Log in</ModalHeader>
+                            <ModalHeader className="flex flex-col gap-1">{modalType}</ModalHeader>
                             <ModalBody>
-                                <Auth isSignInButtonVisible={isSignInButtonVisible} setSignInButtonVisible={setSignInButtonVisible} />
+                                <Auth isSubmitButtonVisible={isSubmitButtonVisible} setSubmitButtonVisible={setSubmitButtonVisible} />
                             </ModalBody>
                             <ModalFooter>
                                 <Button color="danger" variant="bordered" onPress={onClose}>
                                     Close
                                 </Button>
-                                {isSignInButtonVisible && <Button color="primary" variant="shadow" onPress={onClose}>
-                                    Sign in
+                                {isSubmitButtonVisible && <Button color="primary" variant="shadow" onPress={onClose}>
+                                    {modalType}
                                 </Button>}
                             </ModalFooter>
                         </>

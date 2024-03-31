@@ -22,8 +22,8 @@ func handleHTTP(mux *http.ServeMux) {
 	mux.Handle("/auth/linkedin", middleware.BaseRateLimit(middleware.Log(http.HandlerFunc(linkedinAuthHandler))))
 	// mux.Handle("/auth/facebook", middleware.BaseRateLimit(middleware.Log(http.HandlerFunc(FacebookAuthHandler))))
 
-	mux.Handle("/validate_email", middleware.ValidateJWT(middleware.ValidatorRateLimit(middleware.Log(http.HandlerFunc(validateEmailHandler)))))
-	mux.Handle("/validate_emails", middleware.ValidateFile(middleware.ValidateJWT(middleware.ValidatorRateLimit(middleware.Log(http.HandlerFunc(validateEmailsHandler))))))
+	mux.Handle("/validate_email", middleware.ValidatorRateLimit(middleware.Log(http.HandlerFunc(validateEmailHandler))))
+	mux.Handle("/validate_emails", middleware.ValidateFile(middleware.ValidateJWT(middleware.BulkValidatorRateLimit(middleware.Log(http.HandlerFunc(validateEmailsHandler))))))
 
 	// Serve all the files under the "reports" subfolder
 	mux.Handle("/reports/", http.StripPrefix("/reports/", middleware.DownloadAuth(http.FileServer(http.Dir("./reports")))))

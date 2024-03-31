@@ -3,7 +3,7 @@ import { apiBaseUrl } from '~/constants/api';
 
 export const apiClient = axios.create({
   baseURL: apiBaseUrl, // Set your base URL here
-  timeout: 10000, // Specify a timeout (in milliseconds) for requests
+  timeout: 30000, // Specify a timeout (in milliseconds) for requests
   headers: {
     'Content-Type': 'application/json', // Example of default headers
     // Add other default headers if needed
