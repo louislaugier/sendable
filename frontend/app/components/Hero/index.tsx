@@ -12,7 +12,8 @@ export default function HeroSection() {
     const [isLoading, setLoading] = useState(false);
 
     const [email, setEmail] = useState<string>();
-    const [reachability, setReachability] = useState<Reachability>();
+    const [emailConfirmed, setEmailConfirmed] = useState<string>();
+    const [reachability, setReachability] = useState<Reachability | null>();
 
     const [errorMsg, setErrorMsg] = useState<string>();
 
@@ -23,6 +24,10 @@ export default function HeroSection() {
 
     const submitEmail = async () => {
         setLoading(true);
+
+        setEmailConfirmed(email)
+        setReachability(null)
+
         try {
             const res = await validateEmail({ email });
             setReachability(res.is_reachable);
@@ -98,7 +103,7 @@ export default function HeroSection() {
                                     <Divider className="mt-8 mb-4" />
                                     <CardFooter>
                                         <div>
-                                            <p>Reachability for {email}: {reachabilityChip}</p>
+                                            <p>Reachability for {emailConfirmed}: {reachabilityChip}</p>
                                             {/* <p>{reachabilityDescription}</p> */}
                                             <Link onClick={() => {
                                                 setModalType(AuthModalType.Signup);
