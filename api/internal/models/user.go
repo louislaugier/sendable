@@ -21,8 +21,8 @@ type User struct {
 
 	JWT string `json:"jwt,omitempty"`
 
-	Provider       Provider `json:"provider,omitempty"`
-	FacebookUserID string   `json:"facebook_user_id,omitempty"` // non empty value means fb account did not allow access to email, user should be prompted for his email until defined
+	SignupProvider SignupProvider `json:"signup_provider,omitempty"`
+	FacebookUserID string         `json:"facebook_user_id,omitempty"` // non empty value means fb account did not allow access to email, user should be prompted for his email until defined
 
 	Orders []Order `json:"orders,omitempty"`
 

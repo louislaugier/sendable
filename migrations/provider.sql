@@ -8,3 +8,7 @@ CREATE TYPE provider AS ENUM (
     'hubspot',
     'mailchimp',
 );
+
+CREATE TABLE IF NOT EXISTS "public"."provider" (
+    
+);
