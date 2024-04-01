@@ -1,5 +1,5 @@
 export default (props: any) => (
-    <svg width={32} version="1.1" viewBox="0 0 273 191" xmlns="http://www.w3.org/2000/svg" xmlnsXlink="http://www.w3.org/1999/xlink">
+    <svg width={props.w ?? 32} version="1.1" viewBox="0 0 273 191" xmlns="http://www.w3.org/2000/svg" xmlnsXlink="http://www.w3.org/1999/xlink">
         <title>Salesforce.com logo</title>
         <desc>A cloud computing company based in San Francisco, California, United States</desc>
 

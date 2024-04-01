@@ -4,7 +4,8 @@ import { siteName } from "~/constants/app";
 import AuthModalContext from "~/contexts/AuthModalContext";
 import { CheckIcon } from "~/icons/CheckIcon";
 import { MailIcon } from "~/icons/MailIcon";
-import validateEmail from "~/services/api/auth/validate_email";
+import validateEmail from "~/services/api/validate_email";
+import { extractDomain, isValidEmail } from "~/services/utils/email";
 import { Reachability } from "~/types/email";
 import { AuthModalType } from "~/types/modal";
 
@@ -25,14 +26,38 @@ export default function HeroSection() {
     const submitEmail = async () => {
         setLoading(true);
 
+        if (!email) {
+            setErrorMsg("Please enter an email address.");
+            setLoading(false);
+            return;
+        } else if (!isValidEmail(email)) {
+            setErrorMsg("Please enter a valid email address.");
+            setLoading(false);
+            return;
+        }
+
         setEmailConfirmed(email)
         setReachability(null)
 
         try {
             const res = await validateEmail({ email });
             setReachability(res.is_reachable);
-        } catch { }
+        } catch {
+            // TODO: too many requests catch
+            
+            setErrorMsg("An error occurred. Please try again.")
+        }
+
         setLoading(false);
+    };
+
+    const handleKeyDown = (event: React.KeyboardEvent<HTMLInputElement>) => {
+        if (event.key === 'Enter') {
+            // Prevent default behavior of the Enter key press
+            event.preventDefault();
+
+            submitEmail();
+        }
     };
 
     const { authModal, modalType, setModalType } = useContext(AuthModalContext);
@@ -49,7 +74,7 @@ export default function HeroSection() {
     else if (reachability === Reachability.Risky)
         reachabilityChip = <Chip color="warning" variant="dot">{reachability}</Chip>;
     else if (reachability === Reachability.Unknown)
-        reachabilityChip = <Chip color="warning" variant="dot">{reachability}</Chip>;
+        reachabilityChip = <Chip color="warning" variant="dot">{reachability} (protected domain <b>{extractDomain(email!)}</b>)</Chip>;
     else if (reachability === Reachability.Invalid)
         reachabilityChip = <Chip color="danger">{reachability}</Chip>;
 
@@ -60,7 +85,7 @@ export default function HeroSection() {
     // else if (reachability === Reachability.Invalid) reachabilityDescription = "We guarantee with a confidence of 99% that this email is not deliverable."
 
     return (
-        <div style={{ height: 'calc(100vh - 65px)' }} className="flex flex-col items-center justify-center py-16">
+        <div style={{ height: 'calc(70vh - 65px)', minHeight: '550px' }} className="flex flex-col items-center justify-center py-16">
             <div className="max-w-6xl mx-auto flex flex-col md:flex-row">
                 <div className="md:w-1/2 mb-8 md:mb-0 md:pr-8">
                     <h1 className="text-4xl font-bold mb-4">Accurate, fast and secure email address validation service</h1>
@@ -88,12 +113,13 @@ export default function HeroSection() {
                                 errorMessage={errorMsg}
                                 value={email}
                                 onChange={handleEmailChange}
-                                placeholder="Enter your email"
+                                placeholder="Enter an email address"
                                 variant="bordered"
                                 className="mb-4"
                                 endContent={
                                     <MailIcon nomargin className="text-2xl text-default-400 pointer-events-none flex-shrink-0" />
                                 }
+                                onKeyDown={handleKeyDown}
                             />
                             <Button isLoading={isLoading} onClick={submitEmail} color="primary" variant="shadow" className="w-full">
                                 {isLoading ? 'Checking reachability...' : 'Check reachability'}
@@ -103,7 +129,7 @@ export default function HeroSection() {
                                     <Divider className="mt-8 mb-4" />
                                     <CardFooter>
                                         <div>
-                                            <p>Reachability for {emailConfirmed}: {reachabilityChip}</p>
+                                            <p style={{ lineHeight: "30px" }}>Reachability for {emailConfirmed}: {reachabilityChip}</p>
                                             {/* <p>{reachabilityDescription}</p> */}
                                             <Link onClick={() => {
                                                 setModalType(AuthModalType.Signup);

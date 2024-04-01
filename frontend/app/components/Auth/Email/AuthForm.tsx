@@ -2,6 +2,7 @@ import { Checkbox, Input, Link } from "@nextui-org/react"
 import { useState } from "react";
 import { EyeFilledIcon } from "~/icons/EyeFilledIcon";
 import { EyeSlashFilledIcon } from "~/icons/EyeSlashFilledIcon";
+import { LockIcon } from "~/icons/LockIcon";
 import { MailIcon } from "~/icons/MailIcon"
 
 export default function EmailAuthForm(props: any) {
@@ -36,7 +37,7 @@ export default function EmailAuthForm(props: any) {
                 }
                 type={isPasswordVisible ? "text" : "password"}
             />
-            
+
             <div className="flex py-2 px-1 justify-between">
                 <Checkbox
                     classNames={{

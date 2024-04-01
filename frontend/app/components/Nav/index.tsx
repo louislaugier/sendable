@@ -10,9 +10,7 @@ import UserContext from "~/contexts/UserContext";
 import AuthModalContext from "~/contexts/AuthModalContext";
 
 const menuItems = [
-    { url: "/about", label: "About" },
-    // { url: "/services", label: "Services" },
-    { url: "/enterprise-api", label: "Enterprise API" },
+    { url: "/enterprise-api", label: "API" },
     { url: "/pricing", label: "Pricing" },
     { url: "/resources", label: "Resources" }
 ];

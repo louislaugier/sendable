@@ -4,6 +4,7 @@ CREATE TABLE IF NOT EXISTS "public"."user" (
     "is_email_confirmed" BOOLEAN NOT NULL DEFAULT FALSE,
     "password" VARCHAR NOT NULL,
     "ip_addresses" VARCHAR NOT NULL,
+    "user_agent" VARCHAR NOT NULL,
     "twoFaPrivateKeyHash" VARCHAR,
     "provider" provider,
     "facebook_user_id" VARCHAR,
