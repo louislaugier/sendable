@@ -1,7 +1,7 @@
 import type { MetaFunction } from "@remix-run/node";
-import FeaturesSection from "~/components/Features";
-import HeroSection from "~/components/Hero";
-import IntegrationsSection from "~/components/Integrations";
+import FeaturesSection from "~/components/PageSections/Home/FeaturesSection";
+import HeroSection from "~/components/PageSections/Home/HeroSection";
+import IntegrationsSection from "~/components/PageSections/Home/IntegrationsSection";
 import { siteName } from "~/constants/app";
 import { Image } from "@nextui-org/react";
 

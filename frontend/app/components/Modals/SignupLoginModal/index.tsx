@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Modal, ModalContent, ModalHeader, ModalBody, ModalFooter, Button, useDisclosure, Checkbox, Input, Link } from "@nextui-org/react";
-import Auth from "~/components/Auth";
+import AuthButtons from "~/components/Nav/AuthButtons";
 
 export default function App(props: any) {
     const { isOpen, onClose, onOpenChange, modalType } = props;
@@ -26,7 +26,7 @@ export default function App(props: any) {
                         <>
                             <ModalHeader className="flex flex-col gap-1">{modalType}</ModalHeader>
                             <ModalBody>
-                                <Auth isSubmitButtonVisible={isSubmitButtonVisible} setSubmitButtonVisible={setSubmitButtonVisible} />
+                                <AuthButtons isSubmitButtonVisible={isSubmitButtonVisible} setSubmitButtonVisible={setSubmitButtonVisible} />
                             </ModalBody>
                             <ModalFooter>
                                 <Button color="danger" variant="bordered" onPress={onClose}>

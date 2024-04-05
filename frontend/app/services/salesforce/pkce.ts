@@ -3,8 +3,7 @@ import salesforceApiClient from ".";
 export const fetchSalesforcePKCE = async () => {
     try {
         // Endpoint provided by Salesforce to generate PKCE parameters
-        const endpoint = '/services/oauth2/pkce/generator';
-        const response = await salesforceApiClient.get(endpoint);
+        const response = await salesforceApiClient.get('services/oauth2/pkce/generator');
 
         // We assume the server returns the structure { code_challenge, code_verifier }
         return response.data;

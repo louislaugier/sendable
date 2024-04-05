@@ -1,6 +1,6 @@
 import { Button } from "@nextui-org/button";
 import { useEffect, useState } from "react";
-import LinkedinIcon from "~/icons/logos/Linkedin";
+import LinkedinIcon from "~/icons/logos/LinkedinLogo";
 import { linkedinOauthClientId } from "~/constants/oauth/clientIds";
 import { linkedinAuthCodeKey, linkedinStateKey, linkedinUniqueStateValue } from "~/constants/oauth/stateKeys";
 import { linkedinOauthRedirectUri } from "~/constants/oauth/urls";

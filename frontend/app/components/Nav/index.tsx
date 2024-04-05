@@ -1,13 +1,13 @@
-import { Navbar, NavbarBrand, NavbarContent, NavbarItem, Link, Button, useDisclosure } from "@nextui-org/react";
-import SignupLogin from "../SignupLogin";
-import { isCurrentUrl } from "~/utils/url";
+import { Navbar, NavbarBrand, NavbarContent, NavbarItem, Link, Button } from "@nextui-org/react";
 import { useLocation } from "@remix-run/react";
-import { Link as RemixLink } from "@remix-run/react";
-import { useContext, useState } from "react";
-import { AuthModalType } from "~/types/modal";
-import { GoogleOneTap } from "../Auth/Google";
-import UserContext from "~/contexts/UserContext";
+import { useContext } from "react";
 import AuthModalContext from "~/contexts/AuthModalContext";
+import UserContext from "~/contexts/UserContext";
+import { AuthModalType } from "~/types/modal";
+import { isCurrentUrl } from "~/utils/url";
+import SignupLogin from "../Modals/SignupLoginModal";
+import { GoogleOneTap } from "./AuthButtons/GoogleAuthButton";
+import { Link as RemixLink } from "@remix-run/react";
 
 const menuItems = [
     { url: "/api", label: "API" },

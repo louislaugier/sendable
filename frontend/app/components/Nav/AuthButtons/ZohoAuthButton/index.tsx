@@ -6,7 +6,7 @@ import { zohoOauthRedirectUri } from '~/constants/oauth/urls';
 import zohoAuth from '~/services/api/auth/zoho';
 import { handleAuthCode, login } from '~/services/auth/oauth';
 import { Button } from '@nextui-org/button';
-import ZohoIcon from '~/icons/logos/Zoho';
+import ZohoIcon from '~/icons/logos/ZohoFullLogo';
 
 const url = 'https://accounts.zoho.com/oauth/v2/auth'
 const scope = 'ZohoCRM.modules.contacts.READ ZohoCRM.modules.leads.READ ZohoCRM.modules.vendors.READ ZohoCRM.modules.accounts.READ ZohoCRM.users.READ'

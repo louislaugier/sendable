@@ -1,9 +1,9 @@
 import { Avatar } from "@nextui-org/react";
-import Brevo from "~/icons/logos/Brevo";
-import HubspotFull from "~/icons/logos/HubspotFull";
-import Salesforce from "~/icons/logos/Salesforce";
-import SendgridFull from "~/icons/logos/SendgridFull";
-import Zoho from "~/icons/logos/Zoho";
+import BrevoLogo from "~/icons/logos/BrevoFullLogo";
+import HubspotFullLogo from "~/icons/logos/HubspotFullLogo";
+import SalesforceLogo from "~/icons/logos/SalesforceFullLogo";
+import SendgridFullLogo from "~/icons/logos/SendgridFullLogo";
+import ZohoLogo from "~/icons/logos/ZohoFullLogo";
 
 const IntegrationsSection = () => {
     return (
@@ -14,11 +14,11 @@ const IntegrationsSection = () => {
                         Connect your preferred platforms
                     </h2>
                     <div className="flex mt-12" style={{ justifyContent: 'space-between', maxWidth: '1024px', marginRight: 'auto', marginLeft: 'auto' }}>
-                        <Salesforce w={100} />
-                        <Zoho w={"120px"} />
-                        <HubspotFull />
-                        <SendgridFull />
-                        <Brevo />
+                        <SalesforceLogo w={100} />
+                        <ZohoLogo w={"120px"} />
+                        <HubspotFullLogo />
+                        <SendgridFullLogo />
+                        <BrevoLogo />
                     </div>
                 </div>
             </div>

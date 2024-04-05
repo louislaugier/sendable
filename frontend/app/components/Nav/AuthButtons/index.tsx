@@ -1,16 +1,16 @@
 import { Divider } from "@nextui-org/divider";
-import EmailAuthButton from "./Email";
-import GoogleAuthButton from "./Google";
-import HubspotAuthButton from "./Hubspot";
-import LinkedinAuthButton from "./Linkedin";
-import MailchimpAuthButton from "./Mailchimp";
-import SalesforceAuthButton from "./Salesforce";
-import ZohoAuthButton from "./Zoho";
-import EmailAuthForm from "./Email/AuthForm";
+import EmailAuthButton from "./EmailAuthButton";
+import GoogleAuthButton from "./GoogleAuthButton";
+import HubspotAuthButton from "./HubspotAuthButton";
+import LinkedinAuthButton from "./LinkedinAuthButton";
+import MailchimpAuthButton from "./MailchimpAuthButton";
+import SalesforceAuthButton from "./SalesforceAuthButton";
+import ZohoAuthButton from "./ZohoAuthButton";
+import EmailAuthForm from "../../Modals/SignupLoginModal/EmailAuthForm";
 import { ArrowBackIcon } from "~/icons/ArrowBackIcon";
 import { Button } from "@nextui-org/react";
 
-export default function Auth(props: any) {
+export default function AuthButtons(props: any) {
     const { isSubmitButtonVisible, setSubmitButtonVisible } = props
 
     return (

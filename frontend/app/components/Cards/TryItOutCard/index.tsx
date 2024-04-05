@@ -1,15 +1,14 @@
-import { Button, Card, CardFooter, Chip, Divider, Input, Link } from "@nextui-org/react";
-import { useContext, useState } from "react";
-import { siteName } from "~/constants/app";
+import { Card, Button, Divider, CardFooter, Link, Input, Chip } from "@nextui-org/react";
+import { useState, useContext } from "react";
 import AuthModalContext from "~/contexts/AuthModalContext";
 import { CheckIcon } from "~/icons/CheckIcon";
 import { MailIcon } from "~/icons/MailIcon";
 import validateEmail from "~/services/api/validate_email";
-import { extractDomain, isValidEmail } from "~/services/utils/email";
+import { isValidEmail, extractDomain } from "~/services/utils/email";
 import { Reachability } from "~/types/email";
 import { AuthModalType } from "~/types/modal";
 
-export default function HeroSection() {
+export default function TryItOut() {
     const [isLoading, setLoading] = useState(false);
 
     const [email, setEmail] = useState<string>();
@@ -44,7 +43,7 @@ export default function HeroSection() {
             setReachability(res.is_reachable);
         } catch {
             // TODO: too many requests catch
-            
+
             setErrorMsg("An error occurred. Please try again.")
         }
 
@@ -60,7 +59,7 @@ export default function HeroSection() {
         }
     };
 
-    const { authModal, modalType, setModalType } = useContext(AuthModalContext);
+    const { authModal, setModalType } = useContext(AuthModalContext);
 
     let reachabilityChip;
     if (reachability === Reachability.Reachable)
@@ -85,66 +84,50 @@ export default function HeroSection() {
     // else if (reachability === Reachability.Invalid) reachabilityDescription = "We guarantee with a confidence of 99% that this email is not deliverable."
 
     return (
-        <div style={{ height: 'calc(70vh - 65px)', minHeight: '550px' }} className="flex flex-col items-center justify-center py-16">
-            <div className="max-w-6xl mx-auto flex flex-col md:flex-row">
-                <div className="md:w-1/2 mb-8 md:mb-0 md:pr-8">
-                    <h1 className="text-4xl font-bold mb-4">Accurate, fast and secure email address validation service</h1>
-                    <p className="text-lg mb-8">
-                        You invest for better email marketing ROI. We help you find valid emails and connect with your customers. Boost your inbox placement and open rates with 99% accurate real-time email validation software and email deliverability tools like Email Scoring, Email Finder, email testing, and sender reputation monitoring.
-                    </p>
-                    <Button onClick={() => {
-                        setModalType(AuthModalType.Signup);
-                        authModal.onOpen();
-                    }} color="primary" variant="shadow" className="mb-4">
-                        Try It Free
+        <>
+
+            <Card
+                isBlurred
+                className="border-none bg-background/60 dark:bg-default-100/50 max-w-[610px]"
+                shadow="lg"
+            >
+                <div className="bg-white p-8">
+                    <h2 className="text-2xl font-bold mb-4">Try it out</h2>
+                    <Input
+                        isDisabled={isLoading}
+                        errorMessage={errorMsg}
+                        value={email}
+                        onChange={handleEmailChange}
+                        placeholder="Enter an email address"
+                        variant="bordered"
+                        className="mb-4"
+                        endContent={
+                            <MailIcon nomargin className="text-2xl text-default-400 pointer-events-none flex-shrink-0" />
+                        }
+                        onKeyDown={handleKeyDown}
+                    />
+                    <Button isLoading={isLoading} onClick={submitEmail} color="primary" variant="shadow" className="w-full">
+                        {isLoading ? 'Checking reachability...' : 'Check reachability'}
                     </Button>
-                    <p className="text-sm">Get 100 free monthly email verifications</p>
+                    {reachability &&
+                        <>
+                            <Divider className="mt-8 mb-4" />
+                            <CardFooter>
+                                <div>
+                                    <p style={{ lineHeight: "30px" }}>Reachability for {emailConfirmed}: {reachabilityChip}</p>
+                                    {/* <p>{reachabilityDescription}</p> */}
+                                    <Link onClick={() => {
+                                        setModalType(AuthModalType.Signup);
+                                        authModal.onOpen();
+                                    }} className="mt-4 cursor-pointer">
+                                        <b>Learn more</b>
+                                    </Link>
+                                </div>
+                            </CardFooter>
+                        </>
+                    }
                 </div>
-                <div className="md:w-1/2 md:pl-8">
-                    <Card
-                        isBlurred
-                        className="border-none bg-background/60 dark:bg-default-100/50 max-w-[610px]"
-                        shadow="lg"
-                    >
-                        <div className="bg-white p-8">
-                            <h2 className="text-2xl font-bold mb-4">Try it out</h2>
-                            <Input
-                                isDisabled={isLoading}
-                                errorMessage={errorMsg}
-                                value={email}
-                                onChange={handleEmailChange}
-                                placeholder="Enter an email address"
-                                variant="bordered"
-                                className="mb-4"
-                                endContent={
-                                    <MailIcon nomargin className="text-2xl text-default-400 pointer-events-none flex-shrink-0" />
-                                }
-                                onKeyDown={handleKeyDown}
-                            />
-                            <Button isLoading={isLoading} onClick={submitEmail} color="primary" variant="shadow" className="w-full">
-                                {isLoading ? 'Checking reachability...' : 'Check reachability'}
-                            </Button>
-                            {reachability &&
-                                <>
-                                    <Divider className="mt-8 mb-4" />
-                                    <CardFooter>
-                                        <div>
-                                            <p style={{ lineHeight: "30px" }}>Reachability for {emailConfirmed}: {reachabilityChip}</p>
-                                            {/* <p>{reachabilityDescription}</p> */}
-                                            <Link onClick={() => {
-                                                setModalType(AuthModalType.Signup);
-                                                authModal.onOpen();
-                                            }} className="mt-4 cursor-pointer">
-                                                <b>Learn more</b>
-                                            </Link>
-                                        </div>
-                                    </CardFooter>
-                                </>
-                            }
-                        </div>
-                    </Card>
-                </div>
-            </div>
-        </div>
-    );
+            </Card>
+        </>
+    )
 }

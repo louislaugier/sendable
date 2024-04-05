@@ -14,6 +14,7 @@ import Breadcrumb from "./components/Breadcrumb";
 import { GoogleOAuthProvider } from "@react-oauth/google";
 import { googleOauthClientId } from "./constants/oauth/clientIds";
 import { AuthModalProvider } from "./contexts/AuthModalContext";
+import Footer from "./components/Footer";
 
 export const links: LinksFunction = () => [
   { rel: "stylesheet", href: stylesheet },
@@ -44,6 +45,8 @@ export function Layout({ children }: { children: React.ReactNode }) {
                     <Breadcrumb />
                     {children}
                   </div>
+
+                  <Footer />
 
                 </GoogleOAuthProvider>
 
