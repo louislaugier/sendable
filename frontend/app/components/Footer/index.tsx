@@ -1,20 +1,38 @@
+import { menuItems } from "../Nav";
+
 export default function Footer() {
+
     return (
         <footer className="bg-black text-white py-8">
-            <div className="max-w-screen-lg mx-auto flex flex-col md:flex-row items-center justify-between">
-                <div className="text-center md:text-left mb-4 md:mb-0">
-                    <p className="text-lg">Your Company Name</p>
-                    <p className="text-sm">123 Main Street, City, Country</p>
+            <div className="container mx-auto flex justify-between items-start" style={{ maxWidth: 200 }}>
+                <div className="text-center text-sm">
+                    {menuItems.map((item, index) => (
+                        <div key={index} className="mb-2">
+                            <a href={item.url} className="block">
+                                {item.label}
+                            </a>
+                        </div>
+                    ))}
                 </div>
-                <div className="text-center md:text-right">
-                    <p className="text-sm">Follow Us:</p>
-                    <div className="flex justify-center md:justify-end">
-                        <a href="#" className="mr-4">Facebook</a>
-                        <a href="#" className="mr-4">Twitter</a>
-                        <a href="#">Instagram</a>
+                <div className="text-center text-sm">
+                    <div className="mb-2">
+                        <a href="/privacy-policy" className="block">
+                            Privacy Policy
+                        </a>
+                    </div>
+                    <div className="mb-2">
+                        <a href="/terms-of-use" className="block">
+                            Terms of Use
+                        </a>
+                    </div>
+                    <div className="mb-2">
+                        <a href="mailto:contact@example.com" className="block">
+                            Contact Us
+                        </a>
                     </div>
                 </div>
             </div>
+            <p className="text-center text-xs mt-4">© {new Date().getFullYear()} Your Company Name. All rights reserved.</p>
         </footer>
     );
 }

@@ -34,14 +34,13 @@ export function Layout({ children }: { children: React.ReactNode }) {
           <AuthModalProvider>
 
             <NextUIProvider>
-              {/* <main style={{ minHeight: '100vh' }} className="dark text-foreground bg-background"> */}
-              <main style={{ minHeight: '100vh' }} className="text-foreground bg-background">
+              <main className="text-foreground bg-background">
 
                 <GoogleOAuthProvider clientId={googleOauthClientId}>
 
                   <Nav />
 
-                  <div style={{ maxWidth: 1024, margin: 'auto' }}>
+                  <div style={{ maxWidth: 1024, margin: 'auto', minHeight: 'calc(100vh - 177px)' }}>
                     <Breadcrumb />
                     {children}
                   </div>

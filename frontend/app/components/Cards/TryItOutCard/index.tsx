@@ -41,10 +41,12 @@ export default function TryItOut() {
         try {
             const res = await validateEmail({ email });
             setReachability(res.is_reachable);
-        } catch {
-            // TODO: too many requests catch
-
-            setErrorMsg("An error occurred. Please try again.")
+        } catch (error: any) {
+            if (error.message === 'Too many requests') {
+                setErrorMsg("Too many requests. Please try again later.");
+            } else {
+                setErrorMsg("An error occurred. Please try again.");
+            }
         }
 
         setLoading(false);

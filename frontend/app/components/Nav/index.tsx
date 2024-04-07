@@ -9,7 +9,7 @@ import SignupLogin from "../Modals/SignupLoginModal";
 import { GoogleOneTap } from "./AuthButtons/GoogleAuthButton";
 import { Link as RemixLink } from "@remix-run/react";
 
-const menuItems = [
+export const menuItems = [
     { url: "/api", label: "API" },
     { url: "/pricing", label: "Pricing" },
     { url: "/resources", label: "Resources" }
@@ -19,6 +19,7 @@ export default function Nav() {
     const { authModal, modalType, setModalType } = useContext(AuthModalContext);
 
     const location = useLocation()
+    console.log(location)
 
     const { user, setUser } = useContext(UserContext)
 
