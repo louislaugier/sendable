@@ -3,7 +3,7 @@ import { menuItems } from "../Nav";
 export default function Footer() {
 
     return (
-        <footer className="bg-black text-white pt-4 pb-3">
+        <footer className="bg-black text-white pt-6 pb-2">
             <div className="container mx-auto flex justify-between items-start" style={{ maxWidth: 200 }}>
                 <div className="text-center text-sm">
                     {menuItems.map((item, index) => (

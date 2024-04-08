@@ -1,7 +1,8 @@
 export const pricingPlans = [
     {
         name: "Free",
-        price: "$0",
+        monthly_price: "$0",
+        yearly_price: "$0",
         features: [
             "1 Team Members",
             "1 Website",
@@ -12,7 +13,8 @@ export const pricingPlans = [
     },
     {
         name: "Premium",
-        price: "$19",
+        monthly_price: "$29",
+        yearly_price: "$229",
         features: [
             "5 Team Members",
             "5 Website",
@@ -22,8 +24,9 @@ export const pricingPlans = [
         ],
     },
     {
-        name: "Startup",
-        price: "$99",
+        name: "Enterprise",
+        monthly_price: "$99",
+        yearly_price: "$899",
         features: [
             "30 Team Members",
             "30 Website",
