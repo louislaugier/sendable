@@ -31,7 +31,7 @@ export default function Nav() {
                 <NavbarBrand>
                     {/* <Link href={menuItem.url}> */}
                     <RemixLink prefetch="intent" to={"/"}>
-                        LOGO
+                        EMAIL VALIDATOR
                     </RemixLink>
                     {/* </Link> */}
                 </NavbarBrand>

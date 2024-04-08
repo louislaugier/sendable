@@ -14,7 +14,7 @@ export default function HeroSection() {
                 <div className="md:w-1/2 mb-8 md:mb-0 md:pr-8">
                     <h1 className="text-4xl font-bold mb-4">Accurate, fast and secure email address validation service</h1>
                     <p className="text-lg mb-8">
-                        You invest for better email marketing ROI. We help you find valid emails and connect with your customers. Boost your inbox placement and open rates with 99% accurate real-time email validation software and email deliverability tools like Email Scoring, Email Finder, email testing, and sender reputation monitoring.
+                        You invest for better email marketing ROI. We help you find valid emails and connect with your customers and leads. Boost your inbox placement and open rates with 99% accurate real-time email validation software and email deliverability tools like Email Scoring, Email Finder, email testing, and sender reputation monitoring.
                     </p>
                     <Button onClick={() => {
                         setModalType(AuthModalType.Signup);

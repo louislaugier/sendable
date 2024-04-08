@@ -1,5 +1,5 @@
 export interface Feature {
     title: string;
-    imageSrc: string;
+    icon: React.ReactNode;
     description: string;
 }

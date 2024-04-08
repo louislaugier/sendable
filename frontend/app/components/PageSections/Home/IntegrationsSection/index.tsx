@@ -1,4 +1,3 @@
-import { Avatar } from "@nextui-org/react";
 import BrevoLogo from "~/icons/logos/BrevoFullLogo";
 import HubspotFullLogo from "~/icons/logos/HubspotFullLogo";
 import SalesforceLogo from "~/icons/logos/SalesforceFullLogo";

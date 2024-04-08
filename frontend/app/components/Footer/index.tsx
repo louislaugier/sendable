@@ -3,7 +3,7 @@ import { menuItems } from "../Nav";
 export default function Footer() {
 
     return (
-        <footer className="bg-black text-white py-8">
+        <footer className="bg-black text-white pt-4 pb-3">
             <div className="container mx-auto flex justify-between items-start" style={{ maxWidth: 200 }}>
                 <div className="text-center text-sm">
                     {menuItems.map((item, index) => (
@@ -32,7 +32,7 @@ export default function Footer() {
                     </div>
                 </div>
             </div>
-            <p className="text-center text-xs mt-4">© {new Date().getFullYear()} Your Company Name. All rights reserved.</p>
+            <p className="text-center text-xs mt-4">© {new Date().getFullYear()} Email validator. All rights reserved.</p>
         </footer>
     );
 }

@@ -23,7 +23,7 @@ export default function Breadcrumb() {
     return (
         <>
             {pathname !== '/' && (
-                <Breadcrumbs>
+                <Breadcrumbs className="mt-8 px-6">
                     <BreadcrumbItem href="/">Home</BreadcrumbItem>
                     {getBreadcrumbItems()}
                 </Breadcrumbs>

@@ -1,17 +1,11 @@
 import { Card, CardHeader, Divider, CardBody, Image } from "@nextui-org/react";
 import { Feature } from "~/types/feature";
 
-export const FeatureCard: React.FC<Feature> = ({ title, imageSrc, description }) => {
+export const FeatureCard: React.FC<Feature> = ({ title, icon, description }) => {
     return (
         <Card className="my-10 max-w-[400px]">
             <CardHeader className="flex gap-3">
-                <Image
-                    alt="nextui logo"
-                    height={40}
-                    radius="sm"
-                    src={imageSrc}
-                    width={40}
-                />
+                {icon}
                 <div className="flex flex-col">
                     <p className="text-md">{title}</p>
                 </div>
