@@ -38,20 +38,10 @@ export default function Resources() {
     <div className="py-8 px-6">
 
       <div className="flex flex-col items-center mb-16">
-        <p className="text-blue600">Resources</p>
-        <h2 className="text-2xl">Articles and tutorials</h2>
+        <h2 className="text-2xl">Resources</h2>
       </div>
 
       <div className="flex flex-wrap justify-between">
-        {test}
-        {test}
-        {test}
-        {test}
-        {test}
-        {test}
-        {test}
-        {test}
-        {test}
         {test}
         {test}
       </div>

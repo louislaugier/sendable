@@ -1,3 +1,4 @@
+import { siteName } from "~/constants/app";
 import { menuItems } from "../Nav";
 
 export default function Footer() {
@@ -32,7 +33,7 @@ export default function Footer() {
                     </div>
                 </div>
             </div>
-            <p className="text-center text-xs mt-4">© {new Date().getFullYear()} Email validator. All rights reserved.</p>
+            <p className="text-center text-xs mt-4">© {new Date().getFullYear()} {siteName}. All rights reserved.</p>
         </footer>
     );
 }

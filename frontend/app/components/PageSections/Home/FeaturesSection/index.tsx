@@ -36,7 +36,7 @@ const FeaturesSection: React.FC = () => {
                     <FeatureCard
                         title="Catch-All Email Check"
                         icon={<GiCatch />}
-                        description="ZeroBounce identifies catch-all domains so you can isolate them from your list. All these domains will return a “valid” result and you can later score them."
+                        description="We identify catch-all domains and addresses so you can isolate them from your list. All these domains will return a “valid” result and you can later score them."
                     />
                     <FeatureCard
                         title="MX Record and SMTP Server Check"

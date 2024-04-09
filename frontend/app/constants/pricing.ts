@@ -1,38 +1,79 @@
+import { siteName } from "./app";
+
 export const pricingPlans = [
     {
         name: "Free",
+        description: "Dive into email validation effortlessly with our free plan. Enjoy essential features at no cost.",
         monthly_price: "$0",
         yearly_price: "$0",
         features: [
-            "1 Team Members",
-            "1 Website",
-            "1 GB Storage",
-            "1 TB Transfer",
-            "Email Support",
-        ],
+            {
+                content: "500 free monthly validations",
+                tooltip: `You can validate up to 500 email addresses every month for free using ${siteName}'s web interface.`
+            },
+            {
+                content: "Bulk email validation",
+            },
+            {
+                content: "Connect CRM platforms",
+            },
+            {
+                content: "30 free API single validations",
+                tooltip: `You can validate up to 30 email addresses programmatically every month for free using ${siteName}'s API (1 email address at a time).`
+            }
+        ]
     },
     {
         name: "Premium",
+        description: "Elevate your email validation with our premium offering, access advanced features tailored to your needs.",
         monthly_price: "$29",
         yearly_price: "$229",
         features: [
-            "5 Team Members",
-            "5 Website",
-            "5 GB Storage",
-            "5 TB Transfer",
-            "Email Support",
-        ],
+            {
+                content: "300,000 monthly validations",
+                tooltip: `You can validate up to 300,000 email addresses every month for free using ${siteName}'s web interface.`
+            },
+            {
+                content: "Bulk email validation",
+            },
+            {
+                content: "Connect CRM platforms",
+            },
+            {
+                content: "10,000 API single validations",
+                tooltip: `You can validate up to 10,000 email addresses programmatically every month using ${siteName}'s API (1 email address at a time).`
+            },
+            {
+                content: "24 / 7 Support"
+            }
+        ]
     },
     {
         name: "Enterprise",
+        description: "Scale your email validation seamlessly with our top-tier solution for high-volume requirements.",
         monthly_price: "$99",
         yearly_price: "$899",
         features: [
-            "30 Team Members",
-            "30 Website",
-            "30 GB Storage",
-            "30 TB Transfer",
-            "Email Support",
-        ],
+            {
+                content: "Unlimited validations",
+            },
+            {
+                content: "Bulk email validation",
+            },
+            {
+                content: "Connect CRM platforms",
+            },
+            {
+                content: "Unlimited API single validations",
+            },
+            {
+                content: "Unlimited API bulk validations",
+                tooltip: `You can validate as many email address batches as you want programmatically every month using ${siteName}'s API. Bulk validation batches are limited to 1 million email addresses at a time, and only 1 batch at a time.`
+            },
+            {
+                content: "24 / 7 Support"
+            }
+        ]
+
     }
 ];

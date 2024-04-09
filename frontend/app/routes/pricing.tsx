@@ -1,9 +1,8 @@
 import { Tab, Tabs } from "@nextui-org/react";
 import { MetaFunction } from "@remix-run/node";
-import { useContext } from "react";
+import { useState } from "react";
 import CardsSection from "~/components/PageSections/Pricing/CardsSection";
 import { siteName } from "~/constants/app";
-import AuthModalContext from "~/contexts/AuthModalContext";
 
 export const meta: MetaFunction = () => {
   return [
@@ -13,20 +12,19 @@ export const meta: MetaFunction = () => {
 };
 
 export default function Pricing() {
-  const { authModal, setModalType } = useContext(AuthModalContext);
+  const [selectedTab, setSelectedTab] = useState<any>("yearly");
 
   return (
     <div className="py-10 px-6 flex flex-col justify-center items-center">
 
       <div className="flex flex-col items-center mb-8">
-        <p className="text-blue600">Pricing</p>
-        <h2 className="text-2xl">Flexible Plans</h2>
+        <h2 className="text-2xl">Pricing</h2>
       </div>
 
       <div className="flex">
 
-        <div className="flex w-full flex-col">
-          <Tabs aria-label="Options" className="justify-center mb-8">
+        <div className="flex w-full flex-col mb-12">
+          <Tabs selectedKey={selectedTab} onSelectionChange={setSelectedTab} aria-label="Options" className="justify-center mb-8">
             <Tab className="flex gap-8" key="monthly" title="Monthly">
               <CardsSection />
             </Tab>

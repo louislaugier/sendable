@@ -8,11 +8,13 @@ import { isCurrentUrl } from "~/utils/url";
 import SignupLogin from "../Modals/SignupLoginModal";
 import { GoogleOneTap } from "./AuthButtons/GoogleAuthButton";
 import { Link as RemixLink } from "@remix-run/react";
+import { siteName } from "~/constants/app";
 
 export const menuItems = [
     { url: "/api", label: "API" },
     { url: "/pricing", label: "Pricing" },
-    { url: "/resources", label: "Resources" }
+    { url: "/resources", label: "Resources" },
+    { url: "/referral", label: "Referral" }
 ];
 
 export default function Nav() {
@@ -21,7 +23,7 @@ export default function Nav() {
     const location = useLocation()
     console.log(location)
 
-    const { user, setUser } = useContext(UserContext)
+    const { user } = useContext(UserContext)
 
     return (
         <>
@@ -31,7 +33,7 @@ export default function Nav() {
                 <NavbarBrand>
                     {/* <Link href={menuItem.url}> */}
                     <RemixLink prefetch="intent" to={"/"}>
-                        EMAIL VALIDATOR
+                        {siteName.toUpperCase()}
                     </RemixLink>
                     {/* </Link> */}
                 </NavbarBrand>
