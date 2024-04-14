@@ -1,7 +1,7 @@
 import { Card, Button, Divider, CardFooter, Link, Input, Chip } from "@nextui-org/react";
 import { useState, useContext } from "react";
 import AuthModalContext from "~/contexts/AuthModalContext";
-import { CheckIcon } from "~/icons/CheckIcon";
+import { CheckIconRound } from "~/icons/CheckIconRound";
 import { MailIcon } from "~/icons/MailIcon";
 import validateEmail from "~/services/api/validate_email";
 import { isValidEmail, extractDomain } from "~/services/utils/email";
@@ -66,7 +66,7 @@ export default function TryItOut() {
     let reachabilityChip;
     if (reachability === Reachability.Reachable)
         reachabilityChip = <Chip
-            startContent={<CheckIcon size={18} />}
+            startContent={<CheckIconRound size={18} />}
             variant="faded"
             color="success"
         >

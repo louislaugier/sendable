@@ -1,7 +1,7 @@
 import { Card, Button, Divider, Tooltip } from "@nextui-org/react";
 import { useContext } from "react";
 import AuthModalContext from "~/contexts/AuthModalContext";
-import { CheckIcon } from "~/icons/CheckIcon";
+import { CheckIconRound } from "~/icons/CheckIconRound";
 import { AuthModalType } from "~/types/modal";
 import { FiHelpCircle } from "react-icons/fi";
 
@@ -38,7 +38,7 @@ export default function PricingCard(props: any) {
                     <ul className="list-none">
                         {plan.features.map((feature: any, index: number) => (
                             <li key={index} className="flex py-2 gap-2 items-center">
-                                <CheckIcon />
+                                <CheckIconRound />
                                 <div className="relative">
                                     <p className="text-accents8 inline-block">{feature.content}</p>
                                     {feature.tooltip && <div className="absolute top-0" style={{ right: '-20px' }}>

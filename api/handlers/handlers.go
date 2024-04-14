@@ -10,23 +10,27 @@ import (
 	"github.com/rs/cors"
 )
 
+const APIVersionPrefix = "/v1"
+
+func addRouteWithPrefix(mux *http.ServeMux, path string, handler http.Handler) {
+	mux.Handle(APIVersionPrefix+path, middleware.BaseRateLimit(middleware.Log(handler)))
+}
+
 func handleHTTP(mux *http.ServeMux) {
-	mux.Handle("/healthz", middleware.BaseRateLimit(middleware.Log(http.HandlerFunc(healthzHandler))))
+	addRouteWithPrefix(mux, "/healthz", http.HandlerFunc(healthzHandler))
 
-	mux.Handle("/auth/salesforce", middleware.BaseRateLimit(middleware.Log(http.HandlerFunc(salesforceAuthHandler))))
-	mux.Handle("/auth/hubspot", middleware.BaseRateLimit(middleware.Log(http.HandlerFunc(hubspotAuthHandler))))
-	mux.Handle("/auth/zoho", middleware.BaseRateLimit(middleware.Log(http.HandlerFunc(zohoAuthHandler))))
-	mux.Handle("/auth/zoho/confirm_email", middleware.BaseRateLimit(middleware.Log(http.HandlerFunc(zohoAuthConfirmEmailHandler))))
-	mux.Handle("/auth/mailchimp", middleware.BaseRateLimit(middleware.Log(http.HandlerFunc(mailchimpAuthHandler))))
-	mux.Handle("/auth/google", middleware.BaseRateLimit(middleware.Log(http.HandlerFunc(googleAuthHandler))))
-	mux.Handle("/auth/linkedin", middleware.BaseRateLimit(middleware.Log(http.HandlerFunc(linkedinAuthHandler))))
-	// mux.Handle("/auth/facebook", middleware.BaseRateLimit(middleware.Log(http.HandlerFunc(FacebookAuthHandler))))
+	addRouteWithPrefix(mux, "/auth/salesforce", http.HandlerFunc(salesforceAuthHandler))
+	addRouteWithPrefix(mux, "/auth/hubspot", http.HandlerFunc(hubspotAuthHandler))
+	addRouteWithPrefix(mux, "/auth/zoho", http.HandlerFunc(zohoAuthHandler))
+	addRouteWithPrefix(mux, "/auth/zoho/confirm_email", http.HandlerFunc(zohoAuthConfirmEmailHandler))
+	addRouteWithPrefix(mux, "/auth/mailchimp", http.HandlerFunc(mailchimpAuthHandler))
+	addRouteWithPrefix(mux, "/auth/google", http.HandlerFunc(googleAuthHandler))
+	addRouteWithPrefix(mux, "/auth/linkedin", http.HandlerFunc(linkedinAuthHandler))
 
-	mux.Handle("/validate_email", middleware.ValidatorRateLimit(middleware.Log(http.HandlerFunc(validateEmailHandler))))
-	mux.Handle("/validate_emails", middleware.ValidateFile(middleware.ValidateJWT(middleware.BulkValidatorRateLimit(middleware.Log(http.HandlerFunc(validateEmailsHandler))))))
+	addRouteWithPrefix(mux, "/validate_email", middleware.ValidatorRateLimit(middleware.Log(http.HandlerFunc(validateEmailHandler))))
+	addRouteWithPrefix(mux, "/validate_emails", middleware.ValidateFile(middleware.ValidateJWT(middleware.BulkValidatorRateLimit(middleware.Log(http.HandlerFunc(validateEmailsHandler))))))
 
-	// Serve all the files under the "reports" subfolder
-	mux.Handle("/reports/", http.StripPrefix("/reports/", middleware.DownloadAuth(http.FileServer(http.Dir("./reports")))))
+	addRouteWithPrefix(mux, "/reports/", http.StripPrefix("/reports/", middleware.DownloadAuth(http.FileServer(http.Dir("./reports")))))
 }
 
 func StartHTTPSServer() {

@@ -13,8 +13,8 @@ import { siteName } from "~/constants/app";
 export const menuItems = [
     { url: "/api", label: "API" },
     { url: "/pricing", label: "Pricing" },
+    { url: "/referral", label: "Referral" },
     { url: "/resources", label: "Resources" },
-    { url: "/referral", label: "Referral" }
 ];
 
 export default function Nav() {
