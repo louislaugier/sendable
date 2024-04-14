@@ -1,4 +1,4 @@
-import { Button, Snippet, Tab, Table, TableBody, TableCell, TableColumn, TableHeader, TableRow, Tabs } from "@nextui-org/react";
+import { Button, Card, CardBody, Snippet, Tab, Table, TableBody, TableCell, TableColumn, TableHeader, TableRow, Tabs } from "@nextui-org/react";
 import type { MetaFunction } from "@remix-run/node";
 import { useContext, useState } from "react";
 import { siteName } from "~/constants/app";
@@ -8,6 +8,8 @@ import { CodeBlock, dracula } from "react-code-blocks";
 import { apiBaseUrl } from "~/constants/api";
 import CopyIcon from "~/icons/CopyIcon";
 import CheckIcon from "~/icons/CheckIcon";
+import SwaggerUI from "swagger-ui-react"
+import "swagger-ui-react/swagger-ui.css"
 
 export const meta: MetaFunction = () => {
   return [
@@ -76,6 +78,8 @@ export default function Api() {
   const [isTsCodeCopied, setTsCodeCopied] = useState(false);
   const [isGoCodeCopied, setGoCodeCopied] = useState(false);
 
+  const [areDocsOpen, setDocsOpen] = useState(false);
+
   return (
     <>
       <div className="py-8 px-6">
@@ -92,10 +96,15 @@ export default function Api() {
           obcaecati tenetur iure eius earum ut molestias architecto voluptate aliquam
           nihil, eveniet aliquid culpa officia aut!
         </p>
-        <Button onClick={() => {
-        }} color="primary" variant="shadow" className="mb-16">
-          Open API docs
+        <Button onClick={() => setDocsOpen(!areDocsOpen)} color="primary" variant="shadow" className="mb-12">
+          Toggle API docs
         </Button>
+
+        {areDocsOpen && <Card className="mb-16">
+          <CardBody>
+            <SwaggerUI url="https://petstore.swagger.io/v2/swagger.json" />
+          </CardBody>
+        </Card>}
 
         <h3 className="text-lg mb-4">Generating a bearer token from an API key</h3>
         <style>
