@@ -21,6 +21,7 @@ postinstall-frontend-dev:
 install-pkg-frontend-dev:
 	docker-compose exec frontend npm i $(p)
 	make postinstall-frontend-dev
+	docker-compose restart frontend
 
 #################################################################
 
