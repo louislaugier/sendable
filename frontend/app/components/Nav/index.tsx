@@ -1,29 +1,38 @@
-import { Navbar, NavbarBrand, NavbarContent, NavbarItem, Link, Button } from "@nextui-org/react";
+import { Navbar, NavbarBrand, NavbarContent, NavbarItem, Button, Dropdown, DropdownItem, DropdownMenu, DropdownTrigger } from "@nextui-org/react";
 import { useLocation } from "@remix-run/react";
-import { useContext } from "react";
+import { Fragment, useContext } from "react";
 import AuthModalContext from "~/contexts/AuthModalContext";
 import UserContext from "~/contexts/UserContext";
 import { AuthModalType } from "~/types/modal";
-import { isCurrentUrl } from "~/utils/url";
+import { isCurrentUrl, navigateToUrl } from "~/utils/url";
 import SignupLogin from "../Modals/SignupLoginModal";
 import { GoogleOneTap } from "./AuthButtons/GoogleAuthButton";
 import { Link as RemixLink } from "@remix-run/react";
 import { siteName } from "~/constants/app";
+import { ChevronDownIcon } from "~/icons/ChevronDownIcon";
 
 export const menuItems = [
     { url: "/api", label: "API" },
+    { url: "/integrations", label: "Integrations" },
     { url: "/pricing", label: "Pricing" },
-    { url: "/referral", label: "Referral" },
-    { url: "/resources", label: "Resources" },
+    {
+        label: "Resources",
+        sublinks: [
+            { url: "/blog", label: "Blog", description: "Learn more about email validation and reputation." },
+            { url: "/referral", label: "Referral", description: "Refer people and get free Premium access.", disabled: true }
+        ]
+    }
 ];
+
 
 export default function Nav() {
     const { authModal, modalType, setModalType } = useContext(AuthModalContext);
+    const location = useLocation();
+    const { user } = useContext(UserContext);
 
-    const location = useLocation()
-    console.log(location)
-
-    const { user } = useContext(UserContext)
+    const handleSublinkClick = (url: string) => {
+        navigateToUrl(url);
+    };
 
     return (
         <>
@@ -31,39 +40,71 @@ export default function Nav() {
 
             <Navbar isBordered style={{ borderColor: '#E4E4E7' }}>
                 <NavbarBrand>
-                    {/* <Link href={menuItem.url}> */}
                     <RemixLink prefetch="intent" to={"/"}>
                         {siteName.toUpperCase()}
                     </RemixLink>
-                    {/* </Link> */}
                 </NavbarBrand>
                 <NavbarContent className="hidden sm:flex gap-4" justify="center">
                     {menuItems.map((menuItem, index) => (
-                        <NavbarItem
-                            key={index}
-                            isActive={isCurrentUrl(location, menuItem.url)}
-                            aria-current={isCurrentUrl(location, menuItem.url) && "page"}
-                        >
-                            {/* <Link href={menuItem.url}> */}
-                            <RemixLink prefetch="intent" to={menuItem.url}>
-                                <p className={isCurrentUrl(location, menuItem.url) ? "text-primary" : undefined}>
-                                    {menuItem.label}
-                                </p>
-                            </RemixLink>
-                            {/* </Link> */}
-                        </NavbarItem>
+                        <Fragment key={index}>
+                            {menuItem.sublinks ? (
+                                <Dropdown>
+                                    <NavbarItem>
+                                        <DropdownTrigger>
+                                            <Button
+                                                disableRipple
+                                                className="p-0 bg-transparent data-[hover=true]:bg-transparent text-base" // Added text-base class
+                                                endContent={<ChevronDownIcon fill="currentColor" size={16} />}
+                                                radius="sm"
+                                                variant="light"
+                                            >
+                                                {menuItem.label}
+                                            </Button>
+                                        </DropdownTrigger>
+                                    </NavbarItem>
+                                    <DropdownMenu
+                                        aria-label={menuItem.label}
+                                        className="w-[340px]"
+                                        itemClasses={{
+                                            base: "gap-4",
+                                        }}
+                                    >
+                                        {menuItem.sublinks.map((sublink, subIndex) => (
+                                            <DropdownItem
+                                                key={subIndex}
+                                                description={sublink.description}
+                                                onClick={() => handleSublinkClick(sublink.url)}
+                                                style={{ cursor: 'pointer' }}
+                                            >
+                                                {sublink.label}
+                                            </DropdownItem>
+                                        ))}
+                                    </DropdownMenu>
+                                </Dropdown>
+                            ) : (
+                                <NavbarItem
+                                    isActive={isCurrentUrl(location, menuItem.url)}
+                                    aria-current={isCurrentUrl(location, menuItem.url) && "page"}
+                                >
+                                    <RemixLink prefetch="intent" to={menuItem.url}>
+                                        <p className={isCurrentUrl(location, menuItem.url) ? "text-primary" : undefined}>
+                                            {menuItem.label}
+                                        </p>
+                                    </RemixLink>
+                                </NavbarItem>
+                            )}
+                        </Fragment>
                     ))}
                 </NavbarContent>
 
                 <NavbarContent justify="end">
-
                     <NavbarItem className="hidden lg:flex">
-                        <Link style={{ cursor: 'pointer' }} onClick={() => {
+                        <p style={{ cursor: 'pointer' }} onClick={() => {
                             setModalType(AuthModalType.Login)
                             authModal.onOpen()
                         }}>
                             Login
-                        </Link>
+                        </p>
                     </NavbarItem>
 
                     <NavbarItem>
@@ -74,12 +115,12 @@ export default function Nav() {
                             Sign Up Free
                         </Button>
                     </NavbarItem>
-
                 </NavbarContent>
-
             </Navbar>
 
             <SignupLogin modalType={modalType} isOpen={authModal.isOpen} onClose={authModal.onClose} onOpen={authModal.onOpen} onOpenChange={authModal.onOpenChange} />
         </>
     );
 }
+
+

@@ -4,12 +4,12 @@ import { siteName } from "~/constants/app";
 
 export const meta: MetaFunction = () => {
   return [
-    { title: `${siteName} - Resources` },
-    { name: "description", content: "Welcome to Remix! - Resources" },
+    { title: `${siteName} - Blog` },
+    { name: "description", content: "Welcome to Remix! - Blog" },
   ];
 };
 
-export default function Resources() {
+export default function Blog() {
 
   const test = <Card className="max-w-[400px] mb-8">
     <CardHeader className="flex gap-3">
@@ -38,7 +38,7 @@ export default function Resources() {
     <div className="py-8 px-6">
 
       <div className="flex flex-col items-center mb-16">
-        <h2 className="text-2xl">Resources</h2>
+        <h2 className="text-2xl">Blog</h2>
       </div>
 
       <div className="flex flex-wrap justify-between">

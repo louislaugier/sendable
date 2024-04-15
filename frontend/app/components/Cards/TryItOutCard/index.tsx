@@ -70,7 +70,7 @@ export default function TryItOut() {
             variant="faded"
             color="success"
         >
-            {reachability}
+            deliverable
         </Chip>;
     else if (reachability === Reachability.Risky)
         reachabilityChip = <Chip color="warning" variant="dot">{reachability}</Chip>;

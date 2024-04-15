@@ -10,7 +10,7 @@ const IntegrationsSection = () => {
             <div className="py-10 bg-gray-100 absolute" style={{ left: 0, width: '100%' }}>
                 <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
                     <h2 className="text-3xl font-extrabold text-center text-gray-900">
-                        Connect your preferred platforms
+                        Connect your preferred tools
                     </h2>
                     <div className="flex mt-12" style={{ justifyContent: 'space-between', maxWidth: '1024px', marginRight: 'auto', marginLeft: 'auto' }}>
                         <SalesforceLogo w={100} />

@@ -1,21 +1,22 @@
-import { Card, CardHeader, Divider, CardBody, CardFooter, Link, Image } from "@nextui-org/react";
 import type { MetaFunction } from "@remix-run/node";
 import { siteName } from "~/constants/app";
 
 export const meta: MetaFunction = () => {
   return [
-    { title: `${siteName} - Referral` },
-    { name: "description", content: "Welcome to Remix! - Referral" },
+    { title: `${siteName} - Integrations` },
+    { name: "description", content: "Welcome to Remix! - Integrations" },
   ];
 };
 
-export default function Referral() {
+export default function Integrations() {
+
+  
 
   return (
     <div className="py-8 px-6">
 
       <div className="flex flex-col items-center mb-16">
-        <h2 className="text-2xl">Referral</h2>
+        <h2 className="text-2xl">Integrations</h2>
       </div>
 
       <div className="flex flex-wrap justify-between">
