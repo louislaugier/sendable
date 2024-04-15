@@ -1,6 +1,8 @@
 import { Card, CardHeader, Divider, CardBody, CardFooter, Link, Image, Button, image } from "@nextui-org/react";
 import type { MetaFunction } from "@remix-run/node";
+import { Outlet, useLocation } from "@remix-run/react";
 import { siteName } from "~/constants/app";
+import { isCurrentUrl, navigateToUrl } from "~/utils/url";
 
 export const meta: MetaFunction = () => {
   return [
@@ -9,48 +11,50 @@ export const meta: MetaFunction = () => {
   ];
 };
 
-export default function Blog() {
+export const blogPages = [
+  {
+    uri: "/why_use_an_email_validator",
+    title: "Why use an email validator?",
+    imageUrl: "/laptop.jpeg",
+    subtitle: "Lead generation / marketing",
+    date: "Mon Apr 22",
+    readTime: "4 mins",
+  },
+  {
+    uri: "/how_to_boost_your_email_servers_reputation",
+    title: "How to boost your email server's reputation",
+    imageUrl: "/lights.jpeg",
+    subtitle: "DNS / Networking",
+    date: "Mon Apr 15",
+    readTime: "3 mins",
+  },
+]
 
-  const test = <Card className="max-w-[400px] mb-8">
-    <CardHeader className="flex gap-3">
-      <div className="flex flex-col">
-        <p className="text-md">NextUI</p>
-        <p className="text-small text-default-500">nextui.org</p>
-      </div>
-    </CardHeader>
-    <Divider />
-    <CardBody>
-      <p>Make beautiful websites regardless of your design experience.</p>
-    </CardBody>
-    <Divider />
-    <CardFooter>
-      <Link
-        isExternal
-        showAnchorIcon
-        href="https://github.com/nextui-org/nextui"
-      >
-        Visit source code on GitHub.
-      </Link>
-    </CardFooter>
-  </Card>
+export default function Blog() {
+  const location = useLocation();
+  const isBlogRoot = isCurrentUrl(location, '/blog')
 
   return (
-    <div className="py-8 px-6">
+    <>
+      {isBlogRoot ? <div className="py-8 px-6">
 
-      <div className="flex flex-col items-center mb-16">
-        <h2 className="text-2xl">Blog</h2>
-      </div>
+        <div className="flex flex-col items-center mb-16">
+          <h2 className="text-2xl">Blog</h2>
+        </div>
 
-      <div className="flex flex-wrap justify-between">
-        <BlogCard imageUrl="/laptop.jpeg"  title="Why use an email validator?" subtitle='Lead generation / marketing' date='Mon Apr 22' readTime='4 mins' />
-        <BlogCard imageUrl="/lights.jpeg" title="How to preserve your email domain and server's reputation?" subtitle='DNS / Networking' date='Mon Apr 15' readTime='3 mins' />
-      </div>
-    </div>
+
+        <div className="flex flex-wrap justify-between">
+          {blogPages.map(blogPage => <>
+            <BlogCard uri={blogPage.uri} imageUrl={blogPage.imageUrl} title={blogPage.title} subtitle={blogPage.subtitle} date={blogPage.date} readTime={blogPage.readTime} />
+          </>)}
+        </div>
+      </div> : <Outlet />}
+    </>
   );
 }
 
 function BlogCard(props: any) {
-  const { title, subtitle, date, readTime, imageUrl } = props
+  const { title, subtitle, date, readTime, imageUrl, uri } = props
   return (
     <>
       <Card className="col-span-12 sm:col-span-4 h-[300px] w-[400px]">
@@ -66,10 +70,10 @@ function BlogCard(props: any) {
         />
         <CardFooter className="absolute bg-white/30 bottom-0 border-t-1 border-zinc-100/50 z-10 justify-between">
           <div>
-            <p className="text-black text-tiny">{date}</p>
-            <p className="text-black text-tiny">{readTime} read</p>
+            <p className=" text-white/60 text-tiny">{date}</p>
+            <p className=" text-white/60 text-tiny">{readTime} read</p>
           </div>
-          <Button className="text-tiny" color="primary" radius="full" size="sm">
+          <Button onClick={() => navigateToUrl(`/blog${uri}`)} className="text-tiny" color="primary" radius="full" size="sm">
             Read more
           </Button>
         </CardFooter>

@@ -24,7 +24,6 @@ export const menuItems = [
     }
 ];
 
-
 export default function Nav() {
     const { authModal, modalType, setModalType } = useContext(AuthModalContext);
     const location = useLocation();
