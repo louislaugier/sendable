@@ -8,7 +8,7 @@ build-dev:
 
 .PHONY: recreate-dev
 recreate-dev:
-	docker-compose up -d --force-recreate
+	docker-compose up -d --force-recreatefrom termi
 	make postinstall-frontend-dev
 
 #################################################################
@@ -44,6 +44,17 @@ recreate-frontend-dev:
 	docker-compose rm -sfv frontend
 	make build-frontend-dev
 	make start-dev
+
+#################################################################
+
+.PHONY: build-frontend-prd
+build-frontend-prd:
+	docker-compose exec frontend npm run build
+	make postbuild-frontend-dev
+
+.PHONY: postbuild-frontend-dev
+postbuild-frontend-dev:
+	sh frontend/postbuild.sh
 
 #################################################################
 

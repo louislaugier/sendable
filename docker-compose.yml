@@ -54,7 +54,7 @@ services:
       - ./frontend/public/:/frontend/public
       - ./frontend/package.json/:/frontend/package.json
       - ./frontend/tailwind.config.ts/:/frontend/tailwind.config.ts
-      - node_modules:/frontend/node_modules
+      - frontend_node_modules:/frontend/node_modules
     ports:
       - 3000:5173
     environment:
@@ -63,7 +63,8 @@ services:
     networks:
       - vpc_local
 volumes:
-  node_modules:
+  frontend_node_modules:
+  frontend_build:
 networks:
   vpc_local:
     driver: bridge
