@@ -1,11 +1,14 @@
-import { Card, CardHeader, Divider, CardBody, CardFooter, Image, Link, Button, Tooltip } from "@nextui-org/react";
+import { Card, CardHeader, Divider, CardBody, CardFooter, Button, Tooltip } from "@nextui-org/react";
 import type { MetaFunction } from "@remix-run/node";
 import { useContext } from "react";
 import { siteName } from "~/constants/app";
 import AuthModalContext from "~/contexts/AuthModalContext";
 import UserContext from "~/contexts/UserContext";
+import BrevoFullLogo from "~/icons/logos/BrevoFullLogo";
+import HubspotFullLogo from "~/icons/logos/HubspotFullLogo";
 import SalesforceFullLogo from "~/icons/logos/SalesforceFullLogo";
 import SalesforceIcon from '~/icons/logos/SalesforceFullLogo';
+import SendgridFullLogo from "~/icons/logos/SendgridFullLogo";
 import ZohoFullLogo from "~/icons/logos/ZohoFullLogo";
 import { AuthModalType } from "~/types/modal";
 
@@ -25,8 +28,11 @@ export default function Integrations() {
       </div>
 
       <div className="flex flex-wrap justify-between">
-        <IntegrationCard title='Salesforce' url='salesforce.com' description='Import all kinds of contacts from your Salesforce CRM.' hasLoginFeature logo={<SalesforceFullLogo w={60} />} />
-        <IntegrationCard title='Zoho' url='zoho.com' description='Import leads, contacts and vendors from your Salesforce CRM.' hasLoginFeature logo={<ZohoFullLogo w={"60px"} />} />
+        <IntegrationCard title='Salesforce' url='salesforce.com' description='Import all kinds of contacts from your Salesforce CRM.' hasLoginFeature logo={<SalesforceFullLogo w={70} />} />
+        <IntegrationCard title='Zoho' url='zoho.com' description='Import leads, contacts and vendors from your Salesforce CRM.' hasLoginFeature logo={<ZohoFullLogo w={"70px"} />} />
+        <IntegrationCard title='HubSpot' url='hubspot.com' description='Import all kinds of contacts from your HubSpot CRM.' hasLoginFeature logo={<HubspotFullLogo w='90px' />} />
+        <IntegrationCard title='SendGrid' url='sendgrid.com' description='Import your contacts from the SendGrid marketing platform.' logo={<SendgridFullLogo w='100px' />} />
+        <IntegrationCard title='Brevo' url='brevo.com' description='Import your contacts from the Brevo marketing platform.' logo={<BrevoFullLogo w='80px' />} />
       </div>
     </div>
   );
@@ -39,7 +45,7 @@ function IntegrationCard(props: any) {
   const { user } = useContext(UserContext);
 
   return (
-    <Card className="max-w-[400px]">
+    <Card className="w-[400px] mb-12">
       <CardHeader className="flex gap-3">
         {logo}
         <div className="flex flex-col">

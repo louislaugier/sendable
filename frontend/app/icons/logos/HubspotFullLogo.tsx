@@ -1,5 +1,5 @@
 export default (props: any) => (
-    <svg width="150px" viewBox="0 0 512 147" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlnsXlink="http://www.w3.org/1999/xlink" preserveAspectRatio="xMidYMid">
+    <svg width={props.w ?? "150px"} viewBox="0 0 512 147" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlnsXlink="http://www.w3.org/1999/xlink" preserveAspectRatio="xMidYMid">
         <g>
             <path d="M0.06,27.679 L17.912,27.679 L17.912,67.341 L55.563,67.341 L55.563,27.679 L73.438,27.679 L73.438,125.037 L55.563,125.037 L55.563,84.542 L17.912,84.542 L17.912,125.037 L0.06,125.037 L0.06,27.679 L0.06,27.679 Z" fill="#45535E">
 
