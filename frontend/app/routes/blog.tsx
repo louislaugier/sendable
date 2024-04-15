@@ -1,4 +1,4 @@
-import { Card, CardHeader, Divider, CardBody, CardFooter, Link, Image } from "@nextui-org/react";
+import { Card, CardHeader, Divider, CardBody, CardFooter, Link, Image, Button, image } from "@nextui-org/react";
 import type { MetaFunction } from "@remix-run/node";
 import { siteName } from "~/constants/app";
 
@@ -42,9 +42,38 @@ export default function Blog() {
       </div>
 
       <div className="flex flex-wrap justify-between">
-        {test}
-        {test}
+        <BlogCard imageUrl="/laptop.jpeg"  title="Why use an email validator?" subtitle='Lead generation / marketing' date='Mon Apr 22' readTime='4 mins' />
+        <BlogCard imageUrl="/lights.jpeg" title="How to preserve your email domain and server's reputation?" subtitle='DNS / Networking' date='Mon Apr 15' readTime='3 mins' />
       </div>
     </div>
   );
+}
+
+function BlogCard(props: any) {
+  const { title, subtitle, date, readTime, imageUrl } = props
+  return (
+    <>
+      <Card className="col-span-12 sm:col-span-4 h-[300px] w-[400px]">
+        <CardHeader className="absolute z-10 top-1 flex-col !items-start">
+          <p className="text-tiny text-white/60 uppercase font-bold">{subtitle}</p>
+          <h4 className="text-white font-medium text-large">{title}</h4>
+        </CardHeader>
+        <Image
+          removeWrapper
+          alt="Card background"
+          className="z-0 w-full h-full object-cover"
+          src={imageUrl}
+        />
+        <CardFooter className="absolute bg-white/30 bottom-0 border-t-1 border-zinc-100/50 z-10 justify-between">
+          <div>
+            <p className="text-black text-tiny">{date}</p>
+            <p className="text-black text-tiny">{readTime} read</p>
+          </div>
+          <Button className="text-tiny" color="primary" radius="full" size="sm">
+            Read more
+          </Button>
+        </CardFooter>
+      </Card>
+    </>
+  )
 }
