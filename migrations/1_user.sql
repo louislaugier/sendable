@@ -1,3 +1,14 @@
+CREATE TYPE auth_provider AS ENUM (
+    'google',
+    'linkedin',
+    -- 'facebook',
+    -- 'apple',
+    'salesforce',
+    'zoho',
+    'hubspot',
+    'mailchimp'
+);
+
 CREATE TABLE IF NOT EXISTS "public"."user" (
     "id" UUID PRIMARY KEY,
     "email" VARCHAR NOT NULL UNIQUE,
@@ -11,7 +22,6 @@ CREATE TABLE IF NOT EXISTS "public"."user" (
     "created_at" TIMESTAMP NOT NULL DEFAULT now(),
     "updated_at" TIMESTAMP NOT NULL DEFAULT now(),
     "deleted_at" TIMESTAMP,
-
     CONSTRAINT password_or_auth_provider_not_empty CHECK (
         "password_sha256" IS NOT NULL
         OR "auth_provider" IS NOT NULL

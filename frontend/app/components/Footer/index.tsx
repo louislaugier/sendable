@@ -1,18 +1,22 @@
+import { useContext } from "react";
 import { siteName } from "~/constants/app";
-import { menuItems } from "../Nav";
+import { pages } from "~/constants/pages";
+import UserContext from "~/contexts/UserContext";
 
 export default function Footer() {
+    const { user, setUser } = useContext(UserContext);
 
     return (
         <footer className="bg-black text-white pt-6 pb-2">
             <div className="container mx-auto flex justify-between items-start" style={{ maxWidth: 200 }}>
                 <div className="text-center text-sm">
-                    {menuItems.map((item, index) => (
-                        <div key={index} className="mb-2">
-                            <a href={item.url} className="block">
-                                {item.label}
-                            </a>
-                        </div>
+                    {pages.map((page, index) => (
+                        page.requiresAuth && !user ? <></> :
+                            <div key={index} className="mb-2">
+                                <a href={page.url} className="block">
+                                    {page.label}
+                                </a>
+                            </div>
                     ))}
                 </div>
                 <div className="text-center text-sm">

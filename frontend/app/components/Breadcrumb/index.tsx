@@ -1,6 +1,6 @@
 import { Breadcrumbs, BreadcrumbItem } from "@nextui-org/react";
 import { useLocation } from "@remix-run/react";
-import { menuItems } from "../Nav";
+import { pages } from "~/constants/pages";
 import { blogPages } from "~/routes/blog";
 
 export default function Breadcrumb() {
@@ -12,18 +12,18 @@ export default function Breadcrumb() {
 
         for (let i = 0; i < paths.length; i++) {
             const currentPath = `/${paths.slice(0, i + 1).join('/')}`;
-            const menuItem = menuItems.find((item) => item.url === currentPath);
+            const page = pages.find((item) => item.url === currentPath);
 
-            if (menuItem) {
+            if (page) {
                 breadcrumbs.push(
-                    <BreadcrumbItem key={i} href={menuItem.url}>
-                        {menuItem.label}
+                    <BreadcrumbItem key={i} href={page.url}>
+                        {page.label}
                     </BreadcrumbItem>
                 );
 
                 // Handle sublinks within "Resources" or other sections (if applicable)
-                if (menuItem.sublinks && i !== paths.length - 1) {
-                    const sublink = menuItem.sublinks.find((sublink) => sublink.url === `/${paths[i + 1]}`);
+                if (page.sublinks && i !== paths.length - 1) {
+                    const sublink = page.sublinks.find((sublink) => sublink.url === `/${paths[i + 1]}`);
 
                     if (sublink) {
                         breadcrumbs.push(

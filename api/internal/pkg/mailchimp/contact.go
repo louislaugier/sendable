@@ -5,12 +5,10 @@ import (
 	"email-validator/internal/pkg/oauth"
 	"encoding/json"
 	"fmt"
-	"log"
 	"net/http"
 )
 
 func GetContacts(accessToken string, accountBaseURL *string) ([]models.MailchimpContact, error) {
-	log.Println("ok")
 	if accountBaseURL == nil {
 		_, userInfo, err := oauth.VerifyMailchimpCode(accessToken)
 		if err != nil {

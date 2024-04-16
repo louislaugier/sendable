@@ -4,36 +4,19 @@ import { Fragment, useContext } from "react";
 import AuthModalContext from "~/contexts/AuthModalContext";
 import UserContext from "~/contexts/UserContext";
 import { AuthModalType } from "~/types/modal";
-import { isCurrentUrl, navigateToUrl } from "~/utils/url";
+import { isCurrentUrl } from "~/utils/url";
 import SignupLogin from "../Modals/SignupLoginModal";
 import { GoogleOneTap } from "./AuthButtons/GoogleAuthButton";
 import { Link as RemixLink } from "@remix-run/react";
 import { siteName } from "~/constants/app";
 import { ChevronDownIcon } from "~/icons/ChevronDownIcon";
 import { FiExternalLink } from "react-icons/fi";
-
-export const menuItems = [
-    { url: '/dashboard', label: 'Dashboard' },
-    { url: "/api", label: "API" },
-    { url: "/integrations", label: "Integrations" },
-    { url: "/pricing", label: "Pricing" },
-    {
-        label: "Resources",
-        sublinks: [
-            { url: "/blog", label: "Blog", description: "Learn more about email validation and reputation." },
-            { url: "/referral", label: "Referral", description: "Refer people and get free Premium access.", disabled: true }
-        ]
-    }
-];
+import { pages } from "~/constants/pages";
 
 export default function Nav() {
     const { authModal, modalType, setModalType } = useContext(AuthModalContext);
     const location = useLocation();
     const { user, setUser } = useContext(UserContext);
-
-    const handleSublinkClick = (url: string) => {
-        navigateToUrl(url);
-    };
 
     return (
         <>
@@ -46,10 +29,10 @@ export default function Nav() {
                     </RemixLink>
                 </NavbarBrand>
                 <NavbarContent className="hidden sm:flex gap-4" justify="center">
-                    {menuItems.map((menuItem, index) => (
-                        menuItem.label === 'Dashboard' && !user ? <></> :
+                    {pages.map((page, index) => (
+                        page.requiresAuth && !user || page.isInvisibleInNav ? <></> :
                             <Fragment key={index}>
-                                {menuItem.sublinks ? (
+                                {page.sublinks ? (
                                     <Dropdown>
                                         <NavbarItem>
                                             <DropdownTrigger>
@@ -60,22 +43,22 @@ export default function Nav() {
                                                     radius="sm"
                                                     variant="light"
                                                 >
-                                                    {menuItem.label}
+                                                    {page.label}
                                                 </Button>
                                             </DropdownTrigger>
                                         </NavbarItem>
                                         <DropdownMenu
-                                            aria-label={menuItem.label}
+                                            aria-label={page.label}
                                             className="w-[340px]"
                                             itemClasses={{
                                                 base: "gap-4",
                                             }}
                                         >
-                                            {menuItem.sublinks.map((sublink, subIndex) => (
+                                            {page.sublinks.map((sublink, subIndex) => (
                                                 <DropdownItem
                                                     key={subIndex}
                                                     description={sublink.description}
-                                                    onClick={() => handleSublinkClick(sublink.url)}
+                                                    href={sublink.url}
                                                     style={{ cursor: 'pointer' }}
                                                 >
                                                     {sublink.label}
@@ -85,12 +68,12 @@ export default function Nav() {
                                     </Dropdown>
                                 ) : (
                                     <NavbarItem
-                                        isActive={isCurrentUrl(location, menuItem.url)}
-                                        aria-current={isCurrentUrl(location, menuItem.url) && "page"}
+                                        isActive={isCurrentUrl(location, page.url)}
+                                        aria-current={isCurrentUrl(location, page.url) && "page"}
                                     >
-                                        <RemixLink prefetch="intent" to={menuItem.url}>
-                                            <p className={isCurrentUrl(location, menuItem.url) ? "text-primary" : undefined}>
-                                                {menuItem.label}
+                                        <RemixLink prefetch="intent" to={page.url}>
+                                            <p className={isCurrentUrl(location, page.url) ? "text-primary" : undefined}>
+                                                {page.label}
                                             </p>
                                         </RemixLink>
                                     </NavbarItem>
@@ -115,6 +98,7 @@ export default function Nav() {
                                     <DropdownItem
                                         key="dashboard"
                                         description="Validate email addresses"
+                                        href="/dashboard"
                                     // startContent={<AddNoteIcon className={iconClasses} />}
                                     >
                                         Dashboard
@@ -123,6 +107,7 @@ export default function Nav() {
                                 <DropdownSection title="Account">
                                     <DropdownItem
                                         key="settings"
+                                        href="/settings"
                                         description="Account preferences"
                                     >
                                         Settings
