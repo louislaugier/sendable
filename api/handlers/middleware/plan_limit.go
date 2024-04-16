@@ -1,14 +1,19 @@
 package middleware
 
 import (
+	"log"
 	"net/http"
 )
 
 func SingleValidationPlanLimit(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		// get current month single_validations count from db
+		origin := GetValueFromContext(r.Context(), requestOriginKey)
+		log.Println(origin)
 
-		// get origin from context
+		currentPlan := GetValueFromContext(r.Context(), userCurrentPlanKey)
+		log.Println(currentPlan)
+
+		// get current month single_validations count from db
 
 		// if origin frontend
 		// free: 500/mo

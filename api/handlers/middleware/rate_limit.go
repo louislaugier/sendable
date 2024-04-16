@@ -2,6 +2,7 @@ package middleware
 
 import (
 	"email-validator/internal/models"
+	"log"
 	"net/http"
 	"time"
 )
@@ -40,7 +41,11 @@ func BaseRateLimit(h http.Handler) http.Handler {
 
 func SingleValidatorRateLimit(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		// get origin from context
+		origin := GetValueFromContext(r.Context(), requestOriginKey)
+		log.Println(origin)
+
+		currentPlan := GetValueFromContext(r.Context(), userCurrentPlanKey)
+		log.Println(currentPlan)
 
 		// if origin frontend:
 		// 	1 concurrent validation per CLIENT (IP) max & 10 per hour
@@ -56,7 +61,11 @@ func SingleValidatorRateLimit(next http.Handler) http.Handler {
 
 func BulkValidatorRateLimit(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		// get origin from context
+		origin := GetValueFromContext(r.Context(), requestOriginKey)
+		log.Println(origin)
+
+		currentPlan := GetValueFromContext(r.Context(), userCurrentPlanKey)
+		log.Println(currentPlan)
 
 		// if origin == api && plan == free or premium: throw err
 		// else: 1 concurrent validation batch per user

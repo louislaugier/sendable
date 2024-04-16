@@ -29,6 +29,13 @@ const userIDKey userContextKey = "user_id"
 const userCurrentPlanKey userContextKey = "user_current_plan"
 const requestOriginKey userContextKey = "request_origin"
 
+type origin string
+
+const (
+	OriginAPI origin = "api"
+	OriginApp origin = "app"
+)
+
 // GenerateAndBindJWT generates a new JWT token and adds it to the User pointer.
 func GenerateAndBindJWT(user *models.User) error {
 	jwt, err := GenerateJWT(user.ID, user.Email)
@@ -102,13 +109,22 @@ func ValidateJWT(next http.Handler) http.Handler {
 				return
 			}
 
+			var plan models.Order
 			currentPlan, err := order.GetLatestActiveOrder(userID)
 			if err != nil {
 				log.Printf("Error attempting to fetch user's latest valid order: %v", err)
 				http.Error(w, "Internal Sever Error", http.StatusInternalServerError)
 			}
+			if currentPlan != nil {
+				plan = *currentPlan
+			} else {
+				plan = models.Order{
+					UserID: userID,
+					Type:   models.FreePlan,
+				}
+			}
 
-			ctx = context.WithValue(ctx, userCurrentPlanKey, currentPlan)
+			ctx = context.WithValue(ctx, userCurrentPlanKey, plan)
 
 			next.ServeHTTP(w, r.WithContext(ctx))
 		} else {
