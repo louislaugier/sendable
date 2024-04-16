@@ -3,11 +3,12 @@ package user
 import (
 	"email-validator/config"
 	"email-validator/internal/models"
+	"errors"
 	"fmt"
 )
 
 func GetByEmailAndProvider(email string, provider models.AuthProvider) (*models.User, error) {
-	rows, err := config.DB.Query(fmt.Sprintf(`SELECT "id", "email", "is_email_confirmed", "password_sha256", "last_ip_addresses", "last_user_agent", "two_fa_private_key_hash", "auth_provider", "created_at", "updated_at", "deleted_at" FROM public."user" WHERE "email" = '%s' AND "auth_provider" = '%s' LIMIT 1;`, email, provider))
+	rows, err := config.DB.Query(fmt.Sprintf(`SELECT "id", "email", "is_email_confirmed", "last_ip_addresses", "last_user_agent", "two_fa_private_key_hash", "auth_provider", "created_at", "updated_at", "deleted_at" FROM public."user" WHERE "email" = '%s' AND "auth_provider" = '%s' LIMIT 1;`, email, provider))
 
 	if err != nil {
 		return nil, err
@@ -19,35 +20,23 @@ func GetByEmailAndProvider(email string, provider models.AuthProvider) (*models.
 
 	for rows.Next() {
 		u := models.User{}
-		rows.Scan(&u.ID, &u.Email, &u.IsEmailConfirmed, &u.Password, &u.LastIPAddresses, &u.LastUserAgent, &u.TwoFaPrivateKeyHash, &u.AuthProvider, &u.CreatedAt, &u.UpdatedAt, &u.DeletedAt)
+		rows.Scan(&u.ID, &u.Email, &u.IsEmailConfirmed, &u.LastIPAddresses, &u.LastUserAgent, &u.TwoFaPrivateKeyHash, &u.AuthProvider, &u.CreatedAt, &u.UpdatedAt, &u.DeletedAt)
+
+		if u.IsDeleted() {
+			return nil, errors.New("user is deleted")
+		}
+
 		user = &u
 	}
 
 	return user, nil
 }
 
-// func updateSomethingWithTx(DB *sql.DB) error {
-// 	// Start a new transaction
-// 	tx, err := DB.Begin()
-// 	if err != nil {
-// 		return err
-// 	}
-// 	// Defer a rollback in case something fails. The rollback will be ignored if the
-// 	// transaction has already been committed.
-// 	defer tx.Rollback()
+func InsertNew(user *models.User, encryptedPassword *string) error {
+	_, err := config.DB.Exec("INSERT INTO public.user (id, email, is_email_confirmed, password_sha256, last_ip_addresses, last_user_agent, auth_provider) VALUES ($1, $2, $3, $4, $5, $6, $7)", &user.ID, &user.Email, &user.IsEmailConfirmed, encryptedPassword, &user.LastIPAddresses, &user.LastUserAgent, &user.AuthProvider)
+	if err != nil {
+		return err
+	}
 
-// 	// Execute some database commands within the transaction
-// 	if _, err := tx.Exec("UPDATE my_table SET column = value WHERE condition"); err != nil {
-// 		// Handle error and exit function, which triggers deferred rollback
-// 		return err
-// 	}
-//     // You can add more Exec or other transactional operations here if needed
-
-// 	// If everything went fine, commit the transaction
-// 	if err := tx.Commit(); err != nil {
-// 		return err
-// 	}
-
-// 	// Transaction was successful, no need to rollback
-// 	return nil
-// }
+	return nil
+}
