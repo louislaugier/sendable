@@ -97,23 +97,27 @@ export default function Nav() {
                 </NavbarContent>
 
                 <NavbarContent justify="end">
-                    <NavbarItem className="hidden lg:flex">
-                        <p style={{ cursor: 'pointer' }} onClick={() => {
-                            setModalType(AuthModalType.Login)
-                            authModal.onOpen()
-                        }}>
-                            Login
-                        </p>
-                    </NavbarItem>
+                    {user ? <>
+                        Logged in as {user.email}
+                    </> : <>
+                        <NavbarItem className="hidden lg:flex">
+                            <p style={{ cursor: 'pointer' }} onClick={() => {
+                                setModalType(AuthModalType.Login)
+                                authModal.onOpen()
+                            }}>
+                                Login
+                            </p>
+                        </NavbarItem>
 
-                    <NavbarItem>
-                        <Button onClick={() => {
-                            setModalType(AuthModalType.Signup)
-                            authModal.onOpen()
-                        }} color="primary" variant="shadow">
-                            Sign Up Free
-                        </Button>
-                    </NavbarItem>
+                        <NavbarItem>
+                            <Button onClick={() => {
+                                setModalType(AuthModalType.Signup)
+                                authModal.onOpen()
+                            }} color="primary" variant="shadow">
+                                Sign Up Free
+                            </Button>
+                        </NavbarItem>
+                    </>}
                 </NavbarContent>
             </Navbar>
 
