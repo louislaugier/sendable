@@ -30,8 +30,8 @@ export const pricingPlans = [
         yearly_price: "$229",
         features: [
             {
-                content: "300,000 monthly validations",
-                tooltip: `You can validate up to 300,000 email addresses every month for free using ${siteName}'s web interface.`
+                content: "500,000 monthly validations",
+                tooltip: `You can validate up to 500,000 email addresses every month for free using ${siteName}'s web interface.`
             },
             {
                 content: "Bulk email validation",
@@ -40,8 +40,8 @@ export const pricingPlans = [
                 content: "Connect CRM platforms",
             },
             {
-                content: "10,000 API single validations",
-                tooltip: `You can validate up to 10,000 email addresses programmatically every month using ${siteName}'s API (max 3 concurrent validations).`
+                content: "30,000 API single validations",
+                tooltip: `You can validate up to 30,000 email addresses programmatically every month using ${siteName}'s API (max 3 concurrent validations).`
             },
             {
                 content: "24 / 7 Support"

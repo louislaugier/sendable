@@ -43,7 +43,7 @@ func handleHTTP(mux *http.ServeMux) {
 	handle(mux, "/validate_emails",
 		middleware.ValidateFile(
 			middleware.BulkValidatonRateLimit(
-				middleware.ManageBulkValidationOrigin( // ManageSingleValidationOrigin calls ValidateJWT only if origin is other than a guest on frontend
+				middleware.ManageBulkValidationOrigin( // reject if a free / premium user attemps to use API to bulk validate
 					middleware.ValidateJWT(
 						http.HandlerFunc(validateEmailsHandler),
 					),
@@ -61,7 +61,7 @@ func handleHTTP(mux *http.ServeMux) {
 	)
 }
 
-func StartHTTPSServer() {
+func StartServer() {
 	mux := http.NewServeMux()
 	handleHTTP(mux) // Configure the routes
 

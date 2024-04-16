@@ -50,6 +50,9 @@ func getUserByCriteria(query string, args ...interface{}) (*models.User, error) 
 
 		user = &u
 	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
 
 	return user, nil
 }

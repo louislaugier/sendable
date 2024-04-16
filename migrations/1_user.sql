@@ -9,7 +9,7 @@ CREATE TYPE auth_provider AS ENUM (
     'mailchimp'
 );
 
-CREATE TABLE IF NOT EXISTS "public"."user" (
+CREATE TABLE IF NOT EXISTS public."user" (
     "id" UUID PRIMARY KEY,
     "email" VARCHAR NOT NULL UNIQUE,
     "is_email_confirmed" BOOLEAN NOT NULL DEFAULT FALSE,

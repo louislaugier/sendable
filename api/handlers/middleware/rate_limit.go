@@ -43,6 +43,8 @@ func BaseRateLimit(h http.Handler) http.Handler {
 func SingleValidatonRateLimit(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		origin := GetValueFromContext(r.Context(), requestOriginKey)
+		userID := GetValueFromContext(r.Context(), userIDKey)
+		log.Println(userID)
 
 		currentPlan := GetValueFromContext(r.Context(), userCurrentPlanKey)
 		log.Println(currentPlan)

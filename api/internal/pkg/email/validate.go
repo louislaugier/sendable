@@ -16,14 +16,14 @@ import (
 	"sync"
 )
 
-func IsReachable(email string) bool {
-	resp, err := Validate(email)
-	if err != nil {
-		return false
-	}
+// func IsReachable(email string) bool {
+// 	resp, err := Validate(email)
+// 	if err != nil {
+// 		return false
+// 	}
 
-	return resp.MX.AcceptsMail && resp.SMTP.IsDeliverable
-}
+// 	return resp.MX.AcceptsMail && resp.SMTP.IsDeliverable
+// }
 
 func Validate(email string) (*models.ReacherResponse, error) {
 	if format.IsEmailValid(email) {

@@ -8,5 +8,5 @@ import (
 func main() {
 	config.Load()
 
-	handlers.StartHTTPSServer()
+	handlers.StartServer()
 }

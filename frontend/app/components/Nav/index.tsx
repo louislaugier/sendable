@@ -103,6 +103,14 @@ export default function Nav() {
                                     >
                                         Dashboard
                                     </DropdownItem>
+                                    <DropdownItem
+                                        key="validaion_history"
+                                        description="View emails addresses you have validated"
+                                        href="/validaion_history"
+                                    // startContent={<AddNoteIcon className={iconClasses} />}
+                                    >
+                                        Validation history
+                                    </DropdownItem>
                                 </DropdownSection>
                                 <DropdownSection title="Account">
                                     <DropdownItem
