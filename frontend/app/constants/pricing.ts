@@ -19,7 +19,7 @@ export const pricingPlans = [
             },
             {
                 content: "30 free API single validations",
-                tooltip: `You can validate up to 30 email addresses programmatically every month for free using ${siteName}'s API (1 email address at a time).`
+                tooltip: `You can validate up to 30 email addresses programmatically every month for free using ${siteName}'s API (1 validation at a time).`
             }
         ]
     },
@@ -41,7 +41,7 @@ export const pricingPlans = [
             },
             {
                 content: "10,000 API single validations",
-                tooltip: `You can validate up to 10,000 email addresses programmatically every month using ${siteName}'s API (1 email address at a time).`
+                tooltip: `You can validate up to 10,000 email addresses programmatically every month using ${siteName}'s API (max 3 concurrent validations).`
             },
             {
                 content: "24 / 7 Support"
@@ -68,7 +68,7 @@ export const pricingPlans = [
             },
             {
                 content: "Unlimited API bulk validations",
-                tooltip: `You can validate as many email address batches as you want programmatically every month using ${siteName}'s API. Bulk validation batches are limited to 1 million email addresses at a time, and only 1 batch at a time.`
+                tooltip: `You can validate as many email address batches as you want programmatically every month using ${siteName}'s API.\n Bulk validation batches are limited to 1 million email addresses at a time, and only 1 batch at a time. You can validate a batch by posting a file (TXT,CSV,XLS,XLSX) or a JSON payload.`
             },
             {
                 content: "24 / 7 Support"

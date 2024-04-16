@@ -37,13 +37,9 @@ type User struct {
 	AuthProvider *AuthProvider `json:"authProvider,omitempty"`
 	// FacebookUserID string         `json:"facebook_user_id,omitempty"` // non empty value means fb account did not allow access to email, user should be prompted for his email until defined
 
-	CurrentPlan *Order `json:"current_plan,omitempty"`
+	CurrentPlan *Order `json:"currentPlan,omitempty"`
 
 	CreatedAt time.Time `json:"createdAt"`
 	UpdatedAt time.Time `json:"updatedAt"`
 	DeletedAt time.Time `json:"deletedAt,omitempty"`
-}
-
-func (u User) IsDeleted() bool {
-	return !u.DeletedAt.IsZero()
 }

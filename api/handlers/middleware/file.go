@@ -5,7 +5,7 @@ import (
 	"net/http"
 )
 
-// TODO: transfer extension check from api/handlers/validate_emails.go here
+// TODO: transfer extension check from api/handlers/validate_emails.go to here
 // TODO: clamav
 
 func ValidateFile(next http.Handler) http.Handler {

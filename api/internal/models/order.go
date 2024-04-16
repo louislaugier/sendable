@@ -9,9 +9,8 @@ import (
 type OrderDuration string
 
 const (
-	MonthlyOrder  OrderDuration = "monthly"
-	YearlyOrder   OrderDuration = "yearly"
-	LifetimeOrder OrderDuration = "lifetime"
+	MonthlyOrder OrderDuration = "monthly"
+	YearlyOrder  OrderDuration = "yearly"
 )
 
 type OrderType string

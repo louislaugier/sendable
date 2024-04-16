@@ -1,4 +1,4 @@
-CREATE TYPE order_duration AS ENUM ('monthly', 'yearly', 'lifetime');
+CREATE TYPE order_duration AS ENUM ('monthly', 'yearly');
 
 CREATE TYPE order_type AS ENUM ('premium', 'enterprise');
 

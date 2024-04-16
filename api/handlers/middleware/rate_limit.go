@@ -38,11 +38,29 @@ func BaseRateLimit(h http.Handler) http.Handler {
 	return RateLimit(h, models.BaseRateLimiter)
 }
 
-// ValidatorRateLimit wraps an http.Handler and limits requests based on the validator rate limiter
-func ValidatorRateLimit(h http.Handler) http.Handler {
-	return RateLimit(h, models.ValidatorRateLimiter)
+func SingleValidatorRateLimit(next http.Handler) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		// get origin from context
+
+		// if origin frontend:
+		// 	1 concurrent validation per CLIENT (IP) max & 10 per hour
+
+		// else:
+		// 	if free: 1 concurrent validation per user max
+		// 	if premium: 3 concurrent validations per user max
+		// 	if enterprise: unlimited concurrent validations per user
+
+		next.ServeHTTP(w, r)
+	})
 }
 
-func BulkValidatorRateLimit(h http.Handler) http.Handler {
-	return RateLimit(h, models.ValidatorRateLimiter)
+func BulkValidatorRateLimit(next http.Handler) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		// get origin from context
+
+		// if origin == api && plan == free or premium: throw err
+		// else: 1 concurrent validation batch per user
+
+		next.ServeHTTP(w, r)
+	})
 }

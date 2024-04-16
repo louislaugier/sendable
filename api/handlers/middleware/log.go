@@ -9,6 +9,7 @@ import (
 
 	"email-validator/internal/models"
 	"email-validator/internal/pkg/format"
+	"email-validator/internal/pkg/utils"
 )
 
 // Log is a middleware function that logs HTTP requests.
@@ -36,6 +37,6 @@ func Log(next http.Handler) http.Handler {
 
 		// Wrap the entire log message with the color based on status code
 		fmt.Printf("%sRequest: %s %s - Headers: %v - Body: %s - IP: %s - Status: %d%s\n",
-			statusColor, r.Method, r.URL.Path, r.Header, string(body), GetIPsFromRequest(r), customWriter.StatusCode, "\x1b[0m")
+			statusColor, r.Method, r.URL.Path, r.Header, string(body), utils.GetIPsFromRequest(r), customWriter.StatusCode, "\x1b[0m")
 	})
 }

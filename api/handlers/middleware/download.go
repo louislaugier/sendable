@@ -26,7 +26,6 @@ func DownloadAuth(next http.Handler) http.Handler {
 			http.Error(w, "Unauthorized", http.StatusUnauthorized)
 			return
 		}
-		log.Println(ID, token)
 
 		tokenFromFile, err := file.GetJSONReportToken(ID)
 		if err != nil || tokenFromFile == nil {

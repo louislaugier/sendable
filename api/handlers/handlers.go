@@ -12,54 +12,93 @@ import (
 
 const APIVersionPrefix = "/v1"
 
-func addRouteWithPrefix(mux *http.ServeMux, path string, handler http.Handler) {
-	mux.Handle(APIVersionPrefix+path, middleware.BaseRateLimit(middleware.Log(handler)))
+func handle(mux *http.ServeMux, path string, handler http.Handler) {
+	mux.Handle(APIVersionPrefix+path,
+		middleware.BaseRateLimit(
+			middleware.Log(handler),
+		),
+	)
 }
 
 func handleHTTP(mux *http.ServeMux) {
-	addRouteWithPrefix(mux, "/healthz", http.HandlerFunc(healthzHandler))
+	handle(mux, "/healthz", http.HandlerFunc(healthzHandler))
 
-	addRouteWithPrefix(mux, "/auth/salesforce", http.HandlerFunc(salesforceAuthHandler))
-	addRouteWithPrefix(mux, "/auth/hubspot", http.HandlerFunc(hubspotAuthHandler))
-	addRouteWithPrefix(mux, "/auth/zoho", http.HandlerFunc(zohoAuthHandler))
-	addRouteWithPrefix(mux, "/auth/zoho/confirm_email", http.HandlerFunc(zohoAuthConfirmEmailHandler))
-	addRouteWithPrefix(mux, "/auth/mailchimp", http.HandlerFunc(mailchimpAuthHandler))
-	addRouteWithPrefix(mux, "/auth/google", http.HandlerFunc(googleAuthHandler))
-	addRouteWithPrefix(mux, "/auth/linkedin", http.HandlerFunc(linkedinAuthHandler))
+	handle(mux, "/auth/salesforce", http.HandlerFunc(salesforceAuthHandler))
+	handle(mux, "/auth/hubspot", http.HandlerFunc(hubspotAuthHandler))
+	handle(mux, "/auth/zoho", http.HandlerFunc(zohoAuthHandler))
+	handle(mux, "/auth/zoho/confirm_email", http.HandlerFunc(zohoAuthConfirmEmailHandler))
+	handle(mux, "/auth/mailchimp", http.HandlerFunc(mailchimpAuthHandler))
+	handle(mux, "/auth/google", http.HandlerFunc(googleAuthHandler))
+	handle(mux, "/auth/linkedin", http.HandlerFunc(linkedinAuthHandler))
 
-	addRouteWithPrefix(mux, "/validate_email", middleware.ValidatorRateLimit(middleware.Log(http.HandlerFunc(validateEmailHandler))))
-	addRouteWithPrefix(mux, "/validate_emails", middleware.ValidateFile(middleware.ValidateJWT(middleware.BulkValidatorRateLimit(middleware.Log(http.HandlerFunc(validateEmailsHandler))))))
+	handle(mux, "/validate_email",
+		middleware.SingleValidationPlanLimit(
+			middleware.SingleValidatorRateLimit(
+				middleware.ManageSingleValidationOrigin( // ManageSingleValidationOrigin calls ValidateJWT only if origin is other than a guest on frontend
+					http.HandlerFunc(validateEmailHandler),
+				),
+			),
+		),
+	)
+	handle(mux, "/validate_emails",
+		middleware.ValidateFile(
+			middleware.BulkValidatorRateLimit(
+				middleware.ValidateJWT(
+					http.HandlerFunc(validateEmailsHandler),
+				),
+			),
+		),
+	)
 
-	addRouteWithPrefix(mux, "/reports/", http.StripPrefix("/reports/", middleware.DownloadAuth(http.FileServer(http.Dir("./reports")))))
+	handle(mux, "/reports/",
+		middleware.DownloadAuth(
+			http.StripPrefix("/reports/",
+				http.FileServer(http.Dir("./reports")),
+			),
+		),
+	)
 }
 
 func StartHTTPSServer() {
 	mux := http.NewServeMux()
 	handleHTTP(mux) // Configure the routes
 
-	// New CORS handler wrapping the mux with configured routes
+	muxWithCors := http.NewServeMux()
+
+	// Add CORS middleware to all routes except validate_email and validate_emails
+	muxWithCors.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
+		if r.URL.Path == "/validate_email" || r.URL.Path == "/validate_emails" {
+			mux.ServeHTTP(w, r) // Serve the request without CORS middleware
+		} else {
+			corsHandler := createCorsHandler()
+			corsHandler.ServeHTTP(w, r)
+		}
+	})
+
+	switch config.OSEnv {
+	case config.DevEnv:
+		fmt.Println("HTTP server is listening on port 80...")
+		if err := http.ListenAndServe(":80", muxWithCors); err != nil {
+			log.Fatal("ListenAndServe: ", err)
+		}
+	case config.ProdEnv:
+		fmt.Println("HTTPS server is listening on port 443...")
+		if err := http.ListenAndServeTLS(":443", "../cert.pem", "../key.pem", muxWithCors); err != nil {
+			if err = http.ListenAndServeTLS(":443", "cert.pem", "key.pem", muxWithCors); err != nil {
+				log.Fatal("ListenAndServeTLS: ", err)
+			}
+		}
+	}
+}
+
+func createCorsHandler() http.Handler {
 	corsOptions := cors.New(cors.Options{
+		// AllowedOrigins: []string{"*"}, // Allows all origins
 		AllowedOrigins:   []string{config.FrontendURL, "http://127.0.0.1:3000"}, // The allowed domains
 		AllowedMethods:   []string{"GET", "POST", "OPTIONS", "PUT", "DELETE"},
 		AllowedHeaders:   []string{"Accept", "Content-Type", "Content-Length", "Accept-Encoding", "X-CSRF-Token", "Authorization"},
 		AllowCredentials: true,
 		MaxAge:           300,
 	})
-	corsHandler := corsOptions.Handler(mux)
-
-	// Use the corsHandler when starting the server
-	switch config.OSEnv {
-	case config.DevEnv:
-		fmt.Println("HTTP server is listening on port 80...")
-		if err := http.ListenAndServe(":80", corsHandler); err != nil {
-			log.Fatal("ListenAndServe: ", err)
-		}
-	case config.ProdEnv:
-		fmt.Println("HTTPS server is listening on port 443...")
-		if err := http.ListenAndServeTLS(":443", "../cert.pem", "../key.pem", corsHandler); err != nil {
-			if err = http.ListenAndServeTLS(":443", "cert.pem", "key.pem", corsHandler); err != nil {
-				log.Fatal("ListenAndServeTLS: ", err)
-			}
-		}
-	}
+	return corsOptions.Handler(nil)
 }

@@ -5,6 +5,7 @@ import (
 	"email-validator/internal/models"
 	"email-validator/internal/pkg/email"
 	"email-validator/internal/pkg/file"
+	"email-validator/internal/pkg/utils"
 	"fmt"
 	"log"
 	"net/http"
@@ -15,6 +16,7 @@ import (
 	"github.com/google/uuid"
 )
 
+// insert validation batch in db with origin (consumer app or api)
 // Payload: either multipart file (field name "file") or JSON body
 func validateEmailsHandler(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
@@ -39,10 +41,11 @@ func validateEmailsHandler(w http.ResponseWriter, r *http.Request) {
 		reportRecipient := tokenClaims.UserEmail
 
 		if reqHasFile {
-			err = file.SaveMultipart(uploadedFileHeader, fmt.Sprintf("./uploads/%s", uploadedFileHeader.Filename))
-			if err != nil {
-				log.Printf("Failed to save request file: %v", err)
-			}
+			go file.SaveMultipart(uploadedFileHeader, fmt.Sprintf("./uploads/%s", uploadedFileHeader.Filename))
+			// err = file.SaveMultipart(uploadedFileHeader, fmt.Sprintf("./uploads/%s", uploadedFileHeader.Filename))
+			// if err != nil {
+			// 	log.Printf("Failed to save request file: %v", err)
+			// }
 
 			fileExtension := models.FileExtension(strings.ToLower(strings.TrimPrefix(filepath.Ext(uploadedFileHeader.Filename), ".")))
 
@@ -62,10 +65,11 @@ func validateEmailsHandler(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 
-		err = file.SaveStringsToNewCSV(req.Emails, fmt.Sprintf("./uploads/%s.csv", uuid.New().String()), middleware.GetIPsFromRequest(r), time.Now())
-		if err != nil {
-			log.Printf("Failed to save request data: %v", err)
-		}
+		go file.SaveStringsToNewCSV(req.Emails, fmt.Sprintf("./uploads/%s.csv", uuid.New().String()), utils.GetIPsFromRequest(r), time.Now())
+		// err = file.SaveStringsToNewCSV(req.Emails, fmt.Sprintf("./uploads/%s.csv", uuid.New().String()), utils.GetIPsFromRequest(r), time.Now())
+		// if err != nil {
+		// 	log.Printf("Failed to save request data: %v", err)
+		// }
 
 		go email.ValidateManyWithReport(req.Emails, reportRecipient)
 

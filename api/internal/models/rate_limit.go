@@ -15,11 +15,6 @@ var BaseRateLimiter = RateLimiter{
 	Limit: time.Second,
 }
 
-// ValidatorRateLimiter sets the rate limit to 1 request every 3 seconds
-var ValidatorRateLimiter = RateLimiter{
-	Limit: time.Second * 3,
-}
-
 type ClientInfo struct {
 	LastRequestTime time.Time
 	Lock            sync.Mutex

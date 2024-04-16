@@ -9,22 +9,25 @@ import (
 
 type Env string
 
-var OSEnv = Env(os.Getenv("ENV"))
-
 const (
 	DevEnv  Env = "DEV"
 	ProdEnv Env = "PRD"
 )
 
-func loadEnv() {
+var OSEnv = Env(os.Getenv("ENV"))
+
+func loadEnvFile() {
 	if err := godotenv.Load("../.env"); err != nil {
 		if err = godotenv.Load("./.env"); err != nil {
 			log.Fatal("godotenv.Load: ", err)
 		}
 	}
+}
+
+func loadEnv() {
+	loadEnvFile()
 
 	loadDomainURL()
-
 	loadFrontendURL()
 
 	loadOauthClients()

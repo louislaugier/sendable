@@ -5,6 +5,7 @@ import (
 	"email-validator/internal/models"
 	"email-validator/internal/pkg/oauth"
 	"email-validator/internal/pkg/user"
+	"email-validator/internal/pkg/utils"
 	"encoding/json"
 	"log"
 	"net/http"
@@ -46,7 +47,7 @@ func salesforceAuthHandler(w http.ResponseWriter, r *http.Request) {
 			ID:               uuid.New(),
 			Email:            userInfo.Email,
 			IsEmailConfirmed: true,
-			LastIPAddresses:  middleware.GetIPsFromRequest(r),
+			LastIPAddresses:  utils.GetIPsFromRequest(r),
 			LastUserAgent:    r.Header.Get("User-Agent"),
 			AuthProvider:     &salesforceProvider,
 		}

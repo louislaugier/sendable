@@ -3,6 +3,7 @@ package middleware
 import (
 	"context"
 	"email-validator/internal/models"
+	"email-validator/internal/pkg/order"
 	"errors"
 	"fmt"
 	"log"
@@ -24,7 +25,9 @@ type CustomClaims struct {
 
 type userContextKey string
 
-const userKey userContextKey = "user_id"
+const userIDKey userContextKey = "user_id"
+const userCurrentPlanKey userContextKey = "user_current_plan"
+const requestOriginKey userContextKey = "request_origin"
 
 // GenerateAndBindJWT generates a new JWT token and adds it to the User pointer.
 func GenerateAndBindJWT(user *models.User) error {
@@ -76,7 +79,6 @@ func ValidateJWT(next http.Handler) http.Handler {
 			return
 		}
 
-		// Parse the token with the claims checks the signature as well
 		token, err := jwt.ParseWithClaims(tokenString, &CustomClaims{}, func(token *jwt.Token) (interface{}, error) {
 			if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
 				return nil, fmt.Errorf("unexpected signing method: %v", token.Header["alg"])
@@ -85,17 +87,31 @@ func ValidateJWT(next http.Handler) http.Handler {
 		})
 
 		if err != nil {
-			// Token parsing error
-			http.Error(w, "Invalid Token", http.StatusUnauthorized)
+			log.Printf("Error parsing JWT: %v", err)
+			http.Error(w, "Internal Sever Error", http.StatusInternalServerError)
 			return
 		}
 
 		if claims, ok := token.Claims.(*CustomClaims); ok && token.Valid {
-			// Context is the preferred method for passing values down the request pipeline
-			ctx := context.WithValue(r.Context(), userKey, claims.UserID)
+			ctx := context.WithValue(r.Context(), userIDKey, claims.UserID)
+
+			userID, err := uuid.Parse(claims.UserID)
+			if err != nil {
+				log.Printf("Parsed invalid UUID from user ID in claims after successfully validating JWT: %v", err)
+				http.Error(w, "Internal Sever Error", http.StatusInternalServerError)
+				return
+			}
+
+			currentPlan, err := order.GetLatestActiveOrder(userID)
+			if err != nil {
+				log.Printf("Error attempting to fetch user's latest valid order: %v", err)
+				http.Error(w, "Internal Sever Error", http.StatusInternalServerError)
+			}
+
+			ctx = context.WithValue(ctx, userCurrentPlanKey, currentPlan)
+
 			next.ServeHTTP(w, r.WithContext(ctx))
 		} else {
-			// Token is not valid
 			http.Error(w, "Invalid Token", http.StatusUnauthorized)
 			return
 		}
