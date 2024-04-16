@@ -1,37 +1,15 @@
 import { Button } from "@nextui-org/button";
 import { GoogleOAuthProvider, useGoogleLogin, useGoogleOneTapLogin } from "@react-oauth/google";
-import { useState } from "react";
+import { useContext, useState } from "react";
 import GoogleIcon from "~/icons/logos/GoogleLogo";
 import { googleOauthClientId } from "~/constants/oauth/clientIds";
 import googleAuth from "~/services/api/auth/google";
+import UserContext from "~/contexts/UserContext";
 
 export default function GoogleAuthButton() {
-    return (
-        // <GoogleOAuthProvider clientId={googleOauthClientId}>
-            <GoogleAuthButtonComponent />
-        // </GoogleOAuthProvider>
-    )
-}
-
-export function GoogleOneTap() {
-    useGoogleOneTapLogin({
-        onSuccess: async (jwtResponse) => {
-            console.log(jwtResponse.credential);
-            try {
-                let resp = await googleAuth({ jwt: jwtResponse.credential });
-                console.log(resp);
-            } catch { }
-        },
-        onError: () => {
-            console.log('Login Failed');
-        },
-    });
-
-    return <></>
-}
-
-function GoogleAuthButtonComponent() {
     const [isLoading, setLoading] = useState(false);
+
+    const { setUser } = useContext(UserContext)
 
     const onSuccess = async (tokenResponse: any) => {
         setLoading(true);
@@ -39,6 +17,7 @@ function GoogleAuthButtonComponent() {
         try {
             let resp = await googleAuth({ access_token: tokenResponse.access_token });
             console.log(resp);
+            // setUser
         } catch { }
 
         setLoading(false)
@@ -66,11 +45,28 @@ function GoogleAuthButtonComponent() {
                     googleLogin();
                 }}
                 variant="bordered"
+                color="primary"
                 startContent={<GoogleIcon />}
             >
                 <p>{isLoading ? 'Loading...' : 'Log in with Google'}</p>
             </Button>
         </>
     )
+}
 
+export function GoogleOneTap() {
+    useGoogleOneTapLogin({
+        onSuccess: async (jwtResponse) => {
+            console.log(jwtResponse.credential);
+            try {
+                let resp = await googleAuth({ jwt: jwtResponse.credential });
+                console.log(resp);
+            } catch { }
+        },
+        onError: () => {
+            console.log('Login Failed');
+        },
+    });
+
+    return <></>
 }

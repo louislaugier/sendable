@@ -1,7 +1,8 @@
 import { AuthCodeEvent } from "~/types/oauth";
 import { fetchSalesforcePKCE } from "../salesforce/pkce";
+import { User } from "~/types/user";
 
-export const handleAuthCode = (event: MessageEvent<AuthCodeEvent>, auth: (data: any) => Promise<any>, setLoading: React.Dispatch<React.SetStateAction<boolean>>, authCodeKey: string, stateKey: string, codeVerifierKey?: string) => {
+export const handleAuthCode = (event: MessageEvent<AuthCodeEvent>, setUser: React.Dispatch<React.SetStateAction<User | null>>, auth: (data: any) => Promise<any>, setLoading: React.Dispatch<React.SetStateAction<boolean>>, authCodeKey: string, stateKey: string, codeVerifierKey?: string) => {
     if (event.origin !== window.location.origin) {
         return;
     }
@@ -22,8 +23,9 @@ export const handleAuthCode = (event: MessageEvent<AuthCodeEvent>, auth: (data: 
             }
 
             auth({ code, code_verifier: codeVerifier })
-                .then(() => {
-                    console.log('login ok')
+                .then((res: any) => {
+                    console.log('login ok', res)
+                    // setUser
                 })
                 .catch(error => {
                     console.error('Oauth login error:', error);

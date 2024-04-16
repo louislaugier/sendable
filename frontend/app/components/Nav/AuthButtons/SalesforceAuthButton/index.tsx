@@ -1,5 +1,5 @@
 
-import { useEffect, useState } from 'react';
+import { useContext, useEffect, useState } from 'react';
 import { AuthCodeEvent } from '~/types/oauth';
 import { salesforceOauthClientId } from '~/constants/oauth/clientIds';
 import { salesforceAuthCodeKey, salesforceCodeVerifierKey, salesforceStateKey, salesforceUniqueStateValue } from '~/constants/oauth/stateKeys';
@@ -8,28 +8,31 @@ import salesforceAuth from '~/services/api/auth/salesforce';
 import { handleAuthCode, login } from '~/services/auth/oauth';
 import { Button } from '@nextui-org/button';
 import SalesforceIcon from '~/icons/logos/SalesforceFullLogo';
+import UserContext from '~/contexts/UserContext';
 
 const url = 'https://login.salesforce.com/services/oauth2/authorize'
 
-export default function SalesforceAuthButton() {
+export default function SalesforceAuthButton(props: any) {
+  const { customText } = props;
+
+  const { setUser } = useContext(UserContext)
+
   const [isLoading, setLoading] = useState(false);
 
   useEffect(() => {
-    const handle = (event: MessageEvent<AuthCodeEvent>) => handleAuthCode(event, salesforceAuth, setLoading, salesforceAuthCodeKey, salesforceStateKey, salesforceCodeVerifierKey);
+    const handle = (event: MessageEvent<AuthCodeEvent>) => handleAuthCode(event, setUser, salesforceAuth, setLoading, salesforceAuthCodeKey, salesforceStateKey, salesforceCodeVerifierKey);
 
     window.addEventListener('message', handle);
     return () => window.removeEventListener('message', handle);
   }, []);
-
-
 
   const salesforceLogin = async () => {
     await login(setLoading, salesforceUniqueStateValue, salesforceStateKey, salesforceAuthCodeKey, salesforceOauthClientId, salesforceOauthRedirectUri, url, salesforceCodeVerifierKey);
   };
 
   return (
-    <Button style={{ justifyContent: 'flex-start' }} isDisabled={isLoading} onClick={salesforceLogin} variant="bordered" startContent={<SalesforceIcon />}>
-      <p className='text-red'>{isLoading ? 'Loading...' : 'Log in with Salesforce'}</p>
+    <Button style={{ justifyContent: 'flex-start' }} isDisabled={isLoading} onClick={salesforceLogin} color='primary' variant="bordered" startContent={!customText && <SalesforceIcon />}>
+      <p className='text-red'>{isLoading ? 'Loading...' : customText ?? 'Log in with Salesforce'}</p>
     </Button>
   );
 }

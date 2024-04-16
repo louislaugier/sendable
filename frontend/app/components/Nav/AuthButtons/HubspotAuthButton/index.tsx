@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { AuthCodeEvent } from "~/types/oauth";
 import { hubspotOauthClientId } from "~/constants/oauth/clientIds";
 import { hubspotAuthCodeKey, hubspotStateKey, hubspotUniqueStateValue } from "~/constants/oauth/stateKeys";
@@ -7,16 +7,21 @@ import hubspotAuth from "~/services/api/auth/hubspot";
 import { handleAuthCode, login } from "~/services/auth/oauth";
 import { Button } from "@nextui-org/button";
 import HubspotIcon from "~/icons/logos/HubspotLogo";
+import UserContext from "~/contexts/UserContext";
 
 const url = 'https://app-eu1.hubspot.com/oauth/authorize'
 const scope = 'crm.objects.contacts.read'
 
-export default function HubspotAuthButton() {
+export default function HubspotAuthButton(props: any) {
+    const { customText } = props;
+
+    const { setUser } = useContext(UserContext)
+
     const [isLoading, setLoading] = useState(false);
 
     useEffect(() => {
         const handle = (event: MessageEvent<AuthCodeEvent>) => {
-            handleAuthCode(event, hubspotAuth, setLoading, hubspotAuthCodeKey, hubspotStateKey);
+            handleAuthCode(event, setUser, hubspotAuth, setLoading, hubspotAuthCodeKey, hubspotStateKey);
         };
 
         window.addEventListener('message', handle);
@@ -28,8 +33,8 @@ export default function HubspotAuthButton() {
     };
 
     return (
-        <Button style={{ justifyContent: 'flex-start' }} isDisabled={isLoading} onClick={hubspotLogin} variant="bordered" startContent={<HubspotIcon />}>
-            {isLoading ? 'Loading...' : 'Log in with HubSpot'}
+        <Button style={{ justifyContent: 'flex-start' }} isDisabled={isLoading} onClick={hubspotLogin} variant="bordered" color="primary" startContent={!customText && <HubspotIcon />}>
+            {isLoading ? 'Loading...' : customText ?? 'Log in with HubSpot'}
         </Button>
     );
 }
