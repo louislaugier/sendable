@@ -2,6 +2,8 @@ package middleware
 
 import (
 	"context"
+	"email-validator/internal/models"
+	"errors"
 	"fmt"
 	"log"
 	"net/http"
@@ -24,14 +26,29 @@ type userContextKey string
 
 const userKey userContextKey = "user_id"
 
-// GenerateJWT creates a new JWT token for the user.
-func GenerateJWT(userID, userEmail string) (*string, error) {
+// GenerateAndBindJWT generates a new JWT token and adds it to the User pointer.
+func GenerateAndBindJWT(user *models.User) error {
+	jwt, err := GenerateJWT(user.ID, user.Email)
+	if err != nil {
+		return err
+	} else if jwt == nil {
+		return errors.New("empty jwt after errorless generation")
+	}
+
+	user.JWT = *jwt
+	return nil
+}
+
+// GenerateJWT generates a new JWT token for the user.
+func GenerateJWT(userID uuid.UUID, userEmail string) (*string, error) {
+	ID := userID.String()
+
 	claims := CustomClaims{
-		UserID:    userID,
+		UserID:    ID,
 		UserEmail: userEmail,
 		StandardClaims: jwt.StandardClaims{
 			Issuer:    "https://sendable.email",
-			Subject:   userID,
+			Subject:   ID,
 			ExpiresAt: time.Now().AddDate(0, 0, 30).Unix(),
 			IssuedAt:  time.Now().Unix(),
 			Audience:  "https://api.sendable.email",

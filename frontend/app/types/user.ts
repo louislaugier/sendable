@@ -1,13 +1,16 @@
 import { Dispatch, SetStateAction } from "react";
+import { Order } from "./order";
 
 export interface User {
-    name: string;
-    //... add the rest of the properties for your user
-}
-
-export interface UserContext {
-    user: User | null;
-    setUser: Dispatch<SetStateAction<User | null>>;
+    id: string;
+    email: string;
+    isEmailConfirmed: boolean;
+    jwt: string,
+    authProvider?: string,
+    orders: Order[],
+    createdAt: string;
+    updatedAt: string;
+    deletedAt?: string;
 }
 
 export interface UserContext {

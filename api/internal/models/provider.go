@@ -1,17 +1,17 @@
 package models
 
-type SignupProvider string
+type AuthProvider string
 
 const (
-	GoogleProvider   SignupProvider = "google"
-	LinkedinProvider SignupProvider = "linkedin"
+	GoogleProvider   AuthProvider = "google"
+	LinkedinProvider AuthProvider = "linkedin"
 
-	SalesforceProvider SignupProvider = "salesforce"
-	ZohoProvider       SignupProvider = "zoho"
-	HubspotProvider    SignupProvider = "hubspot"
+	SalesforceProvider AuthProvider = "salesforce"
+	ZohoProvider       AuthProvider = "zoho"
+	HubspotProvider    AuthProvider = "hubspot"
 
-	MailchimpProvider SignupProvider = "mailchimp"
+	MailchimpProvider AuthProvider = "mailchimp"
 )
 
-type Provider struct {
+type ContactProvider struct {
 }

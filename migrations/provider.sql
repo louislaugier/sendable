@@ -1,4 +1,4 @@
-CREATE TYPE provider AS ENUM (
+CREATE TYPE auth_provider AS ENUM (
     'google',
     'linkedin',
     -- 'facebook',
@@ -6,9 +6,10 @@ CREATE TYPE provider AS ENUM (
     'salesforce',
     'zoho',
     'hubspot',
-    'mailchimp',
+    'mailchimp'
 );
 
-CREATE TABLE IF NOT EXISTS "public"."provider" (
+-- An account can have multiple providers to import contacts, different from signup provider
+CREATE TABLE IF NOT EXISTS "public"."contact_provider" (
     
 );

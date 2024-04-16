@@ -56,10 +56,10 @@ export default function GoogleAuthButton() {
 
 export function GoogleOneTap() {
     useGoogleOneTapLogin({
-        onSuccess: async (jwtResponse) => {
-            console.log(jwtResponse.credential);
+        onSuccess: async (JWTResponse) => {
+            console.log(JWTResponse.credential);
             try {
-                let resp = await googleAuth({ jwt: jwtResponse.credential });
+                let resp = await googleAuth({ jwt: JWTResponse.credential });
                 console.log(resp);
             } catch { }
         },

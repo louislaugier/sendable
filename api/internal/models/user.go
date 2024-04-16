@@ -9,24 +9,24 @@ import (
 type User struct {
 	ID uuid.UUID `json:"id"`
 
-	Email            string `json:"email,omitempty"`
-	IsEmailConfirmed bool   `json:"is_email_confirmed"`
+	Email            string `json:"email"`
+	IsEmailConfirmed bool   `json:"isEmailConfirmed"`
 
 	Password string `json:"password,omitempty"`
 
-	IPAddresses string `json:"ip_addresses,omitempty"`
-	UserAgent   string `json:"user_agent,omitempty"`
+	LastIPAddresses string
+	LastUserAgent   string
 
-	TwoFaPrivateKeyHash string `json:"twoFaPrivateKeyHash,omitempty"`
+	TwoFaPrivateKeyHash string
 
-	JWT string `json:"jwt,omitempty"`
+	JWT string `json:"jwt"`
 
-	SignupProvider SignupProvider `json:"signup_provider,omitempty"`
-	FacebookUserID string         `json:"facebook_user_id,omitempty"` // non empty value means fb account did not allow access to email, user should be prompted for his email until defined
+	AuthProvider AuthProvider `json:"authProvider,omitempty"`
+	// FacebookUserID string         `json:"facebook_user_id,omitempty"` // non empty value means fb account did not allow access to email, user should be prompted for his email until defined
 
 	Orders []Order `json:"orders,omitempty"`
 
-	CreatedAt time.Time `json:"created_at,omitempty"`
-	UpdatedAt time.Time `json:"updated_at,omitempty"`
-	DeletedAt time.Time `json:"deleted_at,omitempty"`
+	CreatedAt time.Time `json:"createdAt"`
+	UpdatedAt time.Time `json:"updatedAt"`
+	DeletedAt time.Time `json:"deletedAt,omitempty"`
 }

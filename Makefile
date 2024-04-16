@@ -68,8 +68,8 @@ ssh-frontend-dev:
 
 #################################################################
 
-.PHONY: migrate-local
-migrate-local:
+.PHONY: reset-db-local
+reset-db-local:
 	docker-compose rm -sfv db
 	docker-compose build db --no-cache
 	make start-dev

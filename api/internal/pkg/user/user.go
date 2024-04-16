@@ -1,38 +1,30 @@
 package user
 
-// func Create(u *models.User) (*models.User, error) {
-// 	_, err := database.DB.Exec(`insert into public."user" ("walletAddress","avatarUrl","ip","createdAt") values ($1,$2,$3,$4);`, u.WalletAddress, u.AvatarURL, u.IP, time.Now())
-// 	if err != nil {
-// 		log.Println(err)
-// 		return nil, err
-// 	}
+import (
+	"email-validator/config"
+	"email-validator/internal/models"
+	"fmt"
+)
 
-// 	return u, nil
-// }
+func GetByEmailAndProvider(email string, provider models.AuthProvider) (*models.User, error) {
+	rows, err := config.DB.Query(fmt.Sprintf(`SELECT "id", "email", "is_email_confirmed", "password_sha256", "last_ip_addresses", "last_user_agent", "two_fa_private_key_hash", "auth_provider", "created_at", "updated_at", "deleted_at" FROM public."user" WHERE "email" = '%s' AND "auth_provider" = '%s' LIMIT 1;`, email, provider))
 
-// func Login(user *models.User) error {
-// 	rows, err := config.DB.Query(`SELECT "id" FROM public."user" WHERE "deletedAt" IS NULL LIMIT 1;`)
-// 	if err != nil {
-// 		return err
-// 	}
+	if err != nil {
+		return nil, err
+	}
 
-// 	defer rows.Close()
-// 	u := &models.User{}
-// 	for rows.Next() {
-// 		rows.Scan(u.ID)
-// 	}
-// 	isUserFound := u != nil
+	defer rows.Close()
 
-// 	jwt, err := middleware.GenerateJWT(u.ID.String())
-// 	if err != nil {
-// 		log.Println(err)
-// 		return err
-// 	}
+	var user *models.User
 
-// 	u.JWT = *jwt
+	for rows.Next() {
+		u := models.User{}
+		rows.Scan(&u.ID, &u.Email, &u.IsEmailConfirmed, &u.Password, &u.LastIPAddresses, &u.LastUserAgent, &u.TwoFaPrivateKeyHash, &u.AuthProvider, &u.CreatedAt, &u.UpdatedAt, &u.DeletedAt)
+		user = &u
+	}
 
-// 	return nil
-// }
+	return user, nil
+}
 
 // func updateSomethingWithTx(DB *sql.DB) error {
 // 	// Start a new transaction

@@ -1,13 +1,16 @@
 package handlers
 
 import (
+	"email-validator/handlers/middleware"
 	"email-validator/internal/models"
 	"email-validator/internal/pkg/oauth"
-	"email-validator/internal/pkg/salesforce"
+	"email-validator/internal/pkg/user"
 	"encoding/json"
 	"fmt"
 	"log"
 	"net/http"
+
+	"github.com/google/uuid"
 )
 
 func salesforceAuthHandler(w http.ResponseWriter, r *http.Request) {
@@ -33,18 +36,36 @@ func salesforceAuthHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	contacts, err := salesforce.FetchContacts(accessToken)
+	// contacts, err := salesforce.FetchContacts(accessToken)
+	// if err != nil {
+	// 	log.Printf("Error fetching Salesforce contacts: %s", err)
+	// 	http.Error(w, "Internal Server Error", http.StatusInternalServerError)
+	// 	return
+	// }
+	// log.Println(contacts)
+
+	user, err := user.GetByEmailAndProvider(userInfo.Email, models.SalesforceProvider)
 	if err != nil {
-		log.Printf("Error fetching Salesforce contacts: %s", err)
+		log.Printf("Error attempting to fetch user with email %s: %v", userInfo.Email, err)
+		http.Error(w, "Internal Server Error", http.StatusInternalServerError)
+		return
+	} else if user == nil {
+		user = &models.User{
+			ID:               uuid.New(),
+			Email:            userInfo.Email,
+			IsEmailConfirmed: true,
+			LastIPAddresses:  middleware.GetIPsFromRequest(r),
+			LastUserAgent:    r.Header.Get("User-Agent"),
+			AuthProvider:     models.SalesforceProvider,
+		}
+	}
+
+	err = middleware.GenerateAndBindJWT(user)
+	if err != nil {
+		log.Printf("Error attempting to generate & bind jwt to user %s: %v", userInfo.Email, err)
 		http.Error(w, "Internal Server Error", http.StatusInternalServerError)
 		return
 	}
-	log.Println(userInfo)
-	log.Println(contacts)
 
 	fmt.Fprint(w, http.StatusText(http.StatusOK))
-
-	// TODO: get user by email + provider
-	// if nil, insert
-	// return jwt + user
 }
