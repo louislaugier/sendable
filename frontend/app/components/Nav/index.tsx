@@ -1,4 +1,4 @@
-import { Navbar, NavbarBrand, NavbarContent, NavbarItem, Button, Dropdown, DropdownItem, DropdownMenu, DropdownTrigger, User } from "@nextui-org/react";
+import { Navbar, NavbarBrand, NavbarContent, NavbarItem, Button, Dropdown, DropdownItem, DropdownMenu, DropdownTrigger, User, DropdownSection } from "@nextui-org/react";
 import { useLocation } from "@remix-run/react";
 import { Fragment, useContext } from "react";
 import AuthModalContext from "~/contexts/AuthModalContext";
@@ -10,8 +10,10 @@ import { GoogleOneTap } from "./AuthButtons/GoogleAuthButton";
 import { Link as RemixLink } from "@remix-run/react";
 import { siteName } from "~/constants/app";
 import { ChevronDownIcon } from "~/icons/ChevronDownIcon";
+import { FiExternalLink } from "react-icons/fi";
 
 export const menuItems = [
+    { url: '/dashboard', label: 'Dashboard' },
     { url: "/api", label: "API" },
     { url: "/integrations", label: "Integrations" },
     { url: "/pricing", label: "Pricing" },
@@ -45,54 +47,55 @@ export default function Nav() {
                 </NavbarBrand>
                 <NavbarContent className="hidden sm:flex gap-4" justify="center">
                     {menuItems.map((menuItem, index) => (
-                        <Fragment key={index}>
-                            {menuItem.sublinks ? (
-                                <Dropdown>
-                                    <NavbarItem>
-                                        <DropdownTrigger>
-                                            <Button
-                                                disableRipple
-                                                className="p-0 bg-transparent data-[hover=true]:bg-transparent text-base" // Added text-base class
-                                                endContent={<ChevronDownIcon fill="currentColor" size={16} />}
-                                                radius="sm"
-                                                variant="light"
-                                            >
-                                                {menuItem.label}
-                                            </Button>
-                                        </DropdownTrigger>
-                                    </NavbarItem>
-                                    <DropdownMenu
-                                        aria-label={menuItem.label}
-                                        className="w-[340px]"
-                                        itemClasses={{
-                                            base: "gap-4",
-                                        }}
+                        menuItem.label === 'Dashboard' && !user ? <></> :
+                            <Fragment key={index}>
+                                {menuItem.sublinks ? (
+                                    <Dropdown>
+                                        <NavbarItem>
+                                            <DropdownTrigger>
+                                                <Button
+                                                    disableRipple
+                                                    className="p-0 bg-transparent data-[hover=true]:bg-transparent text-base" // Added text-base class
+                                                    endContent={<ChevronDownIcon fill="currentColor" size={16} />}
+                                                    radius="sm"
+                                                    variant="light"
+                                                >
+                                                    {menuItem.label}
+                                                </Button>
+                                            </DropdownTrigger>
+                                        </NavbarItem>
+                                        <DropdownMenu
+                                            aria-label={menuItem.label}
+                                            className="w-[340px]"
+                                            itemClasses={{
+                                                base: "gap-4",
+                                            }}
+                                        >
+                                            {menuItem.sublinks.map((sublink, subIndex) => (
+                                                <DropdownItem
+                                                    key={subIndex}
+                                                    description={sublink.description}
+                                                    onClick={() => handleSublinkClick(sublink.url)}
+                                                    style={{ cursor: 'pointer' }}
+                                                >
+                                                    {sublink.label}
+                                                </DropdownItem>
+                                            ))}
+                                        </DropdownMenu>
+                                    </Dropdown>
+                                ) : (
+                                    <NavbarItem
+                                        isActive={isCurrentUrl(location, menuItem.url)}
+                                        aria-current={isCurrentUrl(location, menuItem.url) && "page"}
                                     >
-                                        {menuItem.sublinks.map((sublink, subIndex) => (
-                                            <DropdownItem
-                                                key={subIndex}
-                                                description={sublink.description}
-                                                onClick={() => handleSublinkClick(sublink.url)}
-                                                style={{ cursor: 'pointer' }}
-                                            >
-                                                {sublink.label}
-                                            </DropdownItem>
-                                        ))}
-                                    </DropdownMenu>
-                                </Dropdown>
-                            ) : (
-                                <NavbarItem
-                                    isActive={isCurrentUrl(location, menuItem.url)}
-                                    aria-current={isCurrentUrl(location, menuItem.url) && "page"}
-                                >
-                                    <RemixLink prefetch="intent" to={menuItem.url}>
-                                        <p className={isCurrentUrl(location, menuItem.url) ? "text-primary" : undefined}>
-                                            {menuItem.label}
-                                        </p>
-                                    </RemixLink>
-                                </NavbarItem>
-                            )}
-                        </Fragment>
+                                        <RemixLink prefetch="intent" to={menuItem.url}>
+                                            <p className={isCurrentUrl(location, menuItem.url) ? "text-primary" : undefined}>
+                                                {menuItem.label}
+                                            </p>
+                                        </RemixLink>
+                                    </NavbarItem>
+                                )}
+                            </Fragment>
                     ))}
                 </NavbarContent>
 
@@ -108,25 +111,39 @@ export default function Nav() {
                                 />
                             </DropdownTrigger>
                             <DropdownMenu aria-label="User Actions" variant="flat">
-                                <DropdownItem key="profile" className="h-14 gap-2">
-                                    <p className="font-bold">Signed in as</p>
-                                    <p className="font-bold">{user.email}</p>
-                                </DropdownItem>
-                                <DropdownItem key="settings">
-                                    My Settings
-                                </DropdownItem>
-                                <DropdownItem key="team_settings">Team Settings</DropdownItem>
-                                <DropdownItem key="analytics">
-                                    Analytics
-                                </DropdownItem>
-                                <DropdownItem key="system">System</DropdownItem>
-                                <DropdownItem key="configurations">Configurations</DropdownItem>
-                                <DropdownItem key="help_and_feedback">
-                                    Help & Feedback
-                                </DropdownItem>
-                                <DropdownItem onClick={() => setUser(null)} key="logout" color="danger">
-                                    Log Out
-                                </DropdownItem>
+                                <DropdownSection title="App" showDivider>
+                                    <DropdownItem
+                                        key="dashboard"
+                                        description="Validate email addresses"
+                                    // startContent={<AddNoteIcon className={iconClasses} />}
+                                    >
+                                        Dashboard
+                                    </DropdownItem>
+                                </DropdownSection>
+                                <DropdownSection title="Account">
+                                    <DropdownItem
+                                        key="settings"
+                                        description="Account preferences"
+                                    >
+                                        Settings
+                                    </DropdownItem>
+                                    <DropdownItem
+                                        key="subscription"
+                                        description="Go to Stripe customer dashboard"
+                                    // href or onClick: stripe target blank 
+                                    >
+                                        <div className="flex">Manage subscription <FiExternalLink style={{ marginLeft: 5 }} /></div>
+                                    </DropdownItem>
+                                    <DropdownItem
+                                        onClick={() => setUser(null)}
+                                        key="logout"
+                                        className="text-danger"
+                                        color="danger"
+                                        description="Disconnect account"
+                                    >
+                                        Log out
+                                    </DropdownItem>
+                                </DropdownSection>
                             </DropdownMenu>
                         </Dropdown>
                     </> : <>

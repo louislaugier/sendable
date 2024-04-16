@@ -13,7 +13,7 @@ export interface User {
     deletedAt?: string;
 }
 
-export interface UserContext {
+export interface UserContextType {
     user: User | null;
     setUser: Dispatch<SetStateAction<User | null>>;
 }

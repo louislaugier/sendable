@@ -17,7 +17,7 @@ export default function GoogleAuthButton() {
         try {
             let resp = await googleAuth({ access_token: tokenResponse.access_token });
             console.log(resp);
-            // setUser
+            // setUser + redirect dashboard
         } catch { }
 
         setLoading(false)
