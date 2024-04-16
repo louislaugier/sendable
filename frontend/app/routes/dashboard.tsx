@@ -1,6 +1,9 @@
 import { Card, CardHeader, Divider, CardBody, CardFooter, Link, Image } from "@nextui-org/react";
 import type { MetaFunction } from "@remix-run/node";
+import { useContext } from "react";
 import { siteName } from "~/constants/app";
+import UserContext from "~/contexts/UserContext";
+import { navigateToUrl } from "~/utils/url";
 
 export const meta: MetaFunction = () => {
   return [
@@ -9,8 +12,10 @@ export const meta: MetaFunction = () => {
   ];
 };
 
-// should redirect to home if not logged
 export default function Dashboard() {
+  const { user } = useContext(UserContext);
+
+  if (!user) navigateToUrl('/')
 
   return (
     <div className="py-8 px-6">

@@ -1,8 +1,11 @@
 import { AuthCodeEvent } from "~/types/oauth";
 import { fetchSalesforcePKCE } from "../salesforce/pkce";
 import { User } from "~/types/user";
+import { navigateToUrl } from "~/utils/url";
 
 export const handleAuthCode = (event: MessageEvent<AuthCodeEvent>, setUser: React.Dispatch<React.SetStateAction<User | null>>, auth: (data: any) => Promise<any>, setLoading: React.Dispatch<React.SetStateAction<boolean>>, authCodeKey: string, stateKey: string, codeVerifierKey?: string) => {
+    setLoading(true);
+
     if (event.origin !== window.location.origin) {
         return;
     }
@@ -12,7 +15,6 @@ export const handleAuthCode = (event: MessageEvent<AuthCodeEvent>, setUser: Reac
         const storedState = sessionStorage.getItem(stateKey);
 
         if (code && state && storedState === state) {
-            setLoading(true);
 
             sessionStorage.removeItem(stateKey);
 
@@ -26,17 +28,16 @@ export const handleAuthCode = (event: MessageEvent<AuthCodeEvent>, setUser: Reac
                 .then((res: any) => {
                     if (res) {
                         setUser(res)
-                        // redirect to dashboard
+                        navigateToUrl('/dashboard')
                     }
                 })
                 .catch(error => {
                     console.error('Oauth login error:', error);
                 })
-                .finally(() => {
-                    setLoading(false);
-                });
         }
     }
+
+    setLoading(false);
 };
 
 export const login = async (setLoading: React.Dispatch<React.SetStateAction<boolean>>, uniqueStateValue: string, stateKey: string, authCodeKey: string, clientId: string, redirectUri: string, authUrl: string, codeVerifierKey?: string, scope?: string) => {

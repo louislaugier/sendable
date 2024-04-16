@@ -5,6 +5,7 @@ import GoogleIcon from "~/icons/logos/GoogleLogo";
 import { googleOauthClientId } from "~/constants/oauth/clientIds";
 import googleAuth from "~/services/api/auth/google";
 import UserContext from "~/contexts/UserContext";
+import { navigateToUrl } from "~/utils/url";
 
 export default function GoogleAuthButton() {
     const [isLoading, setLoading] = useState(false);
@@ -15,9 +16,9 @@ export default function GoogleAuthButton() {
         setLoading(true);
 
         try {
-            let resp = await googleAuth({ access_token: tokenResponse.access_token });
-            console.log(resp);
-            // setUser + redirect dashboard
+            let res = await googleAuth({ access_token: tokenResponse.access_token });
+            setUser(res)
+            navigateToUrl('/dashboard')
         } catch { }
 
         setLoading(false)

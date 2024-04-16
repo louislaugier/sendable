@@ -1,5 +1,6 @@
 import { createContext, useState, useEffect, useMemo } from "react";
 import { User, UserContextType } from "~/types/user";
+import { navigateToUrl } from "~/utils/url";
 
 const UserContext = createContext<UserContextType>({
     user: null,
