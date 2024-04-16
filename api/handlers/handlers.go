@@ -33,7 +33,7 @@ func handleHTTP(mux *http.ServeMux) {
 
 	handle(mux, "/validate_email",
 		middleware.SingleValidationPlanLimit(
-			middleware.SingleValidatorRateLimit(
+			middleware.SingleValidatonRateLimit(
 				middleware.ManageSingleValidationOrigin( // ManageSingleValidationOrigin calls ValidateJWT only if origin is other than a guest on frontend
 					http.HandlerFunc(validateEmailHandler),
 				),
@@ -42,9 +42,11 @@ func handleHTTP(mux *http.ServeMux) {
 	)
 	handle(mux, "/validate_emails",
 		middleware.ValidateFile(
-			middleware.BulkValidatorRateLimit(
-				middleware.ValidateJWT(
-					http.HandlerFunc(validateEmailsHandler),
+			middleware.BulkValidatonRateLimit(
+				middleware.ManageBulkValidationOrigin( // ManageSingleValidationOrigin calls ValidateJWT only if origin is other than a guest on frontend
+					middleware.ValidateJWT(
+						http.HandlerFunc(validateEmailsHandler),
+					),
 				),
 			),
 		),

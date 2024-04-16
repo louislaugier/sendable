@@ -1,6 +1,7 @@
 package middleware
 
 import (
+	"email-validator/config"
 	"email-validator/internal/models"
 	"log"
 	"net/http"
@@ -39,36 +40,29 @@ func BaseRateLimit(h http.Handler) http.Handler {
 	return RateLimit(h, models.BaseRateLimiter)
 }
 
-func SingleValidatorRateLimit(next http.Handler) http.Handler {
+func SingleValidatonRateLimit(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		origin := GetValueFromContext(r.Context(), requestOriginKey)
-		log.Println(origin)
 
 		currentPlan := GetValueFromContext(r.Context(), userCurrentPlanKey)
 		log.Println(currentPlan)
 
-		// if origin frontend:
-		// 	1 concurrent validation per CLIENT (IP) max & 10 per hour
+		if origin == config.FrontendURL {
+			// 	1 concurrent validation per CLIENT (IP) max & 10 per hour
+		} else {
+			// 	if free: 1 concurrent validation per user max
+			// 	if premium: 3 concurrent validations per user max
+			// 	if enterprise: unlimited concurrent validations per user
 
-		// else:
-		// 	if free: 1 concurrent validation per user max
-		// 	if premium: 3 concurrent validations per user max
-		// 	if enterprise: unlimited concurrent validations per user
+		}
 
 		next.ServeHTTP(w, r)
 	})
 }
 
-func BulkValidatorRateLimit(next http.Handler) http.Handler {
+func BulkValidatonRateLimit(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		origin := GetValueFromContext(r.Context(), requestOriginKey)
-		log.Println(origin)
-
-		currentPlan := GetValueFromContext(r.Context(), userCurrentPlanKey)
-		log.Println(currentPlan)
-
-		// if origin == api && plan == free or premium: throw err
-		// else: 1 concurrent validation batch per user
+		// 1 concurrent validation batch per user
 
 		next.ServeHTTP(w, r)
 	})

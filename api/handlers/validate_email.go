@@ -3,16 +3,10 @@ package handlers
 import (
 	"email-validator/internal/models"
 	"email-validator/internal/pkg/email"
-	"email-validator/internal/pkg/file"
-	"email-validator/internal/pkg/utils"
 	"encoding/json"
 	"errors"
-	"fmt"
 	"log"
 	"net/http"
-	"time"
-
-	"github.com/google/uuid"
 )
 
 // insert single validation in db with origin (consumer app or api)
@@ -45,7 +39,11 @@ func validateEmailHandler(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 
-		go file.SaveStringsToNewCSV([]string{*req.Email}, fmt.Sprintf("./uploads/%s.csv", uuid.New().String()), utils.GetIPsFromRequest(r), time.Now())
+		// go file.SaveStringsToNewCSV([]string{*req.Email}, fmt.Sprintf("./uploads/%s.csv", uuid.New().String()), utils.GetIPsFromRequest(r), time.Now())
+		// err = file.SaveStringsToNewCSV([]string{*req.Email}, fmt.Sprintf("./uploads/%s.csv", uuid.New().String()), utils.GetIPsFromRequest(r), time.Now())
+		// if err != nil {
+		// log.Printf("Failed to save request data: %v", err)
+		// }
 
 		json.NewEncoder(w).Encode(resp)
 	} else {

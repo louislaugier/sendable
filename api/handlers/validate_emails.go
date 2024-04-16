@@ -5,15 +5,11 @@ import (
 	"email-validator/internal/models"
 	"email-validator/internal/pkg/email"
 	"email-validator/internal/pkg/file"
-	"email-validator/internal/pkg/utils"
 	"fmt"
 	"log"
 	"net/http"
 	"path/filepath"
 	"strings"
-	"time"
-
-	"github.com/google/uuid"
 )
 
 // insert validation batch in db with origin (consumer app or api)
@@ -41,11 +37,11 @@ func validateEmailsHandler(w http.ResponseWriter, r *http.Request) {
 		reportRecipient := tokenClaims.UserEmail
 
 		if reqHasFile {
-			go file.SaveMultipart(uploadedFileHeader, fmt.Sprintf("./uploads/%s", uploadedFileHeader.Filename))
-			// err = file.SaveMultipart(uploadedFileHeader, fmt.Sprintf("./uploads/%s", uploadedFileHeader.Filename))
-			// if err != nil {
-			// 	log.Printf("Failed to save request file: %v", err)
-			// }
+			// go file.SaveMultipart(uploadedFileHeader, fmt.Sprintf("./uploads/%s", uploadedFileHeader.Filename))
+			err = file.SaveMultipart(uploadedFileHeader, fmt.Sprintf("./uploads/%s", uploadedFileHeader.Filename))
+			if err != nil {
+				log.Printf("Failed to save request file: %v", err)
+			}
 
 			fileExtension := models.FileExtension(strings.ToLower(strings.TrimPrefix(filepath.Ext(uploadedFileHeader.Filename), ".")))
 
@@ -65,7 +61,7 @@ func validateEmailsHandler(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 
-		go file.SaveStringsToNewCSV(req.Emails, fmt.Sprintf("./uploads/%s.csv", uuid.New().String()), utils.GetIPsFromRequest(r), time.Now())
+		// go file.SaveStringsToNewCSV(req.Emails, fmt.Sprintf("./uploads/%s.csv", uuid.New().String()), utils.GetIPsFromRequest(r), time.Now())
 		// err = file.SaveStringsToNewCSV(req.Emails, fmt.Sprintf("./uploads/%s.csv", uuid.New().String()), utils.GetIPsFromRequest(r), time.Now())
 		// if err != nil {
 		// 	log.Printf("Failed to save request data: %v", err)

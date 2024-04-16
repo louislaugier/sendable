@@ -29,13 +29,6 @@ const userIDKey userContextKey = "user_id"
 const userCurrentPlanKey userContextKey = "user_current_plan"
 const requestOriginKey userContextKey = "request_origin"
 
-type origin string
-
-const (
-	OriginAPI origin = "api"
-	OriginApp origin = "app"
-)
-
 // GenerateAndBindJWT generates a new JWT token and adds it to the User pointer.
 func GenerateAndBindJWT(user *models.User) error {
 	jwt, err := GenerateJWT(user.ID, user.Email)

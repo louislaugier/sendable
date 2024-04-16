@@ -4,10 +4,12 @@ import AuthModalContext from "~/contexts/AuthModalContext";
 
 import { AuthModalType } from "~/types/modal";
 import TryItOut from "../../../Cards/TryItOutCard";
+import UserContext from "~/contexts/UserContext";
+import { navigateToUrl } from "~/utils/url";
 
 export default function HeroSection() {
     const { authModal, setModalType } = useContext(AuthModalContext);
-
+    const { user, setUser } = useContext(UserContext);
     return (
         <div style={{ height: 'calc(70vh - 65px)', minHeight: '550px' }} className="flex flex-col items-center justify-center py-16">
             <div className="max-w-6xl mx-auto flex flex-col md:flex-row">
@@ -17,6 +19,10 @@ export default function HeroSection() {
                         You invest for better email marketing ROI. We help you identify valid email addresses to connect with your customers and leads. Boost your inbox placement and open rates with 99% accurate real-time email validation software.
                     </p>
                     <Button onClick={() => {
+                        if (user) {
+                            navigateToUrl('/dashboard')
+                            return
+                        }
                         setModalType(AuthModalType.Signup);
                         authModal.onOpen();
                     }} color="primary" variant="shadow" className="mb-4">

@@ -1,9 +1,12 @@
 CREATE TYPE origin AS ENUM ('app', 'api');
+CREATE TYPE validation_type AS ENUM ('single', 'bulk');
 
 CREATE TABLE IF NOT EXISTS "public"."validation" (
-    "id" SERIAL PRIMARY KEY,
+    "id" UUID PRIMARY KEY,
     "user_id" UUID REFERENCES "public"."user"(id),
-    "target_email" VARCHAR NOT NULL,
+    "single_target_email" VARCHAR,
+    "upload_filename" VARCHAR,
     "origin" origin NOT NULL,
+    "type" validation_type NOT NULL,
     "created_at" TIMESTAMP NOT NULL DEFAULT now()
 );
