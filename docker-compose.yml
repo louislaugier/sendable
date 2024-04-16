@@ -64,7 +64,6 @@ services:
       - vpc_local
 volumes:
   frontend_node_modules:
-  frontend_build:
 networks:
   vpc_local:
     driver: bridge
