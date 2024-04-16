@@ -15,6 +15,7 @@ export default function App(props: any) {
     return (
         <>
             <Modal
+                backdrop="blur"
                 onClose={close}
                 style={{ maxWidth: "375px" }}
                 isOpen={isOpen}

@@ -1,4 +1,4 @@
-import { Navbar, NavbarBrand, NavbarContent, NavbarItem, Button, Dropdown, DropdownItem, DropdownMenu, DropdownTrigger } from "@nextui-org/react";
+import { Navbar, NavbarBrand, NavbarContent, NavbarItem, Button, Dropdown, DropdownItem, DropdownMenu, DropdownTrigger, User } from "@nextui-org/react";
 import { useLocation } from "@remix-run/react";
 import { Fragment, useContext } from "react";
 import AuthModalContext from "~/contexts/AuthModalContext";
@@ -27,7 +27,7 @@ export const menuItems = [
 export default function Nav() {
     const { authModal, modalType, setModalType } = useContext(AuthModalContext);
     const location = useLocation();
-    const { user } = useContext(UserContext);
+    const { user, setUser } = useContext(UserContext);
 
     const handleSublinkClick = (url: string) => {
         navigateToUrl(url);
@@ -98,7 +98,37 @@ export default function Nav() {
 
                 <NavbarContent justify="end">
                     {user ? <>
-                        Logged in as {user.email}
+                        <Dropdown placement="bottom-start" backdrop="blur">
+                            <DropdownTrigger>
+                                <User
+                                    as="button"
+                                    className="transition-transform"
+                                    description="Free user"
+                                    name={user.email}
+                                />
+                            </DropdownTrigger>
+                            <DropdownMenu aria-label="User Actions" variant="flat">
+                                <DropdownItem key="profile" className="h-14 gap-2">
+                                    <p className="font-bold">Signed in as</p>
+                                    <p className="font-bold">{user.email}</p>
+                                </DropdownItem>
+                                <DropdownItem key="settings">
+                                    My Settings
+                                </DropdownItem>
+                                <DropdownItem key="team_settings">Team Settings</DropdownItem>
+                                <DropdownItem key="analytics">
+                                    Analytics
+                                </DropdownItem>
+                                <DropdownItem key="system">System</DropdownItem>
+                                <DropdownItem key="configurations">Configurations</DropdownItem>
+                                <DropdownItem key="help_and_feedback">
+                                    Help & Feedback
+                                </DropdownItem>
+                                <DropdownItem onClick={() => setUser(null)} key="logout" color="danger">
+                                    Log Out
+                                </DropdownItem>
+                            </DropdownMenu>
+                        </Dropdown>
                     </> : <>
                         <NavbarItem className="hidden lg:flex">
                             <p style={{ cursor: 'pointer' }} onClick={() => {

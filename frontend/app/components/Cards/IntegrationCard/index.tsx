@@ -22,7 +22,7 @@ export default function IntegrationCard(props: any) {
             </CardBody>
             <Divider />
             <CardFooter className="justify-end">
-                {signupBtn}
+                {!user && signupBtn}
 
                 <style>
                     {
@@ -35,7 +35,7 @@ export default function IntegrationCard(props: any) {
                 </style>
                 {user ? <Button onClick={() => {
                     // TODO
-                }} color="primary" variant="shadow">
+                }} color="primary" variant="shadow" className="ml-2">
                     Import contacts
                 </Button> : <Tooltip showArrow={true} content={"You must be logged in to import contacts"}>
                     <Button onClick={() => { }} className={`notAllowed${signupBtn ? ' ml-2' : ''}`} color="primary" variant="shadow">

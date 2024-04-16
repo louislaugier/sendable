@@ -8,12 +8,12 @@ CREATE TABLE IF NOT EXISTS "public"."user" (
     "two_fa_private_key_hash" VARCHAR,
     "auth_provider" auth_provider,
     -- "facebook_user_id" VARCHAR,
-    "createdAt" TIMESTAMP NOT NULL DEFAULT now(),
-    "updatedAt" TIMESTAMP NOT NULL DEFAULT now(),
-    "deletedAt" TIMESTAMP,
+    "created_at" TIMESTAMP NOT NULL DEFAULT now(),
+    "updated_at" TIMESTAMP NOT NULL DEFAULT now(),
+    "deleted_at" TIMESTAMP,
 
     CONSTRAINT password_or_auth_provider_not_empty CHECK (
-        "password" IS NOT NULL
+        "password_sha256" IS NOT NULL
         OR "auth_provider" IS NOT NULL
     )
 );
