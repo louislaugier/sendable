@@ -10,3 +10,7 @@ CREATE TABLE IF NOT EXISTS "public"."order" (
     "created_at" TIMESTAMP NOT NULL DEFAULT now(),
     "cancelled_at" TIMESTAMP
 );
+
+-- prevent more than 1 at the same time except if (in that case cancel current one):
+-- - OLD latest order is user's only order and is less than 7 days old (ongoing trial)
+-- - OLD order = premium and NEW order = enterprise

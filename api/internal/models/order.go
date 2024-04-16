@@ -29,6 +29,6 @@ type Order struct {
 	Duration OrderDuration `json:"duration"`
 	Type     OrderType     `json:"type"`
 
-	CreatedAt time.Time `json:"created_at"`
-	UpdatedAt time.Time `json:"updated_at"`
+	CreatedAt   time.Time `json:"created_at"`
+	CancelledAt time.Time `json:"cancelled_at,omitempty"`
 }
