@@ -104,11 +104,8 @@ func ValidateMany(emails []string) ([]models.ReacherResponse, error) {
 					resp, err := Validate(email)
 					if err != nil {
 						if !errors.Is(err, models.ErrInvalidEmail) {
-							select {
-							case errChannel <- err:
-								cancel() // Signal all goroutines to stop by canceling the context
-							default:
-							}
+							errChannel <- err
+							cancel() // Signal all goroutines to stop by canceling the context
 							return
 						}
 
@@ -132,7 +129,7 @@ func ValidateMany(emails []string) ([]models.ReacherResponse, error) {
 			select {
 			case emailChannel <- email:
 			case <-ctx.Done():
-				break // If context is done, stop sending emails
+				break // If context is done, stop validating emails
 			}
 		}
 	}
@@ -144,9 +141,8 @@ func ValidateMany(emails []string) ([]models.ReacherResponse, error) {
 	case err := <-errChannel: // Check if an error was sent to the error channel
 		return nil, err
 	default:
+		return validatedEmails, nil
 	}
-
-	return validatedEmails, nil
 }
 
 // ValidateManyBulk validates emails using Reacher combined with Rabbitmq
