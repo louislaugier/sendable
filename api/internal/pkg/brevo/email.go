@@ -32,7 +32,6 @@ func (c *EmailClient) SendEmail(template models.Template, subject, previewConten
 		HtmlContent: HTML,
 		TextContent: previewContent,
 		Subject:     subject,
-		// Attachment:  files,
 	})
 
 	if err != nil {
