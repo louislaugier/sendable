@@ -35,7 +35,6 @@ type User struct {
 	JWT string `json:"jwt"`
 
 	AuthProvider *AuthProvider `json:"authProvider,omitempty"`
-	// FacebookUserID string         `json:"facebook_user_id,omitempty"` // non empty value means fb account did not allow access to email, user should be prompted for his email until defined
 
 	CurrentPlan *Order `json:"currentPlan,omitempty"`
 

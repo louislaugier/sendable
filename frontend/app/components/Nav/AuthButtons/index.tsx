@@ -35,9 +35,6 @@ export default function AuthButtons(props: any) {
                 <div className="gap-2 flex flex-col" style={{ width: '220px' }}>
                     <GoogleAuthButton />
                     <LinkedinAuthButton />
-
-                    {/* <FacebookAuthButton /> */}
-                    {/* <AppleAuthButton /> */}
                 </div>
 
                 <Divider className="my-6" />

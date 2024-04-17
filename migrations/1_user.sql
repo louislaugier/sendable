@@ -1,8 +1,6 @@
 CREATE TYPE auth_provider AS ENUM (
     'google',
     'linkedin',
-    -- 'facebook',
-    -- 'apple',
     'salesforce',
     'zoho',
     'hubspot',
@@ -18,7 +16,6 @@ CREATE TABLE IF NOT EXISTS public."user" (
     "last_user_agent" VARCHAR NOT NULL DEFAULT 'unknown',
     "two_fa_private_key_hash" VARCHAR,
     "auth_provider" auth_provider,
-    -- "facebook_user_id" VARCHAR,
     "created_at" TIMESTAMP NOT NULL DEFAULT now(),
     "updated_at" TIMESTAMP NOT NULL DEFAULT now(),
     "deleted_at" TIMESTAMP,
