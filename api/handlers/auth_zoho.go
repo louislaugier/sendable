@@ -59,13 +59,19 @@ func handleZohoUserCreation(emails string, r *http.Request) (*models.User, error
 	}
 	if u == nil {
 		s := models.ZohoProvider
+		confirmationCode, err := utils.GenerateEmailConfirmationCode()
+		if err != nil {
+			return nil, err
+		}
+
 		u := &models.User{
-			ID:               uuid.New(),
-			Email:            emails,
-			IsEmailConfirmed: false,
-			LastIPAddresses:  utils.GetIPsFromRequest(r),
-			LastUserAgent:    r.UserAgent(),
-			AuthProvider:     &s,
+			ID:                    uuid.New(),
+			Email:                 emails,
+			IsEmailConfirmed:      false,
+			EmailConfirmationCode: confirmationCode,
+			LastIPAddresses:       utils.GetIPsFromRequest(r),
+			LastUserAgent:         r.UserAgent(),
+			AuthProvider:          &s,
 		}
 
 		err = user.InsertNew(u, nil)

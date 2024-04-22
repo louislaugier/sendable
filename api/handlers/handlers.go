@@ -23,13 +23,19 @@ func handle(mux *http.ServeMux, path string, handler http.Handler) {
 func handleHTTP(mux *http.ServeMux) {
 	handle(mux, "/healthz", http.HandlerFunc(healthzHandler))
 
-	handle(mux, "/auth/salesforce", http.HandlerFunc(salesforceAuthHandler))
-	handle(mux, "/auth/hubspot", http.HandlerFunc(hubspotAuthHandler))
-	handle(mux, "/auth/zoho", http.HandlerFunc(zohoAuthHandler))
-	handle(mux, "/auth/zoho/confirm_email", http.HandlerFunc(zohoAuthConfirmEmailHandler))
-	handle(mux, "/auth/mailchimp", http.HandlerFunc(mailchimpAuthHandler))
-	handle(mux, "/auth/google", http.HandlerFunc(googleAuthHandler))
-	handle(mux, "/auth/linkedin", http.HandlerFunc(linkedinAuthHandler))
+	// login
+	// signup
+	handle(mux, "/confirm_email", http.HandlerFunc(confirmEmailHandler))
+
+	handle(mux, "/oauth/salesforce", http.HandlerFunc(salesforceAuthHandler))
+	handle(mux, "/oauth/hubspot", http.HandlerFunc(hubspotAuthHandler))
+	handle(mux, "/oauth/zoho", http.HandlerFunc(zohoAuthHandler))
+	handle(mux, "/oauth/zoho/set_email", middleware.ValidateJWT(
+		http.HandlerFunc(zohoAuthSetEmailHandler)),
+	)
+	handle(mux, "/oauth/mailchimp", http.HandlerFunc(mailchimpAuthHandler))
+	handle(mux, "/oauth/google", http.HandlerFunc(googleAuthHandler))
+	handle(mux, "/oauth/linkedin", http.HandlerFunc(linkedinAuthHandler))
 
 	handle(mux, "/validate_email",
 		middleware.SingleValidationPlanLimit(

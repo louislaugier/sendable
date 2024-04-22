@@ -14,13 +14,18 @@ import (
 const (
 	insertQuery = "INSERT INTO public.user (id, email, is_email_confirmed, password_sha256, last_ip_addresses, last_user_agent, auth_provider) VALUES (?, ?, ?, ?, ?, ?, ?)"
 
-	selectQuery = `SELECT "id", "email", "is_email_confirmed", "last_ip_addresses", "last_user_agent", "two_fa_private_key_hash", "created_at", "updated_at" FROM public."user" WHERE %s AND "deleted_at" IS NULL LIMIT 1`
+	selectQuery = `SELECT "id", "email", "is_email_confirmed", "created_at", "updated_at" FROM public."user" WHERE %s AND "deleted_at" IS NULL LIMIT 1`
 )
 
 // InsertNew inserts a new user into the database.
 func InsertNew(user *models.User, encryptedPassword *string) error {
 	_, err := config.DB.Exec(insertQuery, &user.ID, &user.Email, &user.IsEmailConfirmed, encryptedPassword, &user.LastIPAddresses, &user.LastUserAgent, &user.AuthProvider)
 	return err
+}
+
+func GetByEmailAndConfirmationCode(email, confirmationCode string) (*models.User, error) {
+	query := fmt.Sprintf(selectQuery, "email = ? AND email_confirmation_code = ?")
+	return getByCriteria(query, email, confirmationCode)
 }
 
 // GetByEmailAndProvider retrieves a user by email and provider.
@@ -63,7 +68,7 @@ func getByCriteria(query string, args ...interface{}) (*models.User, error) {
 
 	for rows.Next() {
 		u := models.User{}
-		err = rows.Scan(&u.ID, &u.Email, &u.IsEmailConfirmed, &u.LastIPAddresses, &u.LastUserAgent, &u.TwoFaPrivateKeyHash, &u.CreatedAt, &u.UpdatedAt)
+		err = rows.Scan(&u.ID, &u.Email, &u.IsEmailConfirmed, &u.CreatedAt, &u.UpdatedAt)
 		if err != nil {
 			return nil, err
 		}

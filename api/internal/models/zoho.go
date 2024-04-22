@@ -4,6 +4,10 @@ type ZohoAuthRequest struct {
 	Code string `json:"code"`
 }
 
+type ZohoConfirmEmailRequest struct {
+	Email string `json:"email"`
+}
+
 type ZohoUsersResponse struct {
 	Users []ZohoUser `json:"users"`
 }
