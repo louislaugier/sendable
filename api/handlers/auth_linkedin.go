@@ -1,10 +1,11 @@
 package handlers
 
 import (
+	"email-validator/handlers/middleware"
 	"email-validator/internal/models"
 	"email-validator/internal/pkg/oauth"
+	"email-validator/internal/pkg/user"
 	"encoding/json"
-	"fmt"
 	"log"
 	"net/http"
 )
@@ -32,11 +33,30 @@ func linkedinAuthHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	log.Println(userInfo)
+	email := userInfo.Email
 
-	fmt.Fprint(w, http.StatusText(http.StatusOK))
+	processLinkedinAuthenticatedUser(w, r, email)
+}
 
-	// TODO: get user by email + provider
-	// if nil, insert
-	// return jwt + user
+func processLinkedinAuthenticatedUser(w http.ResponseWriter, r *http.Request, email string) {
+	lp := models.LinkedinProvider
+
+	u, err := user.GetByEmailAndProvider(email, lp)
+	if err != nil {
+		handleError(w, err, "Error processing user", http.StatusInternalServerError)
+		return
+	}
+
+	if u == nil {
+		createConfirmedAccountAndAndBindJWT(w, r, email, &lp)
+
+		return
+	}
+
+	if err := middleware.GenerateAndBindJWT(u); err != nil {
+		handleError(w, err, "Error generating and binding JWT", http.StatusInternalServerError)
+		return
+	}
+
+	json.NewEncoder(w).Encode(u)
 }

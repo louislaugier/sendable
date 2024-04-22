@@ -41,6 +41,17 @@ func GetByID(ID uuid.UUID) (*models.User, error) {
 	return getByCriteria(query, ID)
 }
 
+// GetByTempZohoOauthData retrieves a user by temporary oauth data (Zoho flow).
+func GetByTempZohoOauthData(comaSeparatedEmails string, lastIPs, lastUserAgent string) (*models.User, error) {
+	query := fmt.Sprintf(selectQuery, "email = ? AND auth_provider = ? AND last_ip_addresses = ? AND last_user_agent = ?")
+	return getByCriteria(query, comaSeparatedEmails, models.ZohoProvider, lastIPs, lastUserAgent)
+}
+
+func InsertNewTempZoho(user *models.User, encryptedPassword *string) error {
+	_, err := config.DB.Exec(insertQuery, &user.ID, &user.Email, &user.IsEmailConfirmed, encryptedPassword, &user.LastIPAddresses, &user.LastUserAgent, &user.AuthProvider)
+	return err
+}
+
 func getByCriteria(query string, args ...interface{}) (*models.User, error) {
 	rows, err := config.DB.Query(query, args...)
 	if err != nil {

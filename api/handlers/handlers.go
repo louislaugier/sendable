@@ -104,3 +104,8 @@ func createCorsHandler() http.Handler {
 	})
 	return corsOptions.Handler(nil)
 }
+
+func handleError(w http.ResponseWriter, err error, message string, statusCode int) {
+	log.Printf("%s: %v", message, err)
+	http.Error(w, message, statusCode)
+}

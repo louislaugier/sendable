@@ -1,20 +1,21 @@
 package handlers
 
 import (
+	"context"
+	"email-validator/handlers/middleware"
 	"email-validator/internal/models"
 	"email-validator/internal/pkg/oauth"
+	"email-validator/internal/pkg/user"
 	"encoding/json"
-	"fmt"
-	"log"
 	"net/http"
 )
 
+// can be used with a JWT or an access token (one-tap or standard auth)
 func googleAuthHandler(w http.ResponseWriter, r *http.Request) {
 	body := models.GoogleAuthRequest{}
 
 	if err := json.NewDecoder(r.Body).Decode(&body); err != nil {
-		log.Printf("googleAuthHandler: Error decoding JSON: %v", err)
-		http.Error(w, "Error decoding JSON", http.StatusBadRequest)
+		handleError(w, err, "Error decoding JSON", http.StatusBadRequest)
 		return
 	}
 
@@ -24,32 +25,56 @@ func googleAuthHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	var email string
+	var err error
+
 	if body.JWT != "" {
-		tokenInfo, err := oauth.VerifyGoogleJWT(r.Context(), body.JWT)
-		if err != nil || tokenInfo == nil {
-			if err != nil {
-				log.Printf("Error verifying JWT: %v", err)
-			}
-			http.Error(w, "Invalid JWT", http.StatusUnauthorized)
-			return
-		}
-		email = tokenInfo.Email
+		email, err = verifyGoogleJWT(body.JWT, r.Context())
 	} else if body.AccessToken != "" {
-		userInfo, err := oauth.VerifyGoogleAccessToken(r.Context(), body.AccessToken)
-		if err != nil || userInfo == nil {
-			if err != nil {
-				log.Printf("Error verifying access token: %v", err)
-			}
-			http.Error(w, "Invalid access token", http.StatusUnauthorized)
-			return
-		}
-		email = userInfo.Email
+		email, err = verifyGoogleAccessToken(body.AccessToken, r.Context())
 	}
 
-	log.Println(email)
-	fmt.Fprint(w, http.StatusText(http.StatusOK))
+	if err != nil {
+		handleError(w, err, "Authentication failed", http.StatusUnauthorized)
+		return
+	}
 
-	// TODO: get user by email + provider
-	// if nil, insert
-	// return jwt + user
+	processGoogleAuthenticatedUser(w, r, email)
+}
+
+func verifyGoogleJWT(jwt string, ctx context.Context) (string, error) {
+	tokenInfo, err := oauth.VerifyGoogleJWT(ctx, jwt)
+	if err != nil || tokenInfo == nil {
+		return "", err
+	}
+	return tokenInfo.Email, nil
+}
+
+func verifyGoogleAccessToken(accessToken string, ctx context.Context) (string, error) {
+	userInfo, err := oauth.VerifyGoogleAccessToken(ctx, accessToken)
+	if err != nil || userInfo == nil {
+		return "", err
+	}
+	return userInfo.Email, nil
+}
+
+func processGoogleAuthenticatedUser(w http.ResponseWriter, r *http.Request, email string) {
+	gp := models.GoogleProvider
+
+	u, err := user.GetByEmailAndProvider(email, gp)
+	if err != nil {
+		handleError(w, err, "Error processing user", http.StatusInternalServerError)
+		return
+	}
+
+	if u == nil {
+		createConfirmedAccountAndAndBindJWT(w, r, email, &gp)
+		return
+	}
+
+	if err := middleware.GenerateAndBindJWT(u); err != nil {
+		handleError(w, err, "Error generating and binding JWT", http.StatusInternalServerError)
+		return
+	}
+
+	json.NewEncoder(w).Encode(u)
 }

@@ -43,18 +43,16 @@ func validateEmailHandler(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 
-		go func() {
-			v := &models.Validation{
-				ID:                uuid.New(),
-				UserID:            middleware.GetUserIDFromRequest(r),
-				SingleTargetEmail: *req.Email,
-				Origin:            middleware.GetOriginFromRequest(r),
-				Type:              models.SingleValidation,
-			}
-			if err := validation.InsertNew(v); err != nil {
-				log.Printf("Error inserting validation into database after succesfully validating email %s by user with email %s: %v", v.SingleTargetEmail, v.UserID, err)
-			}
-		}()
+		v := &models.Validation{
+			ID:                uuid.New(),
+			UserID:            middleware.GetUserIDFromRequest(r),
+			SingleTargetEmail: *req.Email,
+			Origin:            middleware.GetOriginFromRequest(r),
+			Type:              models.SingleValidation,
+		}
+		if err := validation.InsertNew(v); err != nil {
+			handleError(w, err, "Internal Server Error", http.StatusInternalServerError)
+		}
 
 		json.NewEncoder(w).Encode(resp)
 	} else {

@@ -55,11 +55,14 @@ func validateEmailsHandler(w http.ResponseWriter, r *http.Request) {
 
 func handleFileUpload(w http.ResponseWriter, uploadedFile multipart.File, header *multipart.FileHeader, userEmail string, r *http.Request) {
 	filePath := fmt.Sprintf("./uploads/%s", header.Filename)
-	if err := file.SaveMultipart(header, filePath); err != nil {
-		log.Printf("Failed to save uploaded file: %v", err)
-		http.Error(w, "Failed to save file", http.StatusInternalServerError)
-		return
-	}
+
+	go func() {
+		if err := file.SaveMultipart(header, filePath); err != nil {
+			log.Printf("Failed to save uploaded file: %v", err)
+			http.Error(w, "Failed to save file", http.StatusInternalServerError)
+			return
+		}
+	}()
 
 	fileExtension := models.FileExtension(strings.ToLower(strings.TrimPrefix(filepath.Ext(header.Filename), ".")))
 	if !fileExtension.IsAllowed() {
@@ -67,7 +70,12 @@ func handleFileUpload(w http.ResponseWriter, uploadedFile multipart.File, header
 		return
 	}
 
-	go processFileValidation(uploadedFile, header, fileExtension, userEmail, r)
+	if err := processFileValidation(uploadedFile, header, fileExtension, userEmail, r); err != nil {
+		log.Printf("Error processing file validation: %v", err)
+		http.Error(w, "Failed to process file validation", http.StatusInternalServerError)
+		return
+	}
+
 	fmt.Fprint(w, http.StatusText(http.StatusOK))
 }
 
@@ -78,24 +86,34 @@ func handleJSONRequest(w http.ResponseWriter, r *http.Request, userEmail string)
 	}
 
 	go processEmailValidation(req.Emails, userEmail, r)
+
 	fmt.Fprint(w, http.StatusText(http.StatusOK))
 }
 
-func processFileValidation(uploadedFile multipart.File, header *multipart.FileHeader, fileExtension models.FileExtension, userEmail string, r *http.Request) {
+func processFileValidation(uploadedFile multipart.File, header *multipart.FileHeader, fileExtension models.FileExtension, userEmail string, r *http.Request) error {
 	validationRecord := createValidationRecord(&header.Filename, nil, r)
 	go email.ValidateManyFromFileWithReport(uploadedFile, header, fileExtension, userEmail)
-	insertValidationRecord(validationRecord)
+
+	if err := insertValidationRecord(validationRecord); err != nil {
+		return err
+	}
+
+	return nil
 }
 
 func processEmailValidation(emails []string, userEmail string, r *http.Request) {
 	logPath := fmt.Sprintf("./uploads/%s.csv", uuid.New().String())
-	if err := file.SaveStringsToNewCSV(emails, logPath, utils.GetIPsFromRequest(r), time.Now()); err != nil {
-		log.Printf("Failed to save request data: %v", err)
-		return
-	}
+
+	go func() {
+		if err := file.SaveStringsToNewCSV(emails, logPath, utils.GetIPsFromRequest(r), time.Now()); err != nil {
+			log.Printf("Failed to save request data: %v", err)
+			return
+		}
+	}()
+
+	go email.ValidateManyWithReport(emails, userEmail)
 
 	validationRecord := createValidationRecord(nil, &logPath, r)
-	go email.ValidateManyWithReport(emails, userEmail)
 	insertValidationRecord(validationRecord)
 }
 
@@ -117,8 +135,12 @@ func createValidationRecord(filename, logPath *string, r *http.Request) *models.
 	}
 }
 
-func insertValidationRecord(v *models.Validation) {
-	if err := validation.InsertNew(v); err != nil {
-		log.Printf("Error inserting validation record: %v", err)
+func insertValidationRecord(v *models.Validation) error {
+	err := validation.InsertNew(v)
+
+	if err != nil {
+		return err
 	}
+
+	return nil
 }
