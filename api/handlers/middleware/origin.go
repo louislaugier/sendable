@@ -29,7 +29,7 @@ func ManageSingleValidationOrigin(next http.Handler) http.Handler {
 func ManageBulkValidationOrigin(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		origin := GetValueFromContext(r.Context(), requestOriginKey)
-		currentPlan := models.OrderType(GetValueFromContext(r.Context(), userCurrentPlanKey))
+		currentPlan := models.OrderType(GetValueFromContext(r.Context(), userCurrentPlanKey).(string))
 
 		// reject if a free / premium user attemps to use API to bulk validate
 		if origin != config.FrontendURL && (currentPlan == models.FreePlan || currentPlan == models.PremiumOrder) {

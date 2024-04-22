@@ -7,7 +7,7 @@ import (
 	"github.com/google/uuid"
 )
 
-func GetCurrentMonthCount(userID uuid.UUID, validationOrigin models.ValidationOrigin, validationType models.ValidationType) (*int, error) {
+func GetCurrentMonthValidationCount(userID uuid.UUID, validationOrigin models.ValidationOrigin, validationType models.ValidationType) (*int, error) {
 	rows, err := config.DB.Query(`
 		SELECT COUNT(*)
 		FROM public."validation"

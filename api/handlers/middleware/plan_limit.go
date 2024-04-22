@@ -6,20 +6,12 @@ import (
 	"email-validator/internal/pkg/validation"
 	"log"
 	"net/http"
-
-	"github.com/google/uuid"
 )
 
-func validateUserCount(w http.ResponseWriter, r *http.Request, validationOrigin models.ValidationOrigin, maxCount int) (bool, error) {
-	userID := GetValueFromContext(r.Context(), userIDKey)
-	ID, err := uuid.Parse(userID)
-	if err != nil {
-		log.Printf("Parsed invalid UUID from user ID context: %v", err)
-		http.Error(w, "Internal Sever Error", http.StatusInternalServerError)
-		return false, err
-	}
+func validateUserValidationCount(w http.ResponseWriter, r *http.Request, validationOrigin models.ValidationOrigin, maxCount int) (bool, error) {
+	userID := getUserIDFromRequest(r)
 
-	count, err := validation.GetCurrentMonthCount(ID, validationOrigin, models.SingleValidation)
+	count, err := validation.GetCurrentMonthValidationCount(userID, validationOrigin, models.SingleValidation)
 	if err != nil {
 		log.Printf("Failed to get current month validations count: %v", err)
 		http.Error(w, "Internal Sever Error", http.StatusInternalServerError)
@@ -36,7 +28,7 @@ func validateUserCount(w http.ResponseWriter, r *http.Request, validationOrigin 
 func SingleValidationPlanLimit(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		origin := GetValueFromContext(r.Context(), requestOriginKey)
-		currentPlan := models.OrderType(GetValueFromContext(r.Context(), userCurrentPlanKey))
+		currentPlan := models.OrderType(GetValueFromContext(r.Context(), userCurrentPlanKey).(string))
 
 		var maxCount int
 		var validationOrigin models.ValidationOrigin
@@ -59,7 +51,7 @@ func SingleValidationPlanLimit(next http.Handler) http.Handler {
 			}
 		}
 
-		validated, err := validateUserCount(w, r, validationOrigin, maxCount)
+		validated, err := validateUserValidationCount(w, r, validationOrigin, maxCount)
 		if err != nil {
 			log.Printf("Failed to validate user count: %v", err)
 			http.Error(w, "Internal Sever Error", http.StatusInternalServerError)

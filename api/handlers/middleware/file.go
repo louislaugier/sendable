@@ -5,6 +5,7 @@ import (
 	"net/http"
 )
 
+// TODO: manage empty file or inject in context
 // TODO: transfer extension check from api/handlers/validate_emails.go to here
 // TODO: clamav
 

@@ -18,8 +18,8 @@ import (
 
 // CustomClaims includes the custom claims for the JWT.
 type CustomClaims struct {
-	UserID    string `json:"user_id"`
-	UserEmail string `json:"user_email"`
+	UserID    uuid.UUID `json:"user_id"`
+	UserEmail string    `json:"user_email"`
 	jwt.StandardClaims
 }
 
@@ -44,14 +44,12 @@ func GenerateAndBindJWT(user *models.User) error {
 
 // GenerateJWT generates a new JWT token for the user.
 func GenerateJWT(userID uuid.UUID, userEmail string) (*string, error) {
-	ID := userID.String()
-
 	claims := CustomClaims{
-		UserID:    ID,
+		UserID:    userID,
 		UserEmail: userEmail,
 		StandardClaims: jwt.StandardClaims{
 			Issuer:    "https://sendable.email",
-			Subject:   ID,
+			Subject:   userID.String(),
 			ExpiresAt: time.Now().AddDate(0, 0, 30).Unix(),
 			IssuedAt:  time.Now().Unix(),
 			Audience:  "https://api.sendable.email",
@@ -95,12 +93,7 @@ func ValidateJWT(next http.Handler) http.Handler {
 		if claims, ok := token.Claims.(*CustomClaims); ok && token.Valid {
 			ctx := context.WithValue(r.Context(), userIDKey, claims.UserID)
 
-			userID, err := uuid.Parse(claims.UserID)
-			if err != nil {
-				log.Printf("Parsed invalid UUID from user ID in claims after successfully validating JWT: %v", err)
-				http.Error(w, "Internal Sever Error", http.StatusInternalServerError)
-				return
-			}
+			userID := claims.UserID
 
 			var plan models.Order
 			currentPlan, err := order.GetLatestActiveOrder(userID)

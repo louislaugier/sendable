@@ -16,8 +16,9 @@ var BaseRateLimiter = RateLimiter{
 }
 
 type ClientInfo struct {
-	LastRequestTime time.Time
-	Lock            sync.Mutex
+	LastRequestTime   time.Time
+	Lock              sync.Mutex
+	ActiveValidations int
 }
 
 var (
