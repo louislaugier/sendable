@@ -25,8 +25,9 @@ type Validation struct {
 
 	UserID uuid.UUID `json:"user_id"`
 
-	SingleTargetEmail []string `json:"single_target_email,omitempty"`
-	UploadFilename    string   `json:"upload_filename,omitempty"`
+	SingleTargetEmail         string `json:"single_target_email,omitempty"`
+	RawBulkRequestLogFilepath string `json:"raw_bulk_request_log_filepath,omitempty"`
+	UploadFilename            string `json:"upload_filename,omitempty"`
 
 	Origin ValidationOrigin `json:"origin"`
 	Type   ValidationType   `json:"type"`

@@ -19,7 +19,7 @@ var bulkValidationMap = make(map[string]bool)
 // BulkValidationRateLimit limits simultaneous bulk validation requests per user.
 func BulkValidationRateLimit(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		userID := getUserIDFromRequest(r)
+		userID := GetUserIDFromRequest(r)
 		if !acquireBulkValidationLock(userID) {
 			http.Error(w, "Another batch validation is currently running", http.StatusTooManyRequests)
 			return
@@ -93,7 +93,7 @@ func getIPRateLimit(clientIP string) bool {
 
 // limitByUserPlanConcurrencyLimit limits requests based on the user's plan concurrency limit.
 func limitByUserPlanConcurrencyLimit(w http.ResponseWriter, r *http.Request, next http.Handler) {
-	userID := getUserIDFromRequest(r)
+	userID := GetUserIDFromRequest(r)
 	user, err := user.GetByID(userID)
 	if err != nil {
 		log.Printf("Error fetching user with ID %s: %v", userID, err)

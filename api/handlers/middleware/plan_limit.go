@@ -9,7 +9,7 @@ import (
 )
 
 func validateUserValidationCount(w http.ResponseWriter, r *http.Request, validationOrigin models.ValidationOrigin, maxCount int) (bool, error) {
-	userID := getUserIDFromRequest(r)
+	userID := GetUserIDFromRequest(r)
 
 	count, err := validation.GetCurrentMonthValidationCount(userID, validationOrigin, models.SingleValidation)
 	if err != nil {
@@ -18,7 +18,7 @@ func validateUserValidationCount(w http.ResponseWriter, r *http.Request, validat
 		return false, err
 	}
 
-	if *count >= maxCount {
+	if count >= maxCount {
 		return false, nil
 	}
 

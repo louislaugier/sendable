@@ -1,12 +1,16 @@
 package handlers
 
 import (
+	"email-validator/handlers/middleware"
 	"email-validator/internal/models"
 	"email-validator/internal/pkg/email"
+	"email-validator/internal/pkg/validation"
 	"encoding/json"
 	"errors"
 	"log"
 	"net/http"
+
+	"github.com/google/uuid"
 )
 
 // insert single validation in db with origin (consumer app or api)
@@ -39,11 +43,18 @@ func validateEmailHandler(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 
-		// go file.SaveStringsToNewCSV([]string{*req.Email}, fmt.Sprintf("./uploads/%s.csv", uuid.New().String()), utils.GetIPsFromRequest(r), time.Now())
-		// err = file.SaveStringsToNewCSV([]string{*req.Email}, fmt.Sprintf("./uploads/%s.csv", uuid.New().String()), utils.GetIPsFromRequest(r), time.Now())
-		// if err != nil {
-		// log.Printf("Failed to save request data: %v", err)
-		// }
+		go func() {
+			v := &models.Validation{
+				ID:                uuid.New(),
+				UserID:            middleware.GetUserIDFromRequest(r),
+				SingleTargetEmail: *req.Email,
+				Origin:            middleware.GetOriginFromRequest(r),
+				Type:              models.SingleValidation,
+			}
+			if err := validation.InsertNew(v); err != nil {
+				log.Printf("Error inserting validation into database after succesfully validating email %s by user with email %s: %v", v.SingleTargetEmail, v.UserID, err)
+			}
+		}()
 
 		json.NewEncoder(w).Encode(resp)
 	} else {

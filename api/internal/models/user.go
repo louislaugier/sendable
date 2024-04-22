@@ -23,7 +23,7 @@ type User struct {
 	ID uuid.UUID `json:"id"`
 
 	Email            string `json:"email"`
-	IsEmailConfirmed bool   `json:"isEmailConfirmed"`
+	IsEmailConfirmed bool   `json:"is_email_confirmed"`
 
 	Password *string `json:"password,omitempty"`
 
@@ -34,11 +34,11 @@ type User struct {
 
 	JWT string `json:"jwt"`
 
-	AuthProvider *AuthProvider `json:"authProvider,omitempty"`
+	AuthProvider *AuthProvider `json:"auth_provider,omitempty"`
 
-	CurrentPlan *Order `json:"currentPlan,omitempty"`
+	CurrentPlan *Order `json:"current_plan,omitempty"`
 
-	CreatedAt time.Time `json:"createdAt"`
-	UpdatedAt time.Time `json:"updatedAt"`
-	DeletedAt time.Time `json:"deletedAt,omitempty"`
+	CreatedAt time.Time `json:"created_at"`
+	UpdatedAt time.Time `json:"updated_at"`
+	DeletedAt time.Time `json:"deleted_at,omitempty"`
 }
