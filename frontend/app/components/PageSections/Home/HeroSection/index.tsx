@@ -9,7 +9,7 @@ import { navigateToUrl } from "~/utils/url";
 
 export default function HeroSection() {
     const { authModal, setModalType } = useContext(AuthModalContext);
-    const { user, setUser } = useContext(UserContext);
+    const { user } = useContext(UserContext);
     return (
         <div style={{ height: 'calc(70vh - 65px)', minHeight: '550px' }} className="flex flex-col items-center justify-center py-16">
             <div className="max-w-6xl mx-auto flex flex-col md:flex-row">
@@ -26,7 +26,7 @@ export default function HeroSection() {
                         setModalType(AuthModalType.Signup);
                         authModal.onOpen();
                     }} color="primary" variant="shadow" className="mb-4">
-                        Try It Free
+                        {user ? 'Go to dashboard' : 'Try It Free'}
                     </Button>
                     <p className="text-sm">Get 500 free monthly email verifications</p>
                 </div>

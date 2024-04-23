@@ -1,14 +1,18 @@
 import { Card, Button, Divider, CardFooter, Link, Input, Chip } from "@nextui-org/react";
 import { useState, useContext } from "react";
 import AuthModalContext from "~/contexts/AuthModalContext";
+import UserContext from "~/contexts/UserContext";
 import { CheckIconRound } from "~/icons/CheckIconRound";
 import { MailIcon } from "~/icons/MailIcon";
 import validateEmail from "~/services/api/validate_email";
 import { isValidEmail, extractDomain } from "~/services/utils/email";
 import { Reachability } from "~/types/email";
 import { AuthModalType } from "~/types/modal";
+import { navigateToUrl } from "~/utils/url";
 
 export default function TryItOut() {
+    const { user } = useContext(UserContext);
+
     const [isLoading, setLoading] = useState(false);
 
     const [email, setEmail] = useState<string>();
@@ -94,7 +98,12 @@ export default function TryItOut() {
                 shadow="lg"
             >
                 <div className="bg-white p-8">
-                    <h2 className="text-2xl font-bold mb-4">Try it out</h2>
+                    <div className="flex justify-between">
+                        <h2 className="text-2xl font-bold mb-4">Try it out</h2>
+                        {user && <Button onClick={() => navigateToUrl('/dashboard')} color="primary" variant="bordered" className="mb-4">
+                            Go to dashboard
+                        </Button>}
+                    </div>
                     <Input
                         isDisabled={isLoading}
                         errorMessage={errorMsg}
@@ -102,7 +111,7 @@ export default function TryItOut() {
                         onChange={handleEmailChange}
                         placeholder="Enter an email address"
                         variant="bordered"
-                        className="mb-4"
+                        className="my-4"
                         endContent={
                             <MailIcon nomargin className="text-2xl text-default-400 pointer-events-none flex-shrink-0" />
                         }
