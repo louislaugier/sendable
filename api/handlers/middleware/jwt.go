@@ -93,12 +93,9 @@ func ValidateJWT(next http.Handler, requiresConfirmedEmail bool) http.Handler {
 			userID := claims.UserID
 
 			user, err := user.GetByID(userID)
-			if err != nil {
+			if err != nil || user == nil {
 				log.Printf("Error fetching user: %v", err)
 				http.Error(w, "Internal Sever Error", http.StatusInternalServerError)
-				return
-			} else if !user.DeletedAt.IsZero() {
-				http.Error(w, "User is deleted", http.StatusBadRequest)
 				return
 			} else if !user.IsEmailConfirmed && requiresConfirmedEmail {
 				http.Error(w, "Email address is not confirmed", http.StatusBadRequest)

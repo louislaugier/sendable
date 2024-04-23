@@ -14,7 +14,9 @@ import (
 const (
 	insertQuery = "INSERT INTO public.user (id, email, is_email_confirmed, password_sha256, last_ip_addresses, last_user_agent, auth_provider) VALUES (?, ?, ?, ?, ?, ?, ?)"
 
-	selectQuery = `SELECT "id", "email", "is_email_confirmed", "created_at", "updated_at" FROM public."user" WHERE %s AND "deleted_at" IS NULL LIMIT 1`
+	selectQuery = `SELECT "id", "email", "is_email_confirmed", "email_confirmation_code", "created_at", "updated_at" FROM public."user" WHERE %s AND "deleted_at" IS NULL LIMIT 1`
+
+	updateEmailConfirmationQuery = "UPDATE public.user SET is_email_confirmed = true WHERE id = ?"
 )
 
 // InsertNew inserts a new user into the database.
@@ -23,7 +25,13 @@ func InsertNew(user *models.User, encryptedPassword *string) error {
 	return err
 }
 
-func GetByEmailAndConfirmationCode(email, confirmationCode string) (*models.User, error) {
+// SetEmailConfirmed updates the is_email_confirmed field to true for a user with the given ID.
+func SetEmailConfirmed(userID uuid.UUID) error {
+	_, err := config.DB.Exec(updateEmailConfirmationQuery, userID)
+	return err
+}
+
+func GetByEmailAndConfirmationCode(email string, confirmationCode int) (*models.User, error) {
 	query := fmt.Sprintf(selectQuery, "email = ? AND email_confirmation_code = ?")
 	return getByCriteria(query, email, confirmationCode)
 }
@@ -68,7 +76,7 @@ func getByCriteria(query string, args ...interface{}) (*models.User, error) {
 
 	for rows.Next() {
 		u := models.User{}
-		err = rows.Scan(&u.ID, &u.Email, &u.IsEmailConfirmed, &u.CreatedAt, &u.UpdatedAt)
+		err = rows.Scan(&u.ID, &u.Email, &u.IsEmailConfirmed, &u.EmailConfirmationCode, &u.CreatedAt, &u.UpdatedAt)
 		if err != nil {
 			return nil, err
 		}

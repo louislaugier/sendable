@@ -1,18 +1,42 @@
 package handlers
 
 import (
+	"email-validator/config"
+	"email-validator/handlers/middleware"
+	"email-validator/internal/models"
+	"encoding/json"
+	"errors"
+	"fmt"
 	"net/http"
+	"strconv"
 )
 
-// We can get organization info via oauth but no info on the user logging in, therefore we need to ask the user who he is in a given organization after the oauth flow and then send him a confirmation email
+// We can get Zoho organization info via oauth but no info on the user logging in, therefore we need to ask the user who he is in a given organization after the oauth flow and then send him a confirmation email
 func zohoAuthSetEmailHandler(w http.ResponseWriter, r *http.Request) {
 	if r.Method != http.MethodPost {
 		http.Error(w, "method not allowed", http.StatusMethodNotAllowed)
 	}
 
-	// userID := middleware.GetUserIDFromRequest(r)
+	body := models.ZohoSetEmailRequest{}
+	if err := json.NewDecoder(r.Body).Decode(&body); err != nil {
+		handleError(w, err, "Error decoding JSON", http.StatusBadRequest)
+		return
+	}
 
-	// user, err :=
-	// get user by id
-	// send email to req body email with user.email_confirmation_code
+	user := middleware.GetUserFromRequest(r)
+	if user.EmailConfirmationCode == nil {
+		handleError(w, errors.New("no email confirmation code found"), "Internal Server Error", http.StatusBadRequest)
+		return
+	}
+
+	err := config.EmailClient.SendEmail(models.ConfirmEmailTemplate, "Email address confirmation", "Verify your email address", map[string]string{
+		"email_confirmation_code": strconv.Itoa(*user.EmailConfirmationCode),
+		"domain":                  config.DomainURL,
+	}, body.Email)
+	if err != nil {
+		handleError(w, err, "Internal Server Error", http.StatusBadRequest)
+		return
+	}
+
+	fmt.Fprint(w, http.StatusText(http.StatusOK))
 }

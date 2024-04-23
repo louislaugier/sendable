@@ -4,7 +4,7 @@ type ZohoAuthRequest struct {
 	Code string `json:"code"`
 }
 
-type ZohoConfirmEmailRequest struct {
+type ZohoSetEmailRequest struct {
 	Email string `json:"email"`
 }
 
