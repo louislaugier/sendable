@@ -11,7 +11,7 @@ import (
 )
 
 // ValidateManyWithReport consumes ValidateMany and sends a report by email
-func ValidateManyWithReport(emails []string, reportRecipient string) {
+func ValidateManyWithReport(emails []string, reportRecipient string, reportID uuid.UUID) {
 	report, err := ValidateMany(emails)
 
 	if err != nil {
@@ -19,11 +19,11 @@ func ValidateManyWithReport(emails []string, reportRecipient string) {
 		sendReportError(reportRecipient)
 	}
 
-	sendReport(report, reportRecipient)
+	sendReport(report, reportRecipient, reportID)
 }
 
 // ValidateManyFromFileWithReport consumes ValidateManyFromFile and sends a report by email
-func ValidateManyFromFileWithReport(uploadedFile multipart.File, uploadedFileHeader *multipart.FileHeader, extension models.FileExtension, reportRecipient string) {
+func ValidateManyFromFileWithReport(uploadedFile multipart.File, uploadedFileHeader *multipart.FileHeader, extension models.FileExtension, reportRecipient string, reportID uuid.UUID) {
 	report, err := ValidateManyFromFile(uploadedFile, uploadedFileHeader, extension)
 
 	if err != nil {
@@ -31,13 +31,11 @@ func ValidateManyFromFileWithReport(uploadedFile multipart.File, uploadedFileHea
 		sendReportError(reportRecipient)
 	}
 
-	sendReport(report, reportRecipient)
+	sendReport(report, reportRecipient, reportID)
 }
 
 // sendReport sends a report by email to recipient
-func sendReport(report []models.ReacherResponse, recipient string) {
-	ID := uuid.New()
-
+func sendReport(report []models.ReacherResponse, recipient string, ID uuid.UUID) {
 	filePath, err := file.CreateCSVReport(report, ID)
 	if err != nil {
 		log.Printf("Error creating report: %v", err)

@@ -11,6 +11,10 @@ import (
 )
 
 func linkedinAuthHandler(w http.ResponseWriter, r *http.Request) {
+	if r.Method != http.MethodPost {
+		http.Error(w, "method not allowed", http.StatusMethodNotAllowed)
+	}
+
 	body := models.LinkedinAuthRequest{}
 
 	if err := json.NewDecoder(r.Body).Decode(&body); err != nil {

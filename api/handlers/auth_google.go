@@ -12,6 +12,10 @@ import (
 
 // can be used with a JWT or an access token (one-tap or standard auth)
 func googleAuthHandler(w http.ResponseWriter, r *http.Request) {
+	if r.Method != http.MethodPost {
+		http.Error(w, "method not allowed", http.StatusMethodNotAllowed)
+	}
+
 	body := models.GoogleAuthRequest{}
 
 	if err := json.NewDecoder(r.Body).Decode(&body); err != nil {

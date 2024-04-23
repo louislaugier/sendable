@@ -4,8 +4,6 @@ import (
 	"context"
 	"email-validator/internal/models"
 	"net/http"
-
-	"github.com/google/uuid"
 )
 
 // GetValueFromContext retrieves the value from the context by a key name.
@@ -17,15 +15,15 @@ func GetValueFromContext(ctx context.Context, key userContextKey) interface{} {
 	return ""
 }
 
-// Extracts userID from the request context
-func GetUserIDFromRequest(r *http.Request) uuid.UUID {
-	userID := GetValueFromContext(r.Context(), userIDKey)
-	return userID.(uuid.UUID)
+// Extracts user from the request context
+func GetUserFromRequest(r *http.Request) *models.User {
+	user := GetValueFromContext(r.Context(), userKey)
+	return user.(*models.User)
 }
 
 // Extracts origin from the request context
-func GetOriginFromRequest(r *http.Request) models.ValidationOrigin {
-	userID := GetValueFromContext(r.Context(), requestOriginKey)
+func GetOriginFromRequest(r *http.Request) string {
+	origin := GetValueFromContext(r.Context(), requestOriginKey)
 
-	return userID.(models.ValidationOrigin)
+	return origin.(string)
 }

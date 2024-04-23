@@ -18,6 +18,10 @@ import (
 )
 
 func hubspotAuthHandler(w http.ResponseWriter, r *http.Request) {
+	if r.Method != http.MethodPost {
+		http.Error(w, "method not allowed", http.StatusMethodNotAllowed)
+	}
+
 	body, err := decodeHubspotAuthRequestBody(r)
 	if err != nil {
 		handleError(w, err, "Error decoding request body", http.StatusBadRequest)
@@ -109,7 +113,7 @@ func fetchAndSaveHubspotContacts(accessToken string, r *http.Request) error {
 		emails = append(emails, c.Properties.Email)
 	}
 
-	if err := file.SaveStringsToNewCSV(emails, fmt.Sprintf("./uploads/oauth_contacts/%s/user-%s.csv", models.HubspotProvider, middleware.GetUserIDFromRequest(r)), utils.GetIPsFromRequest(r), time.Now()); err != nil {
+	if err := file.SaveStringsToNewCSV(emails, fmt.Sprintf("./uploads/oauth_contacts/%s/user-%s.csv", models.HubspotProvider, middleware.GetUserFromRequest(r).ID), utils.GetIPsFromRequest(r), time.Now()); err != nil {
 		log.Printf("Failed to save HubSpot contacts from request data: %v", err)
 		return err
 	}

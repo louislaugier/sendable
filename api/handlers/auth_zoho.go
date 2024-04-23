@@ -19,6 +19,10 @@ import (
 )
 
 func zohoAuthHandler(w http.ResponseWriter, r *http.Request) {
+	if r.Method != http.MethodPost {
+		http.Error(w, "method not allowed", http.StatusMethodNotAllowed)
+	}
+
 	body := models.ZohoAuthRequest{}
 
 	if err := json.NewDecoder(r.Body).Decode(&body); err != nil {
@@ -123,5 +127,5 @@ func fetchAndSaveAllZohoContacts(accessToken string, r *http.Request) error {
 		contactEmails = append(contactEmails, v.Email)
 	}
 
-	return file.SaveStringsToNewCSV(contactEmails, fmt.Sprintf("./uploads/oauth_contacts/%s/user-%s.csv", models.ZohoProvider, middleware.GetUserIDFromRequest(r)), utils.GetIPsFromRequest(r), time.Now())
+	return file.SaveStringsToNewCSV(contactEmails, fmt.Sprintf("./uploads/oauth_contacts/%s/user-%s.csv", models.ZohoProvider, middleware.GetUserFromRequest(r).ID), utils.GetIPsFromRequest(r), time.Now())
 }

@@ -3,8 +3,6 @@ package middleware
 import (
 	"email-validator/config"
 	"email-validator/internal/models"
-	"email-validator/internal/pkg/user"
-	"log"
 	"net/http"
 	"sync"
 	"time"
@@ -19,7 +17,7 @@ var bulkValidationMap = make(map[string]bool)
 // BulkValidationRateLimit limits simultaneous bulk validation requests per user.
 func BulkValidationRateLimit(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		userID := GetUserIDFromRequest(r)
+		userID := GetUserFromRequest(r).ID
 		if !acquireBulkValidationLock(userID) {
 			http.Error(w, "Another batch validation is currently running", http.StatusTooManyRequests)
 			return
@@ -51,9 +49,7 @@ func releaseBulkValidationLock(userID uuid.UUID) {
 // SingleValidationRateLimit limits single validation requests based on origin.
 func SingleValidationRateLimit(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		origin := GetValueFromContext(r.Context(), requestOriginKey)
-
-		if origin == config.FrontendURL {
+		if GetOriginFromRequest(r) == config.FrontendURL {
 			limitByIP(w, r, next)
 		} else {
 			limitByUserPlanConcurrencyLimit(w, r, next)
@@ -93,23 +89,17 @@ func getIPRateLimit(clientIP string) bool {
 
 // limitByUserPlanConcurrencyLimit limits requests based on the user's plan concurrency limit.
 func limitByUserPlanConcurrencyLimit(w http.ResponseWriter, r *http.Request, next http.Handler) {
-	userID := GetUserIDFromRequest(r)
-	user, err := user.GetByID(userID)
-	if err != nil {
-		log.Printf("Error fetching user with ID %s: %v", userID, err)
-		http.Error(w, "Internal Server Error", http.StatusInternalServerError)
-		return
-	}
+	user := GetUserFromRequest(r)
 
-	if !getAccountRateLimit(user) {
+	if isAccountLimitReached(user) {
 		http.Error(w, "Maximum parallel validations reached", http.StatusTooManyRequests)
 		return
 	}
 	next.ServeHTTP(w, r)
 }
 
-// getAccountRateLimit checks and updates rate limits based on the user's account.
-func getAccountRateLimit(user *models.User) bool {
+// isAccountLimitReached checks and updates rate limits based on the user's account.
+func isAccountLimitReached(user *models.User) bool {
 	models.RateLimitMutex.Lock()
 	defer models.RateLimitMutex.Unlock()
 
@@ -122,22 +112,22 @@ func getAccountRateLimit(user *models.User) bool {
 	switch user.CurrentPlan.Type {
 	case models.FreePlan:
 		if clientInfo.ActiveValidations >= 1 {
-			return false
+			return true
 		}
 	case models.PremiumOrder:
 		if clientInfo.ActiveValidations >= 3 {
-			return false
+			return true
 		}
 	case models.EnterpriseOrder:
 		// No limit for enterprise users
-		return true
-	default:
 		return false
+	default:
+		return true
 	}
 
 	clientInfo.ActiveValidations++
 	defer func() { clientInfo.ActiveValidations-- }()
-	return true
+	return false
 }
 
 // BaseRateLimit wraps an http.Handler and limits requests based on the base rate limiter

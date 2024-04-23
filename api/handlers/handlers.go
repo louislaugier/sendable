@@ -31,7 +31,9 @@ func handleHTTP(mux *http.ServeMux) {
 	handle(mux, "/oauth/hubspot", http.HandlerFunc(hubspotAuthHandler))
 	handle(mux, "/oauth/zoho", http.HandlerFunc(zohoAuthHandler))
 	handle(mux, "/oauth/zoho/set_email", middleware.ValidateJWT(
-		http.HandlerFunc(zohoAuthSetEmailHandler)),
+		http.HandlerFunc(zohoAuthSetEmailHandler),
+		false,
+	),
 	)
 	handle(mux, "/oauth/mailchimp", http.HandlerFunc(mailchimpAuthHandler))
 	handle(mux, "/oauth/google", http.HandlerFunc(googleAuthHandler))
@@ -52,6 +54,7 @@ func handleHTTP(mux *http.ServeMux) {
 				middleware.ManageBulkValidationOrigin( // reject if a free / premium user attemps to use API to bulk validate
 					middleware.ValidateJWT(
 						http.HandlerFunc(validateEmailsHandler),
+						true,
 					),
 				),
 			),

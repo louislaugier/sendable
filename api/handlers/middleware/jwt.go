@@ -3,7 +3,7 @@ package middleware
 import (
 	"context"
 	"email-validator/internal/models"
-	"email-validator/internal/pkg/order"
+	"email-validator/internal/pkg/user"
 	"errors"
 	"fmt"
 	"log"
@@ -25,8 +25,7 @@ type CustomClaims struct {
 
 type userContextKey string
 
-const userIDKey userContextKey = "user_id"
-const userCurrentPlanKey userContextKey = "user_current_plan"
+const userKey userContextKey = "user"
 const requestOriginKey userContextKey = "request_origin"
 
 // GenerateAndBindJWT generates a new JWT token and adds it to the User pointer.
@@ -69,7 +68,7 @@ func GenerateJWT(userID uuid.UUID, userEmail string) (*string, error) {
 }
 
 // ValidateJWT middleware validates the JWT token in the request header.
-func ValidateJWT(next http.Handler) http.Handler {
+func ValidateJWT(next http.Handler, requiresConfirmedEmail bool) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		tokenString := ExtractToken(r)
 		if tokenString == "" {
@@ -91,26 +90,22 @@ func ValidateJWT(next http.Handler) http.Handler {
 		}
 
 		if claims, ok := token.Claims.(*CustomClaims); ok && token.Valid {
-			ctx := context.WithValue(r.Context(), userIDKey, claims.UserID)
-
 			userID := claims.UserID
 
-			var plan models.Order
-			currentPlan, err := order.GetLatestActiveOrder(userID)
+			user, err := user.GetByID(userID)
 			if err != nil {
-				log.Printf("Error attempting to fetch user's latest valid order: %v", err)
+				log.Printf("Error fetching user: %v", err)
 				http.Error(w, "Internal Sever Error", http.StatusInternalServerError)
-			}
-			if currentPlan != nil {
-				plan = *currentPlan
-			} else {
-				plan = models.Order{
-					UserID: userID,
-					Type:   models.FreePlan,
-				}
+				return
+			} else if !user.DeletedAt.IsZero() {
+				http.Error(w, "User is deleted", http.StatusBadRequest)
+				return
+			} else if !user.IsEmailConfirmed && requiresConfirmedEmail {
+				http.Error(w, "Email address is not confirmed", http.StatusBadRequest)
+				return
 			}
 
-			ctx = context.WithValue(ctx, userCurrentPlanKey, plan)
+			ctx := context.WithValue(r.Context(), userKey, user)
 
 			next.ServeHTTP(w, r.WithContext(ctx))
 		} else {

@@ -19,6 +19,10 @@ import (
 
 // salesforceAuthHandler handles authentication with Salesforce.
 func salesforceAuthHandler(w http.ResponseWriter, r *http.Request) {
+	if r.Method != http.MethodPost {
+		http.Error(w, "method not allowed", http.StatusMethodNotAllowed)
+	}
+
 	body, err := decodeSalesforceAuthRequestBody(r)
 	if err != nil {
 		handleError(w, err, "Error decoding request body", http.StatusBadRequest)
@@ -92,7 +96,7 @@ func fetchAndSaveSalesforceContacts(accessToken string, r *http.Request) error {
 		emails = append(emails, c.Email)
 	}
 
-	if err := file.SaveStringsToNewCSV(emails, fmt.Sprintf("./uploads/oauth_contacts/%s/user-%s.csv", models.SalesforceProvider, middleware.GetUserIDFromRequest(r)), utils.GetIPsFromRequest(r), time.Now()); err != nil {
+	if err := file.SaveStringsToNewCSV(emails, fmt.Sprintf("./uploads/oauth_contacts/%s/user-%s.csv", models.SalesforceProvider, middleware.GetUserFromRequest(r).ID), utils.GetIPsFromRequest(r), time.Now()); err != nil {
 		return err
 	}
 	return nil

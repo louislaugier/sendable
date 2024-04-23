@@ -9,7 +9,7 @@ import (
 )
 
 func validateUserValidationCount(w http.ResponseWriter, r *http.Request, validationOrigin models.ValidationOrigin, maxCount int) (bool, error) {
-	userID := GetUserIDFromRequest(r)
+	userID := GetUserFromRequest(r).ID
 
 	count, err := validation.GetCurrentMonthValidationCount(userID, validationOrigin, models.SingleValidation)
 	if err != nil {
@@ -27,15 +27,15 @@ func validateUserValidationCount(w http.ResponseWriter, r *http.Request, validat
 
 func SingleValidationPlanLimit(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		origin := GetValueFromContext(r.Context(), requestOriginKey)
-		currentPlan := models.OrderType(GetValueFromContext(r.Context(), userCurrentPlanKey).(string))
+		origin := GetOriginFromRequest(r)
+		currentPlan := GetUserFromRequest(r).CurrentPlan
 
 		var maxCount int
 		var validationOrigin models.ValidationOrigin
 		switch origin {
 		case config.FrontendURL:
 			validationOrigin = models.AppValidation
-			switch currentPlan {
+			switch currentPlan.Type {
 			case models.FreePlan:
 				maxCount = 500
 			case models.PremiumOrder:
@@ -43,7 +43,7 @@ func SingleValidationPlanLimit(next http.Handler) http.Handler {
 			}
 		default:
 			validationOrigin = models.APIValidation
-			switch currentPlan {
+			switch currentPlan.Type {
 			case models.FreePlan:
 				maxCount = 30
 			case models.PremiumOrder:

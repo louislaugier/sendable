@@ -21,8 +21,6 @@ import (
 
 // validateEmailsHandler handles the email validation requests.
 func validateEmailsHandler(w http.ResponseWriter, r *http.Request) {
-	w.Header().Set("Content-Type", "application/json")
-
 	if r.Method != http.MethodPost {
 		http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
 		return
@@ -44,16 +42,17 @@ func validateEmailsHandler(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "Internal server error", http.StatusInternalServerError)
 		return
 	}
-	reportRecipient := tokenClaims.UserEmail
 
+	reportRecipient := tokenClaims.UserEmail
+	reportID := uuid.New()
 	if uploadedFileHeader != nil {
-		handleFileUpload(w, uploadedFile, uploadedFileHeader, reportRecipient, r)
+		handleFileUpload(w, uploadedFile, uploadedFileHeader, reportRecipient, r, reportID)
 	} else {
-		handleJSONRequest(w, r, reportRecipient)
+		handleJSONRequest(w, r, reportRecipient, reportID)
 	}
 }
 
-func handleFileUpload(w http.ResponseWriter, uploadedFile multipart.File, header *multipart.FileHeader, userEmail string, r *http.Request) {
+func handleFileUpload(w http.ResponseWriter, uploadedFile multipart.File, header *multipart.FileHeader, userEmail string, r *http.Request, reportID uuid.UUID) {
 	filePath := fmt.Sprintf("./uploads/%s", header.Filename)
 
 	go func() {
@@ -70,7 +69,7 @@ func handleFileUpload(w http.ResponseWriter, uploadedFile multipart.File, header
 		return
 	}
 
-	if err := processFileValidation(uploadedFile, header, fileExtension, userEmail, r); err != nil {
+	if err := processFileValidation(uploadedFile, header, fileExtension, userEmail, r, reportID); err != nil {
 		log.Printf("Error processing file validation: %v", err)
 		http.Error(w, "Failed to process file validation", http.StatusInternalServerError)
 		return
@@ -79,20 +78,20 @@ func handleFileUpload(w http.ResponseWriter, uploadedFile multipart.File, header
 	fmt.Fprint(w, http.StatusText(http.StatusOK))
 }
 
-func handleJSONRequest(w http.ResponseWriter, r *http.Request, userEmail string) {
+func handleJSONRequest(w http.ResponseWriter, r *http.Request, userEmail string, reportID uuid.UUID) {
 	req, err := email.ValidateValidationRequest(w, r)
 	if err != nil {
 		return // Error already handled in ValidateValidationRequest
 	}
 
-	go processEmailValidation(req.Emails, userEmail, r)
+	go processEmailValidation(req.Emails, userEmail, r, reportID)
 
 	fmt.Fprint(w, http.StatusText(http.StatusOK))
 }
 
-func processFileValidation(uploadedFile multipart.File, header *multipart.FileHeader, fileExtension models.FileExtension, userEmail string, r *http.Request) error {
+func processFileValidation(uploadedFile multipart.File, header *multipart.FileHeader, fileExtension models.FileExtension, userEmail string, r *http.Request, reportID uuid.UUID) error {
 	validationRecord := createValidationRecord(&header.Filename, nil, r)
-	go email.ValidateManyFromFileWithReport(uploadedFile, header, fileExtension, userEmail)
+	go email.ValidateManyFromFileWithReport(uploadedFile, header, fileExtension, userEmail, reportID)
 
 	if err := insertValidationRecord(validationRecord); err != nil {
 		return err
@@ -101,7 +100,7 @@ func processFileValidation(uploadedFile multipart.File, header *multipart.FileHe
 	return nil
 }
 
-func processEmailValidation(emails []string, userEmail string, r *http.Request) {
+func processEmailValidation(emails []string, reportRecipient string, r *http.Request, reportID uuid.UUID) {
 	logPath := fmt.Sprintf("./uploads/%s.csv", uuid.New().String())
 
 	go func() {
@@ -111,7 +110,7 @@ func processEmailValidation(emails []string, userEmail string, r *http.Request) 
 		}
 	}()
 
-	go email.ValidateManyWithReport(emails, userEmail)
+	go email.ValidateManyWithReport(emails, reportRecipient, reportID)
 
 	validationRecord := createValidationRecord(nil, &logPath, r)
 	insertValidationRecord(validationRecord)
@@ -127,8 +126,8 @@ func createValidationRecord(filename, logPath *string, r *http.Request) *models.
 
 	return &models.Validation{
 		ID:                        uuid.New(),
-		UserID:                    middleware.GetUserIDFromRequest(r),
-		Origin:                    middleware.GetOriginFromRequest(r),
+		UserID:                    middleware.GetUserFromRequest(r).ID,
+		Origin:                    middleware.GetValidationOriginType(middleware.GetOriginFromRequest(r)),
 		Type:                      models.BulkValidation,
 		UploadFilename:            fn,
 		RawBulkRequestLogFilepath: lp,
