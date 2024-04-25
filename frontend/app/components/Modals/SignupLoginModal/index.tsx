@@ -6,7 +6,7 @@ import UserContext from "~/contexts/UserContext";
 export default function App(props: any) {
     const { isOpen, onClose, onOpenChange, modalType } = props;
 
-    const { user, setUser } = useContext(UserContext);
+    const { user } = useContext(UserContext);
 
     const [isSubmitButtonVisible, setSubmitButtonVisible] = useState(false)
 

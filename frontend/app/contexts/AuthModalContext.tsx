@@ -1,8 +1,8 @@
 import { createContext, useState } from 'react';
-import { AuthModalContext, AuthModalType } from '~/types/modal';
+import { AuthModalContextProps, AuthModalType } from '~/types/modal';
 
 
-const AuthModalContext = createContext<AuthModalContext>({
+const AuthModalContext = createContext<AuthModalContextProps>({
     authModal: {
         isOpen: false,
         onOpen: () => { },

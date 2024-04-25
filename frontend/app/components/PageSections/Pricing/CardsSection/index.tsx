@@ -7,7 +7,7 @@ export default function CardsSection(props: any) {
     return (
         <>
             {pricingPlans.map((plan, index) => (
-                <PricingCard isYearly={isYearly} plan={plan} index={index} />
+                <PricingCard key={index} isYearly={isYearly} plan={plan} index={index} />
             ))}
         </>
     )

@@ -3,7 +3,7 @@ export enum AuthModalType {
     Signup = "Sign up",
 }
 
-export interface AuthModalContext {
+export interface AuthModalContextProps {
     authModal: {
         isOpen: boolean;
         onOpen: () => void;

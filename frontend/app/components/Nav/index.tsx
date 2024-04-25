@@ -1,4 +1,4 @@
-import { Navbar, NavbarBrand, NavbarContent, NavbarItem, Button, Dropdown, DropdownItem, DropdownMenu, DropdownTrigger, User, DropdownSection } from "@nextui-org/react";
+import { Navbar, NavbarBrand, NavbarContent, NavbarItem, Button, Dropdown, DropdownItem, DropdownMenu, DropdownTrigger, DropdownSection, User } from "@nextui-org/react";
 import { useLocation } from "@remix-run/react";
 import { Fragment, useContext } from "react";
 import AuthModalContext from "~/contexts/AuthModalContext";
@@ -89,7 +89,7 @@ export default function Nav() {
                                 <User
                                     as="button"
                                     className="transition-transform"
-                                    description="Free user"
+                                    description={`${user.currentPlan.type.charAt(0).toUpperCase() + user.currentPlan.type.slice(1)} user`}
                                     name={user.email}
                                 />
                             </DropdownTrigger>

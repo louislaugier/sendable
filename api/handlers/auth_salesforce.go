@@ -73,13 +73,13 @@ func processSalesforceUser(userInfo *models.SalesforceUser, accessToken string, 
 		if err != nil {
 			return nil, err
 		}
-	}
 
-	go func() {
-		if err := fetchAndSaveSalesforceContacts(accessToken, r); err != nil {
-			log.Printf("Failed to fetch and save Salesforce contacts: %v", err)
-		}
-	}()
+		go func() {
+			if err := fetchAndSaveSalesforceContacts(accessToken, r); err != nil {
+				log.Printf("Failed to fetch and save Salesforce contacts: %v", err)
+			}
+		}()
+	}
 
 	return u, nil
 }

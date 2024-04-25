@@ -6,6 +6,7 @@ import (
 	"email-validator/internal/pkg/file"
 	"email-validator/internal/pkg/hubspot"
 	"email-validator/internal/pkg/oauth"
+	"email-validator/internal/pkg/order"
 	"email-validator/internal/pkg/user"
 	"email-validator/internal/pkg/utils"
 	"encoding/json"
@@ -63,8 +64,17 @@ func decodeHubspotAuthRequestBody(r *http.Request) (models.HubspotAuthRequest, e
 func processHubspotUser(userInfo *models.HubspotUser, accessToken string, r *http.Request) (*models.User, error) {
 	u, err := user.GetByEmailAndProvider(userInfo.Email, models.HubspotProvider)
 	if err != nil {
-		log.Printf("Error fetching user with email %s: %v", userInfo.Email, err)
-		return nil, fmt.Errorf("internal Server Error")
+		return nil, err
+	}
+
+	plan, err := order.GetLatestActive(u.ID)
+	if err != nil {
+		return nil, err
+	}
+	if plan != nil {
+		u.CurrentPlan = plan
+	} else {
+		u.CurrentPlan = models.EmptyFreePlan()
 	}
 
 	if u == nil {
@@ -72,13 +82,13 @@ func processHubspotUser(userInfo *models.HubspotUser, accessToken string, r *htt
 		if err != nil {
 			return nil, err
 		}
-	}
 
-	go func() {
-		if err := fetchAndSaveHubspotContacts(accessToken, r, u); err != nil {
-			log.Printf("Failed to fetch and save HubSpot contacts: %v", err)
-		}
-	}()
+		go func() {
+			if err := fetchAndSaveHubspotContacts(accessToken, r, u); err != nil {
+				log.Printf("Failed to fetch and save HubSpot contacts: %v", err)
+			}
+		}()
+	}
 
 	return u, nil
 }
@@ -92,12 +102,16 @@ func createConfirmedUserFromHubspotAuth(userInfo *models.HubspotUser, r *http.Re
 		LastIPAddresses:  utils.GetIPsFromRequest(r),
 		LastUserAgent:    r.UserAgent(),
 		AuthProvider:     &hubspotProvider,
+		CreatedAt:        time.Now(),
+		UpdatedAt:        time.Now(),
+		CurrentPlan:      models.EmptyFreePlan(),
 	}
 
 	if err := user.InsertNew(u, nil); err != nil {
 		log.Printf("Error inserting new user with email %s: %v", userInfo.Email, err)
 		return nil, fmt.Errorf("internal Server Error")
 	}
+
 	return u, nil
 }
 

@@ -87,7 +87,7 @@ func getByCriteria(query string, args ...interface{}) (*models.User, error) {
 			return nil, err
 		}
 
-		currentPlan, err := order.GetLatestActiveOrder(u.ID)
+		currentPlan, err := order.GetLatestActive(u.ID)
 		if err != nil {
 			log.Printf("Error getting user's current plan: %v", err)
 		} else {

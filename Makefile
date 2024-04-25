@@ -23,6 +23,12 @@ install-pkg-frontend-dev:
 	make postinstall-frontend-dev
 	docker-compose restart frontend
 
+.PHONY: remove-pkg-frontend-dev
+remove-pkg-frontend-dev:
+	docker-compose exec frontend npm uninstall $(p)
+	make postinstall-frontend-dev
+	docker-compose restart frontend
+
 #################################################################
 
 .PHONY: build-api-dev

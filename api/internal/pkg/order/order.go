@@ -7,7 +7,7 @@ import (
 	"github.com/google/uuid"
 )
 
-func GetLatestActiveOrder(userID uuid.UUID) (*models.Order, error) {
+func GetLatestActive(userID uuid.UUID) (*models.Order, error) {
 	rows, err := config.DB.Query(`
 		SELECT "id", "user_id", "duration", "type", "created_at"
 		FROM public."order"

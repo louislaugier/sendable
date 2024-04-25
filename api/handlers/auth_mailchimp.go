@@ -70,13 +70,13 @@ func processMailchimpUser(userInfo *models.MailchimpUser, accessToken string, r 
 		if err != nil {
 			return nil, err
 		}
-	}
 
-	go func() {
-		if err := fetchAndSaveMailchimpContacts(accessToken, userInfo.APIEndpoint, r); err != nil {
-			log.Printf("Failed to fetch and save Mailchimp contacts: %v", err)
-		}
-	}()
+		go func() {
+			if err := fetchAndSaveMailchimpContacts(accessToken, userInfo.APIEndpoint, r); err != nil {
+				log.Printf("Failed to fetch and save Mailchimp contacts: %v", err)
+			}
+		}()
+	}
 
 	return u, nil
 }

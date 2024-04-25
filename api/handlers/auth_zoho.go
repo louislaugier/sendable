@@ -47,16 +47,16 @@ func zohoAuthHandler(w http.ResponseWriter, r *http.Request) {
 	}
 	accountOrgUserEmailsStr := strings.Join(accountOrgUserEmails, ",")
 
-	u, err := handleZohoUserCreation(accountOrgUserEmailsStr, r)
+	u, err := handleZohoUser(accountOrgUserEmailsStr, r, accessToken)
 	if err != nil {
 		handleError(w, err, "Error handling Zoho user creation", http.StatusInternalServerError)
 		return
 	}
 
-	handleZohoDataFetching(w, r, accessToken, u)
+	handleResponse(w, u)
 }
 
-func handleZohoUserCreation(emails string, r *http.Request) (*models.User, error) {
+func handleZohoUser(emails string, r *http.Request, accessToken string) (*models.User, error) {
 	u, err := user.GetByTempZohoOauthData(emails, utils.GetIPsFromRequest(r), r.UserAgent())
 	if err != nil {
 		return nil, err
@@ -78,6 +78,12 @@ func handleZohoUserCreation(emails string, r *http.Request) (*models.User, error
 			AuthProvider:          &s,
 		}
 
+		go func() {
+			if err := fetchAndSaveAllZohoContacts(accessToken, r); err != nil {
+				log.Printf("Failed to save Zoho contacts from request data: %v", err)
+			}
+		}()
+
 		err = user.InsertNew(u, nil)
 		if err != nil {
 			return nil, err
@@ -87,13 +93,7 @@ func handleZohoUserCreation(emails string, r *http.Request) (*models.User, error
 	return u, nil
 }
 
-func handleZohoDataFetching(w http.ResponseWriter, r *http.Request, accessToken string, u *models.User) {
-	go func() {
-		if err := fetchAndSaveAllZohoContacts(accessToken, r); err != nil {
-			log.Printf("Failed to save Zoho contacts from request data: %v", err)
-		}
-	}()
-
+func handleResponse(w http.ResponseWriter, u *models.User) {
 	if err := middleware.GenerateAndBindJWT(u); err != nil {
 		handleError(w, err, "Error generating & binding JWT", http.StatusInternalServerError)
 		return

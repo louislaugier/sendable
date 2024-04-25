@@ -17,8 +17,8 @@ CREATE TABLE IF NOT EXISTS public."user" (
     "last_user_agent" VARCHAR NOT NULL DEFAULT 'unknown',
     "two_fa_private_key_hash" VARCHAR,
     "auth_provider" auth_provider,
-    "created_at" TIMESTAMP NOT NULL DEFAULT now(),
-    "updated_at" TIMESTAMP NOT NULL DEFAULT now(),
+    "created_at" TIMESTAMP NOT NULL,
+    "updated_at" TIMESTAMP NOT NULL,
     "deleted_at" TIMESTAMP,
     CONSTRAINT password_or_auth_provider_not_empty CHECK (
         "password_sha256" IS NOT NULL

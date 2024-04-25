@@ -11,6 +11,7 @@ export interface User {
     createdAt: string;
     updatedAt: string;
     deletedAt?: string;
+    currentPlan: Order,
 }
 
 export interface UserContextType {

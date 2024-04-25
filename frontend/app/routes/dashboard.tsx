@@ -1,4 +1,3 @@
-import { Card, CardHeader, Divider, CardBody, CardFooter, Link, Image } from "@nextui-org/react";
 import type { MetaFunction } from "@remix-run/node";
 import { useContext } from "react";
 import { siteName } from "~/constants/app";
@@ -17,6 +16,8 @@ export default function Dashboard() {
 
   if (!user) navigateToUrl('/')
 
+
+
   return (
     <div className="py-8 px-6">
 
@@ -24,8 +25,7 @@ export default function Dashboard() {
         <h2 className="text-2xl">Dashboard</h2>
       </div>
 
-      <div className="flex flex-wrap justify-between">
-
+      <div className="flex flex-wrap justify-between" style={{ height: 200, width: 200, background: 'red' }}>
       </div>
     </div>
   );

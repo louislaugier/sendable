@@ -25,11 +25,18 @@ const (
 type Order struct {
 	ID int `json:"id,omitempty"`
 
-	UserID uuid.UUID `json:"user_id"`
+	UserID *uuid.UUID `json:"userId,omitempty"`
 
 	Duration OrderDuration `json:"duration,omitempty"`
 	Type     OrderType     `json:"type"`
 
-	CreatedAt   time.Time `json:"created_at,omitempty"`
-	CancelledAt time.Time `json:"cancelled_at,omitempty"`
+	CreatedAt   *time.Time `json:"createdAt,omitempty"`
+	CancelledAt *time.Time `json:"cancelledAt,omitempty"`
+}
+
+func EmptyFreePlan() *Order {
+	return &Order{
+		UserID: nil,
+		Type:   FreePlan,
+	}
 }

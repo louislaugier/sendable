@@ -4,7 +4,7 @@ import { pages } from "~/constants/pages";
 import UserContext from "~/contexts/UserContext";
 
 export default function Footer() {
-    const { user, setUser } = useContext(UserContext);
+    const { user } = useContext(UserContext);
 
     return (
         <footer className="bg-black text-white pt-6 pb-2">
