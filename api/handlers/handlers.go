@@ -40,18 +40,14 @@ func handleHTTP(mux *http.ServeMux) {
 	handle(mux, "/oauth/linkedin", http.HandlerFunc(linkedinAuthHandler))
 
 	handle(mux, "/validate_email",
-		middleware.SingleValidationPlanLimit(
-			middleware.SingleValidationRateLimit(
-				middleware.ManageSingleValidationOrigin( // ManageSingleValidationOrigin calls ValidateJWT only if origin is other than a guest on frontend
-					http.HandlerFunc(validateEmailHandler),
-				),
-			),
+		middleware.ManageSingleValidationOrigin( // ManageSingleValidationOrigin calls SingleValidationRateLimit and only calls ValidateJWT & SingleValidationPlanLimit if origin is other than a guest on frontend
+			http.HandlerFunc(validateEmailHandler),
 		),
 	)
 	handle(mux, "/validate_emails",
 		middleware.ValidateFile(
 			middleware.BulkValidationRateLimit(
-				middleware.ManageBulkValidationOrigin( // reject if a free / premium user attemps to use API to bulk validate
+				middleware.ManageBulkValidationOrigin( // zreject if a free / premium user attemps to use API to bulk validate
 					middleware.ValidateJWT(
 						http.HandlerFunc(validateEmailsHandler),
 						true,
@@ -81,7 +77,7 @@ func StartServer() {
 		if r.URL.Path == "/validate_email" || r.URL.Path == "/validate_emails" {
 			mux.ServeHTTP(w, r) // Serve the request without CORS middleware
 		} else {
-			corsHandler := createCorsHandler()
+			corsHandler := createCorsHandler(mux)
 			corsHandler.ServeHTTP(w, r)
 		}
 	})
@@ -102,7 +98,7 @@ func StartServer() {
 	}
 }
 
-func createCorsHandler() http.Handler {
+func createCorsHandler(mux *http.ServeMux) http.Handler {
 	corsOptions := cors.New(cors.Options{
 		// AllowedOrigins: []string{"*"}, // Allows all origins
 		AllowedOrigins:   []string{config.FrontendURL, "http://127.0.0.1:3000"}, // The allowed domains
@@ -111,7 +107,7 @@ func createCorsHandler() http.Handler {
 		AllowCredentials: true,
 		MaxAge:           300,
 	})
-	return corsOptions.Handler(nil)
+	return corsOptions.Handler(mux)
 }
 
 func handleError(w http.ResponseWriter, err error, message string, statusCode int) {

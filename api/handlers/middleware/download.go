@@ -33,7 +33,6 @@ func DownloadAuth(next http.Handler) http.Handler {
 			http.Error(w, "Unauthorized", http.StatusUnauthorized)
 			return
 		}
-		log.Println(tokenFromFile)
 
 		if token != *tokenFromFile {
 			http.Error(w, "Unauthorized", http.StatusUnauthorized)

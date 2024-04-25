@@ -4,10 +4,11 @@ import (
 	"email-validator/handlers/middleware"
 	"email-validator/internal/models"
 	"email-validator/internal/pkg/email"
+	"email-validator/internal/pkg/user"
+	"email-validator/internal/pkg/utils"
 	"email-validator/internal/pkg/validation"
 	"encoding/json"
 	"errors"
-	"log"
 	"net/http"
 
 	"github.com/google/uuid"
@@ -22,8 +23,7 @@ func validateEmailHandler(w http.ResponseWriter, r *http.Request) {
 	req := models.ValidateEmailRequest{}
 
 	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
-		log.Printf("Failed to decode request payload: %v", err)
-		http.Error(w, "invalid payload", http.StatusBadRequest)
+		handleError(w, err, "invalid payload", http.StatusInternalServerError)
 		return
 	}
 
@@ -39,22 +39,36 @@ func validateEmailHandler(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 
-		log.Println(err)
-		http.Error(w, "internal server error", http.StatusInternalServerError)
+		handleError(w, err, "Internal Server Error", http.StatusInternalServerError)
 		return
 	}
 
 	v := &models.Validation{
 		ID:                uuid.New(),
-		UserID:            middleware.GetUserFromRequest(r).ID,
 		SingleTargetEmail: *req.Email,
 		Origin:            middleware.GetValidationOriginType(middleware.GetOriginFromRequest(r)),
 		Type:              models.SingleValidation,
 	}
+
+	IPaddresses, userAgent := utils.GetIPsFromRequest(r), r.UserAgent()
+
+	loggedUser := middleware.GetUserFromRequest(r)
+	if loggedUser != nil {
+		v.UserID = &loggedUser.ID
+
+		err = user.UpdateIPsAndUserAgent(*v.UserID, IPaddresses, userAgent)
+		if err != nil {
+			handleError(w, err, "Internal Server Error", http.StatusInternalServerError)
+			return
+		}
+	} else {
+		v.GuestIP = &IPaddresses
+		v.GuestUserAgent = &userAgent
+	}
+
 	if err := validation.InsertNew(v); err != nil {
 		handleError(w, err, "Internal Server Error", http.StatusInternalServerError)
 	}
 
 	json.NewEncoder(w).Encode(resp)
-
 }

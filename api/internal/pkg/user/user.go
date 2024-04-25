@@ -12,11 +12,12 @@ import (
 )
 
 const (
-	insertQuery = "INSERT INTO public.user (id, email, is_email_confirmed, password_sha256, last_ip_addresses, last_user_agent, auth_provider) VALUES (?, ?, ?, ?, ?, ?, ?)"
+	insertQuery = "INSERT INTO public.user (id, email, is_email_confirmed, password_sha256, last_ip_addresses, last_user_agent, auth_provider) VALUES ($1, $2, $3, $4, $5, $6, $7);"
 
-	selectQuery = `SELECT "id", "email", "is_email_confirmed", "email_confirmation_code", "created_at", "updated_at" FROM public."user" WHERE %s AND "deleted_at" IS NULL LIMIT 1`
+	selectQuery = `SELECT "id", "email", "is_email_confirmed", "email_confirmation_code", "created_at", "updated_at" FROM public."user" WHERE %s AND "deleted_at" IS NULL LIMIT 1;`
 
-	updateEmailConfirmationQuery = "UPDATE public.user SET is_email_confirmed = true WHERE id = ?"
+	updateEmailConfirmationQuery = "UPDATE public.user SET is_email_confirmed = true WHERE id = $1;"
+	updateIPsAndUserAgentQuery   = "UPDATE public.user SET last_ip_addresses = $1, last_user_agent = $2 WHERE id = $3;"
 )
 
 // InsertNew inserts a new user into the database.
@@ -31,32 +32,37 @@ func SetEmailConfirmed(userID uuid.UUID) error {
 	return err
 }
 
+func UpdateIPsAndUserAgent(userID uuid.UUID, IPs, userAgent string) error {
+	_, err := config.DB.Exec(updateIPsAndUserAgentQuery, IPs, userAgent, userID)
+	return err
+}
+
 func GetByEmailAndConfirmationCode(email string, confirmationCode int) (*models.User, error) {
-	query := fmt.Sprintf(selectQuery, "email = ? AND email_confirmation_code = ?")
+	query := fmt.Sprintf(selectQuery, "email = $1 AND email_confirmation_code = $2")
 	return getByCriteria(query, email, confirmationCode)
 }
 
 // GetByEmailAndProvider retrieves a user by email and provider.
 func GetByEmailAndProvider(email string, provider models.AuthProvider) (*models.User, error) {
-	query := fmt.Sprintf(selectQuery, "email = ? AND auth_provider = ?")
+	query := fmt.Sprintf(selectQuery, "email = $1 AND auth_provider = $2")
 	return getByCriteria(query, email, provider)
 }
 
 // GetByEmailAndPasswordSHA256 retrieves a user by email and password SHA256 hash.
 func GetByEmailAndPasswordSHA256(email, passwordSHA256 string) (*models.User, error) {
-	query := fmt.Sprintf(selectQuery, "email = ? AND password_sha256 = ?")
+	query := fmt.Sprintf(selectQuery, "email = $1 AND password_sha256 = $2")
 	return getByCriteria(query, email, passwordSHA256)
 }
 
 // GetByID retrieves a user by ID.
 func GetByID(ID uuid.UUID) (*models.User, error) {
-	query := fmt.Sprintf(selectQuery, "id = ?")
+	query := fmt.Sprintf(selectQuery, "id = $1")
 	return getByCriteria(query, ID)
 }
 
 // GetByTempZohoOauthData retrieves a user by temporary oauth data (Zoho flow).
 func GetByTempZohoOauthData(comaSeparatedEmails string, lastIPs, lastUserAgent string) (*models.User, error) {
-	query := fmt.Sprintf(selectQuery, "email = ? AND auth_provider = ? AND last_ip_addresses = ? AND last_user_agent = ?")
+	query := fmt.Sprintf(selectQuery, "email = $1 AND auth_provider = $2 AND last_ip_addresses = $3 AND last_user_agent = $4")
 	return getByCriteria(query, comaSeparatedEmails, models.ZohoProvider, lastIPs, lastUserAgent)
 }
 
@@ -83,7 +89,7 @@ func getByCriteria(query string, args ...interface{}) (*models.User, error) {
 
 		currentPlan, err := order.GetLatestActiveOrder(u.ID)
 		if err != nil {
-			log.Println("Error getting user's current plan:", err)
+			log.Printf("Error getting user's current plan: %v", err)
 		} else {
 			u.CurrentPlan = currentPlan
 		}

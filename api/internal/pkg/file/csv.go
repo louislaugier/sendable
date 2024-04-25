@@ -7,7 +7,6 @@ import (
 	"encoding/csv"
 	"fmt"
 	"io"
-	"log"
 	"mime/multipart"
 	"os"
 	"reflect"
@@ -156,7 +155,6 @@ func detectDelimiter(content string) rune {
 
 // CreateCSVReport generates a CSV report based on the provided data.
 func CreateCSVReport(report []models.ReacherResponse, ID uuid.UUID) (string, error) {
-	log.Println("the report:", report)
 	filePath := fmt.Sprintf("./reports/%s.csv", ID.String())
 	file, err := os.Create(filePath)
 	if err != nil {

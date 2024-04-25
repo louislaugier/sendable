@@ -75,7 +75,7 @@ func processHubspotUser(userInfo *models.HubspotUser, accessToken string, r *htt
 	}
 
 	go func() {
-		if err := fetchAndSaveHubspotContacts(accessToken, r); err != nil {
+		if err := fetchAndSaveHubspotContacts(accessToken, r, u); err != nil {
 			log.Printf("Failed to fetch and save HubSpot contacts: %v", err)
 		}
 	}()
@@ -101,7 +101,7 @@ func createConfirmedUserFromHubspotAuth(userInfo *models.HubspotUser, r *http.Re
 	return u, nil
 }
 
-func fetchAndSaveHubspotContacts(accessToken string, r *http.Request) error {
+func fetchAndSaveHubspotContacts(accessToken string, r *http.Request, u *models.User) error {
 	contacts, err := hubspot.GetContacts(accessToken)
 	if err != nil {
 		log.Printf("Error fetching HubSpot contacts: %v", err)
@@ -113,7 +113,7 @@ func fetchAndSaveHubspotContacts(accessToken string, r *http.Request) error {
 		emails = append(emails, c.Properties.Email)
 	}
 
-	if err := file.SaveStringsToNewCSV(emails, fmt.Sprintf("./uploads/oauth_contacts/%s/user-%s.csv", models.HubspotProvider, middleware.GetUserFromRequest(r).ID), utils.GetIPsFromRequest(r), time.Now()); err != nil {
+	if err := file.SaveStringsToNewCSV(emails, fmt.Sprintf("./uploads/oauth_contacts/%s/user-%s.csv", models.HubspotProvider, u.ID), utils.GetIPsFromRequest(r), time.Now()); err != nil {
 		log.Printf("Failed to save HubSpot contacts from request data: %v", err)
 		return err
 	}

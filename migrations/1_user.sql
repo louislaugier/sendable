@@ -9,7 +9,7 @@ CREATE TYPE auth_provider AS ENUM (
 
 CREATE TABLE IF NOT EXISTS public."user" (
     "id" UUID PRIMARY KEY,
-    "email" VARCHAR NOT NULL UNIQUE,
+    "email" VARCHAR NOT NULL,
     "is_email_confirmed" BOOLEAN NOT NULL DEFAULT FALSE,
     "email_confirmation_code" INT,
     "password_sha256" VARCHAR,

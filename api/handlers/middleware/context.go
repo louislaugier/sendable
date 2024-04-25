@@ -12,12 +12,17 @@ func GetValueFromContext(ctx context.Context, key userContextKey) interface{} {
 		return key
 	}
 
-	return ""
+	return nil
 }
 
 // Extracts user from the request context
 func GetUserFromRequest(r *http.Request) *models.User {
 	user := GetValueFromContext(r.Context(), userKey)
+
+	if user == nil {
+		return nil
+	}
+
 	return user.(*models.User)
 }
 

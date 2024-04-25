@@ -13,15 +13,17 @@ func ManageSingleValidationOrigin(next http.Handler) http.Handler {
 		ctx := context.WithValue(r.Context(), requestOriginKey, origin)
 
 		if origin != config.FrontendURL {
-			// If the origin is not frontend, validate JWT
-			ValidateJWT(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+			// If the origin is not frontend, validate JWT and apply rate limits
+			handler := ValidateJWT(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 				next.ServeHTTP(w, r.WithContext(ctx))
-			}), true).ServeHTTP(w, r)
+			}), true)
 
+			// Apply rate limit and plan limit here
+			SingleValidationPlanLimit(SingleValidationRateLimit(handler)).ServeHTTP(w, r)
 			return
 		}
 
-		// If the origin is frontend, proceed without validating JWT (guest on landing page, 10 per hour and 1 at a time)
+		// If the origin is frontend, proceed without additional checks
 		next.ServeHTTP(w, r.WithContext(ctx))
 	})
 }

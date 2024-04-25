@@ -53,7 +53,7 @@ func validateEmailsHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func handleFileUpload(w http.ResponseWriter, uploadedFile multipart.File, header *multipart.FileHeader, userEmail string, r *http.Request, reportID uuid.UUID) {
-	filePath := fmt.Sprintf("./uploads/%s", header.Filename)
+	filePath := fmt.Sprintf("./uploads/email_validations/%s", header.Filename)
 
 	go func() {
 		if err := file.SaveMultipart(header, filePath); err != nil {
@@ -101,7 +101,7 @@ func processFileValidation(uploadedFile multipart.File, header *multipart.FileHe
 }
 
 func processEmailValidation(emails []string, reportRecipient string, r *http.Request, reportID uuid.UUID) {
-	logPath := fmt.Sprintf("./uploads/%s.csv", uuid.New().String())
+	logPath := fmt.Sprintf("./uploads/email_validations/%s.csv", uuid.New().String())
 
 	go func() {
 		if err := file.SaveStringsToNewCSV(emails, logPath, utils.GetIPsFromRequest(r), time.Now()); err != nil {
@@ -126,7 +126,7 @@ func createValidationRecord(filename, logPath *string, r *http.Request) *models.
 
 	return &models.Validation{
 		ID:                        uuid.New(),
-		UserID:                    middleware.GetUserFromRequest(r).ID,
+		UserID:                    &middleware.GetUserFromRequest(r).ID,
 		Origin:                    middleware.GetValidationOriginType(middleware.GetOriginFromRequest(r)),
 		Type:                      models.BulkValidation,
 		UploadFilename:            fn,

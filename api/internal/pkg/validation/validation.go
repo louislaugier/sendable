@@ -10,14 +10,14 @@ import (
 const (
 	insertQuery = `
 		INSERT INTO public.validation 
-			(id, user_id, single_target_email, upload_filename, origin, type) 
+			(id, user_id, guest_ip, guest_user_agent, single_target_email, upload_filename, origin, type) 
 		VALUES 
-			($1, $2, $3, $4, $5, $6);
+			($1, $2, $3, $4, $5, $6, $7, $8);
 	`
 )
 
 func InsertNew(v *models.Validation) error {
-	_, err := config.DB.Exec(insertQuery, v.ID, v.UserID, v.SingleTargetEmail, v.UploadFilename, v.Origin, v.Type)
+	_, err := config.DB.Exec(insertQuery, v.ID, v.UserID, v.GuestIP, v.GuestUserAgent, v.SingleTargetEmail, v.UploadFilename, v.Origin, v.Type)
 	if err != nil {
 		return err
 	}
