@@ -1,46 +1,83 @@
-import { useState } from "react";
+import { useState, useRef, useEffect } from "react";
 
 export default function FileUploader() {
-    const fileTypes = ["csv", "txt", "xls", "xlsx"];
-    const [dragActive, setDragActive] = useState(false);
-    const [file, setFile] = useState(null);
+    const fileTypes = [".csv", ".txt", ".xls", ".xlsx"];
+    const [globalDragActive, setGlobalDragActive] = useState(false);
+    const [localDragActive, setLocalDragActive] = useState(false);
+    const [file, setFile] = useState<File | null>(null);
     const [fileName, setFileName] = useState("");
     const [isFileTypeValid, setIsFileTypeValid] = useState(true);
+    const fileInputRef = useRef<HTMLInputElement>(null);
 
-    // Handle drag events
-    const handleDrag = (e: any) => {
+    useEffect(() => {
+        const handleWindowDragEnter = (e: DragEvent) => {
+            e.preventDefault();
+            setGlobalDragActive(true);
+        };
+
+        const handleWindowDragLeave = (e: DragEvent) => {
+            e.preventDefault();
+            setGlobalDragActive(false);
+        };
+
+        // Add global drag event listeners
+        window.addEventListener('dragenter', handleWindowDragEnter);
+        window.addEventListener('dragleave', handleWindowDragLeave);
+
+        return () => {
+            // Remove global drag event listeners
+            window.removeEventListener('dragenter', handleWindowDragEnter);
+            window.removeEventListener('dragleave', handleWindowDragLeave);
+        };
+    }, []);
+
+    const handleDrag = (e: React.DragEvent<HTMLDivElement>) => {
         e.preventDefault();
         e.stopPropagation();
         if (e.type === "dragenter" || e.type === "dragover") {
-            setDragActive(true);
+            setLocalDragActive(true);
         } else if (e.type === "dragleave" || e.type === "drop") {
-            setDragActive(false);
+            setLocalDragActive(false);
         }
     };
 
-    // Handle file drop
-    const handleDrop = (e: any) => {
+    const handleDrop = (e: React.DragEvent<HTMLDivElement>) => {
         e.preventDefault();
         e.stopPropagation();
-        setDragActive(false);
+        setGlobalDragActive(false);
+        setLocalDragActive(false);
         if (e.dataTransfer.files && e.dataTransfer.files[0]) {
-            const file = e.dataTransfer.files[0];
-            const fileType = file.name.split('.').pop().toLowerCase();
-            if (fileTypes.includes(fileType)) {
-                setFile(file);
-                setFileName(file.name);
-                setIsFileTypeValid(true);
-            } else {
-                setIsFileTypeValid(false);
-            }
+            processFile(e.dataTransfer.files[0]);
         }
+    };
+
+    const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        if (e.target.files && e.target.files[0]) {
+            processFile(e.target.files[0]);
+        }
+    };
+
+    const processFile = (file: File) => {
+        const fileType = file.name.split('.').pop()?.toLowerCase();
+        if (fileType && fileTypes.includes(`.${fileType}`)) {
+            setFile(file);
+            setFileName(file.name);
+            setIsFileTypeValid(true);
+        } else {
+            setIsFileTypeValid(false);
+        }
+    };
+
+    const triggerFileInput = () => {
+        fileInputRef.current?.click();
     };
 
     return (
         <>
             <div className="mb-2">
                 <div
-                    className={`mt-8 mb-2 drop-zone ${dragActive ? 'active' : ''} ${!isFileTypeValid ? 'invalid' : ''}`}
+                    className={`mt-8 mb-2 drop-zone ${localDragActive ? 'active' : ''} ${!isFileTypeValid ? 'invalid' : ''}`}
+                    onClick={triggerFileInput}
                     onDragEnter={handleDrag}
                     onDragOver={handleDrag}
                     onDragLeave={handleDrag}
@@ -49,19 +86,24 @@ export default function FileUploader() {
                         width: '300px',
                         height: '100px',
                         border: '2px dashed',
-                        borderColor: dragActive ? '#2196f3' : '#ccc',
+                        borderColor: localDragActive ? '#2196f3' : globalDragActive ? '#BBDEFB' : '#ccc',
                         display: 'flex',
                         alignItems: 'center',
                         justifyContent: 'center',
                         transition: 'border-color 0.3s',
-                        backgroundColor: !isFileTypeValid ? '#ffebee' : 'transparent', // Red background if invalid file type
+                        backgroundColor: !isFileTypeValid ? '#ffebee' : 'transparent',
                         borderRadius: '12px',
                     }}
                 >
-                    <div>
-                        {dragActive ? "Release to drop" : "Drop a file here or click to upload"}
-                        <input type="file" style={{ display: "none" }} />
-                        <p className="text-xs text-gray-500 text-center" style={{ bottom: "20px" }}>
+                    <div className="text-center">
+                        {localDragActive || globalDragActive ? "Release here to upload" : "Click or drop a file here to upload"}
+                        <input
+                            type="file"
+                            ref={fileInputRef}
+                            onChange={handleChange}
+                            style={{ display: "none" }}
+                        />
+                        <p className="text-xs text-gray-500" style={{ bottom: "20px" }}>
                             Supported file types: {fileTypes.join(", ")}
                         </p>
                     </div>
