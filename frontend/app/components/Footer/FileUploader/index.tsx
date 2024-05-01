@@ -40,7 +40,7 @@ export default function FileUploader() {
         <>
             <div className="mb-2">
                 <div
-                    className={`drop-zone ${dragActive ? 'active' : ''} ${!isFileTypeValid ? 'invalid' : ''}`}
+                    className={`mt-8 mb-2 drop-zone ${dragActive ? 'active' : ''} ${!isFileTypeValid ? 'invalid' : ''}`}
                     onDragEnter={handleDrag}
                     onDragOver={handleDrag}
                     onDragLeave={handleDrag}
@@ -53,18 +53,18 @@ export default function FileUploader() {
                         display: 'flex',
                         alignItems: 'center',
                         justifyContent: 'center',
-                        margin: '20px',
                         transition: 'border-color 0.3s',
-                        backgroundColor: !isFileTypeValid ? '#ffebee' : 'transparent' // Red background if invalid file type
+                        backgroundColor: !isFileTypeValid ? '#ffebee' : 'transparent', // Red background if invalid file type
+                        borderRadius: '12px',
                     }}
                 >
-                    {dragActive ? "Release to drop" : "Drag a file here or click to upload"}
-                    <input type="file" style={{ display: "none" }} />
-                    {/* <div className="relative">
-                        <p className="absolute text-sm text-gray-500" style={{ bottom: "20px" }}>
+                    <div>
+                        {dragActive ? "Release to drop" : "Drop a file here or click to upload"}
+                        <input type="file" style={{ display: "none" }} />
+                        <p className="text-xs text-gray-500 text-center" style={{ bottom: "20px" }}>
                             Supported file types: {fileTypes.join(", ")}
                         </p>
-                    </div> */}
+                    </div>
                 </div>
                 {file && <p>Uploaded: {fileName}</p>}
                 {!isFileTypeValid && <p style={{ color: 'red' }}>File type not allowed.</p>}

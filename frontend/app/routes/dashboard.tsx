@@ -1,6 +1,7 @@
 import { Button, Tab, Tabs, Textarea } from "@nextui-org/react";
 import type { MetaFunction } from "@remix-run/node";
-import { useContext, useState } from "react";
+import { useLocation, useSearchParams } from "@remix-run/react";
+import { useContext, useEffect, useState } from "react";
 import FileUploader from "~/components/Footer/FileUploader";
 import ApiLimitsTable from "~/components/Tables/ApiLimitsTable";
 import { siteName } from "~/constants/app";
@@ -17,9 +18,23 @@ export const meta: MetaFunction = () => {
 export default function Dashboard() {
   const { user } = useContext(UserContext);
 
-  if (!user) navigateToUrl('/')
+  const [searchParams, setSearchParams] = useSearchParams();
+  const [selectedTab, setSelectedTab] = useState<any>("validation");
 
-  const [selected, setSelected] = useState<any>("validation");
+  useEffect(() => {
+    const tab = searchParams.get("tab");
+    if (tab) {
+      setSelectedTab(tab);
+    }
+  }, [searchParams]);
+
+  useEffect(() => {
+    if (selectedTab) {
+      setSearchParams({ tab: selectedTab });
+    }
+  }, [selectedTab, setSearchParams]);
+
+  if (!user) navigateToUrl('/')
 
   return (
     <div className="py-8 px-6">
@@ -33,8 +48,8 @@ export default function Dashboard() {
           aria-label="Options"
           color="primary"
           variant="bordered"
-          selectedKey={selected}
-          onSelectionChange={setSelected}
+          selectedKey={selectedTab}
+          onSelectionChange={setSelectedTab}
         >
           <Tab
             key="validation"

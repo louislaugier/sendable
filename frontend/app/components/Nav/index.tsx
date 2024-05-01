@@ -105,9 +105,9 @@ export default function Nav() {
                                         Validate email addresses
                                     </DropdownItem>
                                     <DropdownItem
-                                        key="validaion_history"
+                                        key="history"
                                         description="Email address validation history"
-                                        href="/validaion_history"
+                                        href="/dashboard?tab=history"
                                     // startContent={<AddNoteIcon className={iconClasses} />}
                                     >
                                         History
