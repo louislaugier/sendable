@@ -11,7 +11,7 @@
     "typecheck": "tsc"
   },
   "dependencies": {
-    "@nextui-org/react": "^2.2.10",
+    "@nextui-org/react": "^2.3.6",
     "@react-oauth/google": "^0.12.1",
     "@remix-run/node": "^2.8.1",
     "@remix-run/react": "^2.8.1",

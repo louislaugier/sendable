@@ -58,8 +58,13 @@ export default function FileUploader() {
                         backgroundColor: !isFileTypeValid ? '#ffebee' : 'transparent' // Red background if invalid file type
                     }}
                 >
-                    {dragActive ? "Release to drop" : "Drag files here or click to upload"}
+                    {dragActive ? "Release to drop" : "Drag a file here or click to upload"}
                     <input type="file" style={{ display: "none" }} />
+                    {/* <div className="relative">
+                        <p className="absolute text-sm text-gray-500" style={{ bottom: "20px" }}>
+                            Supported file types: {fileTypes.join(", ")}
+                        </p>
+                    </div> */}
                 </div>
                 {file && <p>Uploaded: {fileName}</p>}
                 {!isFileTypeValid && <p style={{ color: 'red' }}>File type not allowed.</p>}

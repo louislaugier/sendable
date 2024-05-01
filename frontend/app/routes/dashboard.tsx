@@ -1,4 +1,4 @@
-import { Button, Chip, Tab, Tabs, Textarea } from "@nextui-org/react";
+import { Button, Tab, Tabs, Textarea } from "@nextui-org/react";
 import type { MetaFunction } from "@remix-run/node";
 import { useContext, useState } from "react";
 import FileUploader from "~/components/Footer/FileUploader";
@@ -27,62 +27,67 @@ export default function Dashboard() {
       <div className="flex flex-col items-center mb-16">
         <h2 className="text-2xl">Dashboard</h2>
       </div>
+      <div className="flex w-full flex-col">
 
-      <Tabs
-        aria-label="Options"
-        color="primary"
-        variant="bordered"
-        selectedKey={selected}
-        onSelectionChange={setSelected}
-      >
-        <Tab
-          key="validation"
-          title={
-            <div className="flex items-center space-x-2">
-              {/* <GalleryIcon/> */}
-              <span>Email validation</span>
-            </div>
-          }
+        <Tabs
+          aria-label="Options"
+          color="primary"
+          variant="bordered"
+          selectedKey={selected}
+          onSelectionChange={setSelected}
         >
-          <div className='flex flex-col items-center'>
-            <Button onClick={() => {
-            }} color="primary" variant="shadow">
-              Connect platform
-            </Button>
+          <Tab
+            key="validation"
+            title={
+              <div className="flex items-center space-x-2">
+                {/* <GalleryIcon/> */}
+                <span>Validate new</span>
+              </div>
+            }
+          >
+            <h2 className="text-xl mt-8">Validate email addresses</h2>
+            <div className='flex flex-col items-center py-8'>
+              <Textarea
+                variant="faded"
+                label="Email addresses"
+                placeholder="hello@domain.com,noreply@domain.com"
+                description={`Enter a list of email addresses to validate separated by a coma.`}
+                className="max-w-xs mb-2"
+              />
+              <Button isDisabled onClick={() => {
+              }} color="primary" variant="shadow">
+                Validate
+              </Button>
 
-            <p className="mt-6">or</p>
+              <p className="my-6">or</p>
 
-            <FileUploader />
+              <Button onClick={() => {
+              }} color="primary" variant="shadow">
+                Connect platform
+              </Button>
 
-            <p className="mb-6">or</p>
+              <p className="mt-6">or</p>
 
-            <Textarea
-              variant="faded"
-              label="Email addresses"
-              placeholder="Coma-separated email addresses"
-              description="Enter a list of email addresses to validate."
-              className="max-w-xs mb-2"
-            />
-            <Button isDisabled onClick={() => {
-            }} color="primary" variant="shadow">
-              Validate
-            </Button>
-          </div>
-        </Tab>
-        <Tab
-          key="history"
-          title={
-            <div className="flex items-center space-x-2">
-              {/* <MusicIcon/> */}
-              <span>History</span>
+              <FileUploader />
             </div>
-          }
-        >
-          <ApiLimitsTable />
-        </Tab>
+          </Tab>
+          <Tab
+            key="history"
+            title={
+              <div className="flex items-center space-x-2">
+                {/* <MusicIcon/> */}
+                <span>History</span>
+              </div>
+            }
+          >
+            <h2 className="text-xl mt-8">Validatation history</h2>
+            <div className="py-8">
+              <ApiLimitsTable />
+            </div>
+          </Tab>
 
-      </Tabs>
-
+        </Tabs>
+      </div>
 
 
     </div>

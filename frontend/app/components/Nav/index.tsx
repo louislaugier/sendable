@@ -12,6 +12,7 @@ import { siteName } from "~/constants/app";
 import { ChevronDownIcon } from "~/icons/ChevronDownIcon";
 import { FiExternalLink } from "react-icons/fi";
 import { pages } from "~/constants/pages";
+import { OrderType } from "~/types/order";
 
 export default function Nav() {
     const { authModal, modalType, setModalType } = useContext(AuthModalContext);
@@ -94,24 +95,25 @@ export default function Nav() {
                                 />
                             </DropdownTrigger>
                             <DropdownMenu aria-label="User Actions" variant="flat">
-                                <DropdownSection title="App" showDivider>
+                                <DropdownSection title="Dashboard" showDivider>
                                     <DropdownItem
                                         key="dashboard"
-                                        description="Validate email addresses"
+                                        description="Start a new validation batch"
                                         href="/dashboard"
                                     // startContent={<AddNoteIcon className={iconClasses} />}
                                     >
-                                        Dashboard
+                                        Validate email addresses
                                     </DropdownItem>
                                     <DropdownItem
                                         key="validaion_history"
-                                        description="View emails addresses you have validated"
+                                        description="Email address validation history"
                                         href="/validaion_history"
                                     // startContent={<AddNoteIcon className={iconClasses} />}
                                     >
-                                        Validation history
+                                        History
                                     </DropdownItem>
                                 </DropdownSection>
+                                {/* @ts-ignore */}
                                 <DropdownSection title="Account">
                                     <DropdownItem
                                         key="settings"
@@ -120,13 +122,15 @@ export default function Nav() {
                                     >
                                         Settings
                                     </DropdownItem>
-                                    <DropdownItem
-                                        key="subscription"
-                                        description="Go to Stripe customer dashboard"
-                                    // href or onClick: stripe target blank 
-                                    >
-                                        <div className="flex">Manage subscription <FiExternalLink style={{ marginLeft: 5 }} /></div>
-                                    </DropdownItem>
+                                    {(user.currentPlan?.type === OrderType.Premium || user.currentPlan?.type === OrderType.Enterprise) &&
+                                        <DropdownItem
+                                            key="subscription"
+                                            description="Go to Stripe customer dashboard"
+                                        // href or onClick: stripe target blank 
+                                        >
+                                            <div className="flex">Manage subscription <FiExternalLink style={{ marginLeft: 5 }} /></div>
+                                        </DropdownItem>
+                                    }
                                     <DropdownItem
                                         onClick={() => setUser(null)}
                                         key="logout"

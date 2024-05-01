@@ -2,7 +2,7 @@ export interface Order {
     type: OrderType
 }
 
-enum OrderType {
+export enum OrderType {
     Free = "free",
     Premium = "premium",
     Enterprise = "enterprise",
