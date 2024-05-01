@@ -14,22 +14,39 @@ export default function FileUploader() {
             e.preventDefault();
             setGlobalDragActive(true);
         };
-
+    
+        const handleWindowDragOver = (e: DragEvent) => {
+            e.preventDefault();
+        };
+    
         const handleWindowDragLeave = (e: DragEvent) => {
+            e.preventDefault();
+            // Check if the mouse is outside the window boundaries
+            if (e.clientX <= 0 || e.clientX >= window.innerWidth || e.clientY <= 0 || e.clientY >= window.innerHeight) {
+                setGlobalDragActive(false);
+            }
+        };
+    
+        const handleDrop = (e: DragEvent) => {
             e.preventDefault();
             setGlobalDragActive(false);
         };
-
+    
         // Add global drag event listeners
         window.addEventListener('dragenter', handleWindowDragEnter);
+        window.addEventListener('dragover', handleWindowDragOver);
         window.addEventListener('dragleave', handleWindowDragLeave);
-
+        window.addEventListener('drop', handleDrop);
+    
         return () => {
             // Remove global drag event listeners
             window.removeEventListener('dragenter', handleWindowDragEnter);
+            window.removeEventListener('dragover', handleWindowDragOver);
             window.removeEventListener('dragleave', handleWindowDragLeave);
+            window.removeEventListener('drop', handleDrop);
         };
     }, []);
+    
 
     const handleDrag = (e: React.DragEvent<HTMLDivElement>) => {
         e.preventDefault();
@@ -74,7 +91,7 @@ export default function FileUploader() {
 
     return (
         <>
-            <div className="mb-2">
+            <div className="mb-2 cursor-pointer">
                 <div
                     className={`mt-8 mb-2 drop-zone ${localDragActive ? 'active' : ''} ${!isFileTypeValid ? 'invalid' : ''}`}
                     onClick={triggerFileInput}
