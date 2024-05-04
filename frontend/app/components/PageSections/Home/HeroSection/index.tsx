@@ -14,6 +14,7 @@ export default function HeroSection() {
         <div style={{ height: 'calc(70vh - 65px)', minHeight: '550px' }} className="flex flex-col items-center justify-center py-16">
             <div className="max-w-6xl mx-auto flex flex-col md:flex-row">
                 <div className="md:w-1/2 mb-8 md:mb-0 md:pr-8">
+                    {/* TODO: content synonyms refacto */}
                     <h1 className="text-4xl font-bold mb-4">Accurate, fast and secure email address validation service</h1>
                     <p className="text-lg mb-8">
                         You invest for better email marketing ROI. We help you identify valid email addresses to connect with your customers and leads. Boost your inbox placement and open rates with 99% accurate real-time email validation software.

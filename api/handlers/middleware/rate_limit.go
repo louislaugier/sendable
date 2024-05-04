@@ -2,6 +2,7 @@ package middleware
 
 import (
 	"email-validator/internal/models"
+	"email-validator/internal/pkg/utils"
 	"net/http"
 	"sync"
 	"time"
@@ -41,7 +42,9 @@ func SingleValidationRateLimit(next http.Handler) http.Handler {
 
 // limitByIP limits requests based on the IP rate limit.
 func limitByIP(w http.ResponseWriter, r *http.Request, next http.Handler) {
-	if !validateIPRateLimit(r.RemoteAddr) {
+	IPs := utils.GetIPsFromRequest(r)
+
+	if !validateIPRateLimit(IPs) {
 		http.Error(w, "Rate limit exceeded", http.StatusTooManyRequests)
 		return
 	}
@@ -53,18 +56,24 @@ func validateIPRateLimit(clientIP string) bool {
 	models.RateLimitMutex.Lock()
 	defer models.RateLimitMutex.Unlock()
 
+	now := time.Now()
 	clientInfo, ok := models.RateLimitClientMap[clientIP]
 	if !ok {
-		clientInfo = &models.ClientInfo{LastRequestTime: time.Time{}}
+		// If the client does not exist in the map, create a new entry with the current time
+		models.RateLimitClientMap[clientIP] = &models.ClientInfo{
+			LastRequestTime: now,
+		}
+		return true // Allow the request as this is the first one
 	}
 
-	now := time.Now()
-	if ok && now.Sub(clientInfo.LastRequestTime) < time.Second*30 {
+	// Calculate the time difference since the last request
+	if now.Sub(clientInfo.LastRequestTime) < 30*time.Second {
+		// If the request is too soon (less than 30 seconds), reject it
 		return false
 	}
 
+	// If the time difference is sufficient, update the last request time and allow the request
 	clientInfo.LastRequestTime = now
-	models.RateLimitClientMap[clientIP] = clientInfo
 	return true
 }
 

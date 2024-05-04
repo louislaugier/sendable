@@ -139,6 +139,7 @@ export default function TryItOut() {
                                         setModalType(AuthModalType.Signup);
                                         authModal.onOpen();
                                     }} className="mt-4 cursor-pointer">
+                                        {/* TODO: logged user */}
                                         <b>Learn more</b>
                                     </Link>
                                 </div>

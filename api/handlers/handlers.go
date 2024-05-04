@@ -81,29 +81,30 @@ func handleHTTP(mux *http.ServeMux) {
 func StartServer() {
 	mux := http.NewServeMux()
 	handleHTTP(mux) // Configure the routes
+	corsHandler := createCorsHandler(mux)
 
-	server := http.NewServeMux()
+	// server := http.NewServeMux()
 
-	// Add CORS to all routes except validate_email and validate_emails
-	server.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
-		if r.URL.Path == "/validate_email" || r.URL.Path == "/validate_emails" {
-			mux.ServeHTTP(w, r) // Serve the request without CORS middleware
-		} else {
-			corsHandler := createCorsHandler(mux)
-			corsHandler.ServeHTTP(w, r)
-		}
-	})
+	// // Add CORS to all routes except validate_email and validate_emails
+	// server.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
+	// 	if r.URL.Path == "/validate_email" || r.URL.Path == "/validate_emails" {
+	// 		mux.ServeHTTP(w, r) // Serve the request without CORS middleware
+	// 	} else {
+	// 		corsHandler := createCorsHandler(mux)
+	// 		corsHandler.ServeHTTP(w, r)
+	// 	}
+	// })
 
 	switch config.OSEnv {
 	case config.DevEnv:
 		fmt.Println("HTTP server is listening on port 80...")
-		if err := http.ListenAndServe(":80", server); err != nil {
+		if err := http.ListenAndServe(":80", corsHandler); err != nil {
 			log.Fatal("ListenAndServe: ", err)
 		}
 	case config.ProdEnv:
 		fmt.Println("HTTPS server is listening on port 443...")
-		if err := http.ListenAndServeTLS(":443", "../cert.pem", "../key.pem", server); err != nil {
-			if err = http.ListenAndServeTLS(":443", "cert.pem", "key.pem", server); err != nil {
+		if err := http.ListenAndServeTLS(":443", "../cert.pem", "../key.pem", corsHandler); err != nil {
+			if err = http.ListenAndServeTLS(":443", "cert.pem", "key.pem", corsHandler); err != nil {
 				log.Fatal("ListenAndServeTLS: ", err)
 			}
 		}
