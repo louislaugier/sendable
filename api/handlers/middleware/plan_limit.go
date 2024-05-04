@@ -26,7 +26,7 @@ func validateUserValidationCount(w http.ResponseWriter, r *http.Request, validat
 	return true, nil
 }
 
-func SingleValidationPlanLimit(next http.Handler) http.Handler {
+func SingleValidationUserPlanLimit(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		origin := GetOriginFromRequest(r)
 		currentPlan := GetUserFromRequest(r).CurrentPlan

@@ -13,9 +13,12 @@ func ValidateSingleValidationOriginAndLimits(next http.Handler) http.Handler {
 		ctx := context.WithValue(r.Context(), requestOriginKey, origin)
 
 		if r.Header.Get("Authorization") != "" {
-			ValidateJWT(SingleValidationPlanLimit(SingleValidationRateLimit(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-				next.ServeHTTP(w, r)
-			}))), true).ServeHTTP(w, r.WithContext(ctx))
+			ValidateJWT(
+				SingleValidationUserPlanLimit(SingleValidationRateLimit(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+					next.ServeHTTP(w, r)
+				}))),
+				true,
+			).ServeHTTP(w, r.WithContext(ctx))
 			return
 		}
 
