@@ -79,3 +79,12 @@ reset-db-local:
 	docker-compose rm -sfv db
 	docker-compose build db --no-cache
 	make start-dev
+
+#################################################################
+
+.PHONY: wipe-files-dev
+wipe-files-dev:
+	find api/reports/ -type f ! -name '.gitignore' -exec rm {} +
+	find api/report_tokens/ -type f ! -name '.gitignore' -exec rm {} +
+	find api/files/bulk_validation_logs -type f ! -name '.gitignore' -exec rm {} +
+	find api/files/oauth_contacts -type f ! -name '.gitignore' -exec rm {} +

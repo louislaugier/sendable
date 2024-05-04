@@ -199,21 +199,23 @@ func CreateCSVReport(report []models.ReacherResponse, ID uuid.UUID) (string, err
 func customFormatRecord(record *[]string, item models.ReacherResponse, header []string) {
 	for i, headerItem := range header {
 		switch headerItem {
-		case "Email":
-			(*record)[i] = item.Input
 		case "Reachability":
 			switch item.Reachability {
 			case models.ReachabilitySafe:
-				(*record)[i] = "reachable with good reputation"
+				(*record)[i] = "valid with good reputation"
 			case models.ReachabilityRisky:
-				(*record)[i] = "existing with low reputation"
+				(*record)[i] = "valid with low reputation"
 			case models.ReachabilityUnknown:
 				(*record)[i] = "unknown (domain protected)"
 			case models.ReachabilityInvalid:
-				(*record)[i] = "non-existing (will bounce)"
+				(*record)[i] = "non-existent (will bounce)"
 			}
 		case "Syntax issues":
-			(*record)[i] = strconv.FormatBool(!item.Syntax.IsValidSyntax)
+			val := "NO"
+			if !item.Syntax.IsValidSyntax {
+				val = "YES"
+			}
+			(*record)[i] = val
 			// Add more custom formatting logic here if needed
 		default:
 			// Use getFieldByCSVTag for fields that don't require specific formatting.
@@ -221,7 +223,11 @@ func customFormatRecord(record *[]string, item models.ReacherResponse, header []
 			if fieldValue.IsValid() {
 				switch fieldValue.Kind() {
 				case reflect.Bool:
-					(*record)[i] = strconv.FormatBool(fieldValue.Bool())
+					val := "YES"
+					if !fieldValue.Bool() {
+						val = "NO"
+					}
+					(*record)[i] = val
 				case reflect.String:
 					(*record)[i] = fieldValue.String()
 					// Handle other types if necessary.

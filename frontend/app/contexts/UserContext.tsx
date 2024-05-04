@@ -1,4 +1,5 @@
 import { createContext, useState, useEffect, useMemo } from "react";
+import apiClient from "~/services/api";
 import { User, UserContextType } from "~/types/user";
 
 const UserContext = createContext<UserContextType>({
@@ -21,8 +22,10 @@ export const UserProvider: React.FC<React.PropsWithChildren<{}>> = ({ children }
         if (typeof window !== 'undefined') {
             if (user) {
                 localStorage.setItem('user', JSON.stringify(user));
+                apiClient.defaults.headers.common['Authorization'] = `Bearer ${user.jwt}`;
             } else {
                 localStorage.removeItem('user');
+                delete apiClient.defaults.headers.common['Authorization'];
             }
         }
     }, [user]);

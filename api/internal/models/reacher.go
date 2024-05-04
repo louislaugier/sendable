@@ -23,7 +23,7 @@ const (
 )
 
 type ReacherResponse struct {
-	Input        string       `json:"input,omitempty" csv:"Email"`
+	Input        string       `json:"input,omitempty" csv:"Email address"`
 	Reachability Reachability `json:"is_reachable,omitempty" csv:"Reachability"`
 	Misc         misc         `json:"misc,omitempty"`
 	MX           mx           `json:"mx,omitempty"`
@@ -32,7 +32,7 @@ type ReacherResponse struct {
 }
 
 type misc struct {
-	IsDisposable bool `json:"is_disposable" csv:"Disposable"`
+	IsDisposable bool `json:"is_disposable" csv:"Disposable address"`
 
 	// admin or noreply for example
 	IsRoleAccount bool `json:"is_role_account" csv:"Role account"`
