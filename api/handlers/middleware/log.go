@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"io"
 	"net/http"
+	"time"
 
 	"email-validator/internal/models"
 	"email-validator/internal/pkg/format"
@@ -35,8 +36,11 @@ func Log(next http.Handler) http.Handler {
 		// After the next handler serves the request, log the request with status color.
 		statusColor := format.ColorizeRequestLog(customWriter.StatusCode)
 
+		// Get current time
+		currentTime := time.Now().UTC().Format("2006-01-02 15:04:05")
+
 		// Wrap the entire log message with the color based on status code
-		fmt.Printf("%sRequest: %s %s - Headers: %v - Body: %s - IP: %s - Status: %d%s\n",
-			statusColor, r.Method, r.URL.Path, r.Header, string(body), utils.GetIPsFromRequest(r), customWriter.StatusCode, "\x1b[0m")
+		fmt.Printf("%s[%s] Request: %s %s - Headers: %v - Body: %s - IP: %s - Status: %d%s\n",
+			statusColor, currentTime, r.Method, r.URL.Path, r.Header, string(body), utils.GetIPsFromRequest(r), customWriter.StatusCode, "\x1b[0m")
 	})
 }

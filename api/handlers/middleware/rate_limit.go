@@ -2,7 +2,6 @@ package middleware
 
 import (
 	"email-validator/internal/models"
-	"log"
 	"net/http"
 	"sync"
 	"time"
@@ -57,10 +56,6 @@ func validateIPRateLimit(clientIP string) bool {
 	clientInfo, ok := models.RateLimitClientMap[clientIP]
 	if !ok {
 		clientInfo = &models.ClientInfo{LastRequestTime: time.Time{}}
-	}
-
-	if !clientInfo.LastRequestTime.IsZero() {
-		log.Println(clientInfo.LastRequestTime)
 	}
 
 	now := time.Now()

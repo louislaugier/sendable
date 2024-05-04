@@ -28,6 +28,7 @@ export default function TryItOut() {
 
     const submitEmail = async () => {
         setLoading(true);
+        setErrorMsg('')
 
         if (!email) {
             setErrorMsg("Please enter an email address.");
@@ -44,13 +45,18 @@ export default function TryItOut() {
 
         try {
             const res = await validateEmail({ email });
+
+            if (res === 429) {
+                setErrorMsg("Guests can only validate 1 email address every 30 seconds, signup for free to increase your limits.");
+                setLoading(false);
+                return
+            }
+
             setReachability(res.is_reachable);
         } catch (error: any) {
-            if (error.message === 'Too many requests') {
-                setErrorMsg("Too many requests. Please try again later.");
-            } else {
-                setErrorMsg("An error occurred. Please try again.");
-            }
+            setErrorMsg("An error occurred. Please try again.");
+            setLoading(false);
+            return
         }
 
         setLoading(false);
@@ -99,7 +105,7 @@ export default function TryItOut() {
             >
                 <div className="bg-white p-8">
                     <div className="flex justify-between">
-                        <h2 className="text-2xl font-bold mb-4">Try it out</h2>
+                        <h2 className="text-2xl font-bold mb-4">Test email address reachability</h2>
                         {user && <Button onClick={() => navigateToUrl('/dashboard')} color="primary" variant="bordered" className="mb-4">
                             Go to dashboard
                         </Button>}
@@ -107,9 +113,11 @@ export default function TryItOut() {
                     <Input
                         isDisabled={isLoading}
                         errorMessage={errorMsg}
+                        isInvalid={!!errorMsg}
                         value={email}
                         onChange={handleEmailChange}
-                        placeholder="Enter an email address"
+                        label="Enter an email address"
+                        placeholder="bob@gmail.com"
                         variant="bordered"
                         className="my-4"
                         endContent={

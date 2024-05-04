@@ -13,11 +13,11 @@ import (
 func handle(mux *http.ServeMux, path string, handler http.Handler, withBaseRateLimit bool) {
 	if withBaseRateLimit {
 		mux.Handle(config.APIVersionPrefix+path,
-			middleware.BaseRateLimit(
-				middleware.Log(
-					handler,
-				),
+			// middleware.BaseRateLimit(
+			middleware.Log(
+				handler,
 			),
+			// ),
 		)
 
 		return
@@ -49,14 +49,14 @@ func handleHTTP(mux *http.ServeMux) {
 	handle(mux, "/oauth/linkedin", http.HandlerFunc(linkedinAuthHandler), true)
 
 	handle(mux, "/validate_email",
-		middleware.ValidateSingleValidationOriginAndLimits( // This route has its specific rate limiting
+		middleware.ValidateSingleValidationOriginAndLimits(
 			http.HandlerFunc(validateEmailHandler),
 		),
 		false,
 	)
 	handle(mux, "/validate_emails",
 		middleware.ValidateJWT(
-			middleware.ValidateBulkValidationOrigin( // This route has its specific rate limiting
+			middleware.ValidateBulkValidationOrigin(
 				middleware.ValidateBulkValidationRateLimit(
 					middleware.ValidateFile(
 						http.HandlerFunc(validateEmailsHandler),
