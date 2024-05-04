@@ -1,7 +1,9 @@
 package middleware
 
 import (
+	"email-validator/config"
 	"email-validator/internal/pkg/file"
+	"fmt"
 	"log"
 	"net/http"
 	"strings"
@@ -12,8 +14,7 @@ import (
 // DownloadAuth
 func DownloadAuth(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		ID, err := uuid.Parse(strings.TrimSuffix(r.URL.Path, ".csv.zip"))
-
+		ID, err := uuid.Parse(strings.TrimSuffix(strings.TrimPrefix(r.URL.Path, fmt.Sprintf("%s/reports/", config.APIVersionPrefix)), ".csv.zip"))
 		if err != nil {
 			log.Printf("Error parsing report ID from URL: %v", err)
 			http.Error(w, "Unauthorized", http.StatusUnauthorized)
@@ -22,7 +23,7 @@ func DownloadAuth(next http.Handler) http.Handler {
 
 		token, err := uuid.Parse(r.URL.Query().Get("token"))
 		if err != nil {
-			log.Printf("Error parsing token report from URL: %v", err)
+			log.Printf("Error parsing report token from URL: %v", err)
 			http.Error(w, "Unauthorized", http.StatusUnauthorized)
 			return
 		}

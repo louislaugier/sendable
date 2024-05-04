@@ -3,6 +3,7 @@ package validation
 import (
 	"email-validator/config"
 	"email-validator/internal/models"
+	"log"
 
 	"github.com/google/uuid"
 )
@@ -10,14 +11,15 @@ import (
 const (
 	insertQuery = `
 		INSERT INTO public.validation 
-			(id, user_id, guest_ip, guest_user_agent, single_target_email, upload_filename, origin, type) 
+			(id, user_id, guest_ip, guest_user_agent, single_target_email, raw_bulk_request_log_filepath, upload_filename, origin, type) 
 		VALUES 
-			($1, $2, $3, $4, $5, $6, $7, $8);
+			($1, $2, $3, $4, $5, $6, $7, $8, $9);
 	`
 )
 
 func InsertNew(v *models.Validation) error {
-	_, err := config.DB.Exec(insertQuery, v.ID, v.UserID, v.GuestIP, v.GuestUserAgent, v.SingleTargetEmail, v.UploadFilename, v.Origin, v.Type)
+	log.Println("ok123", v.RawBulkRequestLogFilepath)
+	_, err := config.DB.Exec(insertQuery, v.ID, v.UserID, v.GuestIP, v.GuestUserAgent, v.SingleTargetEmail, v.RawBulkRequestLogFilepath, v.UploadFilename, v.Origin, v.Type)
 	if err != nil {
 		return err
 	}

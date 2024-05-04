@@ -8,11 +8,7 @@ import (
 
 // GetValueFromContext retrieves the value from the context by a key name.
 func GetValueFromContext(ctx context.Context, key userContextKey) interface{} {
-	if key, ok := ctx.Value(key).(string); ok {
-		return key
-	}
-
-	return nil
+	return ctx.Value(key)
 }
 
 // Extracts user from the request context

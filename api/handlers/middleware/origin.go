@@ -30,7 +30,9 @@ func ManageSingleValidationOrigin(next http.Handler) http.Handler {
 
 func ManageBulkValidationOrigin(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		origin := GetOriginFromRequest(r)
+		origin := r.Header.Get("Origin")
+		ctx := context.WithValue(r.Context(), requestOriginKey, origin)
+
 		currentPlan := GetUserFromRequest(r).CurrentPlan
 
 		// reject if a free / premium user attemps to use API to bulk validate
@@ -39,7 +41,7 @@ func ManageBulkValidationOrigin(next http.Handler) http.Handler {
 			return
 		}
 
-		next.ServeHTTP(w, r)
+		next.ServeHTTP(w, r.WithContext(ctx))
 	})
 }
 

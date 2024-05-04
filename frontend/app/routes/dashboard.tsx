@@ -21,6 +21,8 @@ export default function Dashboard() {
   const [searchParams, setSearchParams] = useSearchParams();
   const [selectedTab, setSelectedTab] = useState<any>("validation");
 
+  const [emailsStr, setEmailsStr] = useState<string | null>()
+
   useEffect(() => {
     const tab = searchParams.get("tab");
     if (tab) {
@@ -63,6 +65,8 @@ export default function Dashboard() {
             <h2 className="text-xl mt-8">Validate email addresses</h2>
             <div className='flex flex-col items-center py-8'>
               <Textarea
+                value={emailsStr!}
+                onChange={(e: React.ChangeEvent<HTMLInputElement>) => setEmailsStr(e.target.value)}
                 variant="faded"
                 label="Email addresses"
                 placeholder="hello@domain.com,noreply@domain.com"

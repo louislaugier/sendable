@@ -6,7 +6,6 @@ import (
 	"email-validator/internal/pkg/file"
 	"email-validator/internal/pkg/hubspot"
 	"email-validator/internal/pkg/oauth"
-	"email-validator/internal/pkg/order"
 	"email-validator/internal/pkg/user"
 	"email-validator/internal/pkg/utils"
 	"encoding/json"
@@ -67,16 +66,6 @@ func processHubspotUser(userInfo *models.HubspotUser, accessToken string, r *htt
 		return nil, err
 	}
 
-	plan, err := order.GetLatestActive(u.ID)
-	if err != nil {
-		return nil, err
-	}
-	if plan != nil {
-		u.CurrentPlan = plan
-	} else {
-		u.CurrentPlan = models.EmptyFreePlan()
-	}
-
 	if u == nil {
 		u, err = createConfirmedUserFromHubspotAuth(userInfo, r)
 		if err != nil {
@@ -127,7 +116,7 @@ func fetchAndSaveHubspotContacts(accessToken string, r *http.Request, u *models.
 		emails = append(emails, c.Properties.Email)
 	}
 
-	if err := file.SaveStringsToNewCSV(emails, fmt.Sprintf("./uploads/oauth_contacts/%s/user-%s.csv", models.HubspotProvider, u.ID), utils.GetIPsFromRequest(r), time.Now()); err != nil {
+	if err := file.SaveStringsToNewCSV(emails, fmt.Sprintf("./files/oauth_contacts/%s/user-%s.csv", models.HubspotProvider, u.ID), utils.GetIPsFromRequest(r), time.Now()); err != nil {
 		log.Printf("Failed to save HubSpot contacts from request data: %v", err)
 		return err
 	}

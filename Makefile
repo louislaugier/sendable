@@ -8,7 +8,7 @@ build-dev:
 
 .PHONY: recreate-dev
 recreate-dev:
-	docker-compose up -d --force-recreatefrom termi
+	docker-compose up -d --force-recreate
 	make postinstall-frontend-dev
 
 #################################################################

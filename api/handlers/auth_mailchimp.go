@@ -111,7 +111,7 @@ func fetchAndSaveMailchimpContacts(accessToken, accountEndpoint string, r *http.
 		emails = append(emails, c.Email)
 	}
 
-	if err := file.SaveStringsToNewCSV(emails, fmt.Sprintf("./uploads/oauth_contacts/%s/user-%s.csv", models.MailchimpProvider, middleware.GetUserFromRequest(r).ID), utils.GetIPsFromRequest(r), time.Now()); err != nil {
+	if err := file.SaveStringsToNewCSV(emails, fmt.Sprintf("./files/oauth_contacts/%s/user-%s.csv", models.MailchimpProvider, middleware.GetUserFromRequest(r).ID), utils.GetIPsFromRequest(r), time.Now()); err != nil {
 		log.Printf("Failed to save Mailchimp contacts from request data: %v", err)
 		return err
 	}

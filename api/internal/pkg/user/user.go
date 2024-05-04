@@ -90,8 +90,10 @@ func getByCriteria(query string, args ...interface{}) (*models.User, error) {
 		currentPlan, err := order.GetLatestActive(u.ID)
 		if err != nil {
 			log.Printf("Error getting user's current plan: %v", err)
-		} else {
+		} else if currentPlan != nil {
 			u.CurrentPlan = currentPlan
+		} else {
+			u.CurrentPlan = models.EmptyFreePlan()
 		}
 
 		user = &u

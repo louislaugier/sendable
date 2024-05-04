@@ -11,5 +11,6 @@ CREATE TABLE IF NOT EXISTS public."validation" (
     "upload_filename" VARCHAR,
     "origin" origin NOT NULL,
     "type" validation_type NOT NULL,
+    -- status
     "created_at" TIMESTAMP NOT NULL DEFAULT now()
 );

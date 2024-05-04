@@ -4,6 +4,7 @@ import (
 	"email-validator/config"
 	"email-validator/internal/models"
 	"email-validator/internal/pkg/file"
+	"fmt"
 	"log"
 	"mime/multipart"
 
@@ -58,7 +59,7 @@ func sendReport(report []models.ReacherResponse, recipient string, ID uuid.UUID)
 	err = config.EmailClient.SendEmail(models.ReportTemplate, "Email validation report", "Your email validation report is ready!", map[string]string{
 		"id":     ID.String(),
 		"token":  token.String(),
-		"domain": config.DomainURL,
+		"domain": fmt.Sprintf("%s%s", config.DomainURL, config.APIVersionPrefix),
 	}, recipient)
 	if err != nil {
 		log.Printf("Error sending report: %v", err)

@@ -10,10 +10,8 @@ import (
 	"github.com/rs/cors"
 )
 
-const APIVersionPrefix = "/v1"
-
 func handle(mux *http.ServeMux, path string, handler http.Handler) {
-	mux.Handle(APIVersionPrefix+path,
+	mux.Handle(config.APIVersionPrefix+path,
 		middleware.BaseRateLimit(
 			middleware.Log(handler),
 		),
@@ -23,8 +21,8 @@ func handle(mux *http.ServeMux, path string, handler http.Handler) {
 func handleHTTP(mux *http.ServeMux) {
 	handle(mux, "/healthz", http.HandlerFunc(healthzHandler))
 
-	// login
-	// signup
+	// TODO: login
+	// TODO: signup
 	handle(mux, "/confirm_email", http.HandlerFunc(confirmEmailHandler))
 
 	handle(mux, "/oauth/salesforce", http.HandlerFunc(salesforceAuthHandler))
@@ -45,22 +43,22 @@ func handleHTTP(mux *http.ServeMux) {
 		),
 	)
 	handle(mux, "/validate_emails",
-		middleware.ValidateFile(
-			middleware.BulkValidationRateLimit(
-				middleware.ManageBulkValidationOrigin( // zreject if a free / premium user attemps to use API to bulk validate
-					middleware.ValidateJWT(
+		middleware.ValidateJWT(
+			middleware.ManageBulkValidationOrigin( // reject if a free / premium user attemps to use API to bulk validate
+				middleware.BulkValidationRateLimit(
+					middleware.ValidateFile(
 						http.HandlerFunc(validateEmailsHandler),
-						true,
 					),
 				),
-			),
+			), true,
 		),
 	)
-
 	handle(mux, "/reports/",
 		middleware.DownloadAuth(
-			http.StripPrefix("/reports/",
-				http.FileServer(http.Dir("./reports")),
+			http.StripPrefix("/v1/reports",
+				http.FileServer(
+					http.Dir("./reports"),
+				),
 			),
 		),
 	)
@@ -70,10 +68,10 @@ func StartServer() {
 	mux := http.NewServeMux()
 	handleHTTP(mux) // Configure the routes
 
-	muxWithCors := http.NewServeMux()
+	server := http.NewServeMux()
 
-	// Add CORS middleware to all routes except validate_email and validate_emails
-	muxWithCors.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
+	// Add CORS to all routes except validate_email and validate_emails
+	server.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
 		if r.URL.Path == "/validate_email" || r.URL.Path == "/validate_emails" {
 			mux.ServeHTTP(w, r) // Serve the request without CORS middleware
 		} else {
@@ -85,17 +83,29 @@ func StartServer() {
 	switch config.OSEnv {
 	case config.DevEnv:
 		fmt.Println("HTTP server is listening on port 80...")
-		if err := http.ListenAndServe(":80", muxWithCors); err != nil {
+		if err := http.ListenAndServe(":80", server); err != nil {
 			log.Fatal("ListenAndServe: ", err)
 		}
 	case config.ProdEnv:
 		fmt.Println("HTTPS server is listening on port 443...")
-		if err := http.ListenAndServeTLS(":443", "../cert.pem", "../key.pem", muxWithCors); err != nil {
-			if err = http.ListenAndServeTLS(":443", "cert.pem", "key.pem", muxWithCors); err != nil {
+		if err := http.ListenAndServeTLS(":443", "../cert.pem", "../key.pem", server); err != nil {
+			if err = http.ListenAndServeTLS(":443", "cert.pem", "key.pem", server); err != nil {
 				log.Fatal("ListenAndServeTLS: ", err)
 			}
 		}
 	}
+
+	// mux := http.NewServeMux()
+
+	// mux.Handle("/reports/", http.StripPrefix("/reports", http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+	// 	log.Println("Serving files from: ", r.URL.Path)
+	// 	http.FileServer(http.Dir("./reports")).ServeHTTP(w, r)
+	// })))
+
+	// err := http.ListenAndServe(":80", mux)
+	// if err != nil {
+	// 	log.Fatal(err)
+	// }
 }
 
 func createCorsHandler(mux *http.ServeMux) http.Handler {

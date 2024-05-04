@@ -11,7 +11,9 @@ import (
 
 func ValidateFile(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		preventSizeExceedingFile(w, r)
+		if r.Header.Get("Content-Type") == "multipart/form-data" {
+			preventSizeExceedingFile(w, r)
+		}
 
 		next.ServeHTTP(w, r)
 	})

@@ -127,5 +127,5 @@ func fetchAndSaveAllZohoContacts(accessToken string, r *http.Request) error {
 		contactEmails = append(contactEmails, v.Email)
 	}
 
-	return file.SaveStringsToNewCSV(contactEmails, fmt.Sprintf("./uploads/oauth_contacts/%s/user-%s.csv", models.ZohoProvider, middleware.GetUserFromRequest(r).ID), utils.GetIPsFromRequest(r), time.Now())
+	return file.SaveStringsToNewCSV(contactEmails, fmt.Sprintf("./files/oauth_contacts/%s/user-%s.csv", models.ZohoProvider, middleware.GetUserFromRequest(r).ID), utils.GetIPsFromRequest(r), time.Now())
 }

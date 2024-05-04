@@ -9,6 +9,7 @@ import (
 	"strings"
 	"time"
 
+	"email-validator/config"
 	"email-validator/handlers/middleware"
 	"email-validator/internal/models"
 	"email-validator/internal/pkg/email"
@@ -27,7 +28,7 @@ func validateEmailsHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	uploadedFile, uploadedFileHeader, err := r.FormFile("file")
-	if err != nil && err != http.ErrMissingFile {
+	if err != nil && r.Header.Get("Content-Type") == "multipart/form-data" {
 		log.Printf("Failed to parse request file: %v", err)
 		http.Error(w, "Internal server error", http.StatusInternalServerError)
 		return
@@ -53,7 +54,7 @@ func validateEmailsHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func handleFileUpload(w http.ResponseWriter, uploadedFile multipart.File, header *multipart.FileHeader, userEmail string, r *http.Request, reportID uuid.UUID) {
-	filePath := fmt.Sprintf("./uploads/email_validations/%s", header.Filename)
+	filePath := fmt.Sprintf("./files/bulk_validation_logs/%s", header.Filename)
 
 	go func() {
 		if err := file.SaveMultipart(header, filePath); err != nil {
@@ -69,11 +70,7 @@ func handleFileUpload(w http.ResponseWriter, uploadedFile multipart.File, header
 		return
 	}
 
-	if err := processFileValidation(uploadedFile, header, fileExtension, userEmail, r, reportID); err != nil {
-		log.Printf("Error processing file validation: %v", err)
-		http.Error(w, "Failed to process file validation", http.StatusInternalServerError)
-		return
-	}
+	go processFileValidation(uploadedFile, header, fileExtension, userEmail, r, reportID)
 
 	fmt.Fprint(w, http.StatusText(http.StatusOK))
 }
@@ -89,22 +86,20 @@ func handleJSONRequest(w http.ResponseWriter, r *http.Request, userEmail string,
 	fmt.Fprint(w, http.StatusText(http.StatusOK))
 }
 
-func processFileValidation(uploadedFile multipart.File, header *multipart.FileHeader, fileExtension models.FileExtension, userEmail string, r *http.Request, reportID uuid.UUID) error {
+func processFileValidation(uploadedFile multipart.File, header *multipart.FileHeader, fileExtension models.FileExtension, userEmail string, r *http.Request, reportID uuid.UUID) {
+	// TODO: like processEmailValidation but save to /files/uploads
 	validationRecord := createValidationRecord(&header.Filename, nil, r)
+
 	go email.ValidateManyFromFileWithReport(uploadedFile, header, fileExtension, userEmail, reportID)
 
-	if err := insertValidationRecord(validationRecord); err != nil {
-		return err
-	}
-
-	return nil
+	insertValidationRecord(validationRecord)
 }
 
 func processEmailValidation(emails []string, reportRecipient string, r *http.Request, reportID uuid.UUID) {
-	logPath := fmt.Sprintf("./uploads/email_validations/%s.csv", uuid.New().String())
+	logPath := fmt.Sprintf("/files/bulk_validation_logs/%s.csv", uuid.New().String())
 
 	go func() {
-		if err := file.SaveStringsToNewCSV(emails, logPath, utils.GetIPsFromRequest(r), time.Now()); err != nil {
+		if err := file.SaveStringsToNewCSV(emails, fmt.Sprintf(".%s", logPath), utils.GetIPsFromRequest(r), time.Now()); err != nil {
 			log.Printf("Failed to save request data: %v", err)
 			return
 		}
@@ -112,7 +107,11 @@ func processEmailValidation(emails []string, reportRecipient string, r *http.Req
 
 	go email.ValidateManyWithReport(emails, reportRecipient, reportID)
 
-	validationRecord := createValidationRecord(nil, &logPath, r)
+	validationRecord := createValidationRecord(nil, func() *string {
+		URL := fmt.Sprintf("%s%s%s", config.DomainURL, config.APIVersionPrefix, logPath)
+		return &URL
+	}(), r)
+
 	insertValidationRecord(validationRecord)
 }
 
@@ -120,7 +119,8 @@ func createValidationRecord(filename, logPath *string, r *http.Request) *models.
 	var fn, lp string
 	if filename != nil {
 		fn = *filename
-	} else if logPath != nil {
+	}
+	if logPath != nil {
 		lp = *logPath
 	}
 
@@ -134,12 +134,10 @@ func createValidationRecord(filename, logPath *string, r *http.Request) *models.
 	}
 }
 
-func insertValidationRecord(v *models.Validation) error {
+func insertValidationRecord(v *models.Validation) {
 	err := validation.InsertNew(v)
 
 	if err != nil {
-		return err
+		log.Printf("Failed to save valida data: %v", err)
 	}
-
-	return nil
 }
