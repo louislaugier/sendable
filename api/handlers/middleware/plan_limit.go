@@ -5,6 +5,7 @@ import (
 	"email-validator/internal/models"
 	"email-validator/internal/pkg/validation"
 	"log"
+	"math"
 	"net/http"
 )
 
@@ -40,7 +41,10 @@ func SingleValidationPlanLimit(next http.Handler) http.Handler {
 				maxCount = 500
 			case models.PremiumOrder:
 				maxCount = 500000
+			case models.EnterpriseOrder:
+				maxCount = math.MaxInt64
 			}
+
 		default:
 			validationOrigin = models.APIValidation
 			switch currentPlan.Type {
@@ -48,6 +52,8 @@ func SingleValidationPlanLimit(next http.Handler) http.Handler {
 				maxCount = 30
 			case models.PremiumOrder:
 				maxCount = 30000
+			case models.EnterpriseOrder:
+				maxCount = math.MaxInt64
 			}
 		}
 

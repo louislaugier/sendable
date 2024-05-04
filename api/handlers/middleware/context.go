@@ -22,9 +22,9 @@ func GetUserFromRequest(r *http.Request) *models.User {
 	return user.(*models.User)
 }
 
-// Extracts origin from the request context
+// Extracts origin from the request
 func GetOriginFromRequest(r *http.Request) string {
-	origin := GetValueFromContext(r.Context(), requestOriginKey)
+	origin := r.Header.Get("Origin")
 
-	return origin.(string)
+	return origin
 }

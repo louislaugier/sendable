@@ -11,8 +11,7 @@ import (
 	"github.com/google/uuid"
 )
 
-// DownloadAuth
-func DownloadAuth(next http.Handler) http.Handler {
+func ValidateReportToken(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		ID, err := uuid.Parse(strings.TrimSuffix(strings.TrimPrefix(r.URL.Path, fmt.Sprintf("%s/reports/", config.APIVersionPrefix)), ".csv.zip"))
 		if err != nil {

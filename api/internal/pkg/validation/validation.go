@@ -3,7 +3,6 @@ package validation
 import (
 	"email-validator/config"
 	"email-validator/internal/models"
-	"log"
 
 	"github.com/google/uuid"
 )
@@ -18,7 +17,6 @@ const (
 )
 
 func InsertNew(v *models.Validation) error {
-	log.Println("ok123", v.RawBulkRequestLogFilepath)
 	_, err := config.DB.Exec(insertQuery, v.ID, v.UserID, v.GuestIP, v.GuestUserAgent, v.SingleTargetEmail, v.RawBulkRequestLogFilepath, v.UploadFilename, v.Origin, v.Type)
 	if err != nil {
 		return err

@@ -7,35 +7,33 @@ import (
 	"net/http"
 )
 
-func ManageSingleValidationOrigin(next http.Handler) http.Handler {
+func ValidateSingleValidationOriginAndLimits(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		origin := r.Header.Get("Origin")
+		origin := GetOriginFromRequest(r)
 		ctx := context.WithValue(r.Context(), requestOriginKey, origin)
 
-		if origin != config.FrontendURL {
-			// If the origin is not frontend, validate JWT and apply rate limits
-			handler := ValidateJWT(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-				next.ServeHTTP(w, r.WithContext(ctx))
-			}), true)
-
-			// Apply rate limit and plan limit here
-			SingleValidationPlanLimit(SingleValidationRateLimit(handler)).ServeHTTP(w, r)
+		if r.Header.Get("Authorization") != "" {
+			ValidateJWT(SingleValidationPlanLimit(SingleValidationRateLimit(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+				next.ServeHTTP(w, r)
+			}))), true).ServeHTTP(w, r.WithContext(ctx))
 			return
 		}
 
-		// If the origin is frontend, proceed without additional checks
-		next.ServeHTTP(w, r.WithContext(ctx))
+		// If no Authorization header, apply rate limit middlewares directly
+		SingleValidationRateLimit(next).ServeHTTP(w, r.WithContext(ctx))
 	})
 }
 
-func ManageBulkValidationOrigin(next http.Handler) http.Handler {
+func ValidateBulkValidationOrigin(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		origin := r.Header.Get("Origin")
+		origin := GetOriginFromRequest(r)
 		ctx := context.WithValue(r.Context(), requestOriginKey, origin)
 
 		currentPlan := GetUserFromRequest(r).CurrentPlan
 
-		// reject if a free / premium user attemps to use API to bulk validate
+		// reject if a free / premium user attempts to use API to bulk validate
+		// free user can never bulk validate and premium user can only bulk validate via web app
+		// only enterprise users can bulk validate with API
 		if origin != config.FrontendURL && (currentPlan.Type == models.FreePlan || currentPlan.Type == models.PremiumOrder) {
 			http.Error(w, "Unauthorized", http.StatusUnauthorized)
 			return

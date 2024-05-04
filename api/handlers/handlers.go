@@ -10,57 +10,71 @@ import (
 	"github.com/rs/cors"
 )
 
-func handle(mux *http.ServeMux, path string, handler http.Handler) {
+func handle(mux *http.ServeMux, path string, handler http.Handler, withBaseRateLimit bool) {
+	if withBaseRateLimit {
+		mux.Handle(config.APIVersionPrefix+path,
+			middleware.BaseRateLimit(
+				middleware.Log(
+					handler,
+				),
+			),
+		)
+
+		return
+	}
+
 	mux.Handle(config.APIVersionPrefix+path,
-		middleware.BaseRateLimit(
-			middleware.Log(handler),
+		middleware.Log(
+			handler,
 		),
 	)
 }
 
 func handleHTTP(mux *http.ServeMux) {
-	handle(mux, "/healthz", http.HandlerFunc(healthzHandler))
+	handle(mux, "/healthz", http.HandlerFunc(healthzHandler), true)
 
 	// TODO: login
 	// TODO: signup
-	handle(mux, "/confirm_email", http.HandlerFunc(confirmEmailHandler))
+	handle(mux, "/confirm_email", http.HandlerFunc(confirmEmailHandler), true)
 
-	handle(mux, "/oauth/salesforce", http.HandlerFunc(salesforceAuthHandler))
-	handle(mux, "/oauth/hubspot", http.HandlerFunc(hubspotAuthHandler))
-	handle(mux, "/oauth/zoho", http.HandlerFunc(zohoAuthHandler))
+	handle(mux, "/oauth/salesforce", http.HandlerFunc(salesforceAuthHandler), true)
+	handle(mux, "/oauth/hubspot", http.HandlerFunc(hubspotAuthHandler), true)
+	handle(mux, "/oauth/zoho", http.HandlerFunc(zohoAuthHandler), true)
 	handle(mux, "/oauth/zoho/set_email", middleware.ValidateJWT(
 		http.HandlerFunc(zohoAuthSetEmailHandler),
 		false,
-	),
-	)
-	handle(mux, "/oauth/mailchimp", http.HandlerFunc(mailchimpAuthHandler))
-	handle(mux, "/oauth/google", http.HandlerFunc(googleAuthHandler))
-	handle(mux, "/oauth/linkedin", http.HandlerFunc(linkedinAuthHandler))
+	), true)
+	handle(mux, "/oauth/mailchimp", http.HandlerFunc(mailchimpAuthHandler), true)
+	handle(mux, "/oauth/google", http.HandlerFunc(googleAuthHandler), true)
+	handle(mux, "/oauth/linkedin", http.HandlerFunc(linkedinAuthHandler), true)
 
 	handle(mux, "/validate_email",
-		middleware.ManageSingleValidationOrigin( // ManageSingleValidationOrigin calls SingleValidationRateLimit and only calls ValidateJWT & SingleValidationPlanLimit if origin is other than a guest on frontend
+		middleware.ValidateSingleValidationOriginAndLimits( // This route has its specific rate limiting
 			http.HandlerFunc(validateEmailHandler),
 		),
+		false,
 	)
 	handle(mux, "/validate_emails",
 		middleware.ValidateJWT(
-			middleware.ManageBulkValidationOrigin( // reject if a free / premium user attemps to use API to bulk validate
-				middleware.BulkValidationRateLimit(
+			middleware.ValidateBulkValidationOrigin( // This route has its specific rate limiting
+				middleware.ValidateBulkValidationRateLimit(
 					middleware.ValidateFile(
 						http.HandlerFunc(validateEmailsHandler),
 					),
 				),
 			), true,
 		),
+		false,
 	)
 	handle(mux, "/reports/",
-		middleware.DownloadAuth(
+		middleware.ValidateReportToken(
 			http.StripPrefix("/v1/reports",
 				http.FileServer(
 					http.Dir("./reports"),
 				),
 			),
 		),
+		true,
 	)
 }
 
@@ -94,18 +108,6 @@ func StartServer() {
 			}
 		}
 	}
-
-	// mux := http.NewServeMux()
-
-	// mux.Handle("/reports/", http.StripPrefix("/reports", http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-	// 	log.Println("Serving files from: ", r.URL.Path)
-	// 	http.FileServer(http.Dir("./reports")).ServeHTTP(w, r)
-	// })))
-
-	// err := http.ListenAndServe(":80", mux)
-	// if err != nil {
-	// 	log.Fatal(err)
-	// }
 }
 
 func createCorsHandler(mux *http.ServeMux) http.Handler {
