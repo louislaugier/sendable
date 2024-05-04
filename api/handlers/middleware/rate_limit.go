@@ -3,6 +3,7 @@ package middleware
 import (
 	"email-validator/internal/models"
 	"email-validator/internal/pkg/utils"
+	"log"
 	"net/http"
 	"sync"
 	"time"
@@ -33,15 +34,15 @@ func ValidateBulkValidationRateLimit(next http.Handler) http.Handler {
 func SingleValidationRateLimit(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		if GetUserFromRequest(r) != nil {
-			limitByUserPlanConcurrencyLimit(w, r, next)
+			limitSingleByUserPlanConcurrencyLimit(w, r, next)
 		} else {
-			limitByIP(w, r, next)
+			limitSingleByIP(w, r, next)
 		}
 	})
 }
 
-// limitByIP limits requests based on the IP rate limit.
-func limitByIP(w http.ResponseWriter, r *http.Request, next http.Handler) {
+// limitSingleByIP limits single validation requests based on the IP rate limit.
+func limitSingleByIP(w http.ResponseWriter, r *http.Request, next http.Handler) {
 	IPs := utils.GetIPsFromRequest(r)
 
 	if !validateIPRateLimit(IPs) {
@@ -77,35 +78,36 @@ func validateIPRateLimit(clientIP string) bool {
 	return true
 }
 
-// isAccountLimitReached checks and updates rate limits based on the user's account.
-func isAccountLimitReached(user *models.User) bool {
+// isAccountConcurrencyLimitReached checks and updates rate limits based on the user's account.
+func isAccountConcurrencyLimitReached(user *models.User) bool {
 	models.RateLimitMutex.Lock()
 	defer models.RateLimitMutex.Unlock()
 
 	clientInfo, ok := models.RateLimitClientMap[user.ID.String()]
 	if !ok {
+		log.Println("new")
 		clientInfo = &models.ClientInfo{}
 		models.RateLimitClientMap[user.ID.String()] = clientInfo
 	}
+	log.Println("not new")
 
 	switch user.CurrentPlan.Type {
 	case models.FreePlan:
 		if clientInfo.ActiveValidations >= 1 {
 			return true
 		}
+		clientInfo.ActiveValidations++
 	case models.PremiumOrder:
 		if clientInfo.ActiveValidations >= 3 {
 			return true
 		}
+		clientInfo.ActiveValidations++
 	case models.EnterpriseOrder:
 		// No limit for enterprise users
 		return false
 	default:
 		return true
 	}
-
-	clientInfo.ActiveValidations++
-	defer func() { clientInfo.ActiveValidations-- }()
 
 	return false
 }
@@ -143,11 +145,11 @@ func RateLimit(next http.Handler, limiter models.RateLimiter) http.Handler {
 	})
 }
 
-// limitByUserPlanConcurrencyLimit limits requests based on the user's plan concurrency limit.
-func limitByUserPlanConcurrencyLimit(w http.ResponseWriter, r *http.Request, next http.Handler) {
+// limitSingleByUserPlanConcurrencyLimit limits single validation requests based on the user's plan concurrency limit.
+func limitSingleByUserPlanConcurrencyLimit(w http.ResponseWriter, r *http.Request, next http.Handler) {
 	user := GetUserFromRequest(r)
 
-	if isAccountLimitReached(user) {
+	if isAccountConcurrencyLimitReached(user) {
 		http.Error(w, "Maximum parallel validations reached", http.StatusTooManyRequests)
 		return
 	}
