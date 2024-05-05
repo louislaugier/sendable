@@ -3,56 +3,93 @@ import { useContext, useState } from "react";
 import UserContext from "~/contexts/UserContext";
 import CheckIcon from "~/icons/CheckIcon";
 import validateEmails from "~/services/api/validate_emails";
+import { isValidEmail } from "~/services/utils/email";
 
 export default function TextEmailValidator(props: any) {
     const { user } = useContext(UserContext);
 
-    const [emailsStr, setEmailsStr] = useState<string | null>();
+    const [emailsStr, setEmailsStr] = useState<string>('');
+    const [validEmails, setValidEmails] = useState<Array<string>>([]);
+
     const [isLoading, setLoading] = useState(false);
-
     const [errorMsg, setErrorMsg] = useState<string>();
-
     const [isRequestSent, setRequestSent] = useState(false);
 
     const submitEmails = async () => {
         setLoading(true);
-        setErrorMsg('')
+        setErrorMsg('');
 
         if (!emailsStr) {
-            setErrorMsg("Please enter 1 or more email addresses to vlidate.");
+            setErrorMsg("Please enter 1 or more email addresses to validate.");
             setLoading(false);
             return;
         }
 
         try {
-            const res = await validateEmails({ emails: emailsStr.split(',') });
-
+            const emails = validEmails
+            const res = await validateEmails({ emails });
             if (res === 429) {
-                // TODO: error msgs (concurrency limit reached? monthly limit reached?)
-                // setErrorMsg("You have reached your monthly limits. Please upgrade or try again later.");
-                // setErrorMsg("You have reached your maximum number of parallel validations. Please wait and retry.");
+                // Handle specific errors here
             }
         } catch (error: any) {
             setErrorMsg("An error occurred. Please try again.");
         }
 
-        setRequestSent(true)
-
+        setRequestSent(true);
         setLoading(false);
     };
 
-
     const handleKeyDown = (event: React.KeyboardEvent<HTMLInputElement>) => {
         if (event.key === 'Enter') {
-            // Prevent default behavior of the Enter key press
             event.preventDefault();
-
             submitEmails();
         }
     };
 
+    const handleRemoveEmail = (emailToRemove: string) => {
+        setValidEmails(validEmails.filter(email => email !== emailToRemove));
+    };
+
+    const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const input = e.target.value;
+        setEmailsStr(input);
+
+        const emails = input.split(',').map(email => email.trim()).filter(email => email);
+        const newValidEmails = emails.filter(email => isValidEmail(email));
+
+        setValidEmails([...new Set(newValidEmails)]);
+    };
+
     return (
-        isRequestSent ?
+        !isRequestSent ?
+            <>
+                {validEmails.length > 0 && validEmails.map((email, i) => (
+                    <Chip key={i} onClose={() => handleRemoveEmail(email)} variant="bordered" className="mr-1">
+                        {email}
+                    </Chip>
+                ))}
+
+                <Textarea
+                    isDisabled={isLoading}
+                    errorMessage={errorMsg}
+                    isInvalid={!!errorMsg}
+                    minRows={5}
+                    value={emailsStr}
+                    onChange={handleChange}
+                    variant="faded"
+                    label="Email addresses"
+                    placeholder="hello@domain.com,noreply@domain.com"
+                    description="Enter a list of email addresses to validate separated by a comma."
+                    className="my-6 w-full"
+                    onKeyDown={handleKeyDown}
+                />
+                <div className="w-full flex justify-center">
+                    <Button onClick={submitEmails} isDisabled={!emailsStr} color="primary" variant="shadow">
+                        {isLoading ? 'Checking reachability...' : 'Check reachability'}
+                    </Button>
+                </div>
+            </>
+            :
             <div className="flex flex-col items-center">
                 <Chip
                     startContent={<CheckIcon size={18} />}
@@ -67,27 +104,5 @@ export default function TextEmailValidator(props: any) {
                     New validation batch
                 </Button>
             </div>
-            :
-            <>
-                <Textarea
-                    isDisabled={isLoading}
-                    errorMessage={errorMsg}
-                    isInvalid={!!errorMsg}
-                    minRows={5}
-                    value={emailsStr!}
-                    onChange={(e: React.ChangeEvent<HTMLInputElement>) => setEmailsStr(e.target.value)}
-                    variant="faded"
-                    label="Email addresses"
-                    placeholder="hello@domain.com,noreply@domain.com"
-                    description={`Enter a list of email addresses to validate separated by a coma.`}
-                    className="my-6 w-full"
-                    onKeyDown={handleKeyDown}
-                />
-                <div className="w-full flex justify-center">
-                    <Button onClick={submitEmails} isDisabled={!emailsStr} color="primary" variant="shadow">
-                        {isLoading ? 'Checking reachability...' : 'Check reachability'}
-                    </Button>
-                </div>
-            </>
-    )
+    );
 }
