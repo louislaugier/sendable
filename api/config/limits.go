@@ -5,6 +5,15 @@ import (
 	"math"
 )
 
+var ConcurrentSingleValidationsLimits = map[models.OrderType]int{
+	models.FreePlan:        1,
+	models.PremiumOrder:    3,
+	models.EnterpriseOrder: math.MaxInt64, // Infinity
+}
+
+// Only enterprise accounts can bulk validate, no monthly limit
+const ConcurrentBulkValidationsLimit = 3
+
 var MonthlyAppSingleValidationsLimits = map[models.OrderType]int{
 	models.FreePlan:        500,
 	models.PremiumOrder:    500000,
@@ -16,13 +25,3 @@ var MonthlyAPISingleValidationsLimits = map[models.OrderType]int{
 	models.PremiumOrder:    30000,
 	models.EnterpriseOrder: math.MaxInt64, // Infinity
 }
-
-// Only enterprise accounts can bulk validate, no monthly limit
-
-var ConcurrentSingleValidationsLimits = map[models.OrderType]int{
-	models.FreePlan:        1,
-	models.PremiumOrder:    3,
-	models.EnterpriseOrder: math.MaxInt64, // Infinity
-}
-
-const ConcurrentBulkValidationsLimit = 3
