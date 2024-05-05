@@ -27,7 +27,11 @@ export default function TextEmailValidator(props: any) {
 
         try {
             const emails = validEmails
-            const res = await validateEmails({ emails });
+            let res: any
+
+            if (validEmails.length > 1) res = await validateEmails({ emails });
+            else res = await validateEmails({ email: emails[0] });
+
             if (res === 429) {
                 // Handle specific errors here
             }
