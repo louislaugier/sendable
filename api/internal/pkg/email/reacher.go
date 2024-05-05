@@ -16,7 +16,7 @@ func postToReacher(email string) (*models.ReacherResponse, error) {
 			"to_email": "%s",
 			"hello_name": "%s"
 		}
-	`, email, strings.TrimPrefix(config.DomainURL, "http://")))))
+	`, email, strings.TrimPrefix(strings.TrimPrefix(config.DomainURL, "http://"), "https://")))))
 	if err != nil {
 		return nil, err
 	}
