@@ -25,4 +25,4 @@ var ConcurrentSingleValidationsLimits = map[models.OrderType]int{
 	models.EnterpriseOrder: math.MaxInt64, // Infinity
 }
 
-const ConcurrentBulkValidationsLimit = 1
+const ConcurrentBulkValidationsLimit = 3
