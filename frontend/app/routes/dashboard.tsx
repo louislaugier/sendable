@@ -1,10 +1,8 @@
-import { Button, Tab, Tabs, Textarea } from "@nextui-org/react";
+import { Tab, Tabs } from "@nextui-org/react";
 import type { MetaFunction } from "@remix-run/node";
-import { useLocation, useSearchParams } from "@remix-run/react";
+import { useSearchParams } from "@remix-run/react";
 import { useCallback, useContext, useEffect, useState } from "react";
 import EmailValidatorTab from "~/components/EmailValidatorTab";
-import FileUploader from "~/components/Footer/FileUploader";
-import ApiLimitsTable from "~/components/Tables/ApiLimitsTable";
 import ValidationHistoryTable from "~/components/Tables/ValidationHistoryTable";
 import { siteName } from "~/constants/app";
 import UserContext from "~/contexts/UserContext";
@@ -41,11 +39,15 @@ export default function Dashboard() {
   if (!user) navigateToUrl('/')
 
   const [validations, setValidations] = useState<Array<Validation | null>>([]);
+  const [validationsCount, setValidationsCount] = useState<number>(0);
 
   const loadHistory = useCallback(async (limit: number | undefined = undefined, offset: number | undefined = undefined) => {
     try {
       const res = await getValidationHistory(limit, offset)
-      if (res) setValidations([...validations, ...res])
+      if (res) {
+        setValidations([...validations, ...res.validations])
+        setValidationsCount(res.count)
+      }
     } catch (err) {
       console.error(err)
     }
@@ -54,6 +56,7 @@ export default function Dashboard() {
   useEffect(() => {
     if (user && !validations.length) loadHistory()
   }, [validations, user]);
+
 
   return (
     <div className="py-8 px-6">
@@ -88,7 +91,7 @@ export default function Dashboard() {
           >
             <h2 className="text-xl mt-8">Email validation history</h2>
             <div className="py-8">
-              <ValidationHistoryTable validations={validations} loadHistory={loadHistory} />
+              <ValidationHistoryTable validations={validations} totalCount={validationsCount} loadHistory={loadHistory} />
             </div>
           </Tab>
         </Tabs>

@@ -33,9 +33,7 @@ func UpdateStatus(ID uuid.UUID, status models.ValidationStatus, bulkAddressCount
 }
 
 func GetCurrentMonthCount(userID uuid.UUID, validationOrigin models.ValidationOrigin, isBulkValidation bool) (*int, error) {
-	var (
-		count int
-	)
+	var count int
 
 	prefix := "*"
 	validationType := "NULL"
@@ -89,4 +87,29 @@ func GetMany(userID uuid.UUID, limit, offset int) ([]models.Validation, error) {
 	}
 
 	return validations, nil
+}
+
+func GetCount(userID uuid.UUID) (*int, error) {
+	rows, err := config.DB.Query(`
+		SELECT COUNT(*)
+		FROM public.validation
+		WHERE user_id = $1
+	`, userID)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	var count int
+	for rows.Next() {
+		err := rows.Scan(&count)
+		if err != nil {
+			return nil, err
+		}
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+
+	return &count, nil
 }
