@@ -14,7 +14,7 @@ func postToReacher(email string) (*models.ReacherResponse, error) {
 	req, err := http.Post("http://reacher:8080/v0/check_email", "application/json", bytes.NewBuffer([]byte(fmt.Sprintf(`
 		{
 			"to_email": "%s",
-			"hello_name": "%s",
+			"hello_name": "%s"
 		}
 	`, email, strings.TrimPrefix(config.DomainURL, "http://")))))
 	if err != nil {
