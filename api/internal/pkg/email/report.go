@@ -2,6 +2,7 @@ package email
 
 import (
 	"email-validator/config"
+	"email-validator/handlers/middleware"
 	"email-validator/internal/models"
 	"email-validator/internal/pkg/file"
 	"email-validator/internal/pkg/validation"
@@ -12,37 +13,29 @@ import (
 	"github.com/google/uuid"
 )
 
-func updateValidationStatus(err error, validationID uuid.UUID) error {
-	var status models.ValidationStatus
-	if err != nil {
-		status = models.StatusFailed
-	} else {
-		status = models.StatusCompleted
-	}
-
-	return validation.UpdateStatus(validationID, status)
-}
-
-func ValidateManyWithReport(emails []string, reportRecipient string, validationID, reportToken uuid.UUID) {
+func ValidateManyWithReport(emails []string, userID uuid.UUID, reportRecipientEmail string, validationID, reportToken uuid.UUID) {
 	report, err := ValidateMany(emails)
-	handleValidationReport(report, err, reportRecipient, validationID, reportToken)
+	handleValidationReport(report, err, userID, reportRecipientEmail, validationID, reportToken)
 }
 
-func ValidateManyFromFileWithReport(uploadedFile multipart.File, uploadedFileHeader *multipart.FileHeader, extension models.FileExtension, reportRecipient string, validationID, reportToken uuid.UUID) {
+func ValidateManyFromFileWithReport(uploadedFile multipart.File, uploadedFileHeader *multipart.FileHeader, extension models.FileExtension, userID uuid.UUID, reportRecipientEmail string, validationID, reportToken uuid.UUID) {
 	report, err := ValidateManyFromFile(uploadedFile, uploadedFileHeader, extension)
-	handleValidationReport(report, err, reportRecipient, validationID, reportToken)
+	handleValidationReport(report, err, userID, reportRecipientEmail, validationID, reportToken)
 }
 
-func handleValidationReport(report []models.ReacherResponse, err error, recipient string, validationID, token uuid.UUID) {
+func handleValidationReport(report []models.ReacherResponse, err error, userID uuid.UUID, recipientEmail string, validationID, token uuid.UUID) {
 	if err != nil {
 		log.Printf("Error during validation: %v", err)
-		sendReportError(recipient)
+		sendReportError(recipientEmail)
 	} else {
-		sendReport(report, recipient, validationID, token)
+		sendReport(report, recipientEmail, validationID, token)
 	}
 
 	if updateErr := updateValidationStatus(err, validationID); updateErr != nil {
 		log.Printf("Error updating validation status: %v", updateErr)
+	} else {
+		// Release the lock only after successfully updating the status
+		middleware.ReleaseBulkValidationLock(userID)
 	}
 }
 
@@ -85,4 +78,15 @@ func sendReportError(recipient string) {
 		log.Printf("Error sending report error: %v", err)
 		return
 	}
+}
+
+func updateValidationStatus(err error, validationID uuid.UUID) error {
+	var status models.ValidationStatus
+	if err != nil {
+		status = models.StatusFailed
+	} else {
+		status = models.StatusCompleted
+	}
+
+	return validation.UpdateStatus(validationID, status)
 }

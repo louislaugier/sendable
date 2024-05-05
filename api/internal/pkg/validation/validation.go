@@ -32,7 +32,7 @@ func UpdateStatus(ID uuid.UUID, status models.ValidationStatus) error {
 	return err
 }
 
-func GetCurrentMonthValidationCount(userID uuid.UUID, validationOrigin models.ValidationOrigin, isBulkValidation bool) (*int, error) {
+func GetCurrentMonthCount(userID uuid.UUID, validationOrigin models.ValidationOrigin, isBulkValidation bool) (*int, error) {
 	var (
 		count int
 	)

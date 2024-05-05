@@ -1,6 +1,7 @@
 package middleware
 
 import (
+	"email-validator/config"
 	"email-validator/internal/models"
 	"email-validator/internal/pkg/utils"
 	"log"
@@ -13,20 +14,21 @@ import (
 
 // Global variables
 var bulkValidationMutex sync.Mutex
-var bulkValidationMap = make(map[string]bool)
+var bulkValidationMap = make(map[string]int)
 
 // ValidateBulkValidationRateLimit limits simultaneous bulk validation requests per user.
 func ValidateBulkValidationRateLimit(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		userID := GetUserFromRequest(r).ID
 		if !acquireBulkValidationLock(userID) {
-			http.Error(w, "Another batch validation is currently running", http.StatusTooManyRequests)
+			http.Error(w, "Parallel bulk validation batches limit reached", http.StatusTooManyRequests)
 			return
 		}
 
-		defer releaseBulkValidationLock(userID)
-
+		// Removed defer here to manage it explicitly after updating the status
 		next.ServeHTTP(w, r)
+
+		// Note: Do not release the lock here. It will be released after updating the status.
 	})
 }
 
@@ -85,28 +87,16 @@ func isAccountConcurrencyLimitReached(user *models.User) bool {
 
 	clientInfo, ok := models.RateLimitClientMap[user.ID.String()]
 	if !ok {
-		log.Println("new")
 		clientInfo = &models.ClientInfo{}
 		models.RateLimitClientMap[user.ID.String()] = clientInfo
 	}
-	log.Println("not new")
 
-	switch user.CurrentPlan.Type {
-	case models.FreePlan:
-		if clientInfo.ActiveValidations >= 1 {
-			return true
-		}
-		clientInfo.ActiveValidations++
-	case models.PremiumOrder:
-		if clientInfo.ActiveValidations >= 3 {
-			return true
-		}
-		clientInfo.ActiveValidations++
-	case models.EnterpriseOrder:
-		// No limit for enterprise users
-		return false
-	default:
+	if clientInfo.ActiveValidations >= config.ConcurrentSingleValidationsLimits[user.CurrentPlan.Type] {
 		return true
+	}
+
+	if user.CurrentPlan.Type != models.EnterpriseOrder {
+		clientInfo.ActiveValidations++
 	}
 
 	return false
@@ -162,18 +152,30 @@ func acquireBulkValidationLock(userID uuid.UUID) bool {
 	bulkValidationMutex.Lock()
 	defer bulkValidationMutex.Unlock()
 
-	if bulkValidationMap[userID.String()] {
-		return false // Already running a batch
+	currentCount, ok := bulkValidationMap[userID.String()]
+	log.Println("acquire1", userID, currentCount)
+	if ok && currentCount >= config.ConcurrentBulkValidationsLimit {
+		return false // Limit reached, cannot start another batch
 	}
 
-	bulkValidationMap[userID.String()] = true
+	// Increment the count of running validations for this user
+	bulkValidationMap[userID.String()] = currentCount + 1
+	log.Println("acquire2", userID, bulkValidationMap[userID.String()])
 	return true
 }
 
-// releaseBulkValidationLock releases the lock for a user after bulk validation.
-func releaseBulkValidationLock(userID uuid.UUID) {
+// ReleaseBulkValidationLock releases the lock for a user after bulk validation.
+func ReleaseBulkValidationLock(userID uuid.UUID) {
 	bulkValidationMutex.Lock()
 	defer bulkValidationMutex.Unlock()
 
-	delete(bulkValidationMap, userID.String())
+	currentCount, ok := bulkValidationMap[userID.String()]
+	log.Println("release1", userID, currentCount)
+	if ok && currentCount > 1 {
+		bulkValidationMap[userID.String()] = currentCount - 1
+	} else {
+		delete(bulkValidationMap, userID.String())
+	}
+
+	log.Println("release2", userID, bulkValidationMap[userID.String()])
 }
