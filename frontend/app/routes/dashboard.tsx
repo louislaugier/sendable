@@ -5,8 +5,10 @@ import { useContext, useEffect, useState } from "react";
 import EmailValidatorTab from "~/components/EmailValidatorTab";
 import FileUploader from "~/components/Footer/FileUploader";
 import ApiLimitsTable from "~/components/Tables/ApiLimitsTable";
+import ValidationHistoryTable from "~/components/Tables/ValidationHistoryTable";
 import { siteName } from "~/constants/app";
 import UserContext from "~/contexts/UserContext";
+import getValidationHistory from "~/services/api/validation_history";
 import { navigateToUrl } from "~/utils/url";
 
 export const meta: MetaFunction = () => {
@@ -21,7 +23,6 @@ export default function Dashboard() {
 
   const [searchParams, setSearchParams] = useSearchParams();
   const [selectedTab, setSelectedTab] = useState<any>("validation");
-
 
   useEffect(() => {
     const tab = searchParams.get("tab");
@@ -38,14 +39,26 @@ export default function Dashboard() {
 
   if (!user) navigateToUrl('/')
 
+  const [validations, setValidations] = useState([]);
+  useEffect(() => {
+    const getHistory = async () => {
+      try {
+        const res = await getValidationHistory()
+        if (res) setValidations(res)
+      } catch (err) {
+        console.error(err)
+      }
+    }
+
+    if (!validations.length) getHistory()
+  }, [validations]);
+
   return (
     <div className="py-8 px-6">
-
       <div className="flex flex-col items-center mb-16">
         <h2 className="text-2xl">Dashboard</h2>
       </div>
       <div className="flex w-full flex-col">
-
         <Tabs
           aria-label="Options"
           color="primary"
@@ -71,16 +84,13 @@ export default function Dashboard() {
               </div>
             }
           >
-            <h2 className="text-xl mt-8">Validatation history</h2>
+            <h2 className="text-xl mt-8">Email validation history</h2>
             <div className="py-8">
-              <ApiLimitsTable />
+              <ValidationHistoryTable validations={validations} />
             </div>
           </Tab>
-
         </Tabs>
       </div>
-
-
     </div>
   );
 }

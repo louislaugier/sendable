@@ -1,4 +1,3 @@
-import { AxiosError } from "axios";
 import apiClient from "..";
 
 const validateEmail = async (data: any) => {

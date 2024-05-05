@@ -62,12 +62,14 @@ func GetCurrentMonthCount(userID uuid.UUID, validationOrigin models.ValidationOr
 	return &count, nil
 }
 
-func GetMany(userID uuid.UUID) ([]models.Validation, error) {
+func GetMany(userID uuid.UUID, limit, offset int) ([]models.Validation, error) {
 	rows, err := config.DB.Query(`
-		SELECT id, user_id, single_target_email, upload_filename, report_token, origin, created_at
+		SELECT id, user_id, single_target_email, upload_filename, report_token, origin, status, created_at
 		FROM public.validation
-		WHERE user_id = $1;
-	`, userID)
+		WHERE user_id = $1
+		LIMIT $2
+		OFFSET $3;
+	`, userID, limit, offset)
 	if err != nil {
 		return nil, err
 	}
@@ -76,7 +78,7 @@ func GetMany(userID uuid.UUID) ([]models.Validation, error) {
 	var validations []models.Validation
 	for rows.Next() {
 		var v models.Validation
-		err := rows.Scan(&v.ID, &v.UserID, &v.SingleTargetEmail, &v.UploadFilename, &v.ReportToken, &v.Origin, &v.CreatedAt)
+		err := rows.Scan(&v.ID, &v.UserID, &v.SingleTargetEmail, &v.UploadFilename, &v.ReportToken, &v.Origin, &v.Status, &v.CreatedAt)
 		if err != nil {
 			return nil, err
 		}

@@ -66,6 +66,15 @@ func handleHTTP(mux *http.ServeMux) {
 		),
 		false,
 	)
+
+	handle(mux, "/validation_history",
+		middleware.ValidateJWT(
+			http.HandlerFunc(getValidationHistoryHandler),
+			true,
+		),
+		false,
+	)
+
 	handle(mux, "/reports/",
 		middleware.ValidateReportToken(
 			http.StripPrefix("/v1/reports",

@@ -22,20 +22,20 @@ const (
 )
 
 type Validation struct {
-	ID uuid.UUID
+	ID uuid.UUID `json:"id"`
 
-	UserID *uuid.UUID
+	UserID *uuid.UUID `json:"userId,omitempty"`
 
-	GuestIP        *string
-	GuestUserAgent *string
+	GuestIP        *string `json:"-"`
+	GuestUserAgent *string `json:"-"`
 
-	SingleTargetEmail *string
+	SingleTargetEmail *string `json:"singleTargetEmail,omitempty"`
 
-	UploadFilename *string
-	ReportToken    *uuid.UUID
+	UploadFilename *string    `json:"uploadFilename,omitempty"`
+	ReportToken    *uuid.UUID `json:"reportToken,omitempty"`
 
-	Origin ValidationOrigin
-	Status ValidationStatus
+	Origin ValidationOrigin `json:"origin"`
+	Status ValidationStatus `json:"status"`
 
-	CreatedAt time.Time
+	CreatedAt time.Time `json:"createdAt"`
 }

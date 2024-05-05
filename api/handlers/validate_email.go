@@ -16,13 +16,13 @@ import (
 
 // insert single validation in db with origin (consumer app or api)
 func validateEmailHandler(w http.ResponseWriter, r *http.Request) {
+	if r.Method != http.MethodPost {
+		http.Error(w, "method not allowed", http.StatusMethodNotAllowed)
+	}
+
 	u := middleware.GetUserFromRequest(r)
 	if u != nil {
 		defer func() { models.RateLimitClientMap[u.ID.String()].ActiveValidations-- }()
-	}
-
-	if r.Method != http.MethodPost {
-		http.Error(w, "method not allowed", http.StatusMethodNotAllowed)
 	}
 
 	req := models.ValidateEmailRequest{}
