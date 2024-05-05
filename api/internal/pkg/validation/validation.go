@@ -10,21 +10,28 @@ import (
 const (
 	insertQuery = `
 		INSERT INTO public.validation 
-			(id, user_id, guest_ip, guest_user_agent, single_target_email, raw_bulk_request_log_filepath, upload_filename, origin, type) 
+			(id, user_id, guest_ip, guest_user_agent, single_target_email, upload_filename, origin, type, status) 
 		VALUES 
 			($1, $2, $3, $4, $5, $6, $7, $8, $9);
 	`
+
+	updateStatusQuery = `UPDATE public.validation SET status = $1 WHERE id = $2;`
 )
 
 func InsertNew(v *models.Validation) error {
-	_, err := config.DB.Exec(insertQuery, v.ID, v.UserID, v.GuestIP, v.GuestUserAgent, v.SingleTargetEmail, v.RawBulkRequestLogFilepath, v.UploadFilename, v.Origin, v.Type)
+	_, err := config.DB.Exec(insertQuery, v.ID, v.UserID, v.GuestIP, v.GuestUserAgent, v.SingleTargetEmail, v.UploadFilename, v.Origin, v.Type, v.Status)
 	if err != nil {
 		return err
 	}
 	return nil
 }
 
-func GetCurrentMonthValidationCount(userID uuid.UUID, validationOrigin models.ValidationOrigin, validationType models.ValidationType) (int, error) {
+func UpdateStatus(ID uuid.UUID, status models.ValidationStatus) error {
+	_, err := config.DB.Exec(updateStatusQuery, status, ID)
+	return err
+}
+
+func GetCurrentMonthValidationCount(userID uuid.UUID, validationOrigin models.ValidationOrigin, validationType models.ValidationType) (*int, error) {
 	var count int
 
 	err := config.DB.QueryRow(`
@@ -38,10 +45,10 @@ func GetCurrentMonthValidationCount(userID uuid.UUID, validationOrigin models.Va
 	`, userID, validationOrigin, validationType).Scan(&count)
 
 	if err != nil {
-		return 0, err
+		return nil, err
 	}
 
-	return count, nil
+	return &count, nil
 }
 
 func GetMany(userID uuid.UUID) ([]models.Validation, error) {

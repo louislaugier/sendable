@@ -2,5 +2,6 @@
 *
 !.gitignore
 
-!bulk_validation_logs
+!json_bulk_validation_logs
+!bulk_validation_uploads
 !oauth_contacts

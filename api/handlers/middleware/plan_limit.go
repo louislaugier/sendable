@@ -13,13 +13,13 @@ func validateUserValidationCount(w http.ResponseWriter, r *http.Request, validat
 	userID := GetUserFromRequest(r).ID
 
 	count, err := validation.GetCurrentMonthValidationCount(userID, validationOrigin, models.SingleValidation)
-	if err != nil {
+	if err != nil || count == nil {
 		log.Printf("Failed to get current month validations count: %v", err)
 		http.Error(w, "Internal Sever Error", http.StatusInternalServerError)
 		return false, err
 	}
 
-	if count >= maxCount {
+	if *count >= maxCount {
 		return false, nil
 	}
 

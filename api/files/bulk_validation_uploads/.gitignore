@@ -1,0 +1,3 @@
+# Ignore everything in this directory except this file so that the bulk_validation_uploads folder is not omitted
+*
+!.gitignore

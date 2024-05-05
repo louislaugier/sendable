@@ -20,6 +20,14 @@ const (
 	BulkValidation   ValidationType = "bulk"
 )
 
+type ValidationStatus string
+
+const (
+	StatusProcessing ValidationStatus = "processing"
+	StatusFailed     ValidationStatus = "failed"
+	StatusCompleted  ValidationStatus = "completed"
+)
+
 type Validation struct {
 	ID uuid.UUID
 
@@ -27,12 +35,12 @@ type Validation struct {
 	GuestIP        *string
 	GuestUserAgent *string
 
-	SingleTargetEmail         string
-	RawBulkRequestLogFilepath string
-	UploadFilename            string
+	SingleTargetEmail *string
+	UploadFilename    *string
 
 	Origin ValidationOrigin
 	Type   ValidationType
+	Status ValidationStatus
 
 	CreatedAt time.Time
 }

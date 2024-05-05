@@ -4,6 +4,7 @@ import (
 	"email-validator/config"
 	"email-validator/internal/models"
 	"email-validator/internal/pkg/file"
+	"email-validator/internal/pkg/validation"
 	"fmt"
 	"log"
 	"mime/multipart"
@@ -11,28 +12,38 @@ import (
 	"github.com/google/uuid"
 )
 
-// ValidateManyWithReport consumes ValidateMany and sends a report by email
-func ValidateManyWithReport(emails []string, reportRecipient string, reportID uuid.UUID) {
-	report, err := ValidateMany(emails)
-
+func updateValidationStatus(err error, validationID uuid.UUID) error {
+	var status models.ValidationStatus
 	if err != nil {
-		log.Printf("Error validating many with report: %v", err)
-		sendReportError(reportRecipient)
+		status = models.StatusFailed
+	} else {
+		status = models.StatusCompleted
 	}
 
-	sendReport(report, reportRecipient, reportID)
+	return validation.UpdateStatus(validationID, status)
 }
 
-// ValidateManyFromFileWithReport consumes ValidateManyFromFile and sends a report by email
-func ValidateManyFromFileWithReport(uploadedFile multipart.File, uploadedFileHeader *multipart.FileHeader, extension models.FileExtension, reportRecipient string, reportID uuid.UUID) {
-	report, err := ValidateManyFromFile(uploadedFile, uploadedFileHeader, extension)
+func ValidateManyWithReport(emails []string, reportRecipient string, validationID uuid.UUID) {
+	report, err := ValidateMany(emails)
+	handleValidationReport(report, err, reportRecipient, validationID)
+}
 
+func ValidateManyFromFileWithReport(uploadedFile multipart.File, uploadedFileHeader *multipart.FileHeader, extension models.FileExtension, reportRecipient string, validationID uuid.UUID) {
+	report, err := ValidateManyFromFile(uploadedFile, uploadedFileHeader, extension)
+	handleValidationReport(report, err, reportRecipient, validationID)
+}
+
+func handleValidationReport(report []models.ReacherResponse, err error, recipient string, validationID uuid.UUID) {
 	if err != nil {
-		log.Printf("Error validating many from file with report: %v", err)
-		sendReportError(reportRecipient)
+		log.Printf("Error during validation: %v", err)
+		sendReportError(recipient)
+	} else {
+		sendReport(report, recipient, validationID)
 	}
 
-	sendReport(report, reportRecipient, reportID)
+	if updateErr := updateValidationStatus(err, validationID); updateErr != nil {
+		log.Printf("Error updating validation status: %v", updateErr)
+	}
 }
 
 // sendReport sends a report by email to recipient
