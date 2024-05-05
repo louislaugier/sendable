@@ -27,14 +27,14 @@ func ValidateReportToken(next http.Handler) http.Handler {
 			return
 		}
 
-		tokenFromFile, err := file.GetJSONReportToken(ID)
-		if err != nil || tokenFromFile == nil {
-			log.Printf("Error fetching report token from file: %v", err)
+		storedToken, err := file.GetJSONReportToken(ID)
+		if err != nil || storedToken == nil {
+			log.Printf("Error fetching stored report token: %v", err)
 			http.Error(w, "Unauthorized", http.StatusUnauthorized)
 			return
 		}
 
-		if token != *tokenFromFile {
+		if token != *storedToken {
 			http.Error(w, "Unauthorized", http.StatusUnauthorized)
 			return
 		}

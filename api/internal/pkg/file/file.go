@@ -52,7 +52,7 @@ func SaveStringsToNewCSV(data []string, filePath string, IPs string, timestamp t
 	writer := csv.NewWriter(file)
 	defer writer.Flush()
 
-	// First line is the timestamp followed by author IPs
+	// First line in CSV is the timestamp followed by author IPs
 	if err := writer.Write([]string{timestamp.Format(time.RFC3339), IPs}); err != nil {
 		return err
 	}

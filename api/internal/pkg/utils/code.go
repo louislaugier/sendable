@@ -5,7 +5,7 @@ import (
 	"math/big"
 )
 
-func GenerateEmailConfirmationCode() (*int, error) {
+func GenerateSixDigitCode() (*int, error) {
 	// Define the range for the 6-digit number (from 100000 to 999999)
 	min := big.NewInt(100000)
 	max := big.NewInt(999999)

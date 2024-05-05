@@ -13,11 +13,11 @@ import (
 func handle(mux *http.ServeMux, path string, handler http.Handler, withBaseRateLimit bool) {
 	if withBaseRateLimit {
 		mux.Handle(config.APIVersionPrefix+path,
-			// middleware.BaseRateLimit(
-			middleware.Log(
-				handler,
+			middleware.BaseRateLimit(
+				middleware.Log(
+					handler,
+				),
 			),
-			// ),
 		)
 
 		return

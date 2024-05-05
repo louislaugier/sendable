@@ -63,7 +63,7 @@ func handleZohoUser(emails string, r *http.Request, accessToken string) (*models
 	}
 	if u == nil {
 		s := models.ZohoProvider
-		confirmationCode, err := utils.GenerateEmailConfirmationCode()
+		emailConfirmationCode, err := utils.GenerateSixDigitCode()
 		if err != nil {
 			return nil, err
 		}
@@ -72,7 +72,7 @@ func handleZohoUser(emails string, r *http.Request, accessToken string) (*models
 			ID:                    uuid.New(),
 			Email:                 emails,
 			IsEmailConfirmed:      false,
-			EmailConfirmationCode: confirmationCode,
+			EmailConfirmationCode: emailConfirmationCode,
 			LastIPAddresses:       utils.GetIPsFromRequest(r),
 			LastUserAgent:         r.UserAgent(),
 			AuthProvider:          &s,

@@ -1,5 +1,3 @@
-import { Page } from "~/types/pages";
-
 export const pages = [
     { url: '/dashboard', label: 'Dashboard', requiresAuth: true },
     { url: "/api", label: "API" },

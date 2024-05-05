@@ -24,7 +24,5 @@ func GetUserFromRequest(r *http.Request) *models.User {
 
 // Extracts origin from the request
 func GetOriginFromRequest(r *http.Request) string {
-	origin := r.Header.Get("Origin")
-
-	return origin
+	return r.Header.Get("Origin")
 }

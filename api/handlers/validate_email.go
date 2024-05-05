@@ -52,7 +52,6 @@ func validateEmailHandler(w http.ResponseWriter, r *http.Request) {
 		ID:                uuid.New(),
 		SingleTargetEmail: req.Email,
 		Origin:            middleware.GetValidationOriginType(middleware.GetOriginFromRequest(r)),
-		Type:              models.SingleValidation,
 		Status:            models.StatusCompleted,
 	}
 

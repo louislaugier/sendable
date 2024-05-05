@@ -13,13 +13,6 @@ const (
 	APIValidation ValidationOrigin = "api"
 )
 
-type ValidationType string
-
-const (
-	SingleValidation ValidationType = "single"
-	BulkValidation   ValidationType = "bulk"
-)
-
 type ValidationStatus string
 
 const (
@@ -39,7 +32,6 @@ type Validation struct {
 	UploadFilename    *string
 
 	Origin ValidationOrigin
-	Type   ValidationType
 	Status ValidationStatus
 
 	CreatedAt time.Time

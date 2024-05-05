@@ -107,7 +107,6 @@ func createValidationRecord(filename *string, ID uuid.UUID, r *http.Request) *mo
 		ID:             ID,
 		UserID:         &middleware.GetUserFromRequest(r).ID,
 		Origin:         middleware.GetValidationOriginType(middleware.GetOriginFromRequest(r)),
-		Type:           models.BulkValidation,
 		UploadFilename: filename,
 	}
 }
