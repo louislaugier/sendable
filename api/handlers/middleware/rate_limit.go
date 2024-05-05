@@ -4,7 +4,6 @@ import (
 	"email-validator/config"
 	"email-validator/internal/models"
 	"email-validator/internal/pkg/utils"
-	"log"
 	"net/http"
 	"sync"
 	"time"
@@ -153,14 +152,12 @@ func acquireBulkValidationLock(userID uuid.UUID) bool {
 	defer bulkValidationMutex.Unlock()
 
 	currentCount, ok := bulkValidationMap[userID.String()]
-	log.Println("acquire1", userID, currentCount)
 	if ok && currentCount >= config.ConcurrentBulkValidationsLimit {
 		return false // Limit reached, cannot start another batch
 	}
 
 	// Increment the count of running validations for this user
 	bulkValidationMap[userID.String()] = currentCount + 1
-	log.Println("acquire2", userID, bulkValidationMap[userID.String()])
 	return true
 }
 
@@ -170,12 +167,9 @@ func ReleaseBulkValidationLock(userID uuid.UUID) {
 	defer bulkValidationMutex.Unlock()
 
 	currentCount, ok := bulkValidationMap[userID.String()]
-	log.Println("release1", userID, currentCount)
 	if ok && currentCount > 1 {
 		bulkValidationMap[userID.String()] = currentCount - 1
 	} else {
 		delete(bulkValidationMap, userID.String())
 	}
-
-	log.Println("release2", userID, bulkValidationMap[userID.String()])
 }

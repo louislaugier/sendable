@@ -99,7 +99,6 @@ func processValidationFromFile(uploadedFile multipart.File, header *multipart.Fi
 }
 
 func processValidationFromJSON(emails []string, userID uuid.UUID, reportRecipientEmail string, r *http.Request, validationID, reportToken uuid.UUID) {
-
 	go func() {
 		if err := file.SaveStringsToNewCSV(emails, fmt.Sprintf("./files/json_bulk_validation_logs/%s.csv", validationID), utils.GetIPsFromRequest(r), time.Now()); err != nil {
 			log.Printf("Failed to save request data: %v", err)

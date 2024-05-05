@@ -2,6 +2,7 @@ import { Button, Tab, Tabs, Textarea } from "@nextui-org/react";
 import type { MetaFunction } from "@remix-run/node";
 import { useLocation, useSearchParams } from "@remix-run/react";
 import { useContext, useEffect, useState } from "react";
+import EmailValidatorTab from "~/components/EmailValidatorTab";
 import FileUploader from "~/components/Footer/FileUploader";
 import ApiLimitsTable from "~/components/Tables/ApiLimitsTable";
 import { siteName } from "~/constants/app";
@@ -21,7 +22,6 @@ export default function Dashboard() {
   const [searchParams, setSearchParams] = useSearchParams();
   const [selectedTab, setSelectedTab] = useState<any>("validation");
 
-  const [emailsStr, setEmailsStr] = useState<string | null>()
 
   useEffect(() => {
     const tab = searchParams.get("tab");
@@ -57,44 +57,16 @@ export default function Dashboard() {
             key="validation"
             title={
               <div className="flex items-center space-x-2">
-                {/* <GalleryIcon/> */}
                 <span>Validate new</span>
               </div>
             }
           >
-            <h2 className="text-xl mt-8">Validate email addresses</h2>
-            <div className='flex flex-col items-center py-8'>
-              <Textarea
-                value={emailsStr!}
-                onChange={(e: React.ChangeEvent<HTMLInputElement>) => setEmailsStr(e.target.value)}
-                variant="faded"
-                label="Email addresses"
-                placeholder="hello@domain.com,noreply@domain.com"
-                description={`Enter a list of email addresses to validate separated by a coma.`}
-                className="max-w-xs mb-2"
-              />
-              <Button isDisabled onClick={() => {
-              }} color="primary" variant="shadow">
-                Validate
-              </Button>
-
-              <p className="my-6">or</p>
-
-              <Button onClick={() => {
-              }} color="primary" variant="shadow">
-                Connect platform
-              </Button>
-
-              <p className="mt-6">or</p>
-
-              <FileUploader />
-            </div>
+            <EmailValidatorTab />
           </Tab>
           <Tab
             key="history"
             title={
               <div className="flex items-center space-x-2">
-                {/* <MusicIcon/> */}
                 <span>History</span>
               </div>
             }

@@ -48,6 +48,7 @@ export default function TryItOut() {
 
             if (res === 429) {
                 let msg = "Guests can only validate 1 email address every 30 seconds, signup for free to increase your limits."
+                // TODO: error msgs (concurrency limit reached? monthly limit reached?)
                 if (user) msg = "Maximum parallel email validations reached. Try again later or upgrade your account."
                 setErrorMsg(msg);
                 setLoading(false);
@@ -57,8 +58,6 @@ export default function TryItOut() {
             setReachability(res.is_reachable);
         } catch (error: any) {
             setErrorMsg("An error occurred. Please try again.");
-            setLoading(false);
-            return
         }
 
         setLoading(false);

@@ -113,7 +113,7 @@ export default function FileUploader() {
                     }}
                 >
                     <div className="text-center">
-                        {localDragActive || globalDragActive ? "Release here to upload" : "Click or drop a file here to upload"}
+                        {localDragActive || globalDragActive ? "Release here to upload" : "Click or drop a file to upload"}
                         <input
                             type="file"
                             ref={fileInputRef}
