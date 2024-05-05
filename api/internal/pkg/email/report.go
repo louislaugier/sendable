@@ -23,22 +23,22 @@ func updateValidationStatus(err error, validationID uuid.UUID) error {
 	return validation.UpdateStatus(validationID, status)
 }
 
-func ValidateManyWithReport(emails []string, reportRecipient string, validationID uuid.UUID) {
+func ValidateManyWithReport(emails []string, reportRecipient string, validationID, reportToken uuid.UUID) {
 	report, err := ValidateMany(emails)
-	handleValidationReport(report, err, reportRecipient, validationID)
+	handleValidationReport(report, err, reportRecipient, validationID, reportToken)
 }
 
-func ValidateManyFromFileWithReport(uploadedFile multipart.File, uploadedFileHeader *multipart.FileHeader, extension models.FileExtension, reportRecipient string, validationID uuid.UUID) {
+func ValidateManyFromFileWithReport(uploadedFile multipart.File, uploadedFileHeader *multipart.FileHeader, extension models.FileExtension, reportRecipient string, validationID, reportToken uuid.UUID) {
 	report, err := ValidateManyFromFile(uploadedFile, uploadedFileHeader, extension)
-	handleValidationReport(report, err, reportRecipient, validationID)
+	handleValidationReport(report, err, reportRecipient, validationID, reportToken)
 }
 
-func handleValidationReport(report []models.ReacherResponse, err error, recipient string, validationID uuid.UUID) {
+func handleValidationReport(report []models.ReacherResponse, err error, recipient string, validationID, token uuid.UUID) {
 	if err != nil {
 		log.Printf("Error during validation: %v", err)
 		sendReportError(recipient)
 	} else {
-		sendReport(report, recipient, validationID)
+		sendReport(report, recipient, validationID, token)
 	}
 
 	if updateErr := updateValidationStatus(err, validationID); updateErr != nil {
@@ -47,7 +47,7 @@ func handleValidationReport(report []models.ReacherResponse, err error, recipien
 }
 
 // sendReport sends a report by email to recipient
-func sendReport(report []models.ReacherResponse, recipient string, ID uuid.UUID) {
+func sendReport(report []models.ReacherResponse, recipient string, ID, token uuid.UUID) {
 	filePath, err := file.CreateCSVReport(report, ID)
 	if err != nil {
 		log.Printf("Error creating report: %v", err)
@@ -61,7 +61,7 @@ func sendReport(report []models.ReacherResponse, recipient string, ID uuid.UUID)
 	}
 	zipFile.Close() // Make sure to close the ZIP file when you're done
 
-	token, _, err := file.CreateJSONReportToken(ID)
+	_, err = file.CreateJSONReportTokenFile(ID, token)
 	if err != nil {
 		log.Printf("Error creating report token: %v", err)
 		return

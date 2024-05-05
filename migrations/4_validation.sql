@@ -9,7 +9,8 @@ CREATE TABLE IF NOT EXISTS public."validation" (
     "guest_user_agent" VARCHAR,
     "single_target_email" VARCHAR,
     "upload_filename" VARCHAR,
+    "report_token" UUID,
     "origin" origin NOT NULL,
-    "status" validation_status NOT NULL DEFAULT 'processing',
+    "status" validation_status NOT NULL,
     "created_at" TIMESTAMP NOT NULL DEFAULT now()
 );

@@ -24,12 +24,15 @@ const (
 type Validation struct {
 	ID uuid.UUID
 
-	UserID         *uuid.UUID
+	UserID *uuid.UUID
+
 	GuestIP        *string
 	GuestUserAgent *string
 
 	SingleTargetEmail *string
-	UploadFilename    *string
+
+	UploadFilename *string
+	ReportToken    *uuid.UUID
 
 	Origin ValidationOrigin
 	Status ValidationStatus

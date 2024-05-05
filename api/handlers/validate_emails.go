@@ -36,7 +36,15 @@ func validateEmailsHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	validationID := uuid.New()
-	validationRecord := createValidationRecord(nil, validationID, r)
+	reportToken := uuid.New()
+	validationRecord := &models.Validation{
+		ID:             validationID,
+		UserID:         &middleware.GetUserFromRequest(r).ID,
+		Origin:         middleware.GetValidationOriginType(middleware.GetOriginFromRequest(r)),
+		UploadFilename: nil,
+		ReportToken:    &reportToken,
+		Status:         models.StatusProcessing,
+	}
 
 	err = validation.InsertNew(validationRecord)
 	if err != nil {
@@ -46,13 +54,13 @@ func validateEmailsHandler(w http.ResponseWriter, r *http.Request) {
 
 	reportRecipient := middleware.GetUserFromRequest(r).Email
 	if uploadedFileHeader != nil {
-		handleFileUpload(w, uploadedFile, uploadedFileHeader, reportRecipient, r, validationID)
+		handleFileUpload(w, uploadedFile, uploadedFileHeader, reportRecipient, r, validationID, reportToken)
 	} else {
-		handleJSONRequest(w, r, reportRecipient, validationID)
+		handleJSONRequest(w, r, reportRecipient, validationID, reportToken)
 	}
 }
 
-func handleFileUpload(w http.ResponseWriter, uploadedFile multipart.File, header *multipart.FileHeader, userEmail string, r *http.Request, validationID uuid.UUID) {
+func handleFileUpload(w http.ResponseWriter, uploadedFile multipart.File, header *multipart.FileHeader, userEmail string, r *http.Request, validationID, reportToken uuid.UUID) {
 	filePath := fmt.Sprintf("./files/bulk_validation_uploads/%s", header.Filename)
 
 	go func() {
@@ -69,28 +77,28 @@ func handleFileUpload(w http.ResponseWriter, uploadedFile multipart.File, header
 		return
 	}
 
-	go processValidationFromFile(uploadedFile, header, fileExtension, userEmail, r, validationID)
+	go processValidationFromFile(uploadedFile, header, fileExtension, userEmail, r, validationID, reportToken)
 
 	fmt.Fprint(w, http.StatusText(http.StatusOK))
 }
 
-func handleJSONRequest(w http.ResponseWriter, r *http.Request, userEmail string, validationID uuid.UUID) {
+func handleJSONRequest(w http.ResponseWriter, r *http.Request, userEmail string, validationID, reportToken uuid.UUID) {
 	req, err := email.ValidateValidationRequest(w, r)
 	if err != nil {
 		return // Error already handled in ValidateValidationRequest
 	}
 
-	go processValidationFromJSON(req.Emails, userEmail, r, validationID)
+	go processValidationFromJSON(req.Emails, userEmail, r, validationID, reportToken)
 
 	fmt.Fprint(w, http.StatusText(http.StatusOK))
 }
 
-func processValidationFromFile(uploadedFile multipart.File, header *multipart.FileHeader, fileExtension models.FileExtension, userEmail string, r *http.Request, validationID uuid.UUID) {
+func processValidationFromFile(uploadedFile multipart.File, header *multipart.FileHeader, fileExtension models.FileExtension, userEmail string, r *http.Request, validationID, reportToken uuid.UUID) {
 	// TODO: like processValidationFromJSON but save to /files/uploads
-	go email.ValidateManyFromFileWithReport(uploadedFile, header, fileExtension, userEmail, validationID)
+	go email.ValidateManyFromFileWithReport(uploadedFile, header, fileExtension, userEmail, validationID, reportToken)
 }
 
-func processValidationFromJSON(emails []string, reportRecipient string, r *http.Request, validationID uuid.UUID) {
+func processValidationFromJSON(emails []string, reportRecipient string, r *http.Request, validationID, reportToken uuid.UUID) {
 
 	go func() {
 		if err := file.SaveStringsToNewCSV(emails, fmt.Sprintf("./files/json_bulk_validation_logs/%s.csv", validationID), utils.GetIPsFromRequest(r), time.Now()); err != nil {
@@ -99,14 +107,5 @@ func processValidationFromJSON(emails []string, reportRecipient string, r *http.
 		}
 	}()
 
-	go email.ValidateManyWithReport(emails, reportRecipient, validationID)
-}
-
-func createValidationRecord(filename *string, ID uuid.UUID, r *http.Request) *models.Validation {
-	return &models.Validation{
-		ID:             ID,
-		UserID:         &middleware.GetUserFromRequest(r).ID,
-		Origin:         middleware.GetValidationOriginType(middleware.GetOriginFromRequest(r)),
-		UploadFilename: filename,
-	}
+	go email.ValidateManyWithReport(emails, reportRecipient, validationID, reportToken)
 }

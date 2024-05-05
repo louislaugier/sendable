@@ -11,16 +11,16 @@ import (
 const (
 	insertQuery = `
 		INSERT INTO public.validation 
-			(id, user_id, guest_ip, guest_user_agent, single_target_email, upload_filename, origin, status) 
+			(id, user_id, guest_ip, guest_user_agent, single_target_email, upload_filename, report_token, origin, status) 
 		VALUES 
-			($1, $2, $3, $4, $5, $6, $7, $8);
+			($1, $2, $3, $4, $5, $6, $7, $8, $9);
 	`
 
 	updateStatusQuery = `UPDATE public.validation SET status = $1 WHERE id = $2;`
 )
 
 func InsertNew(v *models.Validation) error {
-	_, err := config.DB.Exec(insertQuery, v.ID, v.UserID, v.GuestIP, v.GuestUserAgent, v.SingleTargetEmail, v.UploadFilename, v.Origin, v.Status)
+	_, err := config.DB.Exec(insertQuery, v.ID, v.UserID, v.GuestIP, v.GuestUserAgent, v.SingleTargetEmail, v.UploadFilename, v.ReportToken, v.Origin, v.Status)
 	if err != nil {
 		return err
 	}
@@ -64,7 +64,7 @@ func GetCurrentMonthValidationCount(userID uuid.UUID, validationOrigin models.Va
 
 func GetMany(userID uuid.UUID) ([]models.Validation, error) {
 	rows, err := config.DB.Query(`
-		SELECT id, user_id, single_target_email, upload_filename, origin, created_at
+		SELECT id, user_id, single_target_email, upload_filename, report_token, origin, created_at
 		FROM public.validation
 		WHERE user_id = $1;
 	`, userID)
@@ -76,7 +76,7 @@ func GetMany(userID uuid.UUID) ([]models.Validation, error) {
 	var validations []models.Validation
 	for rows.Next() {
 		var v models.Validation
-		err := rows.Scan(&v.ID, &v.UserID, &v.SingleTargetEmail, &v.UploadFilename, &v.Origin, &v.CreatedAt)
+		err := rows.Scan(&v.ID, &v.UserID, &v.SingleTargetEmail, &v.UploadFilename, &v.ReportToken, &v.Origin, &v.CreatedAt)
 		if err != nil {
 			return nil, err
 		}
