@@ -8,7 +8,6 @@ CREATE TABLE IF NOT EXISTS public."validation" (
     "guest_ip" VARCHAR,
     "guest_user_agent" VARCHAR,
     "single_target_email" VARCHAR,
-    "bulk_first_email_address" VARCHAR,
     "bulk_address_count" INT,
     "upload_filename" VARCHAR,
     "report_token" UUID,

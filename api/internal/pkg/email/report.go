@@ -31,7 +31,7 @@ func handleValidationReport(report []models.ReacherResponse, err error, userID u
 		sendReport(report, recipientEmail, validationID, token)
 	}
 
-	if updateErr := updateValidationStatus(err, validationID); updateErr != nil {
+	if updateErr := updateValidationStatus(err, validationID, len(report)); updateErr != nil {
 		log.Printf("Error updating validation status: %v", updateErr)
 	} else {
 		// Release the lock only after successfully updating the status
@@ -80,7 +80,7 @@ func sendReportError(recipient string) {
 	}
 }
 
-func updateValidationStatus(err error, validationID uuid.UUID) error {
+func updateValidationStatus(err error, validationID uuid.UUID, bulkAddressCount int) error {
 	var status models.ValidationStatus
 	if err != nil {
 		status = models.StatusFailed
@@ -88,5 +88,5 @@ func updateValidationStatus(err error, validationID uuid.UUID) error {
 		status = models.StatusCompleted
 	}
 
-	return validation.UpdateStatus(validationID, status)
+	return validation.UpdateStatus(validationID, status, &bulkAddressCount)
 }

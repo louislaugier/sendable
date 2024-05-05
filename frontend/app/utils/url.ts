@@ -1,8 +1,11 @@
 import { Location } from "@remix-run/react";
 
 // Function to navigate to a given URL
-export function navigateToUrl(url: string) {
-    if (typeof window !== 'undefined') window.location.href = url;
+export function navigateToUrl(url: string, isTargetBlank: boolean = false) {
+    if (typeof window !== 'undefined') {
+        if (isTargetBlank) window.open(url, '_blank');
+        else window.location.href = url;
+    }
 }
 
 // Function to determine if a given URL is the current URL

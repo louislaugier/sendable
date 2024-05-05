@@ -31,8 +31,9 @@ type Validation struct {
 
 	SingleTargetEmail *string `json:"singleTargetEmail,omitempty"`
 
-	UploadFilename *string    `json:"uploadFilename,omitempty"`
-	ReportToken    *uuid.UUID `json:"reportToken,omitempty"`
+	UploadFilename   *string    `json:"uploadFilename,omitempty"`
+	BulkAddressCount *int       `json:"bulkAddressCount,omitempty"`
+	ReportToken      *uuid.UUID `json:"reportToken,omitempty"`
 
 	Origin ValidationOrigin `json:"origin"`
 	Status ValidationStatus `json:"status"`

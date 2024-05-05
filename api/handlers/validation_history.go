@@ -22,7 +22,7 @@ func getValidationHistoryHandler(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 	if r.URL.Query().Get("offset") != "" {
-		limit, err = strconv.Atoi(r.URL.Query().Get("offset"))
+		offset, err = strconv.Atoi(r.URL.Query().Get("offset"))
 		if err != nil {
 			handleError(w, err, "Invalid query params", http.StatusBadRequest)
 		}

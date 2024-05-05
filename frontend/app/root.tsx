@@ -15,6 +15,7 @@ import { GoogleOAuthProvider } from "@react-oauth/google";
 import { googleOauthClientId } from "./constants/oauth/clientIds";
 import { AuthModalProvider } from "./contexts/AuthModalContext";
 import Footer from "./components/Footer";
+import { ErrorOccuredModalProvider } from "./contexts/ErrorOccuredModalContext";
 
 export const links: LinksFunction = () => [
   { rel: "stylesheet", href: stylesheet },
@@ -30,30 +31,32 @@ export function Layout({ children }: { children: React.ReactNode }) {
         <Links />
       </head>
       <body>
-        <UserProvider>
-          <AuthModalProvider>
+        <ErrorOccuredModalProvider>
+          <UserProvider>
+            <AuthModalProvider>
 
-            <NextUIProvider>
-              <main className="text-foreground bg-background">
+              <NextUIProvider>
+                <main className="text-foreground bg-background">
 
-                <GoogleOAuthProvider clientId={googleOauthClientId}>
+                  <GoogleOAuthProvider clientId={googleOauthClientId}>
 
-                  <Nav />
+                    <Nav />
 
-                  <div style={{ maxWidth: 1024, margin: 'auto', minHeight: 'calc(100vh - 177px)' }}>
-                    <Breadcrumb />
-                    {children}
-                  </div>
+                    <div style={{ maxWidth: 1024, margin: 'auto', minHeight: 'calc(100vh - 177px)' }}>
+                      <Breadcrumb />
+                      {children}
+                    </div>
 
-                  <Footer />
+                    <Footer />
 
-                </GoogleOAuthProvider>
+                  </GoogleOAuthProvider>
 
-              </main>
-            </NextUIProvider>
+                </main>
+              </NextUIProvider>
 
-          </AuthModalProvider>
-        </UserProvider>
+            </AuthModalProvider>
+          </UserProvider>
+        </ErrorOccuredModalProvider>
         <ScrollRestoration />
         <Scripts />
       </body>

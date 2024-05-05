@@ -24,7 +24,6 @@ export default function GoogleAuthButton() {
     }
 
     const onError = () => {
-        console.log('Login failed');
         setLoading(false)
     }
 
@@ -57,14 +56,11 @@ export default function GoogleAuthButton() {
 export function GoogleOneTap() {
     useGoogleOneTapLogin({
         onSuccess: async (JWTResponse) => {
-            console.log(JWTResponse.credential);
             try {
-                let resp = await googleAuth({ jwt: JWTResponse.credential });
-                console.log(resp);
+                await googleAuth({ jwt: JWTResponse.credential });
             } catch { }
         },
         onError: () => {
-            console.log('Login Failed');
         },
     });
 
