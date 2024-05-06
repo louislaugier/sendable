@@ -22,21 +22,22 @@ const (
 )
 
 type Validation struct {
-	ID uuid.UUID `json:"id"`
-
+	ID     uuid.UUID  `json:"id"`
 	UserID *uuid.UUID `json:"userId,omitempty"`
 
-	GuestIP        *string `json:"-"`
-	GuestUserAgent *string `json:"-"`
+	// Single validation fields
+	GuestIP                  *string       `json:"-"`
+	GuestUserAgent           *string       `json:"-"`
+	SingleTargetEmail        *string       `json:"singleTargetEmail,omitempty"`
+	SingleTargetReachability *Reachability `json:"singleTargetReachability,omitempty"`
 
-	SingleTargetEmail *string `json:"singleTargetEmail,omitempty"`
+	// Bulk validation fields
+	UploadFilename   *string              `json:"uploadFilename,omitempty"`
+	BulkAddressCount *int                 `json:"bulkAddressCount,omitempty"`
+	ReportToken      *uuid.UUID           `json:"reportToken,omitempty"`
+	ProviderSource   *ContactProviderType `json:"validationProviderSource,omitempty"`
 
-	UploadFilename   *string    `json:"uploadFilename,omitempty"`
-	BulkAddressCount *int       `json:"bulkAddressCount,omitempty"`
-	ReportToken      *uuid.UUID `json:"reportToken,omitempty"`
-
-	Origin ValidationOrigin `json:"origin"`
-	Status ValidationStatus `json:"status"`
-
-	CreatedAt time.Time `json:"createdAt"`
+	Origin    ValidationOrigin `json:"origin"`
+	Status    ValidationStatus `json:"status"`
+	CreatedAt time.Time        `json:"createdAt"`
 }

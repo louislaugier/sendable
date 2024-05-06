@@ -53,7 +53,6 @@ export default function ValidationHistoryTable(props: any) {
                     {items.length && items.map((validation: Validation, i: number) =>
                         <TableRow key={i}>
                             <TableCell>{moment(validation.createdAt).format("YYYY-MM-DD HH:mm:ss").toString()}</TableCell>
-                            {/* TODO: check upload filename */}
                             <TableCell>{validation.singleTargetEmail ? validation.singleTargetEmail : `${validation.bulkAddressCount ? validation.bulkAddressCount + ' addresses' : 'Loading...'}`}</TableCell>
                             <TableCell>
                                 <p>TODO</p>

@@ -49,10 +49,11 @@ func validateEmailHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	v := &models.Validation{
-		ID:                uuid.New(),
-		SingleTargetEmail: req.Email,
-		Origin:            middleware.GetValidationOriginType(middleware.GetOriginFromRequest(r)),
-		Status:            models.StatusCompleted,
+		ID:                       uuid.New(),
+		SingleTargetEmail:        req.Email,
+		Origin:                   middleware.GetValidationOriginType(middleware.GetOriginFromRequest(r)),
+		Status:                   models.StatusCompleted,
+		SingleTargetReachability: &resp.Reachability,
 	}
 
 	IPaddresses, userAgent := utils.GetIPsFromRequest(r), r.UserAgent()
