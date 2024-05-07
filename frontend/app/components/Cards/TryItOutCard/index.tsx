@@ -1,5 +1,6 @@
 import { Card, Button, Divider, CardFooter, Link, Input, Chip } from "@nextui-org/react";
 import { useState, useContext } from "react";
+import ReachabilityChip from "~/components/ReachabilityChip";
 import AuthModalContext from "~/contexts/AuthModalContext";
 import UserContext from "~/contexts/UserContext";
 import { CheckIconRound } from "~/icons/CheckIconRound";
@@ -74,22 +75,6 @@ export default function TryItOut() {
 
     const { authModal, setModalType } = useContext(AuthModalContext);
 
-    let reachabilityChip;
-    if (reachability === Reachability.Reachable)
-        reachabilityChip = <Chip
-            startContent={<CheckIconRound size={18} />}
-            variant="faded"
-            color="success"
-        >
-            deliverable
-        </Chip>;
-    else if (reachability === Reachability.Risky)
-        reachabilityChip = <Chip color="warning" variant="dot">{reachability}</Chip>;
-    else if (reachability === Reachability.Unknown)
-        reachabilityChip = <Chip color="warning" variant="dot">{reachability} (protected domain <b>{extractDomain(email!)}</b>)</Chip>;
-    else if (reachability === Reachability.Invalid)
-        reachabilityChip = <Chip color="danger">{reachability}</Chip>;
-
     // let reachabilityDescription;
     // if (reachability === Reachability.Reachable) reachabilityDescription = "A hard bounce rate lower than 1% is guaranteed."
     // else if (reachability === Reachability.Risky) reachabilityDescription = "The email address appears to exist, but has quality issues that may result in low engagement or a bounce. We don't recommend sending to these emails, and don't commit on an accuracy rate. An email is considered risky when at least one of the following is true: address is a disposable email address (DEA), address is a role account (e.g. support@ or admin@), address is a catch-all address, address has a full inbox."
@@ -134,7 +119,7 @@ export default function TryItOut() {
                             <Divider className="mt-8 mb-4" />
                             <CardFooter>
                                 <div>
-                                    <p style={{ lineHeight: "30px" }}>Reachability for {emailConfirmed}: {reachabilityChip}</p>
+                                    <p style={{ lineHeight: "30px" }}>Reachability for {emailConfirmed}: <ReachabilityChip reachability={reachability} email={email} /></p>
                                     {/* <p>{reachabilityDescription}</p> */}
                                     <Link onClick={() => {
                                         setModalType(AuthModalType.Signup);

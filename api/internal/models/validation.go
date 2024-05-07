@@ -35,7 +35,7 @@ type Validation struct {
 	UploadFilename   *string              `json:"uploadFilename,omitempty"`
 	BulkAddressCount *int                 `json:"bulkAddressCount,omitempty"`
 	ReportToken      *uuid.UUID           `json:"reportToken,omitempty"`
-	ProviderSource   *ContactProviderType `json:"validationProviderSource,omitempty"`
+	ProviderSource   *ContactProviderType `json:"providerSource,omitempty"`
 
 	Origin    ValidationOrigin `json:"origin"`
 	Status    ValidationStatus `json:"status"`

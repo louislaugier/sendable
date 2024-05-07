@@ -49,7 +49,6 @@ export default function PricingCard(props: any) {
                                         </Tooltip>
                                     </div>}
                                 </div>
-
                             </li>
                         ))}
                     </ul>

@@ -83,6 +83,7 @@ export default function TextEmailValidator(props: any) {
                     variant="faded"
                     label="Email addresses"
                     placeholder="hello@domain.com,noreply@domain.com"
+                    // TODO: or semicolon
                     description="Enter a list of email addresses to validate separated by a comma."
                     className="my-6 w-full"
                     onKeyDown={handleKeyDown}

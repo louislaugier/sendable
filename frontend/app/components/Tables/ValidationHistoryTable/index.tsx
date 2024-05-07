@@ -2,6 +2,7 @@ import { Table, TableHeader, TableColumn, TableBody, TableRow, TableCell, Chip, 
 import moment from "moment";
 import { useState, useMemo } from "react";
 import DownloadReportButton from "~/components/DownloadReportButton";
+import ReachabilityChip from "~/components/ReachabilityChip";
 import { Validation, ValidationOrigin, ValidationStatus } from "~/types/validation";
 
 export default function ValidationHistoryTable(props: any) {
@@ -47,15 +48,15 @@ export default function ValidationHistoryTable(props: any) {
                     <TableColumn>SOURCE</TableColumn>
                     <TableColumn>STATUS</TableColumn>
                     <TableColumn>ORIGIN</TableColumn>
-                    <TableColumn>RESULT</TableColumn>
+                    <TableColumn className="flex justify-center">RESULT</TableColumn>
                 </TableHeader>
                 <TableBody>
                     {items.length && items.map((validation: Validation, i: number) =>
                         <TableRow key={i}>
                             <TableCell>{moment(validation.createdAt).format("YYYY-MM-DD HH:mm:ss").toString()}</TableCell>
-                            <TableCell>{validation.singleTargetEmail ? validation.singleTargetEmail : `${validation.bulkAddressCount ? validation.bulkAddressCount + ' addresses' : 'Loading...'}`}</TableCell>
+                            <TableCell>{validation.singleTargetEmail ? validation.singleTargetEmail : validation.bulkAddressCount ? `${validation.bulkAddressCount} addresses` : 'Loading...'}</TableCell>
                             <TableCell>
-                                <p>TODO</p>
+                                <p>{validation.providerSource ? `${validation.providerSource.charAt(0).toUpperCase()}${validation.providerSource.slice(1)}` : validation.uploadFilename ? validation.uploadFilename : 'Text (manual)'}</p>
                             </TableCell>
                             <TableCell>
                                 {validation.status === ValidationStatus.Completed ?
@@ -73,10 +74,13 @@ export default function ValidationHistoryTable(props: any) {
                                 }
                             </TableCell>
                             <TableCell>{validation.origin === ValidationOrigin.Platform ? 'Platform' : 'API'}</TableCell>
-                            <TableCell>
-                                {validation.reportToken ? <DownloadReportButton validationId={validation.id} reportToken={validation.reportToken} tooltipContent="Download report" /> : <>
-                                    {/* single target result with tooltip */}
-                                </>}
+                            <TableCell className="flex justify-center" style={{height: '56px'}}>
+                                {validation.reportToken ? <DownloadReportButton validationId={validation.id} reportToken={validation.reportToken} tooltipContent="Download report" /> : validation.singleTargetReachability && validation.singleTargetEmail ?
+                                    <>
+                                        <ReachabilityChip reachability={validation.singleTargetReachability} email={validation.singleTargetEmail}/>
+                                    </> : <>
+
+                                    </>}
                             </TableCell>
                         </TableRow>
                     )}
