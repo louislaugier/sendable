@@ -1,6 +1,6 @@
 import { Table, TableHeader, TableColumn, TableBody, TableRow, TableCell, Chip, Pagination, Select, SelectItem } from "@nextui-org/react";
 import moment from "moment";
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import DownloadReportButton from "~/components/DownloadReportButton";
 import ReachabilityChip from "~/components/ReachabilityChip";
 import { Validation, ValidationOrigin, ValidationStatus } from "~/types/validation";
@@ -39,7 +39,7 @@ export default function ValidationHistoryTable(props: any) {
 
             return validations.slice(start, end);
         } else return []
-    }, [page, validations, rowsPerPage]);
+    }, [page, props, rowsPerPage]);
 
     return (
         <div>

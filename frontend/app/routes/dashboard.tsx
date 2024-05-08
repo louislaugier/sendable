@@ -20,26 +20,30 @@ export const meta: MetaFunction = () => {
 export default function Dashboard() {
   const { user } = useContext(UserContext);
 
+  if (!user) navigateToUrl('/')
+
   const [searchParams, setSearchParams] = useSearchParams();
   const [selectedTab, setSelectedTab] = useState<any>("validation");
 
   useEffect(() => {
     const tab = searchParams.get("tab");
-    if (tab) {
-      setSelectedTab(tab);
-    }
+    if (tab) setSelectedTab(tab);
   }, [searchParams]);
 
   useEffect(() => {
     if (selectedTab) {
       setSearchParams({ tab: selectedTab });
+      if (selectedTab === "history") resetHistory()
     }
   }, [selectedTab, setSearchParams]);
 
-  if (!user) navigateToUrl('/')
-
   const [validations, setValidations] = useState<Array<Validation | null>>([]);
   const [validationsCount, setValidationsCount] = useState<number>(0);
+
+  const resetHistory = () => {
+    setValidations([])
+    setValidationsCount(0)
+  }
 
   const loadHistory = useCallback(async (limit: number | undefined = undefined, offset: number | undefined = undefined) => {
     try {
@@ -48,12 +52,10 @@ export default function Dashboard() {
         setValidations([...validations, ...res.validations])
         setValidationsCount(res.count)
       }
-
-      return res.validations
     } catch (err) {
       console.error(err)
     }
-  }, [validations, user]);
+  }, [validationsCount, validations]);
 
   useEffect(() => {
     if (user && !validations.length) loadHistory()
@@ -92,7 +94,7 @@ export default function Dashboard() {
               </div>
             }
           >
-            <EmailValidatorTab />
+            <EmailValidatorTab loadHistory={loadHistory} />
           </Tab>
           <Tab
             key="history"
@@ -104,11 +106,12 @@ export default function Dashboard() {
           >
             <h2 className="text-xl mt-8">Email validation history</h2>
             <div className="py-8">
-              <ValidationHistoryTable validations={validations} totalCount={validationsCount} loadHistory={loadHistory} />
+              {selectedTab === "history" && <ValidationHistoryTable validations={validations} totalCount={validationsCount} loadHistory={loadHistory} />}
             </div>
           </Tab>
         </Tabs>
       </div>
     </div>
+
   );
 }

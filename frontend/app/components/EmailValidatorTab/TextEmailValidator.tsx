@@ -10,6 +10,7 @@ import ReachabilityChip from "../ReachabilityChip";
 import { InvalidDescriptor, ReachableDescriptor, RiskyDescriptor, UnknownDescriptor } from "./ReachabilityDescriptor";
 
 export default function TextEmailValidator(props: any) {
+    const { loadHistory } = props;
     const { user } = useContext(UserContext);
 
     const [emailsStr, setEmailsStr] = useState<string>('');
@@ -26,7 +27,7 @@ export default function TextEmailValidator(props: any) {
         setErrorMsg('');
 
         if (!emailsStr) {
-            setErrorMsg("Please enter 1 or more email addresses to validate.");
+            setErrorMsg("Please enter at least 1 email address to validate.");
             setLoading(false);
             return;
         }
@@ -43,12 +44,17 @@ export default function TextEmailValidator(props: any) {
 
             if (res === 429) {
                 // Handle specific errors here
+
+                return
             }
         } catch (error: any) {
             setErrorMsg("An error occurred. Please try again.");
         }
 
         setRequestSent(true);
+
+        await loadHistory()
+
         setLoading(false);
     };
 
