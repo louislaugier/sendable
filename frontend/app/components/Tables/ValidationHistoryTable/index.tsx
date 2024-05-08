@@ -1,16 +1,34 @@
-import { Table, TableHeader, TableColumn, TableBody, TableRow, TableCell, Chip, Pagination, getKeyValue, Spinner } from "@nextui-org/react";
+import { Table, TableHeader, TableColumn, TableBody, TableRow, TableCell, Chip, Pagination, Select, SelectItem } from "@nextui-org/react";
 import moment from "moment";
 import { useState, useMemo } from "react";
 import DownloadReportButton from "~/components/DownloadReportButton";
 import ReachabilityChip from "~/components/ReachabilityChip";
 import { Validation, ValidationOrigin, ValidationStatus } from "~/types/validation";
-import { useAsyncList } from "@react-stately/data";
+
+const rowsPerPageChoices: any = [
+    {
+        label: "10",
+        value: 10
+    },
+    {
+        label: "25",
+        value: 25
+    },
+    {
+        label: "50",
+        value: 50
+    },
+    {
+        label: "100",
+        value: 100
+    },
+]
 
 export default function ValidationHistoryTable(props: any) {
     const { validations, totalCount, loadHistory } = props;
 
     const [page, setPage] = useState(1);
-    const rowsPerPage = 10;
+    const [rowsPerPage, setRowsPerPage] = useState(10);
 
     const pages = Math.ceil(totalCount / rowsPerPage);
 
@@ -21,11 +39,31 @@ export default function ValidationHistoryTable(props: any) {
 
             return validations.slice(start, end);
         } else return []
-    }, [page, validations]);
+    }, [page, validations, rowsPerPage]);
 
     return (
-        <>
-            <Table removeWrapper aria-label="Email validation history" className="mb-16" bottomContent={items.length &&
+        <div>
+            <Select
+                defaultSelectedKeys={[rowsPerPage]}
+                items={rowsPerPageChoices}
+                label="Rows per page"
+                style={{ width: "150px" }}
+                className="mb-4"
+                onChange={async (e) => {
+                    const newPerPageCount = Number(e.target.value)
+
+                    if (newPerPageCount > rowsPerPage && items.length < totalCount) try {
+                        await loadHistory(rowsPerPage, items.length)
+                    } catch {
+                        return
+                    }
+
+                    setRowsPerPage(newPerPageCount)
+                }}
+            >
+                {(item: any) => <SelectItem key={item.value}>{item.label}</SelectItem>}
+            </Select >
+            <Table aria-label="Email validation history" className="mb-16" bottomContent={items.length &&
                 <div className="flex w-full justify-center">
                     <Pagination
                         isCompact
@@ -34,11 +72,14 @@ export default function ValidationHistoryTable(props: any) {
                         color="primary"
                         page={page}
                         total={pages}
-                        onChange={async (page) => {
-                            if (validations.length < totalCount) {
-                                await loadHistory(rowsPerPage, validations.length)
+                        onChange={async (newPage) => {
+                            if (newPage > page && items.length < totalCount) try {
+                                await loadHistory(rowsPerPage, items.length)
+                            } catch {
+                                return
                             }
-                            setPage(page)
+
+                            setPage(newPage)
                         }}
                     />
                 </div>
@@ -93,74 +134,6 @@ export default function ValidationHistoryTable(props: any) {
                     )}
                 </TableBody>
             </Table>
-        </>
+        </div>
     )
-}
-
-export function Test(props: any) {
-    const { loadHistory } = props;
-    const [isLoading, setIsLoading] = useState(true);
-
-    let list = useAsyncList({
-        async load({ signal }: any) {
-            const history = await loadHistory()
-            setIsLoading(false);
-
-            return {
-                items: history ?? [],
-            };
-        },
-        async sort({ items, sortDescriptor }: any) {
-            return {
-                items: items.sort((a: any, b: any) => {
-                    let first = a[sortDescriptor.column];
-                    let second = b[sortDescriptor.column];
-                    let cmp = (parseInt(first) || first) < (parseInt(second) || second) ? -1 : 1;
-
-                    if (sortDescriptor.direction === "descending") {
-                        cmp *= -1;
-                    }
-
-                    return cmp;
-                }),
-            };
-        },
-    });
-
-    return (
-        <Table
-            aria-label="Example table with client side sorting"
-            sortDescriptor={list.sortDescriptor}
-            onSortChange={list.sort}
-            classNames={{
-                table: "min-h-[400px]",
-            }}
-        >
-            <TableHeader>
-                <TableColumn key="createdAt" allowsSorting>
-                    Name
-                </TableColumn>
-                <TableColumn key="height" allowsSorting>
-                    Height
-                </TableColumn>
-                <TableColumn key="mass" allowsSorting>
-                    Mass
-                </TableColumn>
-                <TableColumn key="birth_year" allowsSorting>
-                    Birth year
-                </TableColumn>
-            </TableHeader>
-            <TableBody
-                items={list.items}
-                isLoading={isLoading}
-                loadingContent={<Spinner label="Loading..." />}
-            >
-                {(item: any) => (
-                    <TableRow key={item.name}>
-                        {(columnKey) => <TableCell>{getKeyValue(item, columnKey)}</TableCell>}
-                    </TableRow>
-                )}
-            </TableBody>
-        </Table>
-    );
 }

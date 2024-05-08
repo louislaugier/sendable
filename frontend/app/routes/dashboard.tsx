@@ -1,9 +1,9 @@
-import { Tab, Tabs } from "@nextui-org/react";
+import { Button, Link, Tab, Tabs } from "@nextui-org/react";
 import type { MetaFunction } from "@remix-run/node";
 import { useSearchParams } from "@remix-run/react";
 import { useCallback, useContext, useEffect, useState } from "react";
 import EmailValidatorTab from "~/components/EmailValidatorTab";
-import ValidationHistoryTable, { Test } from "~/components/Tables/ValidationHistoryTable";
+import ValidationHistoryTable from "~/components/Tables/ValidationHistoryTable";
 import { siteName } from "~/constants/app";
 import UserContext from "~/contexts/UserContext";
 import getValidationHistory from "~/services/api/validation_history";
@@ -59,10 +59,22 @@ export default function Dashboard() {
     if (user && !validations.length) loadHistory()
   }, [validations, user]);
 
+  const goToPricing = async (e: any) => {
+    e.preventDefault()
+    navigateToUrl(`/pricing`)
+  }
+
+  const planType = user?.currentPlan.type.charAt(0).toUpperCase()! + user?.currentPlan.type.slice(1)!
+
   return (
     <div className="py-8 px-6">
       <div className="flex flex-col items-center mb-16">
         <h2 className="text-2xl">Dashboard</h2>
+        <h3 className="text-lg mt-8">Current plan: <b>{planType}</b></h3>
+        <p className="mb-2">Remaining validations: <b>322 / 500</b> | remaining API validations: <b>14 / 30</b> </p>
+        <Button as={Link} href={`/pricing`} onClick={goToPricing} color='primary' variant="shadow">
+          Upgrade
+        </Button>
       </div>
       <div className="flex w-full flex-col">
         <Tabs
@@ -93,7 +105,6 @@ export default function Dashboard() {
             <h2 className="text-xl mt-8">Email validation history</h2>
             <div className="py-8">
               <ValidationHistoryTable validations={validations} totalCount={validationsCount} loadHistory={loadHistory} />
-              <Test loadHistory={loadHistory} />
             </div>
           </Tab>
         </Tabs>
