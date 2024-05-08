@@ -71,7 +71,7 @@ export default function Dashboard() {
       <div className="flex flex-col items-center mb-16">
         <h2 className="text-2xl">Dashboard</h2>
         <h3 className="text-lg mt-8">Current plan: <b>{planType}</b></h3>
-        <p className="mb-2">Remaining validations: <b>322 / 500</b> | remaining API validations: <b>14 / 30</b> </p>
+        <p className="mb-4">Remaining validations: <b>322 / 500</b> | remaining API validations: <b>14 / 30</b> </p>
         <Button as={Link} href={`/pricing`} onClick={goToPricing} color='primary' variant="shadow">
           Upgrade
         </Button>

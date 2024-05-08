@@ -2,8 +2,12 @@ import { Textarea, Button, Chip } from "@nextui-org/react";
 import { useContext, useState } from "react";
 import UserContext from "~/contexts/UserContext";
 import CheckIcon from "~/icons/CheckIcon";
+import validateEmail from "~/services/api/validate_email";
 import validateEmails from "~/services/api/validate_emails";
 import { isValidEmail } from "~/services/utils/email";
+import { Reachability } from "~/types/email";
+import ReachabilityChip from "../ReachabilityChip";
+import { InvalidDescriptor, ReachableDescriptor, RiskyDescriptor, UnknownDescriptor } from "./ReachabilityDescriptor";
 
 export default function TextEmailValidator(props: any) {
     const { user } = useContext(UserContext);
@@ -13,7 +17,9 @@ export default function TextEmailValidator(props: any) {
 
     const [isLoading, setLoading] = useState(false);
     const [errorMsg, setErrorMsg] = useState<string>();
+
     const [isRequestSent, setRequestSent] = useState(false);
+    const [singleTargetReachability, setSingleTargetReachability] = useState<Reachability>()
 
     const submitEmails = async () => {
         setLoading(true);
@@ -30,7 +36,10 @@ export default function TextEmailValidator(props: any) {
             let res: any
 
             if (validEmails.length > 1) res = await validateEmails({ emails });
-            else res = await validateEmails({ email: emails[0] });
+            else {
+                res = await validateEmail({ email: emails[0] });
+                if (res.is_reachable) setSingleTargetReachability(res.is_reachable)
+            }
 
             if (res === 429) {
                 // Handle specific errors here
@@ -95,19 +104,43 @@ export default function TextEmailValidator(props: any) {
                 </div>
             </>
             :
-            <div className="flex flex-col items-center">
-                <Chip
-                    startContent={<CheckIcon size={18} />}
-                    variant="faded"
-                    color="success"
-                    className="mt-6 mb-4"
-                >
-                    Import successful
-                </Chip>
-                <p className="mb-16">Your validation report will be sent to <b>{user?.email}</b> once every email address has been checked.</p>
-                <Button onClick={() => setRequestSent(false)} color="primary" variant="shadow">
-                    New validation batch
-                </Button>
-            </div>
+            <>
+                {
+                    singleTargetReachability ? <>
+                        <p style={{ lineHeight: "30px" }} className="mt-8 mb-4">Reachability for {validEmails[0]}: <ReachabilityChip reachability={singleTargetReachability} email={validEmails[0]} /></p>
+                        <div className="mb-12">
+                            {
+                                singleTargetReachability === Reachability.Reachable ?
+                                    <ReachableDescriptor nochip />
+                                    : singleTargetReachability === Reachability.Risky ?
+                                        <RiskyDescriptor nochip />
+                                        : singleTargetReachability === Reachability.Unknown ?
+                                            <UnknownDescriptor nochip />
+                                            :
+                                            <InvalidDescriptor nochip />
+                            }
+                        </div>
+                    </>
+                        :
+                        <div className="flex flex-col items-center">
+                            <Chip
+                                startContent={<CheckIcon size={18} />}
+                                variant="faded"
+                                color="success"
+                                className="mt-6 mb-4"
+                            >
+                                Import successful
+                            </Chip>
+                            <p className="mb-16">Your validation report will be sent to <b>{user?.email}</b> once every email address has been checked.</p>
+
+                        </div>
+                }
+                <div className="w-full flex justify-center">
+                    <Button onClick={() => setRequestSent(false)} color="primary" variant="shadow">
+                        New validation batch
+                    </Button>
+                </div>
+            </>
+
     );
 }

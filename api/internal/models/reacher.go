@@ -3,22 +3,9 @@ package models
 type Reachability string
 
 const (
-	// We guarantee a hard bounce rate lower than 3%. Bounce rates may still happen, because we connect to the email's SMTP server from a different IP address than you, and yours might be blacklisted.
-	ReachabilitySafe Reachability = "safe"
-
-	// The email address appears to exist, but has quality issues that may result in low engagement or a bounce. We don't recommend sending to these emails, and don't commit on an accuracy rate.
-	// An email is considered risky when at least one of the following is true:
-	//   - is a disposable email address (DEA),
-	//   - is a role account (e.g. support@ or admin@),
-	//   - is a catch-all address,
-	//   - has full inbox.
-	ReachabilityRisky Reachability = "risky"
-
-	// It might happen on rare occasions that the email provider doesn't allow real-time verification of emails. In this case, there's unfortunately nothing Reacher can do. Please let us know if this happens, we're working on finding ways to solve these issues, which in most occasions are solved on a case-by-case basis.
-	// In most cases, this error happens on timeout, when port 25 is closed. On some occasions, it might also happen that the email provider doesn't allow real-time verification of emails (for example, Hotmail). In this case, there's unfortunately nothing Reacher can do. Please let us know if this happens, we're working on finding clever ways to work around these issues.
+	ReachabilitySafe    Reachability = "safe"
+	ReachabilityRisky   Reachability = "risky"
 	ReachabilityUnknown Reachability = "unknown"
-
-	// We guarantee with a confidence of 99% that this email is not deliverable.
 	ReachabilityInvalid Reachability = "invalid"
 )
 

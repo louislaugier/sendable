@@ -9,8 +9,8 @@ export default function ReachabilityChip(props: any) {
     let reachabilityChip;
     if (reachability === Reachability.Reachable)
         reachabilityChip = <Chip
-            startContent={<CheckIconRound size={18} />}
-            variant="faded"
+            // startContent={<CheckIconRound size={18} />}
+            variant="dot"
             color="success"
         >
             deliverable
@@ -20,7 +20,7 @@ export default function ReachabilityChip(props: any) {
     else if (reachability === Reachability.Unknown)
         reachabilityChip = <Chip color="warning" variant="dot">{reachability} (protected domain <b>{extractDomain(email!)}</b>)</Chip>;
     else if (reachability === Reachability.Invalid)
-        reachabilityChip = <Chip color="danger">{reachability}</Chip>;
+        reachabilityChip = <Chip variant="dot" color="danger">{reachability}</Chip>;
 
     return (
         <>

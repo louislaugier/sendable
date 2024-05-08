@@ -74,13 +74,7 @@ export default function TryItOut() {
     };
 
     const { authModal, setModalType } = useContext(AuthModalContext);
-
-    // let reachabilityDescription;
-    // if (reachability === Reachability.Reachable) reachabilityDescription = "A hard bounce rate lower than 1% is guaranteed."
-    // else if (reachability === Reachability.Risky) reachabilityDescription = "The email address appears to exist, but has quality issues that may result in low engagement or a bounce. We don't recommend sending to these emails, and don't commit on an accuracy rate. An email is considered risky when at least one of the following is true: address is a disposable email address (DEA), address is a role account (e.g. support@ or admin@), address is a catch-all address, address has a full inbox."
-    // else if (reachability === Reachability.Unknown) reachabilityDescription = `It might happen on rare occasions that the email provider doesn't allow real-time verification of emails. In this case, there's unfortunately nothing ${siteName} can do. Please let us know if this happens, we're working on finding ways to solve these issues, which in most occasions are solved on a case-by-case basis. In most cases, this error happens on timeout, when port 25 is closed. On some occasions, it might also happen that the email provider doesn't allow real-time verification of emails (for example, Hotmail). In this case, there's unfortunately nothing ${siteName} can do. Please let us know if this happens, we're working on finding clever ways to work around these issues.`
-    // else if (reachability === Reachability.Invalid) reachabilityDescription = "We guarantee with a confidence of 99% that this email is not deliverable."
-
+    
     return (
         <>
 

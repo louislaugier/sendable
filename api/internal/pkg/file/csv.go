@@ -237,7 +237,7 @@ func customFormatRecord(record *[]string, item models.ReacherResponse, header []
 	}
 }
 
-// Recursively generate record based on the "csv" tags in struct fields.
+// Recursively generate record based on the CSV tags in struct fields.
 func generateRecord(value reflect.Value) []string {
 	var record []string
 
