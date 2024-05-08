@@ -7,7 +7,6 @@ import { Reachability } from "~/types/email";
 import { InvalidDescriptor, ReachableDescriptor, RiskyDescriptor, UnknownDescriptor } from "./ReachabilityDescriptor";
 
 export default function EmailValidatorTab(props: any) {
-    const { loadHistory } = props;
     const [selectedTab, setSelectedTab] = useState<any>("validation");
 
     return (
@@ -56,7 +55,7 @@ export default function EmailValidatorTab(props: any) {
                         }
                         className="w-full"
                     >
-                        <TextEmailValidator loadHistory={loadHistory} />
+                        <TextEmailValidator />
                     </Tab>
 
                     <Tab

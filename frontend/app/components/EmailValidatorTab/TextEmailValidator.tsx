@@ -10,7 +10,6 @@ import ReachabilityChip from "../ReachabilityChip";
 import { InvalidDescriptor, ReachableDescriptor, RiskyDescriptor, UnknownDescriptor } from "./ReachabilityDescriptor";
 
 export default function TextEmailValidator(props: any) {
-    const { loadHistory } = props;
     const { user } = useContext(UserContext);
 
     const [emailsStr, setEmailsStr] = useState<string>('');
@@ -52,8 +51,6 @@ export default function TextEmailValidator(props: any) {
         }
 
         setRequestSent(true);
-
-        await loadHistory()
 
         setLoading(false);
     };
