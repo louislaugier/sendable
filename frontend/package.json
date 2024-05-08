@@ -13,6 +13,7 @@
   "dependencies": {
     "@nextui-org/react": "^2.3.6",
     "@react-oauth/google": "^0.12.1",
+    "@react-stately/data": "^3.11.3",
     "@remix-run/node": "^2.8.1",
     "@remix-run/react": "^2.8.1",
     "@remix-run/serve": "^2.8.1",

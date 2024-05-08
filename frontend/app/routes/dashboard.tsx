@@ -3,7 +3,7 @@ import type { MetaFunction } from "@remix-run/node";
 import { useSearchParams } from "@remix-run/react";
 import { useCallback, useContext, useEffect, useState } from "react";
 import EmailValidatorTab from "~/components/EmailValidatorTab";
-import ValidationHistoryTable from "~/components/Tables/ValidationHistoryTable";
+import ValidationHistoryTable, { Test } from "~/components/Tables/ValidationHistoryTable";
 import { siteName } from "~/constants/app";
 import UserContext from "~/contexts/UserContext";
 import getValidationHistory from "~/services/api/validation_history";
@@ -48,6 +48,8 @@ export default function Dashboard() {
         setValidations([...validations, ...res.validations])
         setValidationsCount(res.count)
       }
+
+      return res.validations
     } catch (err) {
       console.error(err)
     }
@@ -56,7 +58,6 @@ export default function Dashboard() {
   useEffect(() => {
     if (user && !validations.length) loadHistory()
   }, [validations, user]);
-
 
   return (
     <div className="py-8 px-6">
@@ -92,6 +93,7 @@ export default function Dashboard() {
             <h2 className="text-xl mt-8">Email validation history</h2>
             <div className="py-8">
               <ValidationHistoryTable validations={validations} totalCount={validationsCount} loadHistory={loadHistory} />
+              <Test loadHistory={loadHistory} />
             </div>
           </Tab>
         </Tabs>

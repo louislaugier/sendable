@@ -91,7 +91,7 @@ VALUES
         NULL,
         '96c5118f-ac98-48d3-8374-a62d6f2f6e00',
         NULL,
-        'api',
+        'app',
         'completed',
         '2024-05-05 20:42:27.340489'
     ),
@@ -211,7 +211,7 @@ VALUES
         NULL,
         NULL,
         NULL,
-        'api',
+        'app',
         'completed',
         '2024-05-05 20:42:36.086446'
     ),
@@ -226,7 +226,7 @@ VALUES
         NULL,
         '497672d1-8b35-4657-bc0e-98b96b9841b0',
         NULL,
-        'api',
+        'app',
         'completed',
         '2024-05-05 19:32:35.750799'
     ),
@@ -271,7 +271,7 @@ VALUES
         NULL,
         NULL,
         NULL,
-        'api',
+        'app',
         'completed',
         '2024-05-05 20:42:38.471553'
     ),
@@ -286,7 +286,7 @@ VALUES
         NULL,
         '3817f158-6cb8-4a8f-be1f-7b29f0b6645b',
         NULL,
-        'api',
+        'app',
         'completed',
         '2024-05-05 19:32:55.65752'
     ),
@@ -302,7 +302,7 @@ VALUES
         '00942ac8-808a-46f6-931b-318b11f8055f',
         NULL,
         'api',
-        'completed',
+        'failed',
         '2024-05-05 20:42:49.029756'
     ),
     (
@@ -346,7 +346,7 @@ VALUES
         NULL,
         '5ae9cfa4-3232-4f46-b81a-658bc77d0cbd',
         NULL,
-        'api',
+        'app',
         'completed',
         '2024-05-05 19:35:20.498791'
     );
