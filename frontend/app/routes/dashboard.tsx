@@ -32,7 +32,7 @@ export default function Dashboard() {
   useEffect(() => {
     if (selectedTab) {
       setSearchParams({ tab: selectedTab });
-      if (selectedTab === "history") resetHistory()
+      // if (selectedTab === "history") resetHistory()
     }
   }, [selectedTab, setSearchParams]);
 
@@ -48,7 +48,7 @@ export default function Dashboard() {
     try {
       const res = await getValidationHistory(limit, offset)
       if (res) {
-        setValidations([...validations, ...res.validations])
+        setValidations(prevValidations => [...prevValidations, ...res.validations])
         setValidationsCount(res.count)
       }
     } catch (err) {

@@ -32,7 +32,7 @@ export default function ValidationHistoryTable(props: any) {
 
     const pages = Math.ceil(totalCount / rowsPerPage);
 
-    const items = useMemo(() => {
+    const currentPageItems = useMemo(() => {
         if (validations.length) {
             const start = (page - 1) * rowsPerPage;
             const end = start + rowsPerPage;
@@ -51,8 +51,8 @@ export default function ValidationHistoryTable(props: any) {
                 className="mb-4"
                 onChange={async (e) => {
                     const newPerPageCount = Number(e.target.value)
-                    if (newPerPageCount > rowsPerPage && items.length < totalCount) try {
-                        await loadHistory(rowsPerPage, items.length)
+                    if (newPerPageCount > rowsPerPage && validations.length < totalCount) try {
+                        await loadHistory(rowsPerPage, validations.length)
                     } catch (err) {
                         console.error(err)
                         return
@@ -63,7 +63,7 @@ export default function ValidationHistoryTable(props: any) {
             >
                 {(item: any) => <SelectItem key={item.value}>{item.label}</SelectItem>}
             </Select >
-            <Table aria-label="Email validation history" className="mb-16" bottomContent={items.length &&
+            <Table aria-label="Email validation history" className="mb-16" bottomContent={validations.length &&
                 <div className="flex w-full justify-center">
                     <Pagination
                         isCompact
@@ -73,8 +73,8 @@ export default function ValidationHistoryTable(props: any) {
                         page={page}
                         total={pages}
                         onChange={async (newPage) => {
-                            if (newPage > page && items.length < totalCount) try {
-                                await loadHistory(rowsPerPage, items.length)
+                            if (newPage > page && validations.length < totalCount) try {
+                                await loadHistory(rowsPerPage, (newPage - 1) * rowsPerPage);
                             } catch (err) {
                                 console.error(err)
                                 return
@@ -100,7 +100,7 @@ export default function ValidationHistoryTable(props: any) {
                     <TableColumn className="flex justify-center items-center">RESULT</TableColumn> */}
                 </TableHeader>
                 <TableBody>
-                    {items.length && items.map((validation: Validation, i: number) =>
+                    {currentPageItems.length && currentPageItems.map((validation: Validation, i: number) =>
                         <TableRow key={i}>
                             <TableCell>{moment(validation.createdAt).format("YYYY-MM-DD HH:mm:ss").toString()}</TableCell>
                             <TableCell>{validation.singleTargetEmail ? validation.singleTargetEmail : validation.bulkAddressCount ? `${validation.bulkAddressCount} addresses` : 'Loading...'}</TableCell>
