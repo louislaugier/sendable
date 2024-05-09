@@ -13,7 +13,7 @@ CREATE TABLE IF NOT EXISTS public."validation" (
     "single_target_reachability" reachability,
     "bulk_address_count" INT,
     "upload_filename" VARCHAR,
-    "report_token" UUID,
+    "report_token" UUID UNIQUE,
     "provider_source" contact_provider_type,
     "origin" origin NOT NULL,
     "status" validation_status NOT NULL,

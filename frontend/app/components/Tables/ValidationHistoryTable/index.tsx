@@ -50,16 +50,26 @@ export default function ValidationHistoryTable(props: any) {
                 style={{ width: "150px" }}
                 className="mb-4"
                 onChange={async (e) => {
-                    const newPerPageCount = Number(e.target.value)
-                    if (newPerPageCount > rowsPerPage && validations.length < totalCount) try {
-                        await loadHistory(rowsPerPage, validations.length)
-                    } catch (err) {
-                        console.error(err)
-                        return
+                    const newPerPageCount = Number(e.target.value);
+                    if (validations.length < totalCount) {
+                        try {
+                            await loadHistory(rowsPerPage, validations.length);
+                        } catch (err) {
+                            console.error(err);
+                            return;
+                        }
                     }
 
-                    setRowsPerPage(newPerPageCount)
+                    setRowsPerPage(newPerPageCount);
+
+                    // Compute the largest possible page number with the new rows per page count
+                    const newPageMax = Math.ceil(totalCount / newPerPageCount);
+
+                    // Set the page to the smaller of the current page and the new maximum page
+                    setPage(Math.min(page, newPageMax));
                 }}
+
+
             >
                 {(item: any) => <SelectItem key={item.value}>{item.label}</SelectItem>}
             </Select >
