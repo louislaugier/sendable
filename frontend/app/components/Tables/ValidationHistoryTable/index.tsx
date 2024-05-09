@@ -1,6 +1,6 @@
 import { Table, TableHeader, TableColumn, TableBody, TableRow, TableCell, Chip, Pagination, Select, SelectItem } from "@nextui-org/react";
 import moment from "moment";
-import { useState, useMemo, useEffect } from "react";
+import { useState, useMemo } from "react";
 import DownloadReportButton from "~/components/DownloadReportButton";
 import ReachabilityChip from "~/components/ReachabilityChip";
 import { Validation, ValidationOrigin, ValidationStatus } from "~/types/validation";
@@ -39,7 +39,7 @@ export default function ValidationHistoryTable(props: any) {
 
             return validations.slice(start, end);
         } else return []
-    }, [page, props, rowsPerPage]);
+    }, [page, validations, totalCount, rowsPerPage]);
 
     return (
         <div>
@@ -51,10 +51,10 @@ export default function ValidationHistoryTable(props: any) {
                 className="mb-4"
                 onChange={async (e) => {
                     const newPerPageCount = Number(e.target.value)
-
                     if (newPerPageCount > rowsPerPage && items.length < totalCount) try {
                         await loadHistory(rowsPerPage, items.length)
-                    } catch {
+                    } catch (err) {
+                        console.error(err)
                         return
                     }
 
@@ -75,7 +75,8 @@ export default function ValidationHistoryTable(props: any) {
                         onChange={async (newPage) => {
                             if (newPage > page && items.length < totalCount) try {
                                 await loadHistory(rowsPerPage, items.length)
-                            } catch {
+                            } catch (err) {
+                                console.error(err)
                                 return
                             }
 

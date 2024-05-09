@@ -19,7 +19,6 @@ export const meta: MetaFunction = () => {
 
 export default function Dashboard() {
   const { user } = useContext(UserContext);
-
   if (!user) navigateToUrl('/')
 
   const [searchParams, setSearchParams] = useSearchParams();
@@ -106,7 +105,7 @@ export default function Dashboard() {
           >
             <h2 className="text-xl mt-8">Email validation history</h2>
             <div className="py-8">
-              {selectedTab === "history" && <ValidationHistoryTable validations={validations} totalCount={validationsCount} />}
+              <ValidationHistoryTable validations={validations} totalCount={validationsCount} loadHistory={loadHistory} />
             </div>
           </Tab>
         </Tabs>
