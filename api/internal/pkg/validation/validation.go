@@ -35,16 +35,15 @@ func UpdateStatus(ID uuid.UUID, status models.ValidationStatus, bulkAddressCount
 func GetCurrentMonthCount(userID uuid.UUID, validationOrigin models.ValidationOrigin, isBulkValidation bool) (*int, error) {
 	var count int
 
-	prefix := "*"
+	prefix := "COUNT(*)"
 	validationType := "NULL"
 	if isBulkValidation {
 		validationType = "NOT NULL"
-	} else {
-		prefix = "DISTINCT single_target_email"
+		prefix = "SUM(bulk_address_count)"
 	}
 
 	err := config.DB.QueryRow(fmt.Sprintf(`
-		SELECT COUNT(%s)
+		SELECT %s
 		FROM public.validation
 		WHERE user_id = $1
 		AND origin = $2

@@ -71,9 +71,11 @@ export default function Dashboard() {
     <div className="py-8 px-6">
       <div className="flex flex-col items-center mb-16">
         <h2 className="text-2xl">Dashboard</h2>
-        <h3 className="text-lg mt-8">Current plan: <b>{planType}</b></h3>
-        <p className="mb-4">Remaining validations: <b>322 / 500</b> | remaining API validations: <b>14 / 30</b> </p>
-        <Button as={Link} href={`/pricing`} onClick={goToPricing} color='primary' variant="shadow">
+        {user && <>
+          <h3 className="text-lg mt-8">Current plan: <b>{planType}</b></h3>
+          <p>Remaining validations: <b>322 / 500</b> | remaining API validations: <b>14 / 30</b> </p>
+        </>}
+        <Button className="mt-4" as={Link} href={`/pricing`} onClick={goToPricing} color='primary' variant="shadow">
           Upgrade
         </Button>
       </div>
