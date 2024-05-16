@@ -1,4 +1,3 @@
-import { AxiosError } from "axios";
 import apiClient from "..";
 
 const validateEmails = async (data: any) => {
@@ -6,10 +5,8 @@ const validateEmails = async (data: any) => {
         const response = await apiClient.post('validate_emails', data);
         return response.data;
     } catch (error: any) {
-        if (error.response && (error as AxiosError).response?.status === 429) {
-            console.error('Too many requests error:', error);
-            throw new Error('Too many requests');
-        } else {
+        if (error?.message?.includes('429')) return { error: error?.response?.data }
+        else {
             console.error('Error:', error);
             throw error;
         }

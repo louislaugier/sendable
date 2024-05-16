@@ -47,7 +47,7 @@ func limitSingleByIP(w http.ResponseWriter, r *http.Request, next http.Handler) 
 	IPs := utils.GetIPsFromRequest(r)
 
 	if !validateIPRateLimit(IPs) {
-		http.Error(w, "Rate limit exceeded", http.StatusTooManyRequests)
+		http.Error(w, "Guests can only validate 1 email address every 30 seconds, signup for free to increase your limits.", http.StatusTooManyRequests)
 		return
 	}
 
@@ -138,8 +138,8 @@ func RateLimit(next http.Handler, limiter models.RateLimiter) http.Handler {
 func limitSingleByUserPlanConcurrencyLimit(w http.ResponseWriter, r *http.Request, next http.Handler) {
 	user := GetUserFromRequest(r)
 
-	if isAccountConcurrencyLimitReached(user) {
-		http.Error(w, "Maximum parallel validations reached", http.StatusTooManyRequests)
+	if !isAccountConcurrencyLimitReached(user) {
+		http.Error(w, "Maximum parallel validations reached. Try again later or upgrade your account.", http.StatusTooManyRequests)
 		return
 	}
 

@@ -47,7 +47,7 @@ func SingleValidationUserPlanLimit(next http.Handler) http.Handler {
 			http.Error(w, "Internal Sever Error", http.StatusInternalServerError)
 			return
 		} else if !validated {
-			http.Error(w, "Limit reached", http.StatusTooManyRequests)
+			http.Error(w, "Monthly email validation limit reached. Upgrade your current plan to increase your limits.", http.StatusTooManyRequests)
 			return
 		}
 

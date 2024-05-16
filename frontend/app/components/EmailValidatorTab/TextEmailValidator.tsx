@@ -35,16 +35,25 @@ export default function TextEmailValidator(props: any) {
             const emails = validEmails
             let res: any
 
-            if (validEmails.length > 1) res = await validateEmails({ emails });
+            if (validEmails.length > 1) {
+                res = await validateEmails({ emails });
+
+                if (res.error) {
+                    setErrorMsg(res.error);
+                    setLoading(false);
+                    return
+                }
+            }
             else {
                 res = await validateEmail({ email: emails[0] });
+
+                if (res.error) {
+                    setErrorMsg(res.error);
+                    setLoading(false);
+                    return
+                }
+
                 if (res.is_reachable) setSingleTargetReachability(res.is_reachable)
-            }
-
-            if (res === 429) {
-                // Handle specific errors here
-
-                return
             }
         } catch (error: any) {
             setErrorMsg("An error occurred. Please try again.");

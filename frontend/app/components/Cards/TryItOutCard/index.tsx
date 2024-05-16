@@ -47,11 +47,8 @@ export default function TryItOut() {
         try {
             const res = await validateEmail({ email });
 
-            if (res === 429) {
-                let msg = "Guests can only validate 1 email address every 30 seconds, signup for free to increase your limits."
-                // TODO: error msgs (concurrency limit reached? monthly limit reached?)
-                if (user) msg = "Maximum parallel email validations reached. Try again later or upgrade your account."
-                setErrorMsg(msg);
+            if (res.error) {
+                setErrorMsg(res.error);
                 setLoading(false);
                 return
             }
