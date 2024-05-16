@@ -83,8 +83,10 @@ export default function ValidationHistoryTable(props: any) {
                         page={page}
                         total={pages}
                         onChange={async (newPage) => {
-                            if (newPage > page && validations.length < totalCount) try {
-                                await loadHistory(rowsPerPage, (newPage - 1) * rowsPerPage);
+                            console.log(page, newPage)
+                            const diff = newPage - page
+                            if (diff > 0 && validations.length < totalCount) try {
+                                await loadHistory(diff * rowsPerPage, page * rowsPerPage);
                             } catch (err) {
                                 console.error(err)
                                 return
@@ -96,18 +98,18 @@ export default function ValidationHistoryTable(props: any) {
                 </div>
             }>
                 <TableHeader>
-                    <TableColumn>Date</TableColumn>
+                    {/* <TableColumn>Date</TableColumn>
                     <TableColumn>Target</TableColumn>
                     <TableColumn>Source</TableColumn>
                     <TableColumn>Status</TableColumn>
                     <TableColumn>Origin</TableColumn>
-                    <TableColumn className="flex justify-center items-center">Result</TableColumn>
-                    {/* <TableColumn>DATE</TableColumn>
+                    <TableColumn className="flex justify-center items-center">Result</TableColumn> */}
+                    <TableColumn>DATE</TableColumn>
                     <TableColumn>TARGET</TableColumn>
                     <TableColumn>SOURCE</TableColumn>
                     <TableColumn>STATUS</TableColumn>
                     <TableColumn>ORIGIN</TableColumn>
-                    <TableColumn className="flex justify-center items-center">RESULT</TableColumn> */}
+                    <TableColumn className="flex justify-center items-center">RESULT</TableColumn>
                 </TableHeader>
                 <TableBody>
                     {currentPageItems.length && currentPageItems.map((validation: Validation, i: number) =>
