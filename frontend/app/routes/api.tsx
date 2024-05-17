@@ -21,8 +21,6 @@ export const meta: MetaFunction = () => {
 export default function Api() {
   const { authModal, setModalType } = useContext(AuthModalContext);
 
-  const [areDocsOpen] = useState(false);
-
   const { user } = useContext(UserContext);
 
   return (
@@ -61,12 +59,6 @@ export default function Api() {
             </Card>
           </AccordionItem>
         </Accordion>
-
-        {areDocsOpen && <Card className="mb-16">
-          <CardBody>
-            <SwaggerUI url="https://petstore.swagger.io/v2/swagger.json" />
-          </CardBody>
-        </Card>}
 
         <h3 className="text-lg mb-4">Generating a bearer token from an API key</h3>
         <CodeSnippetsSection />
