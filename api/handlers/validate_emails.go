@@ -26,22 +26,27 @@ func validateEmailsHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	var uploadFilename *string
 	uploadedFile, uploadedFileHeader, err := r.FormFile("file")
+	//  if request is formatted for bulk validation from file but no file is found in "file" field
 	if err != nil && r.Header.Get("Content-Type") == "multipart/form-data" {
 		handleError(w, err, "Internal Server Error", http.StatusInternalServerError)
 		return
 	}
 	if uploadedFile != nil {
+		uploadFilename = &uploadedFileHeader.Filename
 		defer uploadedFile.Close()
 	}
+
 	userID := middleware.GetUserFromRequest(r).ID
 	validationID := uuid.New()
 	reportToken := uuid.New()
+
 	validationRecord := &models.Validation{
 		ID:             validationID,
 		UserID:         &userID,
 		Origin:         middleware.GetValidationOriginType(middleware.GetOriginFromRequest(r)),
-		UploadFilename: nil,
+		UploadFilename: uploadFilename,
 		ReportToken:    &reportToken,
 		Status:         models.StatusProcessing,
 	}
@@ -54,13 +59,13 @@ func validateEmailsHandler(w http.ResponseWriter, r *http.Request) {
 
 	reportRecipientEmail := middleware.GetUserFromRequest(r).Email
 	if uploadedFileHeader != nil {
-		handleFileUpload(w, uploadedFile, uploadedFileHeader, userID, reportRecipientEmail, r, validationID, reportToken)
+		handleFileUpload(w, uploadedFile, uploadedFileHeader, userID, reportRecipientEmail, validationID, reportToken)
 	} else {
 		handleJSONRequest(w, r, userID, reportRecipientEmail, validationID, reportToken)
 	}
 }
 
-func handleFileUpload(w http.ResponseWriter, uploadedFile multipart.File, header *multipart.FileHeader, userID uuid.UUID, userEmail string, r *http.Request, validationID, reportToken uuid.UUID) {
+func handleFileUpload(w http.ResponseWriter, uploadedFile multipart.File, header *multipart.FileHeader, userID uuid.UUID, userEmail string, validationID, reportToken uuid.UUID) {
 	filePath := fmt.Sprintf("./files/bulk_validation_uploads/%s", header.Filename)
 
 	go func() {
@@ -77,7 +82,7 @@ func handleFileUpload(w http.ResponseWriter, uploadedFile multipart.File, header
 		return
 	}
 
-	go processValidationFromFile(uploadedFile, header, fileExtension, userID, userEmail, r, validationID, reportToken)
+	go email.ValidateManyFromFileWithReport(uploadedFile, header, fileExtension, userID, userEmail, validationID, reportToken)
 
 	fmt.Fprint(w, http.StatusText(http.StatusOK))
 }
@@ -88,23 +93,14 @@ func handleJSONRequest(w http.ResponseWriter, r *http.Request, userID uuid.UUID,
 		return // Error already handled in ValidateValidationRequest
 	}
 
-	go processValidationFromJSON(req.Emails, userID, userEmail, r, validationID, reportToken)
-
-	fmt.Fprint(w, http.StatusText(http.StatusOK))
-}
-
-func processValidationFromFile(uploadedFile multipart.File, header *multipart.FileHeader, fileExtension models.FileExtension, userID uuid.UUID, userEmail string, r *http.Request, validationID, reportToken uuid.UUID) {
-	// TODO: like processValidationFromJSON but save to /files/uploads
-	go email.ValidateManyFromFileWithReport(uploadedFile, header, fileExtension, userID, userEmail, validationID, reportToken)
-}
-
-func processValidationFromJSON(emails []string, userID uuid.UUID, reportRecipientEmail string, r *http.Request, validationID, reportToken uuid.UUID) {
 	go func() {
-		if err := file.SaveStringsToNewCSV(emails, fmt.Sprintf("./files/json_bulk_validation_logs/%s.csv", validationID), utils.GetIPsFromRequest(r), time.Now()); err != nil {
+		if err := file.SaveStringsToNewCSV(req.Emails, fmt.Sprintf("./files/json_bulk_validation_logs/%s.csv", validationID), utils.GetIPsFromRequest(r), time.Now()); err != nil {
 			log.Printf("Failed to save request data: %v", err)
 			return
 		}
 	}()
 
-	go email.ValidateManyWithReport(emails, userID, reportRecipientEmail, validationID, reportToken)
+	go email.ValidateManyWithReport(req.Emails, userID, userEmail, validationID, reportToken)
+
+	fmt.Fprint(w, http.StatusText(http.StatusOK))
 }

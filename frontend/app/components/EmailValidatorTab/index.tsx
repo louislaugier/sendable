@@ -1,10 +1,11 @@
 import { Tab, Button, Tabs, Accordion, AccordionItem, Card, CardBody } from "@nextui-org/react";
-import FileUploader from "../Footer/FileUploader";
+import FileUploader from "./FileEmailValidator";
 import { useState } from "react";
 import TextEmailValidator from "./TextEmailValidator";
 import ReachabilityChip from "../ReachabilityChip";
 import { Reachability } from "~/types/email";
 import { InvalidDescriptor, ReachableDescriptor, RiskyDescriptor, UnknownDescriptor } from "./ReachabilityDescriptor";
+import FileEmailValidator from "./FileEmailValidator";
 
 export default function EmailValidatorTab(props: any) {
     const [selectedTab, setSelectedTab] = useState<any>("validation");
@@ -66,7 +67,7 @@ export default function EmailValidatorTab(props: any) {
                             </div>
                         }
                     >
-                        <FileUploader />
+                        <FileEmailValidator />
                     </Tab>
 
                     <Tab

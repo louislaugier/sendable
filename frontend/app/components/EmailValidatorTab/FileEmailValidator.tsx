@@ -1,6 +1,6 @@
 import { useState, useRef, useEffect } from "react";
 
-export default function FileUploader() {
+export default function FileEmailValidator() {
     const fileTypes = [".csv", ".txt", ".xls", ".xlsx"];
     const [globalDragActive, setGlobalDragActive] = useState(false);
     const [localDragActive, setLocalDragActive] = useState(false);
