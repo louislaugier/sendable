@@ -1,4 +1,4 @@
-import { Accordion, AccordionItem, Button, Card, CardBody } from "@nextui-org/react";
+import { Accordion, AccordionItem, Button, Card, CardBody, Link } from "@nextui-org/react";
 import type { MetaFunction } from "@remix-run/node";
 import { useContext, useState } from "react";
 import { siteName } from "~/constants/app";
@@ -8,6 +8,8 @@ import SwaggerUI from "swagger-ui-react"
 import "swagger-ui-react/swagger-ui.css"
 import CodeSnippetsSection from "~/components/PageSections/Api/CodeSnippetsSection";
 import ApiLimitsTable from "~/components/Tables/ApiLimitsTable";
+import UserContext from "~/contexts/UserContext";
+import { navigateToUrl } from "~/utils/url";
 
 export const meta: MetaFunction = () => {
   return [
@@ -19,7 +21,9 @@ export const meta: MetaFunction = () => {
 export default function Api() {
   const { authModal, setModalType } = useContext(AuthModalContext);
 
-  const [areDocsOpen, setDocsOpen] = useState(false);
+  const [areDocsOpen] = useState(false);
+
+  const { user } = useContext(UserContext);
 
   return (
     <>
@@ -66,10 +70,15 @@ export default function Api() {
 
         <h3 className="text-lg mb-4">Generating a bearer token from an API key</h3>
         <CodeSnippetsSection />
-        <Button onClick={() => {
-          setModalType(AuthModalType.Signup);
-          authModal.onOpen();
-        }} color="primary" variant="shadow" style={{ display: "block" }} className="mt-4 mb-16">
+        <Button as={Link} href={user ? '/settings?tab=api' : ''} onClick={(e) => {
+          if (!user) {
+            setModalType(AuthModalType.Signup);
+            authModal.onOpen();
+          } else {
+            e.preventDefault()
+            navigateToUrl(`/settings?tab=api`)
+          }
+        }} color="primary" variant="shadow" className="mt-4 mb-16">
           Get an API key
         </Button>
 

@@ -9,7 +9,7 @@ import (
 
 func GetLatestActive(userID uuid.UUID) (*models.Order, error) {
 	rows, err := config.DB.Query(`
-		SELECT "id", "user_id", "duration", "type", "created_at"
+		SELECT "duration", "type", "created_at"
 		FROM public."order"
 		WHERE "user_id" = $1 AND "cancelled_at" IS NULL
 		AND (
@@ -27,7 +27,7 @@ func GetLatestActive(userID uuid.UUID) (*models.Order, error) {
 	for rows.Next() {
 		o := models.Order{}
 
-		err = rows.Scan(&o.ID, &o.UserID, &o.Duration, &o.Type, &o.CreatedAt)
+		err = rows.Scan(&o.Duration, &o.Type, &o.CreatedAt)
 		if err != nil {
 			return nil, err
 		}

@@ -1,8 +1,7 @@
 import { Tabs, Tab } from "@nextui-org/react";
 import type { MetaFunction } from "@remix-run/node";
-import { useState } from "react";
-import EmailValidatorTab from "~/components/EmailValidatorTab";
-import ValidationHistoryTable from "~/components/Tables/ValidationHistoryTable";
+import { useSearchParams } from "@remix-run/react";
+import { useEffect, useState } from "react";
 import { siteName } from "~/constants/app";
 
 export const meta: MetaFunction = () => {
@@ -13,7 +12,20 @@ export const meta: MetaFunction = () => {
 };
 
 export default function Settings() {
+  const [searchParams, setSearchParams] = useSearchParams();
   const [selectedTab, setSelectedTab] = useState<any>("user");
+
+  useEffect(() => {
+    const tab = searchParams.get("tab");
+    if (tab) setSelectedTab(tab);
+  }, [searchParams]);
+
+  useEffect(() => {
+    if (selectedTab) {
+      setSearchParams({ tab: selectedTab });
+      // if (selectedTab === "history") resetHistory()
+    }
+  }, [selectedTab, setSearchParams]);
 
   return (
     <>

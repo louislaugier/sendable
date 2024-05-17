@@ -4,6 +4,7 @@ import (
 	"email-validator/config"
 	"email-validator/internal/models"
 	"encoding/json"
+	"fmt"
 	"io"
 	"net/http"
 	"net/url"
@@ -36,6 +37,10 @@ func VerifyHubspotCode(code string) (string, *models.HubspotUser, error) {
 	err = json.Unmarshal(body, &accessTokenResp)
 	if err != nil {
 		return "", nil, err
+	}
+
+	if accessTokenResp.AccessToken == "" {
+		return "", nil, fmt.Errorf("no access token returned: %#v", string(body))
 	}
 
 	userInfo, err := getHubspotUserInfo(accessTokenResp.AccessToken)

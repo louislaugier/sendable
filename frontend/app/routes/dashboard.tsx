@@ -5,8 +5,10 @@ import { useCallback, useContext, useEffect, useState } from "react";
 import EmailValidatorTab from "~/components/EmailValidatorTab";
 import ValidationHistoryTable from "~/components/Tables/ValidationHistoryTable";
 import { siteName } from "~/constants/app";
+import { limits } from "~/constants/limits";
 import UserContext from "~/contexts/UserContext";
 import getValidationHistory from "~/services/api/validation_history";
+import { OrderType } from "~/types/order";
 import { Validation } from "~/types/validation";
 import { navigateToUrl } from "~/utils/url";
 
@@ -71,17 +73,24 @@ export default function Dashboard() {
 
   const planType = user?.currentPlan.type.charAt(0).toUpperCase()! + user?.currentPlan.type.slice(1)!
 
+  const appValidationLimit = user?.currentPlan.type === OrderType.Premium ? limits.premium.app : limits.free.app
+  const apiValidationLimit = user?.currentPlan.type === OrderType.Premium ? limits.premium.api : limits.free.api
+  const remainingAppValidations = appValidationLimit - user?.validationCounts.appValidationsCount!
+  const remainingApiValidations = apiValidationLimit - user?.validationCounts.apiValidationsCount!
+
   return (
     <div className="py-8 px-6">
       <div className="flex flex-col items-center mb-16">
         <h2 className="text-2xl">Dashboard</h2>
         {user && <>
           <h3 className="text-lg mt-8">Current plan: <b>{planType}</b></h3>
-          <p>Remaining validations: <b>322 / 500</b> | remaining API validations: <b>14 / 30</b> </p>
+          {user.currentPlan.type !== OrderType.Enterprise && <>
+            <p>Remaining validations: <b>{remainingAppValidations.toLocaleString()} / {appValidationLimit.toLocaleString()}</b> | remaining API validations: <b>{remainingApiValidations.toLocaleString()} / {apiValidationLimit.toLocaleString()}</b></p>
+            <Button className="mt-4" as={Link} href={`/pricing`} onClick={goToPricing} color='primary' variant="shadow">
+              Upgrade
+            </Button>
+          </>}
         </>}
-        <Button className="mt-4" as={Link} href={`/pricing`} onClick={goToPricing} color='primary' variant="shadow">
-          Upgrade
-        </Button>
       </div>
       <div className="flex w-full flex-col">
         <Tabs

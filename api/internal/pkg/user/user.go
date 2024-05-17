@@ -7,6 +7,7 @@ import (
 	"email-validator/config"
 	"email-validator/internal/models"
 	"email-validator/internal/pkg/order"
+	"email-validator/internal/pkg/validation"
 
 	"github.com/google/uuid"
 )
@@ -39,31 +40,31 @@ func UpdateIPsAndUserAgent(userID uuid.UUID, IPs, userAgent string) error {
 
 func GetByEmailAndConfirmationCode(email string, confirmationCode int) (*models.User, error) {
 	query := fmt.Sprintf(selectQuery, "email = $1 AND email_confirmation_code = $2")
-	return getByCriteria(query, email, confirmationCode)
+	return getByCriteria(false, query, email, confirmationCode)
 }
 
 // GetByEmailAndProvider retrieves a user by email and provider.
 func GetByEmailAndProvider(email string, provider models.AuthProvider) (*models.User, error) {
 	query := fmt.Sprintf(selectQuery, "email = $1 AND auth_provider = $2")
-	return getByCriteria(query, email, provider)
+	return getByCriteria(false, query, email, provider)
 }
 
 // GetByEmailAndPasswordSHA256 retrieves a user by email and password SHA256 hash.
 func GetByEmailAndPasswordSHA256(email, passwordSHA256 string) (*models.User, error) {
 	query := fmt.Sprintf(selectQuery, "email = $1 AND password_sha256 = $2")
-	return getByCriteria(query, email, passwordSHA256)
+	return getByCriteria(false, query, email, passwordSHA256)
 }
 
 // GetByID retrieves a user by ID.
 func GetByID(ID uuid.UUID) (*models.User, error) {
 	query := fmt.Sprintf(selectQuery, "id = $1")
-	return getByCriteria(query, ID)
+	return getByCriteria(false, query, ID)
 }
 
 // GetByTempZohoOauthData retrieves a user by temporary oauth data (Zoho flow).
 func GetByTempZohoOauthData(comaSeparatedEmails string, lastIPs, lastUserAgent string) (*models.User, error) {
 	query := fmt.Sprintf(selectQuery, "email = $1 AND auth_provider = $2 AND last_ip_addresses = $3 AND last_user_agent = $4")
-	return getByCriteria(query, comaSeparatedEmails, models.ZohoProvider, lastIPs, lastUserAgent)
+	return getByCriteria(false, query, comaSeparatedEmails, models.ZohoProvider, lastIPs, lastUserAgent)
 }
 
 func InsertNewTempZoho(user *models.User, encryptedPassword *string) error {
@@ -71,7 +72,7 @@ func InsertNewTempZoho(user *models.User, encryptedPassword *string) error {
 	return err
 }
 
-func getByCriteria(query string, args ...interface{}) (*models.User, error) {
+func getByCriteria(isMinimalQuery bool, query string, args ...interface{}) (*models.User, error) {
 	rows, err := config.DB.Query(query, args...)
 	if err != nil {
 		return nil, err
@@ -87,13 +88,22 @@ func getByCriteria(query string, args ...interface{}) (*models.User, error) {
 			return nil, err
 		}
 
-		currentPlan, err := order.GetLatestActive(u.ID)
-		if err != nil {
-			log.Printf("Error getting user's current plan: %v", err)
-		} else if currentPlan != nil {
-			u.CurrentPlan = currentPlan
-		} else {
-			u.CurrentPlan = models.EmptyFreePlan()
+		if !isMinimalQuery {
+			currentPlan, err := order.GetLatestActive(u.ID)
+			if err != nil {
+				log.Printf("Error getting user's current plan: %v", err)
+			} else if currentPlan != nil {
+				u.CurrentPlan = currentPlan
+			} else {
+				u.CurrentPlan = models.EmptyFreePlan()
+			}
+
+			validationCounts, err := validation.GetCurrentMonthLimitCounts(u.ID)
+			if err != nil {
+				log.Printf("Error getting user's email validations counts for this month: %v", err)
+			} else if validationCounts != nil {
+				u.ValidationCounts = validationCounts
+			}
 		}
 
 		user = &u

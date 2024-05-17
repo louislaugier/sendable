@@ -47,6 +47,7 @@ build-frontend-dev:
 
 .PHONY: recreate-frontend-dev
 recreate-frontend-dev:
+	rm -rf frontend/node_modules
 	docker-compose rm -sfv frontend
 	make build-frontend-dev
 	make start-dev

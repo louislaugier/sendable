@@ -3,22 +3,17 @@ package middleware
 import (
 	"email-validator/config"
 	"email-validator/internal/models"
-	"email-validator/internal/pkg/validation"
 	"log"
 	"net/http"
 )
 
-func validateUserValidationCount(w http.ResponseWriter, r *http.Request, validationOrigin models.ValidationOrigin, maxCount int) (bool, error) {
-	userID := GetUserFromRequest(r).ID
-
-	count, err := validation.GetCurrentMonthCount(userID, validationOrigin, false)
-	if err != nil || count == nil {
-		log.Printf("Failed to get current month validations count: %v", err)
-		http.Error(w, "Internal Sever Error", http.StatusInternalServerError)
-		return false, err
+func validateUserValidationCount(r *http.Request, validationOrigin models.ValidationOrigin, maxCount int) (bool, error) {
+	count := GetUserFromRequest(r).ValidationCounts.AppValidationsCount
+	if validationOrigin == models.APIValidation {
+		count = GetUserFromRequest(r).ValidationCounts.APIValidationsCount
 	}
 
-	if *count >= maxCount {
+	if count >= maxCount {
 		return false, nil
 	}
 
@@ -41,7 +36,7 @@ func SingleValidationUserPlanLimit(next http.Handler) http.Handler {
 			maxCount = config.MonthlyAPISingleValidationsLimits[currentPlan.Type]
 		}
 
-		validated, err := validateUserValidationCount(w, r, validationOrigin, maxCount)
+		validated, err := validateUserValidationCount(r, validationOrigin, maxCount)
 		if err != nil {
 			log.Printf("Failed to validate user count: %v", err)
 			http.Error(w, "Internal Sever Error", http.StatusInternalServerError)

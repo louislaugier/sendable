@@ -12,9 +12,15 @@ export interface User {
     updatedAt: string;
     deletedAt?: string;
     currentPlan: Order,
+    validationCounts: UserValidationCounts,
 }
 
 export interface UserContextType {
     user: User | null;
     setUser: Dispatch<SetStateAction<User | null>>;
+}
+
+export interface UserValidationCounts {
+    appValidationsCount: number
+    apiValidationsCount: number
 }

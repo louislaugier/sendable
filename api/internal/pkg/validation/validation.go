@@ -3,7 +3,6 @@ package validation
 import (
 	"email-validator/config"
 	"email-validator/internal/models"
-	"fmt"
 
 	"github.com/google/uuid"
 )
@@ -14,6 +13,31 @@ const (
 			(id, user_id, guest_ip, guest_user_agent, single_target_email, single_target_reachability, upload_filename, report_token, origin, status) 
 		VALUES 
 			($1, $2, $3, $4, $5, $6, $7, $8, $9, $10);
+	`
+
+	getCountQuery = `
+		SELECT COUNT(*)
+		FROM public.validation
+		WHERE user_id = $1
+	`
+
+	getManyQuery = `
+		SELECT id, user_id, single_target_email, single_target_reachability, bulk_address_count, upload_filename, report_token, provider_source, origin, status, created_at
+		FROM public.validation
+		WHERE user_id = $1
+		ORDER BY created_at DESC
+		LIMIT $2
+		OFFSET $3;
+	`
+
+	getCurrentMonthCountsQuery = `
+		SELECT 
+			SUM(CASE WHEN origin = 'app' THEN COALESCE(bulk_address_count, 1) ELSE 0 END) AS "appValidationsCount",
+			SUM(CASE WHEN origin = 'api' THEN COALESCE(bulk_address_count, 1) ELSE 0 END) AS "apiValidationsCount"
+		FROM 
+			public."validation"
+		WHERE 
+			user_id = $1;
 	`
 
 	updateStatusQuery = `UPDATE public.validation SET status = $1, bulk_address_count = $2 WHERE id = $3;`
@@ -32,42 +56,18 @@ func UpdateStatus(ID uuid.UUID, status models.ValidationStatus, bulkAddressCount
 	return err
 }
 
-func GetCurrentMonthCount(userID uuid.UUID, validationOrigin models.ValidationOrigin, isBulkValidation bool) (*int, error) {
-	var count int
-
-	prefix := "COUNT(*)"
-	validationType := "NULL"
-	if isBulkValidation {
-		validationType = "NOT NULL"
-		prefix = "SUM(bulk_address_count)"
-	}
-
-	err := config.DB.QueryRow(fmt.Sprintf(`
-		SELECT %s
-		FROM public.validation
-		WHERE user_id = $1
-		AND origin = $2
-		AND single_target_email is %s
-		AND EXTRACT(YEAR FROM created_at) = EXTRACT(YEAR FROM CURRENT_DATE)
-		AND EXTRACT(MONTH FROM created_at) = EXTRACT(MONTH FROM CURRENT_DATE);
-	`, prefix, validationType), userID, validationOrigin).Scan(&count)
-
+func GetCurrentMonthLimitCounts(userID uuid.UUID) (*models.UserValidationCounts, error) {
+	counts := &models.UserValidationCounts{}
+	err := config.DB.QueryRow(getCurrentMonthCountsQuery, userID).Scan(&counts.AppValidationsCount, &counts.APIValidationsCount)
 	if err != nil {
 		return nil, err
 	}
 
-	return &count, nil
+	return counts, nil
 }
 
 func GetMany(userID uuid.UUID, limit, offset int) ([]models.Validation, error) {
-	rows, err := config.DB.Query(`
-		SELECT id, user_id, single_target_email, single_target_reachability, bulk_address_count, upload_filename, report_token, provider_source, origin, status, created_at
-		FROM public.validation
-		WHERE user_id = $1
-		ORDER BY created_at DESC
-		LIMIT $2
-		OFFSET $3;
-	`, userID, limit, offset)
+	rows, err := config.DB.Query(getManyQuery, userID, limit, offset)
 	if err != nil {
 		return nil, err
 	}
@@ -90,11 +90,7 @@ func GetMany(userID uuid.UUID, limit, offset int) ([]models.Validation, error) {
 }
 
 func GetCount(userID uuid.UUID) (*int, error) {
-	rows, err := config.DB.Query(`
-		SELECT COUNT(*)
-		FROM public.validation
-		WHERE user_id = $1
-	`, userID)
+	rows, err := config.DB.Query(getCountQuery, userID)
 	if err != nil {
 		return nil, err
 	}

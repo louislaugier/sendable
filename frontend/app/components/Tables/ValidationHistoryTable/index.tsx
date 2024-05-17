@@ -40,6 +40,7 @@ export default function ValidationHistoryTable(props: any) {
             return validations.slice(start, end);
         } else return []
     }, [page, validations, totalCount, rowsPerPage]);
+    console.log(page)
 
     return (
         <div>
@@ -83,16 +84,15 @@ export default function ValidationHistoryTable(props: any) {
                         page={page}
                         total={pages}
                         onChange={async (newPage) => {
-                            console.log(page, newPage)
-                            const diff = newPage - page
+                            setPage(newPage)
+
+                            const diff = newPage * rowsPerPage - currentPageItems.length
                             if (diff > 0 && validations.length < totalCount) try {
-                                await loadHistory(diff * rowsPerPage, page * rowsPerPage);
+                                await loadHistory(diff, currentPageItems.length);
                             } catch (err) {
                                 console.error(err)
                                 return
                             }
-
-                            setPage(newPage)
                         }}
                     />
                 </div>

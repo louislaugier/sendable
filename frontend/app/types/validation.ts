@@ -5,7 +5,6 @@ export interface Validation {
     id: string;
     singleTargetEmail?: string;
     singleTargetReachability?: Reachability;
-    bulkFirstEmailAddress?: string;
     bulkAddressCount?: number;
     uploadFilename?: string;
     reportToken?: string;

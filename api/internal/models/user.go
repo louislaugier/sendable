@@ -37,7 +37,8 @@ type User struct {
 
 	AuthProvider *AuthProvider `json:"authProvider,omitempty"`
 
-	CurrentPlan *Order `json:"currentPlan,omitempty"`
+	ValidationCounts *UserValidationCounts `json:"validationCounts,omitempty"`
+	CurrentPlan      *Order                `json:"currentPlan,omitempty"`
 
 	CreatedAt time.Time  `json:"createdAt"`
 	UpdatedAt time.Time  `json:"updatedAt"`

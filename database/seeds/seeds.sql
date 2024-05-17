@@ -16,7 +16,7 @@ INSERT INTO
 VALUES
     (
         '66608f5e-82fb-4e80-b069-40f852cac076',
-        'l.laugier@pm.me',
+        'louis.laugier12@gmail.com',
         't',
         NULL,
         NULL,
