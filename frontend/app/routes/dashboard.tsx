@@ -78,14 +78,17 @@ export default function Dashboard() {
   const remainingAppValidations = appValidationLimit - user?.validationCounts.appValidationsCount!
   const remainingApiValidations = apiValidationLimit - user?.validationCounts.apiValidationsCount!
 
+  const isPremiumOrEnterprise = user?.currentPlan.type === OrderType.Premium || user?.currentPlan.type === OrderType.Enterprise
+
   return (
     <div className="py-8 px-6">
       <div className="flex flex-col items-center mb-16">
         <h2 className="text-2xl">Dashboard</h2>
         {user && <>
-          <h3 className="text-lg mt-8">Current plan: <b>{planType}</b></h3>
+          <h3 className="text-lg mt-8 mb-2">Current plan: <b>{planType}{isPremiumOrEnterprise && ` (${user?.currentPlan?.duration})`}</b></h3>
           {user.currentPlan.type !== OrderType.Enterprise && <>
-            <p>Remaining validations: <b>{remainingAppValidations.toLocaleString()} / {appValidationLimit.toLocaleString()}</b> | remaining API validations: <b>{remainingApiValidations.toLocaleString()} / {apiValidationLimit.toLocaleString()}</b></p>
+            <p>Remaining validations (this month): <b>{remainingAppValidations.toLocaleString()} / {appValidationLimit.toLocaleString()}</b> email addresses</p>
+            <p>Remaining API validations (this month): <b>{remainingApiValidations.toLocaleString()} / {apiValidationLimit.toLocaleString()}</b> email addresses</p>
             <Button className="mt-4" as={Link} href={`/pricing`} onClick={goToPricing} color='primary' variant="shadow">
               Upgrade
             </Button>

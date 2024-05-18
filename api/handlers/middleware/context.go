@@ -6,6 +6,11 @@ import (
 	"net/http"
 )
 
+// Extracts origin from the request
+func GetOriginFromRequest(r *http.Request) string {
+	return r.Header.Get("Origin")
+}
+
 // GetValueFromContext retrieves the value from the context by a key name.
 func GetValueFromContext(ctx context.Context, key userContextKey) interface{} {
 	return ctx.Value(key)
@@ -22,7 +27,13 @@ func GetUserFromRequest(r *http.Request) *models.User {
 	return user.(*models.User)
 }
 
-// Extracts origin from the request
-func GetOriginFromRequest(r *http.Request) string {
-	return r.Header.Get("Origin")
+// Extracts file data from the request context
+func GetFileDataFromRequest(r *http.Request) *models.FileData {
+	fileData := GetValueFromContext(r.Context(), fileDataKey)
+
+	if fileData == nil {
+		return nil
+	}
+
+	return fileData.(*models.FileData)
 }

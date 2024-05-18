@@ -1,5 +1,7 @@
 package models
 
+import "mime/multipart"
+
 type FileExtension string
 
 const (
@@ -24,4 +26,12 @@ func (fe *FileExtension) IsAllowed() bool {
 	}
 
 	return false
+}
+
+type FileData struct {
+	UploadedFile       multipart.File
+	UploadedFileHeader *multipart.FileHeader
+
+	ColumnsToScan   []string
+	EmailListLength int
 }

@@ -5,8 +5,6 @@ import (
 	"log"
 	"mime/multipart"
 	"net/http"
-	"path/filepath"
-	"strings"
 	"time"
 
 	"email-validator/handlers/middleware"
@@ -27,15 +25,10 @@ func validateEmailsHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	var uploadFilename *string
-	uploadedFile, uploadedFileHeader, err := r.FormFile("file")
-	//  if request is formatted for bulk validation from file but no file is found in "file" field
-	if err != nil && r.Header.Get("Content-Type") == "multipart/form-data" {
-		handleError(w, err, "Internal Server Error", http.StatusInternalServerError)
-		return
-	}
-	if uploadedFile != nil {
-		uploadFilename = &uploadedFileHeader.Filename
-		defer uploadedFile.Close()
+	fileData := middleware.GetFileDataFromRequest(r)
+	if fileData.UploadedFile != nil {
+		uploadFilename = &fileData.UploadedFileHeader.Filename
+		defer fileData.UploadedFile.Close()
 	}
 
 	userID := middleware.GetUserFromRequest(r).ID
@@ -51,36 +44,22 @@ func validateEmailsHandler(w http.ResponseWriter, r *http.Request) {
 		Status:         models.StatusProcessing,
 	}
 
-	err = validation.InsertNew(validationRecord)
+	err := validation.InsertNew(validationRecord)
 	if err != nil {
 		handleError(w, err, "Internal Server Error", http.StatusInternalServerError)
 		return
 	}
 
 	reportRecipientEmail := middleware.GetUserFromRequest(r).Email
-	if uploadedFileHeader != nil {
-		handleFileUpload(w, uploadedFile, uploadedFileHeader, userID, reportRecipientEmail, validationID, reportToken)
+	if fileData.UploadedFileHeader != nil {
+		handleFileUpload(w, fileData.UploadedFile, fileData.UploadedFileHeader, userID, reportRecipientEmail, validationID, reportToken)
 	} else {
 		handleJSONRequest(w, r, userID, reportRecipientEmail, validationID, reportToken)
 	}
 }
 
 func handleFileUpload(w http.ResponseWriter, uploadedFile multipart.File, header *multipart.FileHeader, userID uuid.UUID, userEmail string, validationID, reportToken uuid.UUID) {
-	filePath := fmt.Sprintf("./files/bulk_validation_uploads/%s", header.Filename)
-
-	go func() {
-		if err := file.SaveMultipart(header, filePath); err != nil {
-			log.Printf("Failed to save uploaded file: %v", err)
-			http.Error(w, "Failed to save file", http.StatusInternalServerError)
-			return
-		}
-	}()
-
-	fileExtension := models.FileExtension(strings.ToLower(strings.TrimPrefix(filepath.Ext(header.Filename), ".")))
-	if !fileExtension.IsAllowed() {
-		http.Error(w, "Invalid file extension", http.StatusBadRequest)
-		return
-	}
+	fileExtension := utils.GetExtensionFromFilename(header.Filename)
 
 	go email.ValidateManyFromFileWithReport(uploadedFile, header, fileExtension, userID, userEmail, validationID, reportToken)
 

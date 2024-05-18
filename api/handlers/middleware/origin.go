@@ -14,9 +14,13 @@ func ValidateSingleValidationOriginAndLimits(next http.Handler) http.Handler {
 
 		if r.Header.Get("Authorization") != "" {
 			ValidateJWT(
-				SingleValidationUserPlanLimit(SingleValidationRateLimit(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-					next.ServeHTTP(w, r)
-				}))),
+				ValidatePlanLimit(
+					SingleValidationRateLimit(
+						http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+							next.ServeHTTP(w, r)
+						}),
+					),
+				),
 				true,
 			).ServeHTTP(w, r.WithContext(ctx))
 			return
@@ -27,7 +31,7 @@ func ValidateSingleValidationOriginAndLimits(next http.Handler) http.Handler {
 	})
 }
 
-func ValidateBulkValidationOrigin(next http.Handler) http.Handler {
+func ValidateBulkValidationOriginAndLimits(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		origin := GetOriginFromRequest(r)
 		ctx := context.WithValue(r.Context(), requestOriginKey, origin)
@@ -41,6 +45,16 @@ func ValidateBulkValidationOrigin(next http.Handler) http.Handler {
 			http.Error(w, "Unauthorized", http.StatusUnauthorized)
 			return
 		}
+
+		ValidateFile(
+			ValidatePlanLimit(
+				ValidateBulkValidationRateLimit(
+					http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+						next.ServeHTTP(w, r)
+					}),
+				),
+			),
+		).ServeHTTP(w, r.WithContext(ctx))
 
 		next.ServeHTTP(w, r.WithContext(ctx))
 	})

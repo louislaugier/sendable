@@ -39,14 +39,21 @@ func handleHTTP(mux *http.ServeMux) {
 
 	handle(mux, "/oauth/salesforce", http.HandlerFunc(salesforceAuthHandler), true)
 	handle(mux, "/oauth/hubspot", http.HandlerFunc(hubspotAuthHandler), true)
+	handle(mux, "/oauth/mailchimp", http.HandlerFunc(mailchimpAuthHandler), true)
+
 	handle(mux, "/oauth/zoho", http.HandlerFunc(zohoAuthHandler), true)
 	handle(mux, "/oauth/zoho/set_email", middleware.ValidateJWT(
 		http.HandlerFunc(zohoAuthSetEmailHandler),
 		false,
 	), true)
-	handle(mux, "/oauth/mailchimp", http.HandlerFunc(mailchimpAuthHandler), true)
+
 	handle(mux, "/oauth/google", http.HandlerFunc(googleAuthHandler), true)
 	handle(mux, "/oauth/linkedin", http.HandlerFunc(linkedinAuthHandler), true)
+
+	handle(mux, "/me", middleware.ValidateJWT(
+		http.HandlerFunc(meHandler),
+		true,
+	), true)
 
 	handle(mux, "/validate_email",
 		middleware.ValidateSingleValidationOriginAndLimits(
@@ -54,15 +61,13 @@ func handleHTTP(mux *http.ServeMux) {
 		),
 		false,
 	)
+
 	handle(mux, "/validate_emails",
 		middleware.ValidateJWT(
-			middleware.ValidateBulkValidationOrigin(
-				middleware.ValidateBulkValidationRateLimit(
-					middleware.ValidateFile(
-						http.HandlerFunc(validateEmailsHandler),
-					),
-				),
-			), true,
+			middleware.ValidateBulkValidationOriginAndLimits(
+				http.HandlerFunc(validateEmailsHandler),
+			),
+			true,
 		),
 		false,
 	)

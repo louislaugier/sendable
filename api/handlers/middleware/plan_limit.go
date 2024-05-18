@@ -20,7 +20,7 @@ func validateUserValidationCount(r *http.Request, validationOrigin models.Valida
 	return true, nil
 }
 
-func SingleValidationUserPlanLimit(next http.Handler) http.Handler {
+func ValidatePlanLimit(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		origin := GetOriginFromRequest(r)
 		currentPlan := GetUserFromRequest(r).CurrentPlan
@@ -30,7 +30,7 @@ func SingleValidationUserPlanLimit(next http.Handler) http.Handler {
 		switch origin {
 		case config.FrontendURL:
 			validationOrigin = models.AppValidation
-			maxCount = config.MonthlyAppSingleValidationsLimits[currentPlan.Type]
+			maxCount = config.MonthlyAppValidationsLimits[currentPlan.Type]
 		default:
 			validationOrigin = models.APIValidation
 			maxCount = config.MonthlyAPISingleValidationsLimits[currentPlan.Type]
