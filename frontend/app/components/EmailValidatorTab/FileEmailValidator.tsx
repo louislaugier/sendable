@@ -1,7 +1,7 @@
 import { useState, useRef, useEffect } from "react";
+import { allowedFileTypes } from "~/constants/files";
 
-export default function FileEmailValidator() {
-    const fileTypes = [".csv", ".txt", ".xls", ".xlsx"];
+export default function FileEmailValidator(props: any) {
     const [globalDragActive, setGlobalDragActive] = useState(false);
     const [localDragActive, setLocalDragActive] = useState(false);
     const [file, setFile] = useState<File | null>(null);
@@ -14,11 +14,11 @@ export default function FileEmailValidator() {
             e.preventDefault();
             setGlobalDragActive(true);
         };
-    
+
         const handleWindowDragOver = (e: DragEvent) => {
             e.preventDefault();
         };
-    
+
         const handleWindowDragLeave = (e: DragEvent) => {
             e.preventDefault();
             // Check if the mouse is outside the window boundaries
@@ -26,18 +26,18 @@ export default function FileEmailValidator() {
                 setGlobalDragActive(false);
             }
         };
-    
+
         const handleDrop = (e: DragEvent) => {
             e.preventDefault();
             setGlobalDragActive(false);
         };
-    
+
         // Add global drag event listeners
         window.addEventListener('dragenter', handleWindowDragEnter);
         window.addEventListener('dragover', handleWindowDragOver);
         window.addEventListener('dragleave', handleWindowDragLeave);
         window.addEventListener('drop', handleDrop);
-    
+
         return () => {
             // Remove global drag event listeners
             window.removeEventListener('dragenter', handleWindowDragEnter);
@@ -46,7 +46,7 @@ export default function FileEmailValidator() {
             window.removeEventListener('drop', handleDrop);
         };
     }, []);
-    
+
 
     const handleDrag = (e: React.DragEvent<HTMLDivElement>) => {
         e.preventDefault();
@@ -76,7 +76,7 @@ export default function FileEmailValidator() {
 
     const processFile = (file: File) => {
         const fileType = file.name.split('.').pop()?.toLowerCase();
-        if (fileType && fileTypes.includes(`.${fileType}`)) {
+        if (fileType && allowedFileTypes.includes(`.${fileType}`)) {
             setFile(file);
             setFileName(file.name);
             setIsFileTypeValid(true);
@@ -121,7 +121,7 @@ export default function FileEmailValidator() {
                             style={{ display: "none" }}
                         />
                         <p className="text-xs text-gray-500" style={{ bottom: "20px" }}>
-                            Supported file types: {fileTypes.join(", ")}
+                            Supported file types: {allowedFileTypes.join(", ")}
                         </p>
                     </div>
                 </div>

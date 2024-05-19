@@ -8,6 +8,8 @@ import { InvalidDescriptor, ReachableDescriptor, RiskyDescriptor, UnknownDescrip
 import FileEmailValidator from "./FileEmailValidator";
 
 export default function EmailValidatorTab(props: any) {
+
+    const { remainingAppValidations } = props
     const [selectedTab, setSelectedTab] = useState<any>("validation");
 
     return (
@@ -56,7 +58,7 @@ export default function EmailValidatorTab(props: any) {
                         }
                         className="w-full"
                     >
-                        <TextEmailValidator />
+                        <TextEmailValidator remainingAppValidations={remainingAppValidations}/>
                     </Tab>
 
                     <Tab
@@ -67,7 +69,7 @@ export default function EmailValidatorTab(props: any) {
                             </div>
                         }
                     >
-                        <FileEmailValidator />
+                        <FileEmailValidator remainingAppValidations={remainingAppValidations} />
                     </Tab>
 
                     <Tab

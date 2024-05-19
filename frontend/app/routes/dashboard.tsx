@@ -111,7 +111,7 @@ export default function Dashboard() {
               </div>
             }
           >
-            <EmailValidatorTab loadHistory={loadHistory} />
+            <EmailValidatorTab remainingAppValidations={remainingAppValidations} loadHistory={loadHistory} />
           </Tab>
           <Tab
             key="history"

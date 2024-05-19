@@ -10,6 +10,8 @@ import ReachabilityChip from "../ReachabilityChip";
 import { InvalidDescriptor, ReachableDescriptor, RiskyDescriptor, UnknownDescriptor } from "./ReachabilityDescriptor";
 
 export default function TextEmailValidator(props: any) {
+    const { remainingAppValidations } = props
+
     const { user } = useContext(UserContext);
 
     const [emailsStr, setEmailsStr] = useState<string>('');
@@ -143,8 +145,7 @@ export default function TextEmailValidator(props: any) {
                             >
                                 Import successful
                             </Chip>
-                            <p className="mb-16">Your validation report will be sent to <b>{user?.email}</b> once every email address has been checked.</p>
-
+                            <p className="mb-16">Your validation report will be sent to <b>{user?.email}</b> once every email address has been checked. A maximum of {remainingAppValidations} emails will be validated (your remaining quota), and next ones will be dropped.</p>
                         </div>
                 }
                 <div className="w-full flex justify-center">
