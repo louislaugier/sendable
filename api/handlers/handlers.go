@@ -37,18 +37,32 @@ func handleHTTP(mux *http.ServeMux) {
 	// TODO: signup
 	handle(mux, "/confirm_email", http.HandlerFunc(confirmEmailHandler), true)
 
-	handle(mux, "/oauth/salesforce", http.HandlerFunc(salesforceAuthHandler), true)
-	handle(mux, "/oauth/hubspot", http.HandlerFunc(hubspotAuthHandler), true)
-	handle(mux, "/oauth/mailchimp", http.HandlerFunc(mailchimpAuthHandler), true)
+	handle(mux, "/auth_salesforce", http.HandlerFunc(salesforceAuthHandler), true)
+	handle(mux, "/auth_hubspot", http.HandlerFunc(hubspotAuthHandler), true)
+	handle(mux, "/auth_mailchimp", http.HandlerFunc(mailchimpAuthHandler), true)
 
-	handle(mux, "/oauth/zoho", http.HandlerFunc(zohoAuthHandler), true)
-	handle(mux, "/oauth/zoho/set_email", middleware.ValidateJWT(
+	handle(mux, "/auth_zoho", http.HandlerFunc(zohoAuthHandler), true)
+	handle(mux, "/auth_zoho/set_email", middleware.ValidateJWT(
 		http.HandlerFunc(zohoAuthSetEmailHandler),
 		false,
 	), true)
 
-	handle(mux, "/oauth/google", http.HandlerFunc(googleAuthHandler), true)
-	handle(mux, "/oauth/linkedin", http.HandlerFunc(linkedinAuthHandler), true)
+	handle(mux, "/auth_google", http.HandlerFunc(googleAuthHandler), true)
+	handle(mux, "/auth_linkedin", http.HandlerFunc(linkedinAuthHandler), true)
+
+	handle(mux, "/generate_api_key", middleware.ValidateJWT(
+		http.HandlerFunc(generateAPIKeyHandler),
+		true,
+	), true)
+
+	handle(mux, "/generate_jwt", middleware.ValidateAPIKey(
+		http.HandlerFunc(generateJWTHandler),
+	), true)
+
+	handle(mux, "/api_keys", middleware.ValidateJWT(
+		http.HandlerFunc(APIKeysHandler),
+		true,
+	), true)
 
 	handle(mux, "/me", middleware.ValidateJWT(
 		http.HandlerFunc(meHandler),
@@ -74,7 +88,7 @@ func handleHTTP(mux *http.ServeMux) {
 
 	handle(mux, "/validation_history",
 		middleware.ValidateJWT(
-			http.HandlerFunc(getValidationHistoryHandler),
+			http.HandlerFunc(validationHistoryHandler),
 			true,
 		),
 		false,
@@ -82,7 +96,7 @@ func handleHTTP(mux *http.ServeMux) {
 
 	handle(mux, "/reports/",
 		middleware.ValidateReportToken(
-			http.StripPrefix("/v1/reports",
+			http.StripPrefix(fmt.Sprintf("/%s/reports", config.APIVersionPrefix),
 				http.FileServer(
 					http.Dir("./reports"),
 				),
@@ -100,7 +114,7 @@ func StartServer() {
 
 	// Add CORS to all routes except validate_email and validate_emails
 	server.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
-		if r.URL.Path == "/validate_email" || r.URL.Path == "/validate_emails" {
+		if r.URL.Path == "/generate_jwt" || r.URL.Path == "/validate_email" || r.URL.Path == "/validate_emails" {
 			mux.ServeHTTP(w, r) // Serve the request without CORS middleware
 		} else {
 			corsHandler := createCorsHandler(mux)

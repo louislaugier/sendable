@@ -40,7 +40,7 @@ INSERT INTO
     )
 VALUES
     (
-        1,
+        "af7c1fe6-d669-414e-b066-e9733f0de7a8",
         '66608f5e-82fb-4e80-b069-40f852cac076',
         'yearly',
         'enterprise',

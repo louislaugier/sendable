@@ -2,13 +2,13 @@ package handlers
 
 import (
 	"email-validator/handlers/middleware"
-	"email-validator/internal/pkg/validation"
+	"email-validator/internal/pkg/api_key"
 	"encoding/json"
 	"net/http"
 	"strconv"
 )
 
-func validationHistoryHandler(w http.ResponseWriter, r *http.Request) {
+func APIKeysHandler(w http.ResponseWriter, r *http.Request) {
 	if r.Method != http.MethodGet {
 		http.Error(w, "method not allowed", http.StatusMethodNotAllowed)
 	}
@@ -29,17 +29,10 @@ func validationHistoryHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	userID := middleware.GetUserFromRequest(r).ID
-	validations, err := validation.GetMany(userID, limit, offset)
-	if err != nil {
-		handleError(w, err, "Internal Server Error", http.StatusInternalServerError)
-	}
-	count, err := validation.GetCount(userID)
+	APIKeys, err := api_key.GetMany(userID, limit, offset)
 	if err != nil {
 		handleError(w, err, "Internal Server Error", http.StatusInternalServerError)
 	}
 
-	json.NewEncoder(w).Encode(map[string]interface{}{
-		"validations": validations,
-		"count":       count,
-	})
+	json.NewEncoder(w).Encode(APIKeys)
 }

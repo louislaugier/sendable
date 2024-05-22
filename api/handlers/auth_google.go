@@ -2,7 +2,6 @@ package handlers
 
 import (
 	"context"
-	"email-validator/handlers/middleware"
 	"email-validator/internal/models"
 	"email-validator/internal/pkg/oauth"
 	"email-validator/internal/pkg/user"
@@ -72,11 +71,6 @@ func processGoogleAuthenticatedUser(w http.ResponseWriter, r *http.Request, emai
 
 	if u == nil {
 		createConfirmedAccountAndAndBindJWT(w, r, email, &gp)
-		return
-	}
-
-	if err := middleware.GenerateAndBindJWT(u); err != nil {
-		handleError(w, err, "Error generating and binding JWT", http.StatusInternalServerError)
 		return
 	}
 

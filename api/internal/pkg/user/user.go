@@ -15,7 +15,8 @@ import (
 const (
 	insertQuery = "INSERT INTO public.user (id, email, is_email_confirmed, password_sha256, last_ip_addresses, last_user_agent, auth_provider) VALUES ($1, $2, $3, $4, $5, $6, $7);"
 
-	selectQuery = `SELECT "id", "email", "is_email_confirmed", "email_confirmation_code", "created_at", "updated_at" FROM public."user" WHERE %s AND "deleted_at" IS NULL LIMIT 1;`
+	selectQuery                   = `SELECT "id", "email", "is_email_confirmed", "email_confirmation_code", "created_at", "updated_at" FROM public."user" WHERE %s AND "deleted_at" IS NULL LIMIT 1;`
+	selectUserByAPIKeySHA256Query = `SELECT "id", "email", "is_email_confirmed", "email_confirmation_code", "created_at", "updated_at" FROM public."user" WHERE "id" IN (SELECT "user_id" FROM public."api_key" WHERE "key_sha256" = $1 AND "deleted_at" IS NULL) AND "deleted_at" IS NULL LIMIT 1;`
 
 	updateEmailConfirmationQuery = "UPDATE public.user SET is_email_confirmed = true WHERE id = $1;"
 	updateIPsAndUserAgentQuery   = "UPDATE public.user SET last_ip_addresses = $1, last_user_agent = $2 WHERE id = $3;"
@@ -23,6 +24,11 @@ const (
 
 // InsertNew inserts a new user into the database.
 func InsertNew(user *models.User, encryptedPassword *string) error {
+	_, err := config.DB.Exec(insertQuery, &user.ID, &user.Email, &user.IsEmailConfirmed, encryptedPassword, &user.LastIPAddresses, &user.LastUserAgent, &user.AuthProvider)
+	return err
+}
+
+func InsertNewTempZoho(user *models.User, encryptedPassword *string) error {
 	_, err := config.DB.Exec(insertQuery, &user.ID, &user.Email, &user.IsEmailConfirmed, encryptedPassword, &user.LastIPAddresses, &user.LastUserAgent, &user.AuthProvider)
 	return err
 }
@@ -67,9 +73,9 @@ func GetByTempZohoOauthData(comaSeparatedEmails string, lastIPs, lastUserAgent s
 	return getByCriteria(false, query, comaSeparatedEmails, models.ZohoProvider, lastIPs, lastUserAgent)
 }
 
-func InsertNewTempZoho(user *models.User, encryptedPassword *string) error {
-	_, err := config.DB.Exec(insertQuery, &user.ID, &user.Email, &user.IsEmailConfirmed, encryptedPassword, &user.LastIPAddresses, &user.LastUserAgent, &user.AuthProvider)
-	return err
+// GetByAPIKeySHA256 retrieves a user by API key SHA256 hash.
+func GetByAPIKeySHA256(apiKeySHA256 string) (*models.User, error) {
+	return getByCriteria(false, selectUserByAPIKeySHA256Query, apiKeySHA256)
 }
 
 func getByCriteria(isMinimalQuery bool, query string, args ...interface{}) (*models.User, error) {

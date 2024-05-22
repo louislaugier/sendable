@@ -14,6 +14,7 @@ func meHandler(w http.ResponseWriter, r *http.Request) {
 	u := middleware.GetUserFromRequest(r)
 	if u != nil {
 		json.NewEncoder(w).Encode(u)
+		return
 	}
 
 	http.Error(w, "Internal Server Error", http.StatusInternalServerError)

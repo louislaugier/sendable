@@ -23,7 +23,7 @@ const (
 )
 
 type Order struct {
-	ID int `json:"id,omitempty"`
+	ID uuid.UUID `json:"id,omitempty"`
 
 	UserID *uuid.UUID `json:"userId,omitempty"`
 

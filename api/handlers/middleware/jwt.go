@@ -30,6 +30,8 @@ const requestOriginKey userContextKey = "request_origin"
 const fileDataKey userContextKey = "file_data"
 
 // GenerateAndBindJWT generates a new JWT token and adds it to the User pointer.
+// it also creates an API key linked to the user
+// the API key can be used to generate a JWT
 func GenerateAndBindJWT(user *models.User) error {
 	jwt, err := GenerateJWT(user.ID, user.Email)
 	if err != nil {

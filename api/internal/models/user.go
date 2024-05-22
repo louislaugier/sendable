@@ -26,8 +26,6 @@ type User struct {
 	IsEmailConfirmed      bool   `json:"isEmailConfirmed"`
 	EmailConfirmationCode *int   `json:"-"`
 
-	Password *string `json:"password,omitempty"`
-
 	LastIPAddresses string `json:"-"`
 	LastUserAgent   string `json:"-"`
 
