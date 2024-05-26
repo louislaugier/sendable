@@ -21,12 +21,12 @@ export default function PricingCard(props: any) {
                 </div>
                 <div className="py-4">
                     {isYearly && <p className="text-md text-gray-500" style={{ textDecoration: 'line-through' }}>
-                        ${parseInt(plan.monthly_price.replace('$', '')) * 12} /yr
+                        ${parseInt(plan.monthlyPrice.replace('$', '')) * 12} /yr
                     </p>}
                     <div>
-                        <p className="text-2xl inline-block">{isYearly ? plan.yearly_price : plan.monthly_price}</p>
+                        <p className="text-2xl inline-block">{isYearly ? plan.yearlyPrice : plan.monthlyPrice}</p>
                         <p className="text-accents8 inline-block ml-1">{isYearly ? '/yr' : '/mo'}</p>
-                        {isYearly && <p className="text-accents8 inline-block ml-1">(~${Math.ceil(plan.yearly_price.replace('$', '') / 12)} /mo)</p>}
+                        {isYearly && <p className="text-accents8 inline-block ml-1">(~${Math.ceil(plan.yearlyPrice.replace('$', '') / 12)} /mo)</p>}
                     </div>
                     <Button className="mt-7 mb-12" onClick={() => {
                         setModalType(AuthModalType.Signup);

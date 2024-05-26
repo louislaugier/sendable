@@ -1,4 +1,5 @@
 import { Table, TableHeader, TableColumn, TableBody, TableRow, TableCell } from "@nextui-org/react";
+import { limits } from "~/constants/limits";
 
 export default function ApiLimitsTable() {
     return (
@@ -13,14 +14,14 @@ export default function ApiLimitsTable() {
                 <TableBody>
                     <TableRow key="1">
                         <TableCell>Free</TableCell>
-                        <TableCell>500</TableCell>
-                        <TableCell>30</TableCell>
+                        <TableCell>{limits.free.app.toLocaleString()}</TableCell>
+                        <TableCell>{limits.free.api.toLocaleString()}</TableCell>
                         <TableCell>Unavailable</TableCell>
                     </TableRow>
                     <TableRow key="2">
                         <TableCell>Premium</TableCell>
-                        <TableCell>300,000</TableCell>
-                        <TableCell>10,000</TableCell>
+                        <TableCell>{limits.premium.app.toLocaleString()}</TableCell>
+                        <TableCell>{limits.premium.api.toLocaleString()}</TableCell>
                         <TableCell>Unavailable</TableCell>
                     </TableRow>
                     <TableRow key="3">

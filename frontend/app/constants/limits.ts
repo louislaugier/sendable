@@ -1,10 +1,15 @@
 export const limits = {
     free: {
-        app: 300,
-        api: 30
+        app: 500,
+        api: 30,
+        apiConcurrency: 1
     },
     premium: {
         app: 500000,
-        api: 30000
+        api: 30000,
+        apiConcurrency: 3
+    },
+    enterprise: {
+        apiBulkConcurrency: 3,
     }
 }
