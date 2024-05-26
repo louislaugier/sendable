@@ -36,7 +36,7 @@ const FeaturesSection: React.FC = () => {
                     <FeatureCard
                         title="Catch-All Email Check"
                         icon={<GiCatch size="20px" />}
-                        description="We identify catch-all domains and addresses so you can isolate them from your list. All these domains will return a “valid” result and you can later score them."
+                        description="We identify catch-all domains and addresses so you can isolate them from your list. All these domains will return a “risky” result and you can then sort them."
                     />
                     <FeatureCard
                         title="MX Record and SMTP Server Check"

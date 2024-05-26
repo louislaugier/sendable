@@ -96,21 +96,33 @@ export default function TextEmailValidator(props: any) {
                     </Chip>
                 ))}
 
-                <Textarea
-                    isDisabled={isLoading}
-                    errorMessage={errorMsg}
-                    isInvalid={!!errorMsg}
-                    minRows={5}
-                    value={emailsStr}
-                    onChange={handleChange}
-                    variant="faded"
-                    label="Email addresses"
-                    placeholder="hello@domain.com,noreply@domain.com"
-                    // TODO: or semicolon
-                    description="Enter a list of email addresses to validate separated by a comma."
-                    className="my-6 w-full"
-                    onKeyDown={handleKeyDown}
-                />
+                <style>
+                    {
+                        `
+                            div{
+                                --tw-ring-opacity: 0 !important;
+                            }
+                        `
+                    }
+                </style>
+                <div className="emails-input">
+                    <Textarea
+                        autoFocus
+                        isDisabled={isLoading}
+                        errorMessage={errorMsg}
+                        isInvalid={!!errorMsg}
+                        minRows={5}
+                        value={emailsStr}
+                        onChange={handleChange}
+                        variant="faded"
+                        label="Email addresses"
+                        placeholder="hello@domain.com,noreply@domain.com"
+                        // TODO: or semicolon
+                        description="Enter a list of email addresses to validate separated by a comma."
+                        className="my-6 w-full"
+                        onKeyDown={handleKeyDown}
+                    />
+                </div>
                 <div className="w-full flex justify-center">
                     <Button onClick={submitEmails} isDisabled={!emailsStr} color="primary" variant="shadow">
                         {isLoading ? 'Checking reachability...' : 'Check reachability'}

@@ -1,5 +1,5 @@
 import { useContext } from "react";
-import { siteName } from "~/constants/app";
+import { contactEmail, siteName } from "~/constants/app";
 import { pages } from "~/constants/pages";
 import UserContext from "~/contexts/UserContext";
 
@@ -31,7 +31,7 @@ export default function Footer() {
                         </a>
                     </div>
                     <div className="mb-2">
-                        <a href="mailto:contact@example.com" className="block">
+                        <a href={`mailto:${contactEmail}`} className="block">
                             Contact Us
                         </a>
                     </div>

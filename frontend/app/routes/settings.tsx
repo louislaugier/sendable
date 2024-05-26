@@ -13,12 +13,8 @@ export const meta: MetaFunction = () => {
 
 export default function Settings() {
   const [searchParams, setSearchParams] = useSearchParams();
-  const [selectedTab, setSelectedTab] = useState<any>("user");
 
-  useEffect(() => {
-    const tab = searchParams.get("tab");
-    if (tab) setSelectedTab(tab);
-  }, [searchParams]);
+  const [selectedTab, setSelectedTab] = useState<any>(searchParams.get("tab") ?? "user");
 
   useEffect(() => {
     if (selectedTab) {

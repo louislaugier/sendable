@@ -2,7 +2,7 @@ import apiClient from "..";
 
 const googleAuth = async (data: any) => {
     try {
-        const response = await apiClient.post('oauth/google', data);
+        const response = await apiClient.post('auth_google', data);
         return response.data;
     } catch (error) {
         console.error('Error:', error);

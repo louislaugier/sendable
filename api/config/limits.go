@@ -12,6 +12,7 @@ var ConcurrentSingleValidationsLimits = map[models.OrderType]int{
 }
 
 // Only enterprise accounts can bulk validate, no monthly limit
+
 const ConcurrentBulkValidationsLimit = 3
 
 var MonthlyAppValidationsLimits = map[models.OrderType]int{

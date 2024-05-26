@@ -71,7 +71,7 @@ export default function TryItOut() {
     };
 
     const { authModal, setModalType } = useContext(AuthModalContext);
-    
+
     return (
         <>
 
@@ -88,6 +88,7 @@ export default function TryItOut() {
                         </Button>}
                     </div>
                     <Input
+                        autoFocus
                         isDisabled={isLoading}
                         errorMessage={errorMsg}
                         isInvalid={!!errorMsg}

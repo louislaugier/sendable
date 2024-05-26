@@ -15,13 +15,13 @@ func generateJWTHandler(w http.ResponseWriter, r *http.Request) {
 	user := middleware.GetUserFromRequest(r)
 
 	jwt, err := middleware.GenerateJWT(user.ID, user.Email)
-	if err != nil {
+	if err != nil || jwt == nil {
 		log.Printf("Error generating JWT: %v", err)
 		http.Error(w, "Internal Sever Error", http.StatusInternalServerError)
 		return
 	}
 
-	json.NewEncoder(w).Encode(map[string]interface{}{
-		"jwt": jwt,
+	json.NewEncoder(w).Encode(map[string]string{
+		"jwt": *jwt,
 	})
 }

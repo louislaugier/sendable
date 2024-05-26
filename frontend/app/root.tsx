@@ -16,6 +16,7 @@ import { googleOauthClientId } from "./constants/oauth/clientIds";
 import { AuthModalProvider } from "./contexts/AuthModalContext";
 import Footer from "./components/Footer";
 import { ErrorOccuredModalProvider } from "./contexts/ErrorOccuredModalContext";
+import "swagger-ui-react/swagger-ui.css"
 
 export const links: LinksFunction = () => [
   { rel: "stylesheet", href: stylesheet },

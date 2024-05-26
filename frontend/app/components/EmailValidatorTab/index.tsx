@@ -1,16 +1,18 @@
-import { Tab, Button, Tabs, Accordion, AccordionItem, Card, CardBody } from "@nextui-org/react";
-import FileUploader from "./FileEmailValidator";
+import { Tab, Button, Tabs, Accordion, AccordionItem, Card, CardBody, useDisclosure } from "@nextui-org/react";
 import { useState } from "react";
 import TextEmailValidator from "./TextEmailValidator";
-import ReachabilityChip from "../ReachabilityChip";
-import { Reachability } from "~/types/email";
 import { InvalidDescriptor, ReachableDescriptor, RiskyDescriptor, UnknownDescriptor } from "./ReachabilityDescriptor";
 import FileEmailValidator from "./FileEmailValidator";
+import ApiReference from "../ApiReference";
+import { navigateToUrl } from "~/utils/url";
+import NewApiKeyModal from "../Modals/NewApiKeyModal";
 
 export default function EmailValidatorTab(props: any) {
 
     const { remainingAppValidations } = props
     const [selectedTab, setSelectedTab] = useState<any>("validation");
+
+    const newApiKeyModal = useDisclosure();
 
     return (
         <>
@@ -27,17 +29,19 @@ export default function EmailValidatorTab(props: any) {
                 }
             </style>
             <Accordion id='validation-docs-toggle' className="mt-12">
-                <AccordionItem key="1" aria-label="Toggle reachability reference" subtitle="Press to expand" title="Toggle reachability reference">
-                    <div className="flex flex-col my-4 gap-3 text-sm">
-                        <ReachableDescriptor />
-                        <RiskyDescriptor />
-                        <UnknownDescriptor />
-                        <InvalidDescriptor />
-                    </div>
-
+                <AccordionItem key="1" aria-label="Toggle reachability reference" subtitle="Press to expand" title="Reachability reference">
+                    <Card>
+                        <CardBody>
+                            <div className="flex flex-col my-4 gap-3 text-sm">
+                                <ReachableDescriptor />
+                                <RiskyDescriptor />
+                                <UnknownDescriptor />
+                                <InvalidDescriptor />
+                            </div>
+                        </CardBody>
+                    </Card>
                 </AccordionItem>
             </Accordion>
-
 
             <div className='flex flex-col items-center py-8'>
                 <Tabs
@@ -58,7 +62,7 @@ export default function EmailValidatorTab(props: any) {
                         }
                         className="w-full"
                     >
-                        <TextEmailValidator remainingAppValidations={remainingAppValidations}/>
+                        <TextEmailValidator remainingAppValidations={remainingAppValidations} />
                     </Tab>
 
                     <Tab
@@ -89,14 +93,28 @@ export default function EmailValidatorTab(props: any) {
                     <Tab
                         key="api"
                         title={
-                            <div className="flex items-center space-x-2">
+                            <div className="space-x-2">
                                 <span>API</span>
                             </div>
                         }
+                        className="w-full"
                     >
+                        <div className="flex flex-col w-full">
+                            <div className="flex space-x-2">
+                                <Button onClick={newApiKeyModal.onOpen} color="primary" variant="shadow" className="my-4" >
+                                    Generate new API key
+                                </Button>
+                                <Button onClick={() => navigateToUrl('/settings?tab=api')} color="primary" variant="bordered" className="my-4" >
+                                    Manage API keys
+                                </Button>
+                            </div>
+                            <ApiReference />
+                        </div>
                     </Tab>
                 </Tabs>
             </div>
+
+            <NewApiKeyModal isOpen={newApiKeyModal.isOpen} onClose={newApiKeyModal.onClose} onOpenChange={newApiKeyModal.onOpenChange} />
         </>
     )
 }

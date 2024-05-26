@@ -1,15 +1,15 @@
-import { Accordion, AccordionItem, Button, Card, CardBody, Link } from "@nextui-org/react";
+import { Button, useDisclosure } from "@nextui-org/react";
 import type { MetaFunction } from "@remix-run/node";
-import { useContext, useState } from "react";
+import { useContext } from "react";
 import { siteName } from "~/constants/app";
 import AuthModalContext from "~/contexts/AuthModalContext";
 import { AuthModalType } from "~/types/modal";
-import SwaggerUI from "swagger-ui-react"
-import "swagger-ui-react/swagger-ui.css"
 import CodeSnippetsSection from "~/components/PageSections/Api/CodeSnippetsSection";
 import ApiLimitsTable from "~/components/Tables/ApiLimitsTable";
 import UserContext from "~/contexts/UserContext";
 import { navigateToUrl } from "~/utils/url";
+import ApiReference from "~/components/ApiReference";
+import NewApiKeyModal from "~/components/Modals/NewApiKeyModal";
 
 export const meta: MetaFunction = () => {
   return [
@@ -23,6 +23,8 @@ export default function Api() {
 
   const { user } = useContext(UserContext);
 
+  const newApiKeyModal = useDisclosure();
+
   return (
     <>
       <div className="py-8 px-6">
@@ -31,52 +33,32 @@ export default function Api() {
           <h2 className="text-2xl">API</h2>
         </div>
 
-        <h3 className="text-lg mb-4">API reference</h3>
-        {/* <p className="mb-6">Lorem ipsum dolor sit amet consectetur adipisicing elit. Maxime mollitia,
-          molestiae quas vel sint commodi repudiandae consequuntur voluptatum laborum
-          numquam blanditiis harum quisquam eius sed odit fugiat iusto fuga praesentium
-          optio, eaque rerum! Provident similique accusantium nemo autem. Veritatis
-          obcaecati tenetur iure eius earum ut molestias architecto voluptate aliquam
-          nihil, eveniet aliquid culpa officia aut!
-        </p> */}
-
-        <style>
-          {
-            `
-              #docs-toggle button>div {
-                flex: unset;
-                width: 235px;
-              }
-            `
-          }
-        </style>
-        <Accordion id='docs-toggle' className="mb-12">
-          <AccordionItem key="1" aria-label="Toggle API documentation" subtitle="Press to expand" title="Open API documentation">
-            <Card className="mb-16">
-              <CardBody>
-                <SwaggerUI url="https://petstore.swagger.io/v2/swagger.json" />
-              </CardBody>
-            </Card>
-          </AccordionItem>
-        </Accordion>
+        <ApiReference />
 
         <h3 className="text-lg mb-4">Generating a bearer token from an API key</h3>
         <CodeSnippetsSection />
-        <Button as={Link} href={user ? '/settings?tab=api' : ''} onClick={(e) => {
-          if (!user) {
-            setModalType(AuthModalType.Signup);
-            authModal.onOpen();
-          } else {
-            e.preventDefault()
-            navigateToUrl(`/settings?tab=api`)
-          }
-        }} color="primary" variant="shadow" className="mt-4 mb-16">
-          Get an API key
-        </Button>
+
+        <div className="flex space-x-2">
+          <Button onClick={(e) => {
+            if (!user) {
+              setModalType(AuthModalType.Signup);
+              authModal.onOpen();
+            } else {
+              newApiKeyModal.onOpen()
+            }
+          }} color="primary" variant="shadow" className="mt-4 mb-16">
+            {user ? 'Generate new API key' : 'Get an API key'}
+          </Button>
+          {user && <Button onClick={() => navigateToUrl('/settings?tab=api')} color="primary" variant="bordered" className="my-4" >
+            Manage API keys
+          </Button>}
+        </div>
 
         <h3 className="text-lg mb-4">Limits</h3>
         <ApiLimitsTable />
       </div>
+
+      {user && <NewApiKeyModal isOpen={newApiKeyModal.isOpen} onClose={newApiKeyModal.onClose} onOpenChange={newApiKeyModal.onOpenChange} />}
     </>
   );
 }

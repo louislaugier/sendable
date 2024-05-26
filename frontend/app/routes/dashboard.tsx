@@ -24,12 +24,7 @@ export default function Dashboard() {
   if (!user) navigateToUrl('/')
 
   const [searchParams, setSearchParams] = useSearchParams();
-  const [selectedTab, setSelectedTab] = useState<any>("validation");
-
-  useEffect(() => {
-    const tab = searchParams.get("tab");
-    if (tab) setSelectedTab(tab);
-  }, [searchParams]);
+  const [selectedTab, setSelectedTab] = useState<any>(searchParams.get("tab") ?? "validation");
 
   useEffect(() => {
     if (selectedTab) {

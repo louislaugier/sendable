@@ -1,5 +1,5 @@
 import { useContext, useState } from "react";
-import { Modal, ModalContent, ModalHeader, ModalBody, ModalFooter, Button, useDisclosure, Checkbox, Input, Link } from "@nextui-org/react";
+import { Modal, ModalContent, ModalHeader, ModalBody, ModalFooter, Button } from "@nextui-org/react";
 import AuthButtons from "~/components/Nav/AuthButtons";
 import UserContext from "~/contexts/UserContext";
 

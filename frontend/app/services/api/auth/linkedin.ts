@@ -2,7 +2,7 @@ import apiClient from "..";
 
 const linkedinAuth = async (data: any) => {
     try {
-        const response = await apiClient.post('oauth/linkedin', data);
+        const response = await apiClient.post('auth_linkedin', data);
         return response.data;
     } catch (error) {
         console.error('Error:', error);

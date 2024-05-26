@@ -2,7 +2,7 @@ import apiClient from "..";
 
 const zohoAuth = async (data: any) => {
     try {
-        const response = await apiClient.post('oauth/zoho', data);
+        const response = await apiClient.post('auth_zoho', data);
         return response.data;
     } catch (error) {
         console.error('Error:', error);
