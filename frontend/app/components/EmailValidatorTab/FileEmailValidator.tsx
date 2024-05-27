@@ -1,5 +1,6 @@
 import { useState, useRef, useEffect } from "react";
 import { allowedFileTypes } from "~/constants/files";
+import { getColumnNamesFromCSV, getColumnNamesFromXLS } from "~/utils/file";
 
 export default function FileEmailValidator(props: any) {
     const [globalDragActive, setGlobalDragActive] = useState(false);
@@ -77,13 +78,25 @@ export default function FileEmailValidator(props: any) {
     const processFile = (file: File) => {
         const fileType = file.name.split('.').pop()?.toLowerCase();
         if (fileType && allowedFileTypes.includes(`.${fileType}`)) {
-            setFile(file);
-            setFileName(file.name);
-            setIsFileTypeValid(true);
+          setFile(file);
+          setFileName(file.name);
+          setIsFileTypeValid(true);
+      
+          // Get column names based on file type
+          if (fileType === 'csv') {
+            getColumnNamesFromCSV(file)
+              .then((columnNames) => console.log(columnNames))
+              .catch((error) => console.error(error));
+          } else if (fileType === 'xls' || fileType === 'xlsx') {
+            getColumnNamesFromXLS(file)
+              .then((columnNames) => console.log(columnNames))
+              .catch((error) => console.error(error));
+          }
         } else {
-            setIsFileTypeValid(false);
+          setIsFileTypeValid(false);
         }
-    };
+      };
+      
 
     const triggerFileInput = () => {
         fileInputRef.current?.click();
