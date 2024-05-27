@@ -18,7 +18,7 @@ const (
 	getCountQuery = `
 		SELECT COUNT(*)
 		FROM public.validation
-		WHERE user_id = $1
+		WHERE user_id = $1;
 	`
 
 	getManyQuery = `

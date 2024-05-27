@@ -13,13 +13,23 @@ import (
 	"github.com/google/uuid"
 )
 
-func ValidateManyWithReport(emails []string, userID uuid.UUID, reportRecipientEmail string, validationID, reportToken uuid.UUID) {
+func ValidateManyWithReport(emails []string, userID uuid.UUID, reportRecipientEmail string, validationID, reportToken uuid.UUID, remainingEmails int) {
 	report, err := ValidateMany(emails)
+
+	if len(report) > remainingEmails {
+		report = report[:remainingEmails]
+	}
+
 	handleValidationReport(report, err, userID, reportRecipientEmail, validationID, reportToken)
 }
 
-func ValidateManyFromFileWithReport(uploadedFile multipart.File, uploadedFileHeader *multipart.FileHeader, extension models.FileExtension, userID uuid.UUID, reportRecipientEmail string, validationID, reportToken uuid.UUID) {
+func ValidateManyFromFileWithReport(uploadedFile multipart.File, uploadedFileHeader *multipart.FileHeader, extension models.FileExtension, userID uuid.UUID, reportRecipientEmail string, validationID, reportToken uuid.UUID, remainingEmails int) {
 	report, err := ValidateManyFromFile(uploadedFile, uploadedFileHeader, extension)
+
+	if len(report) > remainingEmails {
+		report = report[:remainingEmails]
+	}
+
 	handleValidationReport(report, err, userID, reportRecipientEmail, validationID, reportToken)
 }
 
