@@ -35,11 +35,29 @@ func GetLinesFromCSV(file multipart.File, comma rune) ([][]string, error) {
 
 // GetEmailsFromCSV accepts a multipart.File, reads the lines of CSV,
 // and extracts valid email addresses.
-func GetEmailsFromCSV(file multipart.File, comma rune) ([]string, error) {
+func GetEmailsFromCSV(file multipart.File, comma rune, columnsToScan []string) ([]string, error) {
 	// Get lines from the CSV file
 	lines, err := GetLinesFromCSV(file, comma)
 	if err != nil {
 		return nil, err
+	}
+
+	// Get the header from the CSV file
+	header := lines[0]
+	lines = lines[1:]
+
+	// Create a map of column indices that need to be scanned
+	var columnIndices map[int]bool
+	if len(columnsToScan) > 0 {
+		columnIndices = make(map[int]bool)
+		for i, columnName := range header {
+			for _, columnToScan := range columnsToScan {
+				if strings.EqualFold(columnName, columnToScan) {
+					columnIndices[i] = true
+					break
+				}
+			}
+		}
 	}
 
 	threadsCountEnv := os.Getenv("THREADS_COUNT")
@@ -58,7 +76,11 @@ func GetEmailsFromCSV(file multipart.File, comma rune) ([]string, error) {
 			defer wg.Done()
 			for j, line := range lines {
 				if j%threadsCount == partitionIndex {
-					for _, cell := range line {
+					for k, cell := range line {
+						// If columnsToScan is not empty, only scan cells from those columns
+						if len(columnIndices) > 0 && !columnIndices[k] {
+							continue
+						}
 						trimmedCell := strings.TrimSpace(cell)
 						if format.IsEmailValid(trimmedCell) {
 							mutex.Lock()

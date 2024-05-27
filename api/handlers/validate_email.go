@@ -4,7 +4,6 @@ import (
 	"email-validator/handlers/middleware"
 	"email-validator/internal/models"
 	"email-validator/internal/pkg/email"
-	"email-validator/internal/pkg/user"
 	"email-validator/internal/pkg/utils"
 	"email-validator/internal/pkg/validation"
 	"encoding/json"
@@ -40,7 +39,7 @@ func validateEmailHandler(w http.ResponseWriter, r *http.Request) {
 	resp, err := email.Validate(*req.Email)
 	if err != nil {
 		if errors.Is(err, models.ErrInvalidEmail) {
-			http.Error(w, models.ErrInvalidEmail.Error(), http.StatusBadRequest)
+			http.Error(w, err.Error(), http.StatusBadRequest)
 			return
 		}
 
@@ -61,12 +60,6 @@ func validateEmailHandler(w http.ResponseWriter, r *http.Request) {
 	loggedUser := middleware.GetUserFromRequest(r)
 	if loggedUser != nil {
 		v.UserID = &loggedUser.ID
-
-		err = user.UpdateIPsAndUserAgent(*v.UserID, IPaddresses, userAgent)
-		if err != nil {
-			handleError(w, err, "Internal Server Error", http.StatusInternalServerError)
-			return
-		}
 	} else {
 		v.GuestIP = &IPaddresses
 		v.GuestUserAgent = &userAgent

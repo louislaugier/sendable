@@ -2,6 +2,7 @@ package file
 
 import (
 	"email-validator/internal/pkg/format"
+	"email-validator/internal/pkg/utils"
 	"fmt"
 	"io"
 	"mime/multipart"
@@ -14,8 +15,8 @@ import (
 )
 
 // Updated to handle multipart file uploads
-func GetEmailsFromXLSX(file multipart.File) ([]string, error) {
-	cells, err := getCellsFromXLSX(file)
+func GetEmailsFromXLSX(file multipart.File, columnsToScan []string) ([]string, error) {
+	cells, err := getCellsFromXLSX(file, columnsToScan)
 	if err != nil {
 		return nil, err
 	}
@@ -24,8 +25,8 @@ func GetEmailsFromXLSX(file multipart.File) ([]string, error) {
 }
 
 // Updated to handle multipart file uploads
-func GetEmailsFromXLS(file multipart.File) ([]string, error) {
-	cells, err := getCellsFromXLS(file)
+func GetEmailsFromXLS(file multipart.File, columnsToScan []string) ([]string, error) {
+	cells, err := getCellsFromXLS(file, columnsToScan)
 	if err != nil {
 		return nil, err
 	}
@@ -55,7 +56,7 @@ func createTempFile(file multipart.File, pattern string) (string, error) {
 	return tempFile.Name(), nil
 }
 
-func getCellsFromXLSX(file multipart.File) ([]string, error) {
+func getCellsFromXLSX(file multipart.File, columnsToScan []string) ([]string, error) {
 	tempFileName, err := createTempFile(file, "temp.xlsx")
 	if err != nil {
 		return nil, err
@@ -69,10 +70,21 @@ func getCellsFromXLSX(file multipart.File) ([]string, error) {
 
 	var cells []string
 	for _, sheet := range xlFile.Sheets {
+		var columnIndices []int
+		if len(columnsToScan) > 0 {
+			headerRow := sheet.Rows[0]
+			for i, cell := range headerRow.Cells {
+				if utils.Contains(columnsToScan, cell.String()) {
+					columnIndices = append(columnIndices, i)
+				}
+			}
+		}
 		for _, row := range sheet.Rows {
-			for _, cell := range row.Cells {
-				text := cell.String()
-				cells = append(cells, text)
+			for i, cell := range row.Cells {
+				if len(columnIndices) == 0 || utils.ContainsInt(columnIndices, i) {
+					text := cell.String()
+					cells = append(cells, text)
+				}
 			}
 		}
 	}
@@ -80,7 +92,7 @@ func getCellsFromXLSX(file multipart.File) ([]string, error) {
 	return cells, nil
 }
 
-func getCellsFromXLS(file multipart.File) ([]string, error) {
+func getCellsFromXLS(file multipart.File, columnsToScan []string) ([]string, error) {
 	tempFileName, err := createTempFile(file, "email-validator-*.xls")
 	if err != nil {
 		return nil, err
@@ -98,11 +110,22 @@ func getCellsFromXLS(file multipart.File) ([]string, error) {
 		if sheet == nil {
 			continue
 		}
+		var columnIndices []int
+		if len(columnsToScan) > 0 {
+			headerRow := sheet.Row(0)
+			for i := 0; i < headerRow.LastCol(); i++ {
+				if utils.Contains(columnsToScan, headerRow.Col(i)) {
+					columnIndices = append(columnIndices, i)
+				}
+			}
+		}
 		for rowIndex := 0; rowIndex <= int(sheet.MaxRow); rowIndex++ {
 			row := sheet.Row(rowIndex)
 			for colIndex := 0; colIndex < row.LastCol(); colIndex++ {
-				cell := row.Col(colIndex)
-				cells = append(cells, cell)
+				if len(columnIndices) == 0 || utils.ContainsInt(columnIndices, colIndex) {
+					cell := row.Col(colIndex)
+					cells = append(cells, cell)
+				}
 			}
 		}
 	}

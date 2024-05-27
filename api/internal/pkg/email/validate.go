@@ -8,7 +8,6 @@ import (
 	"encoding/json"
 	"errors"
 	"log"
-	"mime/multipart"
 	"net/http"
 	"os"
 	"strconv"
@@ -39,7 +38,7 @@ func Validate(email string) (*models.ReacherResponse, error) {
 }
 
 // ValidateManyFromFile determines the file format and validates emails accordingly
-func ValidateManyFromFile(uploadedFile multipart.File, uploadedFileHeader *multipart.FileHeader, extension models.FileExtension) ([]models.ReacherResponse, error) {
+func ValidateManyFromFile(fileData models.FileData, extension models.FileExtension) ([]models.ReacherResponse, error) {
 	var (
 		emails    []string
 		delimiter rune
@@ -48,18 +47,18 @@ func ValidateManyFromFile(uploadedFile multipart.File, uploadedFileHeader *multi
 
 	switch extension {
 	case models.FileExtensionCSV:
-		delimiter, err = file.GuessCSVDelimiter(uploadedFileHeader)
+		delimiter, err = file.GuessCSVDelimiter(fileData.UploadedFileHeader)
 		if err != nil {
 			return nil, err
 		}
 
-		emails, err = file.GetEmailsFromCSV(uploadedFile, delimiter)
+		emails, err = file.GetEmailsFromCSV(fileData.UploadedFile, delimiter, fileData.ColumnsToScan)
 	case models.FileExtensionXLSX:
-		emails, err = file.GetEmailsFromXLSX(uploadedFile)
+		emails, err = file.GetEmailsFromXLSX(fileData.UploadedFile, fileData.ColumnsToScan)
 	case models.FileExtensionXLS:
-		emails, err = file.GetEmailsFromXLS(uploadedFile)
+		emails, err = file.GetEmailsFromXLS(fileData.UploadedFile, fileData.ColumnsToScan)
 	case models.FileExtensionTXT:
-		emails, err = file.GetEmailsFromTXT(uploadedFile)
+		emails, err = file.GetEmailsFromTXT(fileData.UploadedFile)
 	}
 
 	if err != nil {

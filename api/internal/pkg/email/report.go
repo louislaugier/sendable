@@ -8,26 +8,25 @@ import (
 	"email-validator/internal/pkg/validation"
 	"fmt"
 	"log"
-	"mime/multipart"
 
 	"github.com/google/uuid"
 )
 
-func ValidateManyWithReport(emails []string, userID uuid.UUID, reportRecipientEmail string, validationID, reportToken uuid.UUID, remainingEmails int) {
+func ValidateManyWithReport(emails []string, userID uuid.UUID, reportRecipientEmail string, validationID, reportToken uuid.UUID, remainingEmailsCurrentMonth int) {
 	report, err := ValidateMany(emails)
 
-	if len(report) > remainingEmails {
-		report = report[:remainingEmails]
+	if len(report) > remainingEmailsCurrentMonth {
+		report = report[:remainingEmailsCurrentMonth]
 	}
 
 	handleValidationReport(report, err, userID, reportRecipientEmail, validationID, reportToken)
 }
 
-func ValidateManyFromFileWithReport(uploadedFile multipart.File, uploadedFileHeader *multipart.FileHeader, extension models.FileExtension, userID uuid.UUID, reportRecipientEmail string, validationID, reportToken uuid.UUID, remainingEmails int) {
-	report, err := ValidateManyFromFile(uploadedFile, uploadedFileHeader, extension)
+func ValidateManyFromFileWithReport(fileData models.FileData, extension models.FileExtension, userID uuid.UUID, reportRecipientEmail string, validationID, reportToken uuid.UUID, remainingEmailsCurrentMonth int) {
+	report, err := ValidateManyFromFile(fileData, extension)
 
-	if len(report) > remainingEmails {
-		report = report[:remainingEmails]
+	if len(report) > remainingEmailsCurrentMonth {
+		report = report[:remainingEmailsCurrentMonth]
 	}
 
 	handleValidationReport(report, err, userID, reportRecipientEmail, validationID, reportToken)

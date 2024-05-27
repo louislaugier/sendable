@@ -5,6 +5,8 @@ import (
 	"math"
 )
 
+const UploadFileSizeLimitMegaBytes = 30
+
 var ConcurrentSingleValidationsLimits = map[models.OrderType]int{
 	models.FreePlan:        1,
 	models.PremiumOrder:    3,

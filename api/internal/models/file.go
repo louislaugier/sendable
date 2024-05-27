@@ -32,6 +32,5 @@ type FileData struct {
 	UploadedFile       multipart.File
 	UploadedFileHeader *multipart.FileHeader
 
-	ColumnsToScan   []string
-	EmailListLength int
+	ColumnsToScan []string
 }

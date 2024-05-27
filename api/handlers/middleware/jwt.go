@@ -4,6 +4,7 @@ import (
 	"context"
 	"email-validator/internal/models"
 	"email-validator/internal/pkg/user"
+	"email-validator/internal/pkg/utils"
 	"errors"
 	"fmt"
 	"log"
@@ -95,17 +96,25 @@ func ValidateJWT(next http.Handler, requiresConfirmedEmail bool) http.Handler {
 		if claims, ok := token.Claims.(*CustomClaims); ok && token.Valid {
 			userID := claims.UserID
 
-			user, err := user.GetByID(userID)
-			if err != nil || user == nil {
+			u, err := user.GetByID(userID)
+			if err != nil || u == nil {
 				log.Printf("Error fetching user: %v", err)
 				http.Error(w, "Internal Sever Error", http.StatusInternalServerError)
 				return
-			} else if !user.IsEmailConfirmed && requiresConfirmedEmail {
+			} else if !u.IsEmailConfirmed && requiresConfirmedEmail {
 				http.Error(w, "Email address is not confirmed", http.StatusBadRequest)
 				return
 			}
 
-			ctx := context.WithValue(r.Context(), userKey, user)
+			IPaddresses, userAgent := utils.GetIPsFromRequest(r), r.UserAgent()
+			err = user.UpdateIPsAndUserAgent(u.ID, IPaddresses, userAgent)
+			if err != nil {
+				log.Printf("Error updating user's IPs and user agent: %v", err)
+				http.Error(w, "Internal Sever Error", http.StatusInternalServerError)
+				return
+			}
+
+			ctx := context.WithValue(r.Context(), userKey, u)
 
 			next.ServeHTTP(w, r.WithContext(ctx))
 		} else {

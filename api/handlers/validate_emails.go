@@ -3,7 +3,6 @@ package handlers
 import (
 	"fmt"
 	"log"
-	"mime/multipart"
 	"net/http"
 	"time"
 
@@ -27,7 +26,7 @@ func validateEmailsHandler(w http.ResponseWriter, r *http.Request) {
 
 	var uploadFilename *string
 	fileData := middleware.GetFileDataFromRequest(r)
-	if fileData.UploadedFile != nil {
+	if fileData != nil {
 		uploadFilename = &fileData.UploadedFileHeader.Filename
 		defer fileData.UploadedFile.Close()
 	}
@@ -51,32 +50,32 @@ func validateEmailsHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	var remainingEmails int
+	var remainingEmailsCurrentMonth int
 	origin := middleware.GetOriginFromRequest(r)
 	user := middleware.GetUserFromRequest(r)
 	if origin == config.FrontendURL {
-		remainingEmails = user.ValidationCounts.AppValidationsCount
+		remainingEmailsCurrentMonth = user.ValidationCounts.AppValidationsCount
 	} else {
-		remainingEmails = user.ValidationCounts.APIValidationsCount
+		remainingEmailsCurrentMonth = user.ValidationCounts.APIValidationsCount
 	}
 
 	reportRecipientEmail := middleware.GetUserFromRequest(r).Email
 	if fileData.UploadedFileHeader != nil {
-		handleFileUpload(w, fileData.UploadedFile, fileData.UploadedFileHeader, userID, reportRecipientEmail, validationID, reportToken, remainingEmails)
+		handleFileUpload(w, *fileData, userID, reportRecipientEmail, validationID, reportToken, remainingEmailsCurrentMonth)
 	} else {
-		handleJSONRequest(w, r, userID, reportRecipientEmail, validationID, reportToken, remainingEmails)
+		handleJSONRequest(w, r, userID, reportRecipientEmail, validationID, reportToken, remainingEmailsCurrentMonth)
 	}
 }
 
-func handleFileUpload(w http.ResponseWriter, uploadedFile multipart.File, header *multipart.FileHeader, userID uuid.UUID, userEmail string, validationID, reportToken uuid.UUID, remainingEmails int) {
-	fileExtension := utils.GetExtensionFromFilename(header.Filename)
+func handleFileUpload(w http.ResponseWriter, fileData models.FileData, userID uuid.UUID, userEmail string, validationID, reportToken uuid.UUID, remainingEmailsCurrentMonth int) {
+	fileExtension := utils.GetExtensionFromFilename(fileData.UploadedFileHeader.Filename)
 
-	go email.ValidateManyFromFileWithReport(uploadedFile, header, fileExtension, userID, userEmail, validationID, reportToken, remainingEmails)
+	go email.ValidateManyFromFileWithReport(fileData, fileExtension, userID, userEmail, validationID, reportToken, remainingEmailsCurrentMonth)
 
 	fmt.Fprint(w, http.StatusText(http.StatusOK))
 }
 
-func handleJSONRequest(w http.ResponseWriter, r *http.Request, userID uuid.UUID, userEmail string, validationID, reportToken uuid.UUID, remainingEmails int) {
+func handleJSONRequest(w http.ResponseWriter, r *http.Request, userID uuid.UUID, userEmail string, validationID, reportToken uuid.UUID, remainingEmailsCurrentMonth int) {
 	req, err := email.ValidateValidationRequest(w, r)
 	if err != nil {
 		return // Error already handled in ValidateValidationRequest
@@ -89,7 +88,7 @@ func handleJSONRequest(w http.ResponseWriter, r *http.Request, userID uuid.UUID,
 		}
 	}()
 
-	go email.ValidateManyWithReport(req.Emails, userID, userEmail, validationID, reportToken, remainingEmails)
+	go email.ValidateManyWithReport(req.Emails, userID, userEmail, validationID, reportToken, remainingEmailsCurrentMonth)
 
 	fmt.Fprint(w, http.StatusText(http.StatusOK))
 }
