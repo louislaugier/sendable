@@ -1,11 +1,15 @@
-import { Button, Checkbox, CheckboxGroup, Switch } from "@nextui-org/react";
-import { useState, useRef, useEffect } from "react";
+import { Button, Checkbox, CheckboxGroup, Chip, Switch, user } from "@nextui-org/react";
+import { useState, useRef, useEffect, useContext } from "react";
 import { allowedFileTypes } from "~/constants/files";
 import { limits } from "~/constants/limits";
+import UserContext from "~/contexts/UserContext";
+import CheckIcon from "~/icons/CheckIcon";
 import validateEmails from "~/services/api/validate_emails";
 import { getColumnNamesFromCSV, getColumnNamesFromXLS } from "~/utils/file";
 
 export default function FileEmailValidator(props: any) {
+    const { remainingAppValidations } = props
+
     const [globalDragActive, setGlobalDragActive] = useState(false);
     const [localDragActive, setLocalDragActive] = useState(false);
     const fileInputRef = useRef<HTMLInputElement>(null);
@@ -19,6 +23,9 @@ export default function FileEmailValidator(props: any) {
     const [selectedColumns, setSelectedColumns] = useState<Array<string>>([]);
 
     const [isLoading, setLoading] = useState(false);
+    const [isRequestSent, setRequestSent] = useState(false);
+
+    const { user } = useContext(UserContext);
 
     useEffect(() => {
         const handleWindowDragEnter = (e: DragEvent) => {
@@ -132,20 +139,19 @@ export default function FileEmailValidator(props: any) {
     const reset = () => {
         setColumns([])
         setSelectedColumns([])
-        setHasColumnsToScan(true)
+        setHasColumnsToScan(false)
     }
 
     const submit = async () => {
         setLoading(true);
         setErrorMsg("")
 
-        // TODO post multipart
         try {
-            await validateEmails({})
+            await validateEmails({ columnsToScan: selectedColumns }, file!)
+            reset()
         } catch { }
 
-        // if ok 
-        reset()
+        setRequestSent(true);
 
         setLoading(false);
     }
@@ -153,79 +159,98 @@ export default function FileEmailValidator(props: any) {
     const isFileTypeNotAllowed = errorMsg === "File type not allowed."
 
     return (
-        <>
-            <div className="mb-2 cursor-pointer flex flex-col items-center w-full">
-                <div
-                    className={`mb-2 drop-zone ${localDragActive ? 'active' : ''} ${isFileTypeNotAllowed ? 'invalid' : ''}`}
-                    onClick={triggerFileInput}
-                    onDragEnter={handleDrag}
-                    onDragOver={handleDrag}
-                    onDragLeave={handleDrag}
-                    onDrop={handleDrop}
-                    style={{
-                        width: '300px',
-                        height: '100px',
-                        border: '2px dashed',
-                        borderColor: localDragActive ? '#2196f3' : globalDragActive ? '#BBDEFB' : '#ccc',
-                        display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                        transition: 'border-color 0.3s',
-                        backgroundColor: isFileTypeNotAllowed ? '#ffebee' : 'transparent',
-                        borderRadius: '12px',
-                    }}
-                >
-                    <div className="text-center">
-                        {localDragActive || globalDragActive ? "Release here to upload" : "Click or drop a file to upload"}
-                        <input
-                            type="file"
-                            ref={fileInputRef}
-                            onChange={handleChange}
-                            style={{ display: "none" }}
-                        />
-                        <p className="text-xs text-gray-500" style={{ bottom: "20px" }}>
-                            Supported file types: {allowedFileTypes.join(", ")}
-                        </p>
+        isRequestSent ?
+            <>
+                <div className="mb-2 cursor-pointer flex flex-col items-center w-full">
+                    <div
+                        className={`mb-2 drop-zone ${localDragActive ? 'active' : ''} ${isFileTypeNotAllowed ? 'invalid' : ''}`}
+                        onClick={triggerFileInput}
+                        onDragEnter={handleDrag}
+                        onDragOver={handleDrag}
+                        onDragLeave={handleDrag}
+                        onDrop={handleDrop}
+                        style={{
+                            width: '300px',
+                            height: '100px',
+                            border: '2px dashed',
+                            borderColor: localDragActive ? '#2196f3' : globalDragActive ? '#BBDEFB' : '#ccc',
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            transition: 'border-color 0.3s',
+                            backgroundColor: isFileTypeNotAllowed ? '#ffebee' : 'transparent',
+                            borderRadius: '12px',
+                        }}
+                    >
+                        <div className="text-center">
+                            {localDragActive || globalDragActive ? "Release here to upload" : "Click or drop a file to upload"}
+                            <input
+                                type="file"
+                                ref={fileInputRef}
+                                onChange={handleChange}
+                                style={{ display: "none" }}
+                            />
+                            <p className="text-xs text-gray-500" style={{ bottom: "20px" }}>
+                                Supported file types: {allowedFileTypes.join(", ")}
+                            </p>
+                        </div>
+                    </div>
+                    {file && <p className="mt-4">Uploaded: <b>{fileName}</b></p>}
+                    {!!errorMsg && <p style={{ color: 'red' }}>{errorMsg}</p>}
+
+                    {file && file.type !== "text/plain" && <>
+                        <Switch isSelected={hasColumnsToScan} onValueChange={setHasColumnsToScan} className="mt-4">
+                            Select columns manually
+                        </Switch>
+
+                        {hasColumnsToScan && <>
+                            {columns.length > 1 && <Checkbox value="all" className="mt-4" onValueChange={(isSelected) => {
+                                if (isSelected) setSelectedColumns(columns)
+                                else setSelectedColumns([])
+                            }} isSelected={selectedColumns.length === columns.length}>
+                                Select all
+                            </Checkbox>}
+
+                            <CheckboxGroup value={selectedColumns}
+                                onValueChange={setSelectedColumns} orientation="horizontal" className="mt-4">
+                                {columns.map((column: string, index: number) => {
+                                    return (
+                                        <Checkbox
+                                            key={index}
+                                            value={column}
+                                        >
+                                            {column}
+                                        </Checkbox>
+                                    );
+                                })}
+                            </CheckboxGroup>
+                        </>}
+                    </>}
+
+                    <div className="w-full flex justify-center mt-8">
+                        <Button onClick={submit} isDisabled={!file || isFileTypeNotAllowed || (hasColumnsToScan && !selectedColumns.length)} color="primary" variant="shadow">
+                            {isLoading ? 'Checking reachability...' : 'Check reachability'}
+                        </Button>
                     </div>
                 </div>
-                {file && <p className="mt-4">Uploaded: <b>{fileName}</b></p>}
-                {!!errorMsg && <p style={{ color: 'red' }}>{errorMsg}</p>}
+            </> : <>
+                <div className="flex flex-col items-center">
+                    <Chip
+                        startContent={<CheckIcon size={18} />}
+                        variant="faded"
+                        color="success"
+                        className="mt-6 mb-4"
+                    >
+                        Import successful
+                    </Chip>
+                    <p className="mb-16">Your validation report will be sent to <b>{user?.email}</b> once every email address has been checked. A maximum of {remainingAppValidations} emails will be validated (your remaining quota), the next ones will be dropped.</p>
+                </div>
 
-                {file && file.type !== "text/plain" && <>
-                    <Switch isSelected={hasColumnsToScan} onValueChange={setHasColumnsToScan} className="mt-4">
-                        Select columns manually
-                    </Switch>
-
-                    {hasColumnsToScan && <>
-                        {columns.length > 1 && <Checkbox value="all" className="mt-4" onValueChange={(isSelected) => {
-                            if (isSelected) setSelectedColumns(columns)
-                            else setSelectedColumns([])
-                        }} isSelected={selectedColumns.length === columns.length}>
-                            Select all
-                        </Checkbox>}
-
-                        <CheckboxGroup value={selectedColumns}
-                            onValueChange={setSelectedColumns} orientation="horizontal" className="mt-4">
-                            {columns.map((column: string, index: number) => {
-                                return (
-                                    <Checkbox
-                                        key={index}
-                                        value={column}
-                                    >
-                                        {column}
-                                    </Checkbox>
-                                );
-                            })}
-                        </CheckboxGroup>
-                    </>}
-                </>}
-
-                <div className="w-full flex justify-center mt-8">
-                    <Button onClick={submit} isDisabled={!file || isFileTypeNotAllowed || (hasColumnsToScan && !selectedColumns.length)} color="primary" variant="shadow">
-                        {isLoading ? 'Checking reachability...' : 'Check reachability'}
+                <div className="w-full flex justify-center">
+                    <Button onClick={() => setRequestSent(false)} color="primary" variant="shadow">
+                        New validation batch
                     </Button>
                 </div>
-            </div>
-        </>
+            </>
     );
 }
