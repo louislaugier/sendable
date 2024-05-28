@@ -4,12 +4,12 @@ import { useContext } from "react";
 import { siteName } from "~/constants/app";
 import AuthModalContext from "~/contexts/AuthModalContext";
 import { AuthModalType } from "~/types/modal";
-import CodeSnippetsSection from "~/components/PageSections/Api/CodeSnippetsSection";
-import ApiLimitsTable from "~/components/Tables/ApiLimitsTable";
+import CodeSnippetsSection from "~/components/page_sections/api/CodeSnippetsSection";
+import ApiLimitsTable from "~/components/tables/ApiLimitsTable";
 import UserContext from "~/contexts/UserContext";
 import { navigateToUrl } from "~/utils/url";
-import ApiReference from "~/components/ApiReference";
-import NewApiKeyModal from "~/components/Modals/NewApiKeyModal";
+import NewApiKeyModal from "~/components/modals/NewApiKeyModal";
+import ApiReference from "~/components/single_components/ApiReference";
 
 export const meta: MetaFunction = () => {
   return [

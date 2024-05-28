@@ -3,7 +3,7 @@ import type { MetaFunction } from "@remix-run/node";
 import { useSearchParams } from "@remix-run/react";
 import { useCallback, useContext, useEffect, useState } from "react";
 import EmailValidatorTab from "~/components/EmailValidatorTab";
-import ValidationHistoryTable from "~/components/Tables/ValidationHistoryTable";
+import ValidationHistoryTable from "~/components/tables/ValidationHistoryTable";
 import { siteName } from "~/constants/app";
 import { limits } from "~/constants/limits";
 import UserContext from "~/contexts/UserContext";

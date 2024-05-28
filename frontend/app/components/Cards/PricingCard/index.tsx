@@ -1,7 +1,7 @@
 import { Card, Button, Divider, Tooltip } from "@nextui-org/react";
 import { useContext } from "react";
 import AuthModalContext from "~/contexts/AuthModalContext";
-import { CheckIconRound } from "~/icons/CheckIconRound";
+import { CheckIconRound } from "~/components/icons/CheckIconRound";
 import { AuthModalType } from "~/types/modal";
 import { FiHelpCircle } from "react-icons/fi";
 

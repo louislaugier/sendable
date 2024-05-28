@@ -17,8 +17,8 @@ import (
 	"github.com/google/uuid"
 )
 
-// salesforceAuthHandler handles authentication with Salesforce.
-func salesforceAuthHandler(w http.ResponseWriter, r *http.Request) {
+// SalesforceAuthHandler handles authentication with Salesforce.
+func SalesforceAuthHandler(w http.ResponseWriter, r *http.Request) {
 	if r.Method != http.MethodPost {
 		http.Error(w, "method not allowed", http.StatusMethodNotAllowed)
 	}

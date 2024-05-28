@@ -1,10 +1,9 @@
 import type { MetaFunction } from "@remix-run/node";
-import FeaturesSection from "~/components/PageSections/Home/FeaturesSection";
-import HeroSection from "~/components/PageSections/Home/HeroSection";
-import IntegrationsSection from "~/components/PageSections/Home/IntegrationsSection";
+import FeaturesSection from "~/components/page_sections/_root/FeaturesSection";
+import HeroSection from "~/components/page_sections/_root/HeroSection";
+import IntegrationsSection from "~/components/page_sections/_root/IntegrationsSection";
 import { siteName } from "~/constants/app";
-import { Image } from "@nextui-org/react";
-import DataPrivacySection from "~/components/PageSections/Home/DataPrivacySection";
+import DataPrivacySection from "~/components/page_sections/_root/DataPrivacySection";
 
 export const meta: MetaFunction = () => {
   return [

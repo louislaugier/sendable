@@ -1,6 +1,6 @@
 import type { MetaFunction } from "@remix-run/node";
 import { Outlet, useLocation } from "@remix-run/react";
-import BlogCard from "~/components/Cards/BlogCard";
+import BlogCard from "~/components/cards/BlogCard";
 import { siteName } from "~/constants/app";
 import { isCurrentUrl } from "~/utils/url";
 

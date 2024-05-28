@@ -17,7 +17,7 @@ import (
 	"github.com/google/uuid"
 )
 
-func mailchimpAuthHandler(w http.ResponseWriter, r *http.Request) {
+func MailchimpAuthHandler(w http.ResponseWriter, r *http.Request) {
 	if r.Method != http.MethodPost {
 		http.Error(w, "method not allowed", http.StatusMethodNotAllowed)
 	}

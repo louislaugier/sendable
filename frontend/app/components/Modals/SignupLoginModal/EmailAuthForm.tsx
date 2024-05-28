@@ -1,9 +1,9 @@
 import { Checkbox, Input, Link } from "@nextui-org/react"
 import { useState } from "react";
-import { EyeFilledIcon } from "~/icons/EyeFilledIcon";
-import { EyeSlashFilledIcon } from "~/icons/EyeSlashFilledIcon";
-import { LockIcon } from "~/icons/LockIcon";
-import { MailIcon } from "~/icons/MailIcon"
+import { EyeFilledIcon } from "~/components/icons/EyeFilledIcon";
+import { EyeSlashFilledIcon } from "~/components/icons/EyeSlashFilledIcon";
+import { LockIcon } from "~/components/icons/LockIcon";
+import { MailIcon } from "~/components/icons/MailIcon"
 
 export default function EmailAuthForm(props: any) {
     const [isPasswordVisible, setPasswordVisible] = useState(false);

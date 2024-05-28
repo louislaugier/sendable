@@ -2,11 +2,11 @@ package main
 
 import (
 	"email-validator/config"
-	"email-validator/handlers"
+	"email-validator/handlers/router"
 )
 
 func main() {
 	config.Load()
 
-	handlers.StartServer()
+	router.StartServer()
 }

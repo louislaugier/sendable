@@ -1,6 +1,6 @@
 import { useDisclosure } from "@nextui-org/react";
 import React, { createContext, useContext, ReactNode } from "react";
-import ErrorOccuredModal from "~/components/Modals/ErrorOccuredModal";
+import ErrorOccuredModal from "~/components/modals/ErrorOccuredModal";
 
 type ErrorOccuredModalContextType = {
     setErrorOccuredModalVisible: (visible: boolean) => void;

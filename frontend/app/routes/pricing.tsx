@@ -1,7 +1,7 @@
 import { Tab, Tabs } from "@nextui-org/react";
 import { MetaFunction } from "@remix-run/node";
 import { useState } from "react";
-import CardsSection from "~/components/PageSections/Pricing/CardsSection";
+import CardsSection from "~/components/page_sections/pricing/CardsSection";
 import { siteName } from "~/constants/app";
 
 export const meta: MetaFunction = () => {

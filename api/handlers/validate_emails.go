@@ -17,8 +17,8 @@ import (
 	"github.com/google/uuid"
 )
 
-// validateEmailsHandler handles the email validation requests.
-func validateEmailsHandler(w http.ResponseWriter, r *http.Request) {
+// ValidateEmailsHandler handles the bulk email validation requests.
+func ValidateEmailsHandler(w http.ResponseWriter, r *http.Request) {
 	if r.Method != http.MethodPost {
 		http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
 		return

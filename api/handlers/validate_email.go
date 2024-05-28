@@ -14,7 +14,7 @@ import (
 )
 
 // insert single validation in db with origin (consumer app or api)
-func validateEmailHandler(w http.ResponseWriter, r *http.Request) {
+func ValidateEmailHandler(w http.ResponseWriter, r *http.Request) {
 	if r.Method != http.MethodPost {
 		http.Error(w, "method not allowed", http.StatusMethodNotAllowed)
 	}

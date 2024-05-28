@@ -10,7 +10,7 @@ import (
 )
 
 // can be used with a JWT or an access token (one-tap or standard auth)
-func googleAuthHandler(w http.ResponseWriter, r *http.Request) {
+func GoogleAuthHandler(w http.ResponseWriter, r *http.Request) {
 	if r.Method != http.MethodPost {
 		http.Error(w, "method not allowed", http.StatusMethodNotAllowed)
 	}

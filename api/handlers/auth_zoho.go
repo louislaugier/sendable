@@ -18,7 +18,7 @@ import (
 	"github.com/google/uuid"
 )
 
-func zohoAuthHandler(w http.ResponseWriter, r *http.Request) {
+func ZohoAuthHandler(w http.ResponseWriter, r *http.Request) {
 	if r.Method != http.MethodPost {
 		http.Error(w, "method not allowed", http.StatusMethodNotAllowed)
 	}
