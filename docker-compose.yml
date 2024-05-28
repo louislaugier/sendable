@@ -21,7 +21,7 @@ services:
   db:
     build:
       context: ./database
-      dockerfile: Dockerfile.dev.db
+      dockerfile: Dockerfile.dev
     environment:
       POSTGRES_PASSWORD: pass
       POSTGRES_DB: db
