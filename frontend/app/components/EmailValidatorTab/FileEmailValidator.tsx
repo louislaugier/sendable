@@ -2,19 +2,21 @@ import { Button, Checkbox, CheckboxGroup, Switch } from "@nextui-org/react";
 import { useState, useRef, useEffect } from "react";
 import { allowedFileTypes } from "~/constants/files";
 import { limits } from "~/constants/limits";
+import validateEmails from "~/services/api/validate_emails";
 import { getColumnNamesFromCSV, getColumnNamesFromXLS } from "~/utils/file";
 
 export default function FileEmailValidator(props: any) {
     const [globalDragActive, setGlobalDragActive] = useState(false);
     const [localDragActive, setLocalDragActive] = useState(false);
+    const fileInputRef = useRef<HTMLInputElement>(null);
+
     const [file, setFile] = useState<File | null>(null);
     const [fileName, setFileName] = useState("");
-    const [isFileTypeValid, setIsFileTypeValid] = useState(true);
-    const fileInputRef = useRef<HTMLInputElement>(null);
+    const [errorMsg, setErrorMsg] = useState<string>();
 
     const [hasColumnsToScan, setHasColumnsToScan] = useState(false);
     const [columns, setColumns] = useState<Array<string>>([]);
-    const [selectedColumns, setSelectedColumns] = useState([]);
+    const [selectedColumns, setSelectedColumns] = useState<Array<string>>([]);
 
     const [isLoading, setLoading] = useState(false);
 
@@ -84,6 +86,8 @@ export default function FileEmailValidator(props: any) {
     };
 
     const processFile = (file: File) => {
+        reset()
+
         const limit = limits.uploadFileSizeMegaBytes
         if (file.size > limit * 1024 * 1024) {
             alert(`File size exceeds the limit of ${limit}MB`);
@@ -94,47 +98,65 @@ export default function FileEmailValidator(props: any) {
         if (fileType && allowedFileTypes.includes(`.${fileType}`)) {
             setFile(file);
             setFileName(file.name);
-            setIsFileTypeValid(true);
+            setErrorMsg("");
 
             // Get column names based on file type
             if (fileType === 'csv') {
                 getColumnNamesFromCSV(file)
                     .then((columnNames) => {
-                        console.log(columnNames)
+                        setSelectedColumns(columnNames);
                         setColumns(columnNames)
                     })
                     .catch((error) => console.error(error));
             } else if (fileType === 'xls' || fileType === 'xlsx') {
                 getColumnNamesFromXLS(file)
                     .then((columnNames) => {
-                        console.log(columnNames)
+                        setSelectedColumns(columnNames);
                         setColumns(columnNames)
                     })
                     .catch((error) => console.error(error));
             }
         } else {
-            setIsFileTypeValid(false);
+            setErrorMsg("File type not allowed.");
         }
     };
 
+    useEffect(() => {
+        if (selectedColumns.length !== columns.length) setSelectedColumns(columns);
+    }, [columns]);
 
     const triggerFileInput = () => {
         fileInputRef.current?.click();
     };
 
+    const reset = () => {
+        setColumns([])
+        setSelectedColumns([])
+        setHasColumnsToScan(true)
+    }
+
     const submit = async () => {
         setLoading(true);
+        setErrorMsg("")
+
+        // TODO post multipart
+        try {
+            await validateEmails({})
+        } catch { }
+
+        // if ok 
+        reset()
 
         setLoading(false);
     }
 
-console.log(columns)
+    const isFileTypeNotAllowed = errorMsg === "File type not allowed."
 
     return (
         <>
             <div className="mb-2 cursor-pointer flex flex-col items-center w-full">
                 <div
-                    className={`mb-2 drop-zone ${localDragActive ? 'active' : ''} ${!isFileTypeValid ? 'invalid' : ''}`}
+                    className={`mb-2 drop-zone ${localDragActive ? 'active' : ''} ${isFileTypeNotAllowed ? 'invalid' : ''}`}
                     onClick={triggerFileInput}
                     onDragEnter={handleDrag}
                     onDragOver={handleDrag}
@@ -149,7 +171,7 @@ console.log(columns)
                         alignItems: 'center',
                         justifyContent: 'center',
                         transition: 'border-color 0.3s',
-                        backgroundColor: !isFileTypeValid ? '#ffebee' : 'transparent',
+                        backgroundColor: isFileTypeNotAllowed ? '#ffebee' : 'transparent',
                         borderRadius: '12px',
                     }}
                 >
@@ -166,25 +188,40 @@ console.log(columns)
                         </p>
                     </div>
                 </div>
-                {file && <p className="mt-4">Uploaded: {fileName}</p>}
-                {!isFileTypeValid && <p style={{ color: 'red' }}>File type not allowed.</p>}
+                {file && <p className="mt-4">Uploaded: <b>{fileName}</b></p>}
+                {!!errorMsg && <p style={{ color: 'red' }}>{errorMsg}</p>}
 
                 {file && file.type !== "text/plain" && <>
                     <Switch isSelected={hasColumnsToScan} onValueChange={setHasColumnsToScan} className="mt-4">
-                        Select columns to scan manually
+                        Select columns manually
                     </Switch>
 
                     {hasColumnsToScan && <>
-                        <CheckboxGroup orientation="horizontal" className="mt-2">
-                            {columns.map((column: string) => (
-                                <Checkbox key={column} value={column}>{column}</Checkbox>
-                            ))}
+                        {columns.length > 1 && <Checkbox value="all" className="mt-4" onValueChange={(isSelected) => {
+                            if (isSelected) setSelectedColumns(columns)
+                            else setSelectedColumns([])
+                        }} isSelected={selectedColumns.length === columns.length}>
+                            Select all
+                        </Checkbox>}
+
+                        <CheckboxGroup value={selectedColumns}
+                            onValueChange={setSelectedColumns} orientation="horizontal" className="mt-4">
+                            {columns.map((column: string, index: number) => {
+                                return (
+                                    <Checkbox
+                                        key={index}
+                                        value={column}
+                                    >
+                                        {column}
+                                    </Checkbox>
+                                );
+                            })}
                         </CheckboxGroup>
                     </>}
                 </>}
 
                 <div className="w-full flex justify-center mt-8">
-                    <Button onClick={submit} isDisabled={!file || !isFileTypeValid} color="primary" variant="shadow">
+                    <Button onClick={submit} isDisabled={!file || isFileTypeNotAllowed || (hasColumnsToScan && !selectedColumns.length)} color="primary" variant="shadow">
                         {isLoading ? 'Checking reachability...' : 'Check reachability'}
                     </Button>
                 </div>
