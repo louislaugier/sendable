@@ -77,10 +77,10 @@ export default function Dashboard() {
 
   return (
     <div className="py-8 px-6">
-      <div className="flex flex-col items-center mb-16">
+      <div className="flex flex-col items-center mb-4">
         <h2 className="text-2xl">Dashboard</h2>
         {user && <>
-          <h3 className="text-lg mt-8 mb-2">Current plan: <b>{planType}{isPremiumOrEnterprise && ` (${user?.currentPlan?.duration})`}</b></h3>
+          <h3 className="text-lg mt-4 mb-2">Current plan: <b>{planType}{isPremiumOrEnterprise && ` (${user?.currentPlan?.duration})`}</b></h3>
           {user.currentPlan.type !== OrderType.Enterprise && <>
             <p>Remaining validations (this month): <b>{remainingAppValidations.toLocaleString()} / {appValidationLimit.toLocaleString()}</b> email addresses</p>
             <p>Remaining API validations (this month): <b>{remainingApiValidations.toLocaleString()} / {apiValidationLimit.toLocaleString()}</b> email addresses</p>

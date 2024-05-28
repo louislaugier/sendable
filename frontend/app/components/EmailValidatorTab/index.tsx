@@ -6,6 +6,7 @@ import FileEmailValidator from "./FileEmailValidator";
 import ApiReference from "../ApiReference";
 import { navigateToUrl } from "~/utils/url";
 import NewApiKeyModal from "../Modals/NewApiKeyModal";
+import ReachabilityReference from "../ReachabilityReference";
 
 export default function EmailValidatorTab(props: any) {
 
@@ -17,31 +18,6 @@ export default function EmailValidatorTab(props: any) {
     return (
         <>
             <h2 className="text-xl mt-8">Validate email addresses</h2>
-
-            <style>
-                {
-                    `
-                        #validation-docs-toggle button>div {
-                            flex: unset;
-                            width: 250px;
-                        }
-                    `
-                }
-            </style>
-            <Accordion id='validation-docs-toggle' className="mt-12">
-                <AccordionItem key="1" aria-label="Toggle reachability reference" subtitle="Press to expand" title="Reachability reference">
-                    <Card>
-                        <CardBody>
-                            <div className="flex flex-col my-4 gap-3 text-sm">
-                                <ReachableDescriptor />
-                                <RiskyDescriptor />
-                                <UnknownDescriptor />
-                                <InvalidDescriptor />
-                            </div>
-                        </CardBody>
-                    </Card>
-                </AccordionItem>
-            </Accordion>
 
             <div className='flex flex-col items-center py-8'>
                 <Tabs
@@ -62,6 +38,7 @@ export default function EmailValidatorTab(props: any) {
                         }
                         className="w-full"
                     >
+                        <ReachabilityReference />
                         <TextEmailValidator remainingAppValidations={remainingAppValidations} />
                     </Tab>
 
@@ -72,7 +49,9 @@ export default function EmailValidatorTab(props: any) {
                                 <span>Upload file</span>
                             </div>
                         }
+                        className="w-full"
                     >
+                        <ReachabilityReference />
                         <FileEmailValidator remainingAppValidations={remainingAppValidations} />
                     </Tab>
 
@@ -83,11 +62,15 @@ export default function EmailValidatorTab(props: any) {
                                 <span>Connect platform</span>
                             </div>
                         }
+                        className="w-full"
                     >
-                        <Button onClick={() => {
-                        }} color="primary" variant="shadow">
-                            Connect platform
-                        </Button>
+                        <ReachabilityReference />
+                        <div className="w-full flex justify-center mt-8">
+                            <Button onClick={() => {
+                            }} color="primary" variant="shadow">
+                                Connect platform
+                            </Button>
+                        </div>
                     </Tab>
 
                     <Tab
@@ -100,15 +83,16 @@ export default function EmailValidatorTab(props: any) {
                         className="w-full"
                     >
                         <div className="flex flex-col w-full">
-                            <div className="flex space-x-2">
-                                <Button onClick={newApiKeyModal.onOpen} color="primary" variant="shadow" className="my-4" >
+                            <ReachabilityReference />
+                            <div className="flex flex-col space-x-2 w-full items-center">
+                                <ApiReference />
+                                <Button onClick={newApiKeyModal.onOpen} color="primary" variant="shadow" className="mb-4" >
                                     Generate new API key
                                 </Button>
                                 <Button onClick={() => navigateToUrl('/settings?tab=api')} color="primary" variant="bordered" className="my-4" >
                                     Manage API keys
                                 </Button>
                             </div>
-                            <ApiReference />
                         </div>
                     </Tab>
                 </Tabs>

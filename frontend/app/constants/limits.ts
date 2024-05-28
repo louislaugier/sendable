@@ -11,5 +11,6 @@ export const limits = {
     },
     enterprise: {
         apiBulkConcurrency: 3,
-    }
+    },
+    uploadFileSizeMegaBytes: 30
 }

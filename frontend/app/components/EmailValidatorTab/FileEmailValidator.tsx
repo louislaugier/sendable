@@ -1,5 +1,7 @@
+import { Button, Checkbox, CheckboxGroup, Switch } from "@nextui-org/react";
 import { useState, useRef, useEffect } from "react";
 import { allowedFileTypes } from "~/constants/files";
+import { limits } from "~/constants/limits";
 import { getColumnNamesFromCSV, getColumnNamesFromXLS } from "~/utils/file";
 
 export default function FileEmailValidator(props: any) {
@@ -9,6 +11,12 @@ export default function FileEmailValidator(props: any) {
     const [fileName, setFileName] = useState("");
     const [isFileTypeValid, setIsFileTypeValid] = useState(true);
     const fileInputRef = useRef<HTMLInputElement>(null);
+
+    const [hasColumnsToScan, setHasColumnsToScan] = useState(false);
+    const [columns, setColumns] = useState<Array<string>>([]);
+    const [selectedColumns, setSelectedColumns] = useState([]);
+
+    const [isLoading, setLoading] = useState(false);
 
     useEffect(() => {
         const handleWindowDragEnter = (e: DragEvent) => {
@@ -76,37 +84,57 @@ export default function FileEmailValidator(props: any) {
     };
 
     const processFile = (file: File) => {
+        const limit = limits.uploadFileSizeMegaBytes
+        if (file.size > limit * 1024 * 1024) {
+            alert(`File size exceeds the limit of ${limit}MB`);
+            return;
+        }
+
         const fileType = file.name.split('.').pop()?.toLowerCase();
         if (fileType && allowedFileTypes.includes(`.${fileType}`)) {
-          setFile(file);
-          setFileName(file.name);
-          setIsFileTypeValid(true);
-      
-          // Get column names based on file type
-          if (fileType === 'csv') {
-            getColumnNamesFromCSV(file)
-              .then((columnNames) => console.log(columnNames))
-              .catch((error) => console.error(error));
-          } else if (fileType === 'xls' || fileType === 'xlsx') {
-            getColumnNamesFromXLS(file)
-              .then((columnNames) => console.log(columnNames))
-              .catch((error) => console.error(error));
-          }
+            setFile(file);
+            setFileName(file.name);
+            setIsFileTypeValid(true);
+
+            // Get column names based on file type
+            if (fileType === 'csv') {
+                getColumnNamesFromCSV(file)
+                    .then((columnNames) => {
+                        console.log(columnNames)
+                        setColumns(columnNames)
+                    })
+                    .catch((error) => console.error(error));
+            } else if (fileType === 'xls' || fileType === 'xlsx') {
+                getColumnNamesFromXLS(file)
+                    .then((columnNames) => {
+                        console.log(columnNames)
+                        setColumns(columnNames)
+                    })
+                    .catch((error) => console.error(error));
+            }
         } else {
-          setIsFileTypeValid(false);
+            setIsFileTypeValid(false);
         }
-      };
-      
+    };
+
 
     const triggerFileInput = () => {
         fileInputRef.current?.click();
     };
 
+    const submit = async () => {
+        setLoading(true);
+
+        setLoading(false);
+    }
+
+console.log(columns)
+
     return (
         <>
-            <div className="mb-2 cursor-pointer">
+            <div className="mb-2 cursor-pointer flex flex-col items-center w-full">
                 <div
-                    className={`mt-8 mb-2 drop-zone ${localDragActive ? 'active' : ''} ${!isFileTypeValid ? 'invalid' : ''}`}
+                    className={`mb-2 drop-zone ${localDragActive ? 'active' : ''} ${!isFileTypeValid ? 'invalid' : ''}`}
                     onClick={triggerFileInput}
                     onDragEnter={handleDrag}
                     onDragOver={handleDrag}
@@ -138,8 +166,28 @@ export default function FileEmailValidator(props: any) {
                         </p>
                     </div>
                 </div>
-                {file && <p>Uploaded: {fileName}</p>}
+                {file && <p className="mt-4">Uploaded: {fileName}</p>}
                 {!isFileTypeValid && <p style={{ color: 'red' }}>File type not allowed.</p>}
+
+                {file && file.type !== "text/plain" && <>
+                    <Switch isSelected={hasColumnsToScan} onValueChange={setHasColumnsToScan} className="mt-4">
+                        Select columns to scan manually
+                    </Switch>
+
+                    {hasColumnsToScan && <>
+                        <CheckboxGroup orientation="horizontal" className="mt-2">
+                            {columns.map((column: string) => (
+                                <Checkbox key={column} value={column}>{column}</Checkbox>
+                            ))}
+                        </CheckboxGroup>
+                    </>}
+                </>}
+
+                <div className="w-full flex justify-center mt-8">
+                    <Button onClick={submit} isDisabled={!file || !isFileTypeValid} color="primary" variant="shadow">
+                        {isLoading ? 'Checking reachability...' : 'Check reachability'}
+                    </Button>
+                </div>
             </div>
         </>
     );

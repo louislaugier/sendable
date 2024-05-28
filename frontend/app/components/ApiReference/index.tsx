@@ -16,7 +16,7 @@ export default function ApiReference() {
                 }
             </style>
             
-            <Accordion id='docs-toggle' className="mb-12">
+            <Accordion id='docs-toggle' className="mb-4">
                 <AccordionItem key="1" aria-label="Toggle API documentation" subtitle="Press to expand documentation" title="API reference">
                     <Card className="mb-16">
                         <CardBody>

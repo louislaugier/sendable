@@ -1,5 +1,5 @@
 import Papa from 'papaparse';
-import XLSX from 'xlsx';
+import { read, utils } from 'xlsx';
 
 // Helper function for CSV files
 export const getColumnNamesFromCSV = (file: File): Promise<string[]> => {
@@ -7,7 +7,9 @@ export const getColumnNamesFromCSV = (file: File): Promise<string[]> => {
     Papa.parse(file, {
       preview: 1,
       complete: (results: any) => {
-        resolve(results.data[0] as string[]);
+        // Filter out any empty strings from the result
+        const columns = results.data[0].filter((col: string) => col.trim() !== "");
+        resolve(columns as string[]);
       },
       error: (error: any) => {
         reject(error);
@@ -22,9 +24,9 @@ export const getColumnNamesFromXLS = (file: File): Promise<string[]> => {
     const reader = new FileReader();
     reader.onload = (e: any) => {
       const data = new Uint8Array(e.target.result as ArrayBuffer);
-      const workbook = XLSX.read(data, { type: 'array' });
+      const workbook = read(data, { type: 'array' });
       const worksheet = workbook.Sheets[workbook.SheetNames[0]];
-      const jsonData = XLSX.utils.sheet_to_json(worksheet, { header: 1 });
+      const jsonData = utils.sheet_to_json(worksheet, { header: 1 });
       resolve(jsonData[0] as string[]);
     };
     reader.onerror = (error) => {
