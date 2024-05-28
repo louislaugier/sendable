@@ -85,8 +85,8 @@ reset-db-local:
 
 .PHONY: wipe-files-dev
 wipe-files-dev:
-	find api/reports/ -type f ! -name '.gitignore' -exec rm {} +
-	find api/report_tokens/ -type f ! -name '.gitignore' -exec rm {} +
+	find api/files/reports/ -type f ! -name '.gitignore' -exec rm {} +
+	find api/files/report_tokens/ -type f ! -name '.gitignore' -exec rm {} +
 	find api/files/json_bulk_validation_logs -type f ! -name '.gitignore' -exec rm {} +
 	find api/files/bulk_validation_uploads -type f ! -name '.gitignore' -exec rm {} +
 	find api/files/oauth_contacts -type f ! -name '.gitignore' -exec rm {} +
@@ -94,5 +94,5 @@ wipe-files-dev:
 
 .PHONY: copy-seeds-dev
 copy-seeds-dev:
-	cp -a ./database/mock/reports/. ./api/reports/
-	cp -a ./database/mock/report_tokens/. ./api/report_tokens/
+	cp -a ./database/mock/files/reports/. ./api/files/reports/
+	cp -a ./database/mock/files/report_tokens/. ./api/files/report_tokens/

@@ -177,7 +177,7 @@ func detectDelimiter(content string) rune {
 
 // CreateCSVReport generates a CSV report based on the provided data.
 func CreateCSVReport(report []models.ReacherResponse, ID uuid.UUID) (string, error) {
-	filePath := fmt.Sprintf("./reports/%s.csv", ID.String())
+	filePath := fmt.Sprintf("./files/reports/%s.csv", ID.String())
 	file, err := os.Create(filePath)
 	if err != nil {
 		return "", err

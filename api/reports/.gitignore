@@ -1,3 +1,0 @@
-# Ignore everything in this directory except this file so that the reports folder is not omitted
-*
-!.gitignore

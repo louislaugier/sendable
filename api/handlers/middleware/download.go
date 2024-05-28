@@ -13,7 +13,7 @@ import (
 
 func ValidateReportToken(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		ID, err := uuid.Parse(strings.TrimSuffix(strings.TrimPrefix(r.URL.Path, fmt.Sprintf("%s/reports/", config.APIVersionPrefix)), ".csv.zip"))
+		ID, err := uuid.Parse(strings.TrimSuffix(strings.TrimPrefix(r.URL.Path, fmt.Sprintf("%s/files/reports/", config.APIVersionPrefix)), ".csv.zip"))
 		if err != nil {
 			log.Printf("Error parsing report ID from URL: %v", err)
 			http.Error(w, "Unauthorized", http.StatusUnauthorized)

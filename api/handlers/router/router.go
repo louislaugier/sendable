@@ -99,7 +99,7 @@ func handleHTTP(mux *http.ServeMux) {
 		middleware.ValidateReportToken(
 			http.StripPrefix(fmt.Sprintf("/%s/reports", config.APIVersionPrefix),
 				http.FileServer(
-					http.Dir("./reports"),
+					http.Dir("./files/reports"),
 				),
 			),
 		),
