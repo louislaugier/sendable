@@ -14,7 +14,7 @@ func ValidateAPIKey(next http.Handler) http.Handler {
 		key := r.Header.Get("X-API-Key")
 
 		if key == "" {
-			http.Error(w, "Missing or Invalid X-API-Key", http.StatusUnauthorized)
+			http.Error(w, "Missing or invalid X-API-Key header", http.StatusUnauthorized)
 			return
 		}
 

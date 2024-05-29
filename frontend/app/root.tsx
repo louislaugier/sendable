@@ -9,14 +9,14 @@ import type { LinksFunction } from "@remix-run/node";
 import stylesheet from "~/tailwind.css?url";
 import { NextUIProvider } from "@nextui-org/react";
 import { UserProvider } from "./contexts/UserContext";
-import Nav from "./components/Nav";
-import Breadcrumb from "./components/Breadcrumb";
 import { GoogleOAuthProvider } from "@react-oauth/google";
 import { googleOauthClientId } from "./constants/oauth/clientIds";
 import { AuthModalProvider } from "./contexts/AuthModalContext";
-import Footer from "./components/Footer";
 import { ErrorOccuredModalProvider } from "./contexts/ErrorOccuredModalContext";
 import "swagger-ui-react/swagger-ui.css"
+import Breadcrumb from "./components/single_components/Breadcrumb";
+import Footer from "./components/single_components/Footer";
+import Nav from "./components/single_components/Nav";
 
 export const links: LinksFunction = () => [
   { rel: "stylesheet", href: stylesheet },

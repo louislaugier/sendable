@@ -33,9 +33,5 @@ func (c *EmailClient) SendEmail(template models.Template, subject, previewConten
 		Subject:     subject,
 	})
 
-	if err != nil {
-		return err
-	}
-
-	return nil
+	return err
 }

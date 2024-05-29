@@ -1,15 +1,14 @@
 import { Card, Button, Divider, CardFooter, Link, Input, Chip } from "@nextui-org/react";
 import { useState, useContext } from "react";
-import ReachabilityChip from "~/components/ReachabilityChip";
 import AuthModalContext from "~/contexts/AuthModalContext";
 import UserContext from "~/contexts/UserContext";
-import { CheckIconRound } from "~/components/icons/CheckIconRound";
 import { MailIcon } from "~/components/icons/MailIcon";
 import validateEmail from "~/services/api/validate_email";
-import { isValidEmail, extractDomain } from "~/services/utils/email";
+import { isValidEmail, } from "~/services/utils/email";
 import { Reachability } from "~/types/email";
 import { AuthModalType } from "~/types/modal";
 import { navigateToUrl } from "~/utils/url";
+import ReachabilityChip from "~/components/single_components/ReachabilityReference/ReachabilityChip";
 
 export default function TryItOut() {
     const { user } = useContext(UserContext);

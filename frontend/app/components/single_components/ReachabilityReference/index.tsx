@@ -1,5 +1,5 @@
 import { Accordion, AccordionItem, Card, CardBody } from "@nextui-org/react";
-import { ReachableDescriptor, RiskyDescriptor, UnknownDescriptor, InvalidDescriptor } from "../EmailValidatorTab/ReachabilityDescriptor";
+import { ReachableDescriptor, RiskyDescriptor, UnknownDescriptor, InvalidDescriptor } from "./ReachabilityDescriptor";
 
 export default function ReachabilityReference() {
 

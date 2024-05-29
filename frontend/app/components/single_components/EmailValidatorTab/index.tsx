@@ -1,12 +1,11 @@
-import { Tab, Button, Tabs, Accordion, AccordionItem, Card, CardBody, useDisclosure } from "@nextui-org/react";
+import { Tab, Button, Tabs, useDisclosure } from "@nextui-org/react";
 import { useState } from "react";
 import TextEmailValidator from "./TextEmailValidator";
-import { InvalidDescriptor, ReachableDescriptor, RiskyDescriptor, UnknownDescriptor } from "./ReachabilityDescriptor";
 import FileEmailValidator from "./FileEmailValidator";
 import ApiReference from "../ApiReference";
 import { navigateToUrl } from "~/utils/url";
-import NewApiKeyModal from "../Modals/NewApiKeyModal";
 import ReachabilityReference from "../ReachabilityReference";
+import NewApiKeyModal from "~/components/modals/NewApiKeyModal";
 
 export default function EmailValidatorTab(props: any) {
 

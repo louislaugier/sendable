@@ -9,7 +9,7 @@ import (
 	"net/http"
 )
 
-func ConfirmEmailHandler(w http.ResponseWriter, r *http.Request) {
+func ConfirmEmailAddressHandler(w http.ResponseWriter, r *http.Request) {
 	if r.Method != http.MethodPost {
 		http.Error(w, "method not allowed", http.StatusMethodNotAllowed)
 	}

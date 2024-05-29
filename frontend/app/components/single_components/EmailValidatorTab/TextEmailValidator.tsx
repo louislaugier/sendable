@@ -6,8 +6,8 @@ import validateEmail from "~/services/api/validate_email";
 import validateEmails from "~/services/api/validate_emails";
 import { isValidEmail } from "~/services/utils/email";
 import { Reachability } from "~/types/email";
-import ReachabilityChip from "../ReachabilityChip";
-import { InvalidDescriptor, ReachableDescriptor, RiskyDescriptor, UnknownDescriptor } from "./ReachabilityDescriptor";
+import ReachabilityChip from "../ReachabilityReference/ReachabilityChip";
+import { InvalidDescriptor, ReachableDescriptor, RiskyDescriptor, UnknownDescriptor } from "../ReachabilityReference/ReachabilityDescriptor";
 
 export default function TextEmailValidator(props: any) {
     const { remainingAppValidations } = props

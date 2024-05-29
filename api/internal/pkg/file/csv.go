@@ -60,8 +60,7 @@ func GetEmailsFromCSV(file multipart.File, comma rune, columnsToScan []string) (
 		}
 	}
 
-	threadsCountEnv := os.Getenv("THREADS_COUNT")
-	threadsCount, err := strconv.Atoi(threadsCountEnv)
+	threadsCount, err := strconv.Atoi(os.Getenv("THREADS_COUNT"))
 	if err != nil {
 		threadsCount = 1 // Default to 1 if conversion fails or env var is not set
 	}

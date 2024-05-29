@@ -1,5 +1,5 @@
 import { Reachability } from "~/types/email";
-import ReachabilityChip from "../ReachabilityChip";
+import ReachabilityChip from "./ReachabilityChip";
 
 export function ReachableDescriptor(props: any) {
     const { nochip } = props;

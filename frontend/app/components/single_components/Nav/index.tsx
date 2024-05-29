@@ -5,7 +5,7 @@ import AuthModalContext from "~/contexts/AuthModalContext";
 import UserContext from "~/contexts/UserContext";
 import { AuthModalType } from "~/types/modal";
 import { isCurrentUrl } from "~/utils/url";
-import SignupLogin from "../Modals/SignupLoginModal";
+import SignupLogin from "../../modals/SignupLoginModal";
 import { GoogleOneTap } from "./AuthButtons/GoogleAuthButton";
 import { Link as RemixLink } from "@remix-run/react";
 import { siteName } from "~/constants/app";

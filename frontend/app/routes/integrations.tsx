@@ -1,14 +1,14 @@
 import type { MetaFunction } from "@remix-run/node";
 import IntegrationCard from "~/components/cards/IntegrationCard";
-import HubspotAuthButton from "~/components/Nav/AuthButtons/HubspotAuthButton";
-import SalesforceAuthButton from "~/components/Nav/AuthButtons/SalesforceAuthButton";
-import ZohoAuthButton from "~/components/Nav/AuthButtons/ZohoAuthButton";
 import { siteName } from "~/constants/app";
 import BrevoFullLogo from "~/components/icons/logos/BrevoFullLogo";
 import HubspotFullLogo from "~/components/icons/logos/HubspotFullLogo";
 import SalesforceFullLogo from "~/components/icons/logos/SalesforceFullLogo";
 import SendgridFullLogo from "~/components/icons/logos/SendgridFullLogo";
 import ZohoFullLogo from "~/components/icons/logos/ZohoFullLogo";
+import HubspotAuthButton from "~/components/single_components/Nav/AuthButtons/HubspotAuthButton";
+import SalesforceAuthButton from "~/components/single_components/Nav/AuthButtons/SalesforceAuthButton";
+import ZohoAuthButton from "~/components/single_components/Nav/AuthButtons/ZohoAuthButton";
 
 export const meta: MetaFunction = () => {
   return [

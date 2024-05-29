@@ -2,11 +2,15 @@ package handlers
 
 import (
 	"context"
+	"email-validator/handlers/middleware"
 	"email-validator/internal/models"
 	"email-validator/internal/pkg/oauth"
 	"email-validator/internal/pkg/user"
+	"email-validator/internal/pkg/utils"
 	"encoding/json"
 	"net/http"
+
+	"github.com/google/uuid"
 )
 
 // can be used with a JWT or an access token (one-tap or standard auth)
@@ -70,7 +74,30 @@ func processGoogleAuthenticatedUser(w http.ResponseWriter, r *http.Request, emai
 	}
 
 	if u == nil {
-		createConfirmedAccountAndAndBindJWT(w, r, email, &gp)
+		createConfirmedAccountAndBindJWT(w, r, email, &gp)
+		return
+	}
+
+	json.NewEncoder(w).Encode(u)
+}
+
+func createConfirmedAccountAndBindJWT(w http.ResponseWriter, r *http.Request, email string, provider *models.AuthProvider) {
+	u := &models.User{
+		ID:               uuid.New(),
+		Email:            email,
+		IsEmailConfirmed: true,
+		LastIPAddresses:  utils.GetIPsFromRequest(r),
+		LastUserAgent:    r.UserAgent(),
+		AuthProvider:     provider,
+	}
+
+	if err := user.InsertNew(u, nil); err != nil {
+		handleError(w, err, "Error inserting new user", http.StatusInternalServerError)
+		return
+	}
+
+	if err := middleware.GenerateAndBindJWT(u); err != nil {
+		handleError(w, err, "Error generating and binding JWT", http.StatusInternalServerError)
 		return
 	}
 

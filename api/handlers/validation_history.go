@@ -29,17 +29,17 @@ func ValidationHistoryHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	userID := middleware.GetUserFromRequest(r).ID
-	validations, err := validation.GetMany(userID, limit, offset)
+	history, err := validation.GetMany(userID, limit, offset)
 	if err != nil {
 		handleError(w, err, "Internal Server Error", http.StatusInternalServerError)
 	}
-	count, err := validation.GetCount(userID)
+	totalCount, err := validation.GetCount(userID)
 	if err != nil {
 		handleError(w, err, "Internal Server Error", http.StatusInternalServerError)
 	}
 
 	json.NewEncoder(w).Encode(map[string]interface{}{
-		"validations": validations,
-		"count":       count,
+		"validations": history,
+		"count":       totalCount,
 	})
 }

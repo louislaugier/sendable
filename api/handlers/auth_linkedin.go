@@ -51,7 +51,7 @@ func processLinkedinAuthenticatedUser(w http.ResponseWriter, r *http.Request, em
 	}
 
 	if u == nil {
-		createConfirmedAccountAndAndBindJWT(w, r, email, &lp)
+		createConfirmedAccountAndBindJWT(w, r, email, &lp)
 
 		return
 	}

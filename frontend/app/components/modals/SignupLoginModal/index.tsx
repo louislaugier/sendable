@@ -1,7 +1,7 @@
 import { useContext, useState } from "react";
 import { Modal, ModalContent, ModalHeader, ModalBody, ModalFooter, Button } from "@nextui-org/react";
-import AuthButtons from "~/components/Nav/AuthButtons";
 import UserContext from "~/contexts/UserContext";
+import AuthButtons from "~/components/single_components/Nav/AuthButtons";
 
 export default function App(props: any) {
     const { isOpen, onClose, onOpenChange, modalType } = props;

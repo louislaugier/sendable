@@ -36,7 +36,7 @@ func handleHTTP(mux *http.ServeMux) {
 
 	// TODO: login
 	// TODO: signup
-	handle(mux, "/confirm_email", http.HandlerFunc(handlers.ConfirmEmailHandler), true)
+	handle(mux, "/confirm_email_address", http.HandlerFunc(handlers.ConfirmEmailAddressHandler), true)
 
 	handle(mux, "/auth_salesforce", http.HandlerFunc(handlers.SalesforceAuthHandler), true)
 	handle(mux, "/auth_hubspot", http.HandlerFunc(handlers.HubspotAuthHandler), true)
@@ -142,7 +142,8 @@ func StartServer() {
 func createCorsHandler(mux *http.ServeMux) http.Handler {
 	corsOptions := cors.New(cors.Options{
 		// AllowedOrigins: []string{"*"}, // Allows all origins
-		AllowedOrigins:   []string{config.FrontendURL, "http://127.0.0.1:3000"}, // The allowed domains
+		// AllowedOrigins:   []string{config.FrontendURL, "http://127.0.0.1:3000"}, // The allowed domains
+		AllowedOrigins:   []string{config.FrontendURL}, // The allowed domains
 		AllowedMethods:   []string{"GET", "POST", "OPTIONS", "PUT", "DELETE"},
 		AllowedHeaders:   []string{"Accept", "Content-Type", "Content-Length", "Accept-Encoding", "X-CSRF-Token", "Authorization"},
 		AllowCredentials: true,

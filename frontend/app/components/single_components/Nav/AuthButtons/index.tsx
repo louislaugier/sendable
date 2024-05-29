@@ -6,9 +6,9 @@ import LinkedinAuthButton from "./LinkedinAuthButton";
 import MailchimpAuthButton from "./MailchimpAuthButton";
 import SalesforceAuthButton from "./SalesforceAuthButton";
 import ZohoAuthButton from "./ZohoAuthButton";
-import EmailAuthForm from "../../Modals/SignupLoginModal/EmailAuthForm";
 import { ArrowBackIcon } from "~/components/icons/ArrowBackIcon";
 import { Button } from "@nextui-org/react";
+import EmailAuthForm from "~/components/modals/SignupLoginModal/EmailAuthForm";
 
 export default function AuthButtons(props: any) {
     const { isSubmitButtonVisible, setSubmitButtonVisible } = props
