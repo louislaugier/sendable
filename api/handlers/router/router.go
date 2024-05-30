@@ -20,15 +20,13 @@ func handle(mux *http.ServeMux, path string, handler http.Handler, withBaseRateL
 				),
 			),
 		)
-
-		return
+	} else {
+		mux.Handle(config.APIVersionPrefix+path,
+			middleware.Log(
+				handler,
+			),
+		)
 	}
-
-	mux.Handle(config.APIVersionPrefix+path,
-		middleware.Log(
-			handler,
-		),
-	)
 }
 
 func handleHTTP(mux *http.ServeMux) {
