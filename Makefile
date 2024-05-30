@@ -94,5 +94,5 @@ wipe-files-dev:
 
 .PHONY: copy-seeds-dev
 copy-seeds-dev:
-	cp -a ./database/mock/files/reports/. ./api/files/reports/
-	cp -a ./database/mock/files/report_tokens/. ./api/files/report_tokens/
+	cp -a ./database/mock/reports/. ./api/files/reports/
+	cp -a ./database/mock/report_tokens/. ./api/files/report_tokens/
