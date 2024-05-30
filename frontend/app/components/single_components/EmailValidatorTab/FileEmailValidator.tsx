@@ -159,7 +159,7 @@ export default function FileEmailValidator(props: any) {
     const isFileTypeNotAllowed = errorMsg === "File type not allowed."
 
     return (
-        isRequestSent ?
+        !isRequestSent ?
             <>
                 <div className="mb-2 cursor-pointer flex flex-col items-center w-full">
                     <div

@@ -84,18 +84,17 @@ func isAccountConcurrencyLimitReached(user *models.User) bool {
 	models.RateLimitMutex.Lock()
 	defer models.RateLimitMutex.Unlock()
 
-	clientInfo, ok := models.RateLimitClientMap[user.ID.String()]
+	_, ok := models.RateLimitClientMap[user.ID.String()]
 	if !ok {
-		clientInfo = &models.ClientInfo{}
-		models.RateLimitClientMap[user.ID.String()] = clientInfo
+		models.RateLimitClientMap[user.ID.String()] = &models.ClientInfo{}
 	}
 
-	if clientInfo.ActiveValidations >= config.ConcurrentSingleValidationsLimits[user.CurrentPlan.Type] {
+	if models.RateLimitClientMap[user.ID.String()].ActiveValidations >= config.ConcurrentSingleValidationsLimits[user.CurrentPlan.Type] {
 		return true
 	}
 
 	if user.CurrentPlan.Type != models.EnterpriseOrder {
-		clientInfo.ActiveValidations++
+		models.RateLimitClientMap[user.ID.String()].ActiveValidations++
 	}
 
 	return false
@@ -138,7 +137,7 @@ func RateLimit(next http.Handler, limiter models.RateLimiter) http.Handler {
 func limitSingleByUserPlanConcurrencyLimit(w http.ResponseWriter, r *http.Request, next http.Handler) {
 	user := GetUserFromRequest(r)
 
-	if !isAccountConcurrencyLimitReached(user) {
+	if isAccountConcurrencyLimitReached(user) {
 		http.Error(w, "Maximum parallel validations reached. Try again later or upgrade your account.", http.StatusTooManyRequests)
 		return
 	}
