@@ -115,7 +115,7 @@ export default function ValidationHistoryTable(props: any) {
                     {currentPageItems.length && currentPageItems.map((validation: Validation, i: number) =>
                         <TableRow key={i}>
                             <TableCell>{moment(validation.createdAt).format("YYYY-MM-DD HH:mm:ss").toString()}</TableCell>
-                            <TableCell>{validation.singleTargetEmail ? validation.singleTargetEmail : validation.bulkAddressCount ? `${validation.bulkAddressCount} addresses` : 'Loading...'}</TableCell>
+                            <TableCell>{validation.singleTargetEmail ? validation.singleTargetEmail : validation.bulkAddressCount ? `${validation.bulkAddressCount} addresses` : 'Processing...'}</TableCell>
                             <TableCell>
                                 <p>{validation.providerSource ? `${validation.providerSource.charAt(0).toUpperCase()}${validation.providerSource.slice(1)}` : validation.uploadFilename ? validation.uploadFilename : 'Text (manual)'}</p>
                             </TableCell>
