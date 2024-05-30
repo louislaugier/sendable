@@ -60,7 +60,7 @@ func ValidateEmailsHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	reportRecipientEmail := middleware.GetUserFromRequest(r).Email
-	if fileData.UploadedFileHeader != nil {
+	if fileData != nil {
 		handleFileUpload(w, *fileData, userID, reportRecipientEmail, validationID, reportToken, remainingEmailsCurrentMonth)
 	} else {
 		handleJSONRequest(w, r, userID, reportRecipientEmail, validationID, reportToken, remainingEmailsCurrentMonth)

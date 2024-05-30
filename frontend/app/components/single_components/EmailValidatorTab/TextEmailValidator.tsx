@@ -1,19 +1,14 @@
 import { Textarea, Button, Chip } from "@nextui-org/react";
-import { useContext, useState } from "react";
-import UserContext from "~/contexts/UserContext";
-import CheckIcon from "~/components/icons/CheckIcon";
+import { useState } from "react";
 import validateEmail from "~/services/api/validate_email";
 import validateEmails from "~/services/api/validate_emails";
 import { isValidEmail } from "~/services/utils/email";
 import { Reachability } from "~/types/email";
 import ReachabilityChip from "../ReachabilityReference/ReachabilityChip";
 import { InvalidDescriptor, ReachableDescriptor, RiskyDescriptor, UnknownDescriptor } from "../ReachabilityReference/ReachabilityDescriptor";
+import RequestSent from "./RequestSent";
 
 export default function TextEmailValidator(props: any) {
-    const { remainingAppValidations } = props
-
-    const { user } = useContext(UserContext);
-
     const [emailsStr, setEmailsStr] = useState<string>('');
     const [validEmails, setValidEmails] = useState<Array<string>>([]);
 
@@ -22,6 +17,13 @@ export default function TextEmailValidator(props: any) {
 
     const [isRequestSent, setRequestSent] = useState(false);
     const [singleTargetReachability, setSingleTargetReachability] = useState<Reachability>()
+
+    const reset = () => {
+        setEmailsStr('')
+        setValidEmails([])
+        setRequestSent(false)
+        if (singleTargetReachability) setSingleTargetReachability(undefined)
+    }
 
     const submitEmails = async () => {
         setLoading(true);
@@ -148,23 +150,8 @@ export default function TextEmailValidator(props: any) {
                         </div>
                     </>
                         :
-                        <div className="flex flex-col items-center">
-                            <Chip
-                                startContent={<CheckIcon size={18} />}
-                                variant="faded"
-                                color="success"
-                                className="mt-6 mb-4"
-                            >
-                                Import successful
-                            </Chip>
-                            <p className="mb-16">Your validation report will be sent to <b>{user?.email}</b> once every email address has been checked. A maximum of {remainingAppValidations} emails will be validated (your remaining quota), the next ones will be dropped.</p>
-                        </div>
+                       <RequestSent reset={reset} />
                 }
-                <div className="w-full flex justify-center">
-                    <Button onClick={() => setRequestSent(false)} color="primary" variant="shadow">
-                        New validation batch
-                    </Button>
-                </div>
             </>
 
     );

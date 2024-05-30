@@ -15,15 +15,13 @@ import (
 func ValidateFile(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		uploadedFile, uploadedFileHeader, err := r.FormFile("file")
+		if utils.IsMultipartFormContentType(r) {
+			if err != nil || uploadedFileHeader == nil {
+				w.WriteHeader(http.StatusBadRequest)
+				log.Printf("Error parsing multipart form: %v", err)
+				return
+			}
 
-		// if request is formatted for bulk validation from file but no file is found in "file" field
-		if r.Header.Get("Content-Type") == "multipart/form-data" && (err != nil || uploadedFileHeader == nil) {
-			w.WriteHeader(http.StatusBadRequest)
-			log.Printf("Error parsing multipart form: %v", err)
-			return
-		}
-
-		if r.Header.Get("Content-Type") == "multipart/form-data" {
 			preventSizeExceedingFile(w, r)
 
 			// TODO: ClamAV
@@ -45,6 +43,8 @@ func ValidateFile(next http.Handler) http.Handler {
 				return
 			}
 
+			// TODO: check mime type
+
 			columnsToScan := []string{}
 			if r.FormValue("columnsToScan") != "" {
 				columnsToScan = strings.Split(r.FormValue("columnsToScan"), ",")
@@ -56,8 +56,10 @@ func ValidateFile(next http.Handler) http.Handler {
 				ColumnsToScan:      columnsToScan,
 			}
 
-			ctx := context.WithValue(r.Context(), fileDataKey, fileData)
+			// here when fileData is not nil, it is nil in ValidateEmailsHandler (it shouldn't be, need to fix this)
+			ctx := context.WithValue(r.Context(), fileDataKey, &fileData)
 			next.ServeHTTP(w, r.WithContext(ctx))
+
 			return
 		}
 

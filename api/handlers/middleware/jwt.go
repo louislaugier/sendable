@@ -27,7 +27,6 @@ type CustomClaims struct {
 type userContextKey string
 
 const userKey userContextKey = "user"
-const requestOriginKey userContextKey = "request_origin"
 const fileDataKey userContextKey = "file_data"
 
 // GenerateAndBindJWT generates a new JWT token and adds it to the User pointer.

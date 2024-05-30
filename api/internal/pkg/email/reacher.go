@@ -6,11 +6,13 @@ import (
 	"email-validator/internal/models"
 	"encoding/json"
 	"fmt"
+	"log"
 	"net/http"
 	"strings"
 )
 
 func postToReacher(email string) (*models.ReacherResponse, error) {
+	log.Printf("Validating %s", email)
 	req, err := http.Post("http://reacher:8080/v0/check_email", "application/json", bytes.NewBuffer([]byte(fmt.Sprintf(`
 		{
 			"to_email": "%s",

@@ -1,15 +1,12 @@
-import { Button, Checkbox, CheckboxGroup, Chip, Switch, user } from "@nextui-org/react";
-import { useState, useRef, useEffect, useContext } from "react";
+import { Button, Checkbox, CheckboxGroup, Switch } from "@nextui-org/react";
+import { useState, useRef, useEffect } from "react";
 import { allowedFileTypes } from "~/constants/files";
 import { limits } from "~/constants/limits";
-import UserContext from "~/contexts/UserContext";
-import CheckIcon from "~/components/icons/CheckIcon";
 import validateEmails from "~/services/api/validate_emails";
 import { getColumnNamesFromCSV, getColumnNamesFromXLS } from "~/utils/file";
+import RequestSent from "./RequestSent";
 
 export default function FileEmailValidator(props: any) {
-    const { remainingAppValidations } = props
-
     const [globalDragActive, setGlobalDragActive] = useState(false);
     const [localDragActive, setLocalDragActive] = useState(false);
     const fileInputRef = useRef<HTMLInputElement>(null);
@@ -24,8 +21,6 @@ export default function FileEmailValidator(props: any) {
 
     const [isLoading, setLoading] = useState(false);
     const [isRequestSent, setRequestSent] = useState(false);
-
-    const { user } = useContext(UserContext);
 
     useEffect(() => {
         const handleWindowDragEnter = (e: DragEvent) => {
@@ -86,18 +81,18 @@ export default function FileEmailValidator(props: any) {
         }
     };
 
-    const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         if (e.target.files && e.target.files[0]) {
             processFile(e.target.files[0]);
         }
     };
 
     const processFile = (file: File) => {
-        reset()
+        resetFileColumns()
 
         const limit = limits.uploadFileSizeMegaBytes
         if (file.size > limit * 1024 * 1024) {
-            alert(`File size exceeds the limit of ${limit}MB`);
+            setErrorMsg(`File size exceeds the limit of ${limit}MB`);
             return;
         }
 
@@ -111,14 +106,20 @@ export default function FileEmailValidator(props: any) {
             if (fileType === 'csv') {
                 getColumnNamesFromCSV(file)
                     .then((columnNames) => {
-                        setSelectedColumns(columnNames);
+                        if (!columnNames.length) {
+                            setErrorMsg("No columns names found in file.")
+                            return
+                        }
                         setColumns(columnNames)
                     })
                     .catch((error) => console.error(error));
             } else if (fileType === 'xls' || fileType === 'xlsx') {
                 getColumnNamesFromXLS(file)
                     .then((columnNames) => {
-                        setSelectedColumns(columnNames);
+                        if (!columnNames.length) {
+                            setErrorMsg("No columns names found in file.")
+                            return
+                        }
                         setColumns(columnNames)
                     })
                     .catch((error) => console.error(error));
@@ -128,17 +129,22 @@ export default function FileEmailValidator(props: any) {
         }
     };
 
-    useEffect(() => {
-        if (selectedColumns.length !== columns.length) setSelectedColumns(columns);
-    }, [columns]);
-
     const triggerFileInput = () => {
         fileInputRef.current?.click();
     };
 
     const reset = () => {
+        resetFileColumns()
+        setRequestSent(false)
+        setFile(null)
+        setFileName("")
+
+        // refresh history
+    }
+
+    const resetFileColumns = () => {
         setColumns([])
-        setSelectedColumns([])
+        if (selectedColumns.length) setSelectedColumns([])
         setHasColumnsToScan(false)
     }
 
@@ -147,8 +153,12 @@ export default function FileEmailValidator(props: any) {
         setErrorMsg("")
 
         try {
-            await validateEmails({ columnsToScan: selectedColumns }, file!)
-            reset()
+            const res = await validateEmails({ columnsToScan: selectedColumns }, file!)
+            if (res.error) {
+                setErrorMsg(res.error);
+                setLoading(false);
+                return
+            }
         } catch { }
 
         setRequestSent(true);
@@ -187,7 +197,7 @@ export default function FileEmailValidator(props: any) {
                             <input
                                 type="file"
                                 ref={fileInputRef}
-                                onChange={handleChange}
+                                onChange={handleFileChange}
                                 style={{ display: "none" }}
                             />
                             <p className="text-xs text-gray-500" style={{ bottom: "20px" }}>
@@ -199,7 +209,12 @@ export default function FileEmailValidator(props: any) {
                     {!!errorMsg && <p style={{ color: 'red' }}>{errorMsg}</p>}
 
                     {file && file.type !== "text/plain" && <>
-                        <Switch isSelected={hasColumnsToScan} onValueChange={setHasColumnsToScan} className="mt-4">
+                        <Switch isSelected={hasColumnsToScan} onValueChange={(isSelected) => {
+                            if (isSelected) setSelectedColumns(columns)
+                            else setSelectedColumns([])
+
+                            setHasColumnsToScan(isSelected)
+                        }} className="mt-4">
                             Select columns manually
                         </Switch>
 
@@ -233,24 +248,8 @@ export default function FileEmailValidator(props: any) {
                         </Button>
                     </div>
                 </div>
-            </> : <>
-                <div className="flex flex-col items-center">
-                    <Chip
-                        startContent={<CheckIcon size={18} />}
-                        variant="faded"
-                        color="success"
-                        className="mt-6 mb-4"
-                    >
-                        Import successful
-                    </Chip>
-                    <p className="mb-16">Your validation report will be sent to <b>{user?.email}</b> once every email address has been checked. A maximum of {remainingAppValidations} emails will be validated (your remaining quota), the next ones will be dropped.</p>
-                </div>
-
-                <div className="w-full flex justify-center">
-                    <Button onClick={() => setRequestSent(false)} color="primary" variant="shadow">
-                        New validation batch
-                    </Button>
-                </div>
             </>
+            :
+            <RequestSent reset={reset} />
     );
 }

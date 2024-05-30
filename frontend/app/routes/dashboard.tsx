@@ -10,6 +10,7 @@ import UserContext from "~/contexts/UserContext";
 import getValidationHistory from "~/services/api/validation_history";
 import { OrderType } from "~/types/order";
 import { Validation } from "~/types/validation";
+import { getApiValidationLimit, getAppValidationLimit, getRemainingApiValidations, getRemainingAppValidations } from "~/utils/limit";
 import { navigateToUrl } from "~/utils/url";
 
 export const meta: MetaFunction = () => {
@@ -68,10 +69,10 @@ export default function Dashboard() {
 
   const planType = user?.currentPlan.type.charAt(0).toUpperCase()! + user?.currentPlan.type.slice(1)!
 
-  const appValidationLimit = user?.currentPlan.type === OrderType.Premium ? limits.premium.app : limits.free.app
-  const apiValidationLimit = user?.currentPlan.type === OrderType.Premium ? limits.premium.api : limits.free.api
-  const remainingAppValidations = appValidationLimit - user?.validationCounts.appValidationsCount!
-  const remainingApiValidations = apiValidationLimit - user?.validationCounts.apiValidationsCount!
+  const appValidationLimit = getAppValidationLimit(user!)
+  const apiValidationLimit = getApiValidationLimit(user!)
+  const remainingAppValidations = getRemainingAppValidations(user!)
+  const remainingApiValidations = getRemainingApiValidations(user!)
 
   const isPremiumOrEnterprise = user?.currentPlan.type === OrderType.Premium || user?.currentPlan.type === OrderType.Enterprise
 
