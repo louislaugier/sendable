@@ -7,6 +7,8 @@ import { getColumnNamesFromCSV, getColumnNamesFromXLS } from "~/utils/file";
 import RequestSent from "./RequestSent";
 
 export default function FileEmailValidator(props: any) {
+    const { resetHistory } = props
+
     const [globalDragActive, setGlobalDragActive] = useState(false);
     const [localDragActive, setLocalDragActive] = useState(false);
     const fileInputRef = useRef<HTMLInputElement>(null);
@@ -159,6 +161,8 @@ export default function FileEmailValidator(props: any) {
                 setLoading(false);
                 return
             }
+
+            await resetHistory()
         } catch { }
 
         setRequestSent(true);

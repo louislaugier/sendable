@@ -21,7 +21,7 @@ func ValidateEmailHandler(w http.ResponseWriter, r *http.Request) {
 
 	u := middleware.GetUserFromRequest(r)
 	if u != nil {
-		defer func() { models.RateLimitClientMap[u.ID.String()].ActiveValidations-- }()
+		defer func() { middleware.RateLimitClientMap[u.ID.String()].ActiveValidations-- }()
 	}
 
 	req := models.ValidateEmailRequest{}

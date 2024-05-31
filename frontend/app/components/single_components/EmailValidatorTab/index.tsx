@@ -9,7 +9,7 @@ import NewApiKeyModal from "~/components/modals/NewApiKeyModal";
 
 export default function EmailValidatorTab(props: any) {
 
-    const { remainingAppValidations } = props
+    const { remainingAppValidations, resetHistory } = props
     const [selectedTab, setSelectedTab] = useState<any>("validation");
 
     const newApiKeyModal = useDisclosure();
@@ -38,7 +38,7 @@ export default function EmailValidatorTab(props: any) {
                         className="w-full"
                     >
                         <ReachabilityReference />
-                        <TextEmailValidator remainingAppValidations={remainingAppValidations} />
+                        <TextEmailValidator resetHistory={resetHistory} remainingAppValidations={remainingAppValidations} />
                     </Tab>
 
                     <Tab
@@ -51,7 +51,7 @@ export default function EmailValidatorTab(props: any) {
                         className="w-full"
                     >
                         <ReachabilityReference />
-                        <FileEmailValidator remainingAppValidations={remainingAppValidations} />
+                        <FileEmailValidator resetHistory={resetHistory} remainingAppValidations={remainingAppValidations} />
                     </Tab>
 
                     <Tab

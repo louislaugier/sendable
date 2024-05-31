@@ -2,8 +2,6 @@ package models
 
 import "mime/multipart"
 
-type FileExtension string
-
 const (
 	FileExtensionCSV  FileExtension = "csv"
 	FileExtensionTXT  FileExtension = "txt"
@@ -18,6 +16,16 @@ var allowedFileExtensions = []FileExtension{
 	FileExtensionXLSX,
 }
 
+type (
+	FileExtension string
+	FileData      struct {
+		UploadedFile       multipart.File
+		UploadedFileHeader *multipart.FileHeader
+
+		ColumnsToScan []string
+	}
+)
+
 func (fe *FileExtension) IsAllowed() bool {
 	for _, ext := range allowedFileExtensions {
 		if *fe == ext {
@@ -26,11 +34,4 @@ func (fe *FileExtension) IsAllowed() bool {
 	}
 
 	return false
-}
-
-type FileData struct {
-	UploadedFile       multipart.File
-	UploadedFileHeader *multipart.FileHeader
-
-	ColumnsToScan []string
 }

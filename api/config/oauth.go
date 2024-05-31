@@ -2,28 +2,30 @@ package config
 
 import "os"
 
-var GoogleOauthClientID string
+var (
+	GoogleOauthClientID,
 
-var SalesforceOauthClientID string
-var SalesforceOauthClientSecret string
-var SalesforceOauthRedirectURI string
-var SalesforceAppURL string
+	SalesforceOauthClientID,
+	SalesforceOauthClientSecret,
+	SalesforceOauthRedirectURI,
+	SalesforceAppURL,
 
-var HubspotOauthClientID string
-var HubspotOauthClientSecret string
-var HubspotOauthRedirectURI string
+	HubspotOauthClientID,
+	HubspotOauthClientSecret,
+	HubspotOauthRedirectURI,
 
-var ZohoOauthClientID string
-var ZohoOauthClientSecret string
-var ZohoOauthRedirectURI string
+	ZohoOauthClientID,
+	ZohoOauthClientSecret,
+	ZohoOauthRedirectURI,
 
-var MailchimpOauthClientID string
-var MailchimpOauthClientSecret string
-var MailchimpOauthRedirectURI string
+	MailchimpOauthClientID,
+	MailchimpOauthClientSecret,
+	MailchimpOauthRedirectURI,
 
-var LinkedinOauthClientID string
-var LinkedinOauthClientSecret string
-var LinkedinOauthRedirectURI string
+	LinkedinOauthClientID,
+	LinkedinOauthClientSecret,
+	LinkedinOauthRedirectURI string
+)
 
 func loadOauthClients() {
 	GoogleOauthClientID = os.Getenv("GOOGLE_OAUTH_CLIENT_ID")

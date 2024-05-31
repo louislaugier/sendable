@@ -36,11 +36,6 @@ export default function Dashboard() {
   const [validations, setValidations] = useState<Array<Validation | null>>([]);
   const [validationsCount, setValidationsCount] = useState<number>(0);
 
-  const resetHistory = () => {
-    setValidations([])
-    setValidationsCount(0)
-  }
-
   const [isHistoryFetched, setHistoryFetched] = useState(false);
   const loadHistory = useCallback(async (limit: number | undefined = undefined, offset: number | undefined = undefined) => {
     try {
@@ -53,6 +48,13 @@ export default function Dashboard() {
       console.error(err)
     }
   }, [validationsCount, validations]);
+
+  const resetHistory = useCallback(async () => {
+    setValidations([])
+    setValidationsCount(0)
+
+    await loadHistory()
+  }, [validations, validationsCount])
 
   useEffect(() => {
     if (user && !isHistoryFetched) {
@@ -106,7 +108,7 @@ export default function Dashboard() {
               </div>
             }
           >
-            <EmailValidatorTab remainingAppValidations={remainingAppValidations} loadHistory={loadHistory} />
+            <EmailValidatorTab remainingAppValidations={remainingAppValidations} resetHistory={resetHistory} />
           </Tab>
           <Tab
             key="history"

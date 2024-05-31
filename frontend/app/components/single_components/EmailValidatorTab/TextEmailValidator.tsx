@@ -9,6 +9,8 @@ import { InvalidDescriptor, ReachableDescriptor, RiskyDescriptor, UnknownDescrip
 import RequestSent from "./RequestSent";
 
 export default function TextEmailValidator(props: any) {
+    const { resetHistory } = props
+
     const [emailsStr, setEmailsStr] = useState<string>('');
     const [validEmails, setValidEmails] = useState<Array<string>>([]);
 
@@ -58,6 +60,8 @@ export default function TextEmailValidator(props: any) {
                 }
 
                 if (res.is_reachable) setSingleTargetReachability(res.is_reachable)
+
+                await resetHistory()
             }
         } catch (error: any) {
             setErrorMsg("An error occurred. Please try again.");
@@ -150,7 +154,7 @@ export default function TextEmailValidator(props: any) {
                         </div>
                     </>
                         :
-                       <RequestSent reset={reset} />
+                        <RequestSent reset={reset} />
                 }
             </>
 

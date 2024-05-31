@@ -11,7 +11,16 @@ import (
 	"github.com/google/uuid"
 )
 
-// Global variables
+// BaseRateLimiter sets the rate limit to 1 request per second
+var (
+	BaseRateLimiter = models.RateLimiter{
+		Limit: time.Second,
+	}
+
+	RateLimitClientMap = make(map[string]*models.ClientInfo)
+	RateLimitMutex     sync.Mutex
+)
+
 var bulkValidationMutex sync.Mutex
 var bulkValidationMap = make(map[string]int)
 
@@ -55,21 +64,21 @@ func limitSingleByIP(w http.ResponseWriter, r *http.Request, next http.Handler) 
 }
 
 func validateIPRateLimit(clientIP string) bool {
-	models.RateLimitMutex.Lock()
-	defer models.RateLimitMutex.Unlock()
+	RateLimitMutex.Lock()
+	defer RateLimitMutex.Unlock()
 
 	now := time.Now()
-	clientInfo, ok := models.RateLimitClientMap[clientIP]
+	clientInfo, ok := RateLimitClientMap[clientIP]
 	if !ok {
 		// If the client does not exist in the map, create a new entry with the current time
-		models.RateLimitClientMap[clientIP] = &models.ClientInfo{
+		RateLimitClientMap[clientIP] = &models.ClientInfo{
 			LastRequestTime: now,
 		}
 		return true // Allow the request as this is the first one
 	}
 
 	// Calculate the time difference since the last request
-	if now.Sub(clientInfo.LastRequestTime) < 30*time.Second {
+	if now.Sub(clientInfo.LastRequestTime) < config.GuestEmailValidationFrequency {
 		// If the request is too soon (less than 30 seconds), reject it
 		return false
 	}
@@ -81,20 +90,20 @@ func validateIPRateLimit(clientIP string) bool {
 
 // isAccountConcurrencyLimitReached checks and updates rate limits based on the user's account.
 func isAccountConcurrencyLimitReached(user *models.User) bool {
-	models.RateLimitMutex.Lock()
-	defer models.RateLimitMutex.Unlock()
+	RateLimitMutex.Lock()
+	defer RateLimitMutex.Unlock()
 
-	_, ok := models.RateLimitClientMap[user.ID.String()]
+	_, ok := RateLimitClientMap[user.ID.String()]
 	if !ok {
-		models.RateLimitClientMap[user.ID.String()] = &models.ClientInfo{}
+		RateLimitClientMap[user.ID.String()] = &models.ClientInfo{}
 	}
 
-	if models.RateLimitClientMap[user.ID.String()].ActiveValidations >= config.ConcurrentSingleValidationsLimits[user.CurrentPlan.Type] {
+	if RateLimitClientMap[user.ID.String()].ActiveValidations >= config.ConcurrentSingleValidationsLimits[user.CurrentPlan.Type] {
 		return true
 	}
 
 	if user.CurrentPlan.Type != models.EnterpriseSubscription {
-		models.RateLimitClientMap[user.ID.String()].ActiveValidations++
+		RateLimitClientMap[user.ID.String()].ActiveValidations++
 	}
 
 	return false
@@ -102,22 +111,22 @@ func isAccountConcurrencyLimitReached(user *models.User) bool {
 
 // BaseRateLimit wraps an http.Handler and limits requests based on the base rate limiter
 func BaseRateLimit(h http.Handler) http.Handler {
-	return RateLimit(h, models.BaseRateLimiter)
+	return RateLimit(h, BaseRateLimiter)
 }
 
 // RateLimit wraps an http.Handler and limits requests based on the provided rate limiter
 func RateLimit(next http.Handler, limiter models.RateLimiter) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		models.RateLimitMutex.Lock()
+		RateLimitMutex.Lock()
 
 		clientIP := r.RemoteAddr
-		clientInfo, ok := models.RateLimitClientMap[clientIP]
+		clientInfo, ok := RateLimitClientMap[clientIP]
 		if !ok {
 			clientInfo = &models.ClientInfo{}
-			models.RateLimitClientMap[clientIP] = clientInfo
+			RateLimitClientMap[clientIP] = clientInfo
 		}
 
-		models.RateLimitMutex.Unlock()
+		RateLimitMutex.Unlock()
 		clientInfo.Lock.Lock()
 		defer clientInfo.Lock.Unlock()
 

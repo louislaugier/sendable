@@ -15,6 +15,7 @@ import (
 func ValidateFile(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		uploadedFile, uploadedFileHeader, err := r.FormFile("file")
+
 		if utils.IsMultipartFormContentType(r) {
 			if err != nil || uploadedFileHeader == nil {
 				w.WriteHeader(http.StatusBadRequest)
@@ -68,9 +69,10 @@ func ValidateFile(next http.Handler) http.Handler {
 }
 
 func preventSizeExceedingFile(w http.ResponseWriter, r *http.Request) {
-	err := r.ParseMultipartForm(int64(config.UploadFileSizeLimitMegaBytes) << 20)
+	err := r.ParseMultipartForm(config.UploadFileSizeLimit)
+
 	if err != nil {
-		http.Error(w, fmt.Sprintf("File size exceed limit of %d MB", config.UploadFileSizeLimitMegaBytes), http.StatusBadRequest)
+		http.Error(w, fmt.Sprintf("File size exceed limit of %d MB", config.UploadFileSizeLimit), http.StatusBadRequest)
 		return
 	}
 }

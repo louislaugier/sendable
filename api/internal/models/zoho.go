@@ -1,45 +1,47 @@
 package models
 
-type ZohoAuthRequest struct {
-	Code string `json:"code"`
-}
+type (
+	ZohoAuthRequest struct {
+		Code string `json:"code"`
+	}
 
-type ZohoSetEmailRequest struct {
-	Email string `json:"email"`
-}
+	ZohoSetEmailRequest struct {
+		Email string `json:"email"`
+	}
 
-type ZohoUsersResponse struct {
-	Users []ZohoUser `json:"users"`
-}
+	ZohoUsersResponse struct {
+		Users []ZohoUser `json:"users"`
+	}
 
-type ZohoUser struct {
-	Email string `json:"email"`
-}
+	ZohoUser struct {
+		Email string `json:"email"`
+	}
 
-type ZohoProspect struct {
-	Email string `json:"Email"`
-}
+	ZohoProspect struct {
+		Email string `json:"Email"`
+	}
 
-type ZohoContactsResponse struct {
-	Data []ZohoContact `json:"data"`
-}
+	ZohoContactsResponse struct {
+		Data []ZohoContact `json:"data"`
+	}
 
-type ZohoContact struct {
-	ZohoProspect
-}
+	ZohoContact struct {
+		ZohoProspect
+	}
 
-type ZohoLeadsResponse struct {
-	Data []ZohoLead `json:"data"`
-}
+	ZohoLeadsResponse struct {
+		Data []ZohoLead `json:"data"`
+	}
 
-type ZohoLead struct {
-	ZohoProspect
-}
+	ZohoLead struct {
+		ZohoProspect
+	}
 
-type ZohoVendorsResponse struct {
-	Data []ZohoVendor `json:"data"`
-}
+	ZohoVendorsResponse struct {
+		Data []ZohoVendor `json:"data"`
+	}
 
-type ZohoVendor struct {
-	ZohoProspect
-}
+	ZohoVendor struct {
+		ZohoProspect
+	}
+)

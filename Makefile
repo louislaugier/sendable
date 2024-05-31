@@ -90,9 +90,9 @@ wipe-files-dev:
 	find api/files/json_bulk_validation_logs -type f ! -name '.gitignore' -exec rm {} +
 	find api/files/bulk_validation_uploads -type f ! -name '.gitignore' -exec rm {} +
 	find api/files/oauth_contacts -type f ! -name '.gitignore' -exec rm {} +
-	make copy-seeds-dev
+	make copy-seeds
 
-.PHONY: copy-seeds-dev
-copy-seeds-dev:
+.PHONY: copy-seeds
+copy-seeds:
 	cp -a ./database/mock/reports/. ./api/files/reports/
 	cp -a ./database/mock/report_tokens/. ./api/files/report_tokens/

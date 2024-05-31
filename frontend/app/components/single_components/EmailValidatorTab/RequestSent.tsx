@@ -8,6 +8,8 @@ import { getRemainingAppValidations } from "~/utils/limit";
 export default function RequestSent(props: any) {
     const { reset } = props
     const { user } = useContext(UserContext)
+
+    const remainingAppValidations = getRemainingAppValidations(user!)
     return (
         <>
             <div className="flex flex-col items-center">
@@ -19,7 +21,7 @@ export default function RequestSent(props: any) {
                 >
                     Import successful
                 </Chip>
-                <p className="mb-12">Your validation report will be sent to <b>{user?.email}</b> once every email address has been checked. {user?.currentPlan.type !== SubscriptionType.Enterprise && <> A maximum of <b>{getRemainingAppValidations(user!)}</b> email addresses will be validated (your remaining quota), the next ones will be dropped.</>}</p>
+                <p className="mb-12">Your validation report will be sent to <b>{user?.email}</b> once every email address has been checked. {user?.currentPlan.type !== SubscriptionType.Enterprise && <> A maximum of <b>{remainingAppValidations}</b> email address{remainingAppValidations > 1 && 'es'} will be validated (your remaining quota), the next ones will be dropped.</>}</p>
 
                 <div className="w-full flex justify-center">
                     <Button onClick={reset} color="primary" variant="shadow">
