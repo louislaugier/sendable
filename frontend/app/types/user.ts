@@ -1,5 +1,5 @@
 import { Dispatch, SetStateAction } from "react";
-import { Order } from "./order";
+import { Subscription } from "./subscription";
 
 export interface User {
     id: string;
@@ -7,11 +7,11 @@ export interface User {
     isEmailConfirmed: boolean;
     jwt: string,
     authProvider?: string,
-    orders: Order[],
+    subscriptions: Subscription[],
     createdAt: string;
     updatedAt: string;
     deletedAt?: string;
-    currentPlan: Order,
+    currentPlan: Subscription,
     validationCounts: UserValidationCounts,
 }
 

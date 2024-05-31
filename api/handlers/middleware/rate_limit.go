@@ -93,7 +93,7 @@ func isAccountConcurrencyLimitReached(user *models.User) bool {
 		return true
 	}
 
-	if user.CurrentPlan.Type != models.EnterpriseOrder {
+	if user.CurrentPlan.Type != models.EnterpriseSubscription {
 		models.RateLimitClientMap[user.ID.String()].ActiveValidations++
 	}
 

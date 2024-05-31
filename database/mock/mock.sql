@@ -30,10 +30,10 @@ VALUES
     );
 
 INSERT INTO
-    "public"."order" (
+    "public"."subscription" (
         "id",
         "user_id",
-        "duration",
+        "billing_frequency",
         "type",
         "created_at",
         "cancelled_at"

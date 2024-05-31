@@ -12,7 +12,7 @@ import { siteName } from "~/constants/app";
 import { ChevronDownIcon } from "~/components/icons/ChevronDownIcon";
 import { FiExternalLink } from "react-icons/fi";
 import { pages } from "~/constants/pages";
-import { OrderType } from "~/types/order";
+import { SubscriptionType } from "~/types/subscription";
 
 export default function Nav() {
     const { authModal, modalType, setModalType } = useContext(AuthModalContext);
@@ -122,7 +122,7 @@ export default function Nav() {
                                     >
                                         Settings
                                     </DropdownItem>
-                                    {(user.currentPlan?.type === OrderType.Premium || user.currentPlan?.type === OrderType.Enterprise) &&
+                                    {(user.currentPlan?.type === SubscriptionType.Premium || user.currentPlan?.type === SubscriptionType.Enterprise) &&
                                         <DropdownItem
                                             key="subscription"
                                             description="Go to Stripe customer dashboard"

@@ -1,13 +1,12 @@
 package user
 
 import (
-	"fmt"
-	"log"
-
 	"email-validator/config"
 	"email-validator/internal/models"
-	"email-validator/internal/pkg/order"
+	"email-validator/internal/pkg/subscription"
 	"email-validator/internal/pkg/validation"
+	"fmt"
+	"log"
 
 	"github.com/google/uuid"
 )
@@ -95,7 +94,7 @@ func getByCriteria(isMinimalQuery bool, query string, args ...interface{}) (*mod
 		}
 
 		if !isMinimalQuery {
-			currentPlan, err := order.GetLatestActive(u.ID)
+			currentPlan, err := subscription.GetLatestActive(u.ID)
 			if err != nil {
 				log.Printf("Error getting user's current plan: %v", err)
 			} else if currentPlan != nil {

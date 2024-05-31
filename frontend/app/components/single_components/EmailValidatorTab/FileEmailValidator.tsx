@@ -171,7 +171,7 @@ export default function FileEmailValidator(props: any) {
     return (
         !isRequestSent ?
             <>
-                <div className="mb-2 cursor-pointer flex flex-col items-center w-full">
+                <div className="mb-2 mt-4 cursor-pointer flex flex-col items-center w-full">
                     <div
                         className={`mb-2 drop-zone ${localDragActive ? 'active' : ''} ${isFileTypeNotAllowed ? 'invalid' : ''}`}
                         onClick={triggerFileInput}

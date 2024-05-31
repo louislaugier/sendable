@@ -5,10 +5,9 @@ import { useCallback, useContext, useEffect, useState } from "react";
 import EmailValidatorTab from "~/components/single_components/EmailValidatorTab";
 import ValidationHistoryTable from "~/components/tables/ValidationHistoryTable";
 import { siteName } from "~/constants/app";
-import { limits } from "~/constants/limits";
 import UserContext from "~/contexts/UserContext";
 import getValidationHistory from "~/services/api/validation_history";
-import { OrderType } from "~/types/order";
+import { SubscriptionType } from "~/types/subscription";
 import { Validation } from "~/types/validation";
 import { getApiValidationLimit, getAppValidationLimit, getRemainingApiValidations, getRemainingAppValidations } from "~/utils/limit";
 import { navigateToUrl } from "~/utils/url";
@@ -74,15 +73,15 @@ export default function Dashboard() {
   const remainingAppValidations = getRemainingAppValidations(user!)
   const remainingApiValidations = getRemainingApiValidations(user!)
 
-  const isPremiumOrEnterprise = user?.currentPlan.type === OrderType.Premium || user?.currentPlan.type === OrderType.Enterprise
+  const isPremiumOrEnterprise = user?.currentPlan.type === SubscriptionType.Premium || user?.currentPlan.type === SubscriptionType.Enterprise
 
   return (
     <div className="py-8 px-6">
       <div className="flex flex-col items-center mb-4">
         <h2 className="text-2xl">Dashboard</h2>
         {user && <>
-          <h3 className="text-lg mt-4 mb-2">Current plan: <b>{planType}{isPremiumOrEnterprise && ` (${user?.currentPlan?.duration})`}</b></h3>
-          {user.currentPlan.type !== OrderType.Enterprise && <>
+          <h3 className="text-lg mt-4 mb-2">Current plan: <b>{planType}{isPremiumOrEnterprise && ` (billed ${user?.currentPlan?.billingFrequency})`}</b></h3>
+          {user.currentPlan.type !== SubscriptionType.Enterprise && <>
             <p>Remaining validations (this month): <b>{remainingAppValidations.toLocaleString()} / {appValidationLimit.toLocaleString()}</b> email addresses</p>
             <p>Remaining API validations (this month): <b>{remainingApiValidations.toLocaleString()} / {apiValidationLimit.toLocaleString()}</b> email addresses</p>
             <Button className="mt-4" as={Link} href={`/pricing`} onClick={goToPricing} color='primary' variant="shadow">

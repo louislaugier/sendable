@@ -33,7 +33,7 @@ func ValidateBulkValidationOriginAndLimits(next http.Handler) http.Handler {
 		// free user can never bulk validate and premium user can only bulk validate via web app
 		// only enterprise users can bulk validate with API
 		currentPlan := GetUserFromRequest(r).CurrentPlan
-		if GetOriginFromRequest(r) != config.FrontendURL && currentPlan.Type != models.EnterpriseOrder {
+		if GetOriginFromRequest(r) != config.FrontendURL && currentPlan.Type != models.EnterpriseSubscription {
 			http.Error(w, "Unauthorized", http.StatusUnauthorized)
 			return
 		}
