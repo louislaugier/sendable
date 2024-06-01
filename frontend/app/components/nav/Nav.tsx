@@ -6,7 +6,7 @@ import UserContext from "~/contexts/UserContext";
 import { AuthModalType } from "~/types/modal";
 import { isCurrentUrl } from "~/utils/url";
 import SignupLogin from "../../modals/SignupLoginModal";
-import { GoogleOneTap } from "./AuthButtons/GoogleAuthButton";
+import { GoogleOneTap } from "../AuthButtons/GoogleAuthButton";
 import { Link as RemixLink } from "@remix-run/react";
 import { siteName } from "~/constants/app";
 import { ChevronDownIcon } from "~/components/icons/ChevronDownIcon";

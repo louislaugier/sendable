@@ -15,8 +15,8 @@ import { AuthModalProvider } from "./contexts/AuthModalContext";
 import { ErrorOccurredModalProvider } from "./contexts/ErrorOccurredModalContext";
 import "swagger-ui-react/swagger-ui.css"
 import Breadcrumb from "./components/single_components/Breadcrumb";
-import Footer from "./components/single_components/Footer";
-import Nav from "./components/single_components/Nav";
+import Footer from "./components/footer/Footer";
+import Nav from "./components/nav/Nav";
 
 export const links: LinksFunction = () => [
   { rel: "stylesheet", href: stylesheet },
