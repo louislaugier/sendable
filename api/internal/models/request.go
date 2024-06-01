@@ -44,4 +44,8 @@ type (
 		CurrentPassword string `json:"currentPassword"`
 		NewPassword     string `json:"newPassword"`
 	}
+	Enable2FARequest struct {
+		TwoFactorAuthenticationCode   string `json:"twoFactorAuthenticationCode"`
+		TwoFactorAuthenticationSecret string `json:"twoFactorAuthenticationSecret"`
+	}
 )

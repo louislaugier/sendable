@@ -55,6 +55,19 @@ func handleHTTP(mux *http.ServeMux) {
 		http.HandlerFunc(handlers.UpdateEmailAddressHandler),
 		true,
 	), true)
+	handle(mux, "/update_password", middleware.ValidateJWT(
+		http.HandlerFunc(handlers.UpdateEmailAddressHandler),
+		true,
+	), true)
+	handle(mux, "/enable_2fa", middleware.ValidateJWT(
+		http.HandlerFunc(handlers.Enable2FAHandler),
+		true,
+	), true)
+	handle(mux, "/disable_2fa", middleware.ValidateJWT(
+		http.HandlerFunc(handlers.Disable2FAHandler),
+		true,
+	), true)
+
 	handle(mux, "/subscription_history",
 		middleware.ValidateJWT(
 			http.HandlerFunc(handlers.SubscriptionHistoryHandler),
@@ -90,6 +103,7 @@ func handleHTTP(mux *http.ServeMux) {
 		),
 		false,
 	)
+
 	handle(mux, "/validation_history",
 		middleware.ValidateJWT(
 			http.HandlerFunc(handlers.ValidationHistoryHandler),
@@ -97,7 +111,6 @@ func handleHTTP(mux *http.ServeMux) {
 		),
 		false,
 	)
-
 	handle(mux, "/validation_reports/",
 		middleware.ValidateReportToken(
 			http.StripPrefix(fmt.Sprintf("%s/validation_reports/", config.APIVersionPrefix),

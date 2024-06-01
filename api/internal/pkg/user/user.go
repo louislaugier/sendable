@@ -17,7 +17,8 @@ const (
 	selectQuery                   = `SELECT "id", "email", "is_email_confirmed", "email_confirmation_code", "2fa_secret", "created_at", "updated_at" FROM public."user" WHERE %s AND "deleted_at" IS NULL LIMIT 1;`
 	selectUserByAPIKeySHA256Query = `SELECT "id", "email", "is_email_confirmed", "email_confirmation_code", "created_at", "updated_at" FROM public."user" WHERE "id" IN (SELECT "user_id" FROM public."api_key" WHERE "key_sha256" = $1 AND "deleted_at" IS NULL) AND "deleted_at" IS NULL LIMIT 1;`
 
-	updatPasswordSHA256Query         = "UPDATE public.user SET password_sha256 = $1 WHERE id = $2;"
+	update2FASecretQuery             = "UPDATE public.user SET 2fa_secret = $1 WHERE id = $2;"
+	updatePasswordSHA256Query        = "UPDATE public.user SET password_sha256 = $1 WHERE id = $2;"
 	updateEmailAddressQuery          = "UPDATE public.user SET email = $1 WHERE id = $2;"
 	updateEmailConfirmationQuery     = "UPDATE public.user SET is_email_confirmed = true WHERE id = $1;"
 	updateEmailConfirmationCodeQuery = "UPDATE public.user SET email_confirmation_code = $1 WHERE id = $2;"
@@ -53,7 +54,12 @@ func UpdateEmailAddress(userID uuid.UUID, email string) error {
 }
 
 func UpdatePasswordSHA256(userID uuid.UUID, encryptedPassword string) error {
-	_, err := config.DB.Exec(updatPasswordSHA256Query, encryptedPassword)
+	_, err := config.DB.Exec(updatePasswordSHA256Query, encryptedPassword, userID)
+	return err
+}
+
+func Set2FASecret(userID uuid.UUID, twoFactorAuthenticationSecret *string) error {
+	_, err := config.DB.Exec(updatePasswordSHA256Query, twoFactorAuthenticationSecret, userID)
 	return err
 }
 
