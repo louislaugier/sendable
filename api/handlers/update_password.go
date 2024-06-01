@@ -27,7 +27,7 @@ func UpdatePasswordHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	requesterUser := middleware.GetUserFromRequest(r)
-	u, err := user.GetByIDAndPasswordSha256(requesterUser.ID, utils.Encrypt(body.CurrentPassword))
+	u, err := user.GetByIDAndPasswordSHA256(requesterUser.ID, utils.Encrypt(body.CurrentPassword))
 	if err != nil {
 		handleError(w, err, "Internal Server Error", http.StatusInternalServerError)
 		return

@@ -85,7 +85,7 @@ func GetByID(ID uuid.UUID) (*models.User, error) {
 	return getByCriteria(false, query, ID)
 }
 
-func GetByIDAndPasswordSha256(ID uuid.UUID, passwordSHA256 string) (*models.User, error) {
+func GetByIDAndPasswordSHA256(ID uuid.UUID, passwordSHA256 string) (*models.User, error) {
 	query := fmt.Sprintf(selectQuery, "id = $1 AND password_sha256 = $2")
 	return getByCriteria(false, query, ID, passwordSHA256)
 }
