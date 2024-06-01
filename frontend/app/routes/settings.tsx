@@ -2,7 +2,7 @@ import { Tabs, Tab } from "@nextui-org/react";
 import type { MetaFunction } from "@remix-run/node";
 import { useSearchParams } from "@remix-run/react";
 import { useEffect, useState } from "react";
-import UserTab from "~/components/page_sections/settings/UserTab";
+import AccountTab from "~/components/page_sections/settings/AccountTab";
 import { siteName } from "~/constants/app";
 
 export const meta: MetaFunction = () => {
@@ -41,14 +41,14 @@ export default function Settings() {
             onSelectionChange={setSelectedTab}
           >
             <Tab
-              key="user"
+              key="account"
               title={
                 <div className="flex items-center space-x-2">
-                  <span>User</span>
+                  <span>Account</span>
                 </div>
               }
             >
-              <UserTab />
+              <AccountTab />
             </Tab>
             <Tab
               key="plan"

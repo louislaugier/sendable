@@ -1,4 +1,4 @@
-import { Button, Card, CardBody, Input, useDisclosure } from "@nextui-org/react";
+import { Button, Card, CardBody, Input, Snippet, useDisclosure } from "@nextui-org/react";
 import QRCode from "qrcode.react";
 import { useContext, useState } from "react";
 import { EyeFilledIcon } from "~/components/icons/EyeFilledIcon";
@@ -8,7 +8,7 @@ import DeleteAccountModal from "~/components/modals/DeleteAccountModal";
 import UserContext from "~/contexts/UserContext";
 import { generate2faSecret, getQrCodeUrl } from "~/services/utils/2fa";
 
-export default function UserTab() {
+export default function AccountTab() {
     const { user } = useContext(UserContext)
 
     const [email, setEmail] = useState(user?.email ?? "")
@@ -103,10 +103,10 @@ export default function UserTab() {
                                 {isEnable2faClicked ? <div className="flex flex-col items-center">
                                     <p className="text-sm">Scan the QR code below using your authenticator app or enter the following code manually:</p>
 
-                                    <b className="text-sm mb-4">{generated2faSecret}</b>
+                                    <Snippet symbol='' className="text-sm mt-2 mb-4">{generated2faSecret}</Snippet>
                                     {user && generated2faSecret && <QRCode value={getQrCodeUrl(user?.email!, generated2faSecret)} />}
 
-                                    <b className="text-sm mb-2 mt-4">Enter the six-digit code from the authenticator app.</b>
+                                    <b className="text-sm mb-2 mt-4">Enter the six-digit code from the authenticator app</b>
                                     <p className="text-sm">After scanning the QR code, the app will display a six-digit code that you can enter below.</p>
                                     <div className="flex my-4 space-x-2">
                                         <TwoFactorAuthCodeInput twoFactorAuthCode={twoFactorAuthCode} twoFactorAuthCodeErrorMsg={twoFactorAuthCodeErrorMsg} setTwoFactorAuthCode={setTwoFactorAuthCode} />
