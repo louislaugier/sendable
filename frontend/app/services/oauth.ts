@@ -1,7 +1,7 @@
 import { AuthCodeEvent } from "~/types/oauth";
-import { fetchSalesforcePKCE } from "../salesforce/pkce";
 import { User } from "~/types/user";
 import { navigateToUrl } from "~/utils/url";
+import { fetchSalesforcePKCE } from "./utils/salesforce/pkce";
 
 export const handleAuthCode = (event: MessageEvent<AuthCodeEvent>, setUser: React.Dispatch<React.SetStateAction<User | null>>, auth: (data: any) => Promise<any>, setLoading: React.Dispatch<React.SetStateAction<boolean>>, authCodeKey: string, stateKey: string, salesforceCodeVerifierKey?: string) => {
     setLoading(true);

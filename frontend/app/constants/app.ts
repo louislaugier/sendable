@@ -1,4 +1,4 @@
-import { getEnv } from "~/services/env";
+import { getEnv } from "~/services/utils/env";
 
 export const appUrl = getEnv("APP_URL");
 

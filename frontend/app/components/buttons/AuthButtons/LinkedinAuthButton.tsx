@@ -5,9 +5,9 @@ import { linkedinOauthClientId } from "~/constants/oauth/clientIds";
 import { linkedinAuthCodeKey, linkedinStateKey, linkedinUniqueStateValue } from "~/constants/oauth/stateKeys";
 import { linkedinOauthRedirectUri } from "~/constants/oauth/urls";
 import linkedinAuth from "~/services/api/auth/linkedin";
-import { handleAuthCode, login } from "~/services/auth/oauth";
 import { AuthCodeEvent } from "~/types/oauth";
 import UserContext from "~/contexts/UserContext";
+import { handleAuthCode, login } from "~/services/oauth";
 
 const url = 'https://www.linkedin.com/oauth/v2/authorization'
 const scope = 'email openid'

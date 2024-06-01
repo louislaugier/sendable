@@ -39,30 +39,25 @@ func handleHTTP(mux *http.ServeMux) {
 	handle(mux, "/auth_salesforce", http.HandlerFunc(handlers.SalesforceAuthHandler), true)
 	handle(mux, "/auth_hubspot", http.HandlerFunc(handlers.HubspotAuthHandler), true)
 	handle(mux, "/auth_mailchimp", http.HandlerFunc(handlers.MailchimpAuthHandler), true)
-
 	handle(mux, "/auth_zoho", http.HandlerFunc(handlers.ZohoAuthHandler), true)
 	handle(mux, "/auth_zoho/set_email", middleware.ValidateJWT(
 		http.HandlerFunc(handlers.ZohoAuthSetEmailHandler),
 		false,
 	), true)
-
 	handle(mux, "/auth_google", http.HandlerFunc(handlers.GoogleAuthHandler), true)
 	handle(mux, "/auth_linkedin", http.HandlerFunc(handlers.LinkedinAuthHandler), true)
-
-	handle(mux, "/generate_api_key", middleware.ValidateJWT(
-		http.HandlerFunc(handlers.GenerateAPIKeyHandler),
-		true,
-	), true)
 
 	handle(mux, "/generate_jwt", middleware.ValidateAPIKey(
 		http.HandlerFunc(handlers.GenerateJWTHandler),
 	), true)
-
+	handle(mux, "/generate_api_key", middleware.ValidateJWT(
+		http.HandlerFunc(handlers.GenerateAPIKeyHandler),
+		true,
+	), true)
 	handle(mux, "/api_keys", middleware.ValidateJWT(
 		http.HandlerFunc(handlers.APIKeysHandler),
 		true,
 	), true)
-
 	handle(mux, "/me", middleware.ValidateJWT(
 		http.HandlerFunc(handlers.MeHandler),
 		true,
@@ -74,7 +69,6 @@ func handleHTTP(mux *http.ServeMux) {
 		),
 		false,
 	)
-
 	handle(mux, "/validate_emails",
 		middleware.ValidateJWT(
 			middleware.ValidateBulkValidationOriginAndLimits(
@@ -84,7 +78,6 @@ func handleHTTP(mux *http.ServeMux) {
 		),
 		false,
 	)
-
 	handle(mux, "/validation_history",
 		middleware.ValidateJWT(
 			http.HandlerFunc(handlers.ValidationHistoryHandler),
@@ -93,9 +86,9 @@ func handleHTTP(mux *http.ServeMux) {
 		false,
 	)
 
-	handle(mux, "/reports/",
+	handle(mux, "/validation_reports/",
 		middleware.ValidateReportToken(
-			http.StripPrefix(fmt.Sprintf("%s/reports/", config.APIVersionPrefix),
+			http.StripPrefix(fmt.Sprintf("%s/validation_reports/", config.APIVersionPrefix),
 				http.FileServer(
 					http.Dir("./files/reports"),
 				),

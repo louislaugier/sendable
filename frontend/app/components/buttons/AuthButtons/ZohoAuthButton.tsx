@@ -4,10 +4,10 @@ import { zohoOauthClientId } from '~/constants/oauth/clientIds';
 import { zohoAuthCodeKey, zohoStateKey, zohoUniqueStateValue } from '~/constants/oauth/stateKeys';
 import { zohoOauthRedirectUri } from '~/constants/oauth/urls';
 import zohoAuth from '~/services/api/auth/zoho';
-import { handleAuthCode, login } from '~/services/auth/oauth';
 import { Button } from '@nextui-org/button';
 import ZohoIcon from '~/components/icons/logos/ZohoFullLogo';
 import UserContext from '~/contexts/UserContext';
+import { handleAuthCode, login } from '~/services/oauth';
 
 const url = 'https://accounts.zoho.com/oauth/v2/auth'
 const scope = 'ZohoCRM.modules.contacts.READ ZohoCRM.modules.leads.READ ZohoCRM.modules.vendors.READ ZohoCRM.modules.accounts.READ ZohoCRM.users.READ'

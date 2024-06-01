@@ -4,10 +4,10 @@ import { mailchimpOauthClientId } from '~/constants/oauth/clientIds';
 import { mailchimpAuthCodeKey, mailchimpStateKey, mailchimpUniqueStateValue } from '~/constants/oauth/stateKeys';
 import { mailchimpOauthRedirectUri } from '~/constants/oauth/urls';
 import mailchimpAuth from '~/services/api/auth/mailchimp';
-import { handleAuthCode, login } from '~/services/auth/oauth';
 import { Button } from '@nextui-org/button';
 import MailchimpIcon from '~/components/icons/logos/MailchimpLogo';
 import UserContext from '~/contexts/UserContext';
+import { handleAuthCode, login } from '~/services/oauth';
 
 const url = 'https://login.mailchimp.com/oauth2/authorize'
 

@@ -15,7 +15,7 @@ CREATE TABLE IF NOT EXISTS public."user" (
     "password_sha256" VARCHAR,
     "last_ip_addresses" VARCHAR NOT NULL,
     "last_user_agent" VARCHAR NOT NULL DEFAULT 'unknown',
-    "two_fa_private_key_hash" VARCHAR,
+    "2fa_secret" VARCHAR,
     "auth_provider" auth_provider,
     "created_at" TIMESTAMP NOT NULL,
     "updated_at" TIMESTAMP NOT NULL,

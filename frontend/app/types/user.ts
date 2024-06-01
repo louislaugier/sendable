@@ -5,6 +5,7 @@ export interface User {
     id: string;
     email: string;
     isEmailConfirmed: boolean;
+    is2faEnabled: boolean;
     jwt: string,
     authProvider?: string,
     subscriptions: Subscription[],

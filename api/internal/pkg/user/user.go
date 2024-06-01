@@ -14,7 +14,7 @@ import (
 const (
 	insertQuery = "INSERT INTO public.user (id, email, is_email_confirmed, password_sha256, last_ip_addresses, last_user_agent, auth_provider) VALUES ($1, $2, $3, $4, $5, $6, $7);"
 
-	selectQuery                   = `SELECT "id", "email", "is_email_confirmed", "email_confirmation_code", "created_at", "updated_at" FROM public."user" WHERE %s AND "deleted_at" IS NULL LIMIT 1;`
+	selectQuery                   = `SELECT "id", "email", "is_email_confirmed", "email_confirmation_code", "2fa_secret", "created_at", "updated_at" FROM public."user" WHERE %s AND "deleted_at" IS NULL LIMIT 1;`
 	selectUserByAPIKeySHA256Query = `SELECT "id", "email", "is_email_confirmed", "email_confirmation_code", "created_at", "updated_at" FROM public."user" WHERE "id" IN (SELECT "user_id" FROM public."api_key" WHERE "key_sha256" = $1 AND "deleted_at" IS NULL) AND "deleted_at" IS NULL LIMIT 1;`
 
 	updateEmailConfirmationQuery = "UPDATE public.user SET is_email_confirmed = true WHERE id = $1;"
@@ -88,9 +88,12 @@ func getByCriteria(isMinimalQuery bool, query string, args ...interface{}) (*mod
 
 	for rows.Next() {
 		u := models.User{}
-		err = rows.Scan(&u.ID, &u.Email, &u.IsEmailConfirmed, &u.EmailConfirmationCode, &u.CreatedAt, &u.UpdatedAt)
+		err = rows.Scan(&u.ID, &u.Email, &u.IsEmailConfirmed, &u.EmailConfirmationCode, &u.TwoFactorAuthSecret, &u.CreatedAt, &u.UpdatedAt)
 		if err != nil {
 			return nil, err
+		}
+		if u.TwoFactorAuthSecret != nil {
+			u.Is2FAEnabled = true
 		}
 
 		if !isMinimalQuery {

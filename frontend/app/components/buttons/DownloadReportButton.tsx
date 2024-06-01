@@ -17,7 +17,7 @@ export default function DownloadReportButton(props: any) {
         setLoading(true)
 
         try {
-            navigateToUrl(`${apiBaseUrl}/reports/${validationId}.csv.zip?token=${reportToken}`)
+            navigateToUrl(`${apiBaseUrl}/validation_reports/${validationId}.csv.zip?token=${reportToken}`)
         } catch (error) {
             setErrorOccurredModalVisible(true)
         }
@@ -28,7 +28,7 @@ export default function DownloadReportButton(props: any) {
     return (
         <>
             <Tooltip content={tooltipContent}>
-                <Button as={Link} href={`${apiBaseUrl}/reports/${validationId}.csv.zip?token=${reportToken}`} onClick={downloadReport} isDisabled={isLoading} isLoading={isLoading} isIconOnly variant="light" aria-label="Download">
+                <Button as={Link} href={`${apiBaseUrl}/validation_reports/${validationId}.csv.zip?token=${reportToken}`} onClick={downloadReport} isDisabled={isLoading} isLoading={isLoading} isIconOnly variant="light" aria-label="Download">
                     <DownloadIcon />
                 </Button>
             </Tooltip>

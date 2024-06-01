@@ -20,23 +20,21 @@ const (
 type (
 	AuthProvider string
 	User         struct {
-		ID uuid.UUID `json:"id"`
+		ID                    uuid.UUID `json:"id"`
+		Email                 string    `json:"email"`
+		IsEmailConfirmed      bool      `json:"isEmailConfirmed"`
+		EmailConfirmationCode *int      `json:"-"`
 
-		Email                 string `json:"email"`
-		IsEmailConfirmed      bool   `json:"isEmailConfirmed"`
-		EmailConfirmationCode *int   `json:"-"`
-
-		LastIPAddresses string `json:"-"`
-		LastUserAgent   string `json:"-"`
-
-		TwoFaPrivateKeyHash string `json:"-"`
-
-		JWT string `json:"jwt"`
-
-		AuthProvider *AuthProvider `json:"authProvider,omitempty"`
+		JWT                 string        `json:"jwt"`
+		AuthProvider        *AuthProvider `json:"authProvider,omitempty"`
+		TwoFactorAuthSecret *string       `json:"-"`
+		Is2FAEnabled        bool          `json:"is2faEnabled"`
 
 		ValidationCounts *UserValidationCounts `json:"validationCounts,omitempty"`
 		CurrentPlan      *Subscription         `json:"currentPlan,omitempty"`
+
+		LastIPAddresses string `json:"-"`
+		LastUserAgent   string `json:"-"`
 
 		CreatedAt time.Time  `json:"createdAt"`
 		UpdatedAt time.Time  `json:"updatedAt"`

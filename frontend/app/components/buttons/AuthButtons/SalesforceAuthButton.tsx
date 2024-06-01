@@ -5,10 +5,10 @@ import { salesforceOauthClientId } from '~/constants/oauth/clientIds';
 import { salesforceAuthCodeKey, salesforceCodeVerifierKey, salesforceStateKey, salesforceUniqueStateValue } from '~/constants/oauth/stateKeys';
 import { salesforceOauthRedirectUri } from '~/constants/oauth/urls';
 import salesforceAuth from '~/services/api/auth/salesforce';
-import { handleAuthCode, login } from '~/services/auth/oauth';
 import { Button } from '@nextui-org/button';
 import SalesforceIcon from '~/components/icons/logos/SalesforceFullLogo';
 import UserContext from '~/contexts/UserContext';
+import { handleAuthCode, login } from '~/services/oauth';
 
 const url = 'https://login.salesforce.com/services/oauth2/authorize'
 
