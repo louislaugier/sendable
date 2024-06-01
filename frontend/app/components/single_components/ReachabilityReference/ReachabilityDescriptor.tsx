@@ -1,5 +1,6 @@
 import { Reachability } from "~/types/email";
 import ReachabilityChip from "./ReachabilityChip";
+import React from "react";
 
 export function ReachableDescriptor(props: any) {
     const { nochip } = props;
@@ -18,25 +19,44 @@ export function ReachableDescriptor(props: any) {
     );
 }
 
+
 export function RiskyDescriptor(props: any) {
     const { nochip } = props;
-    const description = `The email address appears to exist, but has quality issues that may result in low engagement or a bounce. We don't recommend sending to these addresses, and don't commit on an accuracy rate.\n
-    An email address' reachability is considered risky when at least one of the following is true:\n
-    • it is a disposable email address (DEA),\n
-    • it is a role account (e.g. support@ or admin@),\n
-    • it is a catch-all address,\n
-    • its inbox is full.`
+    const description = [
+        "The email address appears to exist, but has quality issues that may result in low engagement or a bounce. We don't recommend sending to these addresses, and don't commit on an accuracy rate.",
+        "An email address' reachability is considered risky when at least one of the following is true:",
+        "• it is a disposable email address (DEA),",
+        "• it is a role account (e.g. support@ or admin@ prefix),",
+        "• it is a catch-all address,",
+        "• its inbox is full."
+    ];
 
     return (
-        <>
+        <div>
             {!nochip ? (
-                <p>
-                    <ReachabilityChip reachability={Reachability.Risky} />: {description}
-                </p>
+                <>
+                    <p>
+                        <ReachabilityChip reachability={Reachability.Risky} />: {description[0]}
+                    </p>
+                    <p style={{ margin: '8px 0' }}>{description[1]}</p>
+                    <ul style={{ margin: 0, paddingLeft: '20px' }}>
+                        {description.slice(2).map((line, index) => (
+                            <li key={index} style={{ marginBottom: '4px' }}>{line}</li>
+                        ))}
+                    </ul>
+                </>
             ) : (
-                <p>{description}</p>
+                <>
+                    <p>{description[0]}</p>
+                    <p style={{ margin: '8px 0' }}>{description[1]}</p>
+                    <ul style={{ margin: 0, paddingLeft: '20px' }}>
+                        {description.slice(2).map((line, index) => (
+                            <li key={index} style={{ marginBottom: '4px' }}>{line}</li>
+                        ))}
+                    </ul>
+                </>
             )}
-        </>
+        </div>
     );
 }
 
