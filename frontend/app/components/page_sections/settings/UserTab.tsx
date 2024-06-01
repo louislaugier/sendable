@@ -1,9 +1,10 @@
-import { Button, Card, CardBody, Input } from "@nextui-org/react";
+import { Button, Card, CardBody, Input, useDisclosure } from "@nextui-org/react";
 import QRCode from "qrcode.react";
 import { useContext, useState } from "react";
 import { EyeFilledIcon } from "~/components/icons/EyeFilledIcon";
 import { EyeSlashFilledIcon } from "~/components/icons/EyeSlashFilledIcon";
 import TwoFactorAuthCodeInput from "~/components/inputs/TwoFactorAuthCodeInput";
+import DeleteAccountModal from "~/components/modals/DeleteAccountModal";
 import UserContext from "~/contexts/UserContext";
 import { generate2faSecret, getQrCodeUrl } from "~/services/utils/2fa";
 
@@ -22,6 +23,8 @@ export default function UserTab() {
     const [generated2faSecret, setGenerated2faSecret] = useState("")
     const [twoFactorAuthCode, setTwoFactorAuthCode] = useState("")
     const [twoFactorAuthCodeErrorMsg, setTwoFactorAuthCodeErrorMsg] = useState("")
+
+    const deleteAccountModal = useDisclosure()
 
     return (
         <>
@@ -95,7 +98,7 @@ export default function UserTab() {
                         </div>
 
                         <div className="w-full text-center">
-                            <p className="mb-2">Two-factor authentication (2FA){user?.is2faEnabled && <b> (active)</b>}:</p>
+                            <p className="mb-2">Two-factor authentication (2FA){user?.is2faEnabled && <b> (enabled)</b>}:</p>
                             {!user?.is2faEnabled ? <>
                                 {isEnable2faClicked ? <div className="flex flex-col items-center">
                                     <p className="text-sm">Scan the QR code below using your authenticator app or enter the following code manually:</p>
@@ -118,14 +121,24 @@ export default function UserTab() {
                                     Enable
                                 </Button>}
                             </> : <>
-                                <Button className="mb-2" color="primary" variant="shadow">
-                                    Disable
-                                </Button>
+                                <div className="flex mt-2 mb-4 space-x-2 justify-center">
+                                    <TwoFactorAuthCodeInput twoFactorAuthCode={twoFactorAuthCode} twoFactorAuthCodeErrorMsg={twoFactorAuthCodeErrorMsg} setTwoFactorAuthCode={setTwoFactorAuthCode} />
+
+                                    <Button className="mb-2" color="primary" variant="shadow">
+                                        Disable
+                                    </Button>
+                                </div>
                             </>}
+
+                            <p className="mt-6 mb-2">Delete my account and personal data:</p>
+                            <Button onClick={deleteAccountModal.onOpen} className="mb-2" color="danger" variant="bordered">
+                                Delete account
+                            </Button>
                         </div>
                     </CardBody>
                 </Card>
-            </div >
+            </div>
+            <DeleteAccountModal isOpen={deleteAccountModal.isOpen} onClose={deleteAccountModal.onClose} onOpenChange={deleteAccountModal.onOpenChange} />
         </>
     )
 }

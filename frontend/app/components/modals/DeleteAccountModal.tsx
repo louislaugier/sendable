@@ -1,0 +1,65 @@
+import { Modal, ModalContent, ModalHeader, ModalBody, ModalFooter, Button, Input } from "@nextui-org/react";
+import { useContext, useState } from "react";
+import UserContext from "~/contexts/UserContext";
+import { SubscriptionType } from "~/types/subscription";
+
+const DeleteAccountModal = (props: any) => {
+    const { isOpen, onClose, onOpenChange } = props
+
+    const { user } = useContext(UserContext)
+
+    const [inputValue, setInputValue] = useState("")
+    const [inputValueErrorMsg, setInputValueErrorMsg] = useState("")
+
+    return (
+        <Modal
+            backdrop="blur"
+            onClose={onClose}
+            style={{ maxWidth: "450px" }}
+            isOpen={isOpen}
+            onOpenChange={onOpenChange}
+            placement="top-center"
+        >
+            <ModalContent>
+                {(onClose) => (
+                    <>
+                        <ModalHeader className="flex flex-col gap-1">Delete my account and personal data</ModalHeader>
+                        <ModalBody>
+                            <p>You are about to delete your account.</p>
+                            <p className="mb-2">{user?.currentPlan.type !== SubscriptionType.Free && <>Because your account has an ongoing plan <b>({user?.currentPlan.type})</b>, we will deactivate your account until the next scheduled billing date. Logging back in or using the API will reactivate your account.</>}</p>
+
+                            <Input
+                                onPaste={(e) => e.preventDefault()}
+                                type="text"
+                                label={`To confirm, type "delete my account" below`}
+                                value={inputValue}
+                                variant="bordered"
+                                errorMessage={inputValueErrorMsg}
+                                onValueChange={setInputValue}
+                                placeholder={"Enter the text above"}
+                                labelPlacement="outside"
+                                className="max-w-xs"
+                            />
+                        </ModalBody>
+                        <ModalFooter>
+                            <Button color={"primary"} variant="shadow" onPress={() => {
+                                setInputValueErrorMsg("")
+
+                                if (inputValue !== "delete my account") {
+                                    setInputValueErrorMsg(`You must exactly write "delete my account"`)
+                                }
+                            }}>
+                                Delete account
+                            </Button>
+                            <Button color="danger" variant="bordered" onPress={onClose}>
+                                Close
+                            </Button>
+                        </ModalFooter>
+                    </>
+                )}
+            </ModalContent>
+        </Modal>
+    );
+};
+
+export default DeleteAccountModal;
