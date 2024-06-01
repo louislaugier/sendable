@@ -7,9 +7,9 @@ import (
 )
 
 const (
-	SalesforceContactProvider ContactProviderType = ContactProviderType(SalesforceProvider)
-	HubspotContactProvider    ContactProviderType = ContactProviderType(HubspotProvider)
-	ZohoContactProvider       ContactProviderType = ContactProviderType(ZohoProvider)
+	SalesforceContactProvider ContactProviderType = ContactProviderType(SalesforceProvider) // extends oauth provider
+	HubspotContactProvider    ContactProviderType = ContactProviderType(HubspotProvider)    // extends oauth provider
+	ZohoContactProvider       ContactProviderType = ContactProviderType(ZohoProvider)       // extends oauth provider
 	SendgridContactProvider   ContactProviderType = "sendgrid"
 	BrevoContactProvider      ContactProviderType = "brevo"
 )

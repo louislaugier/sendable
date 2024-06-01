@@ -69,7 +69,7 @@ func sendReport(report []models.ReacherResponse, recipient string, ID, token uui
 		return
 	}
 
-	err = config.EmailClient.SendEmail(models.ReportTemplate, "Email validation report", "Your email validation report is ready!", map[string]string{
+	err = config.EmailClient.SendEmail(models.EmailValidationReportTemplate, "Email validation report", "Your email validation report is ready!", map[string]string{
 		"id":     ID.String(),
 		"token":  token.String(),
 		"domain": fmt.Sprintf("%s%s", config.DomainURL, config.APIVersionPrefix),
@@ -82,7 +82,7 @@ func sendReport(report []models.ReacherResponse, recipient string, ID, token uui
 
 // sendReportError sends a report error by email to recipient
 func sendReportError(recipient string) {
-	err := config.EmailClient.SendEmail(models.ErrorTemplate, "Email validation error", "Issues while attempting to validate emails.", nil, recipient)
+	err := config.EmailClient.SendEmail(models.EmailValidationErrorTemplate, "Email validation error", "Issues while attempting to validate emails.", nil, recipient)
 	if err != nil {
 		log.Printf("Error sending report error: %v", err)
 		return

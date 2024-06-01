@@ -69,7 +69,7 @@ func handleHTTP(mux *http.ServeMux) {
 	), true)
 
 	handle(mux, "/validate_email",
-		middleware.ValidateSingleValidationOriginAndLimits( // calls validate JWT if not guest
+		middleware.ValidateSingleValidationOriginAndLimits( // calls ValidateJWT and checks limits if not guest
 			http.HandlerFunc(handlers.ValidateEmailHandler),
 		),
 		false,

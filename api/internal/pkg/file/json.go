@@ -48,11 +48,7 @@ func mapToJSONFile(data map[string]interface{}, filePath string) (*os.File, erro
 	if err != nil {
 		return nil, err
 	}
-	defer func() {
-		if err != nil {
-			file.Close()
-		}
-	}()
+	defer file.Close()
 
 	_, err = file.Write(jsonData)
 	if err != nil {

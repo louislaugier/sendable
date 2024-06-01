@@ -1,4 +1,4 @@
-package subscription
+package stripe
 
 // On link generation:
 // prevent 2 or more ongoing subscriptions at the same time except if (in that case cancel current one):

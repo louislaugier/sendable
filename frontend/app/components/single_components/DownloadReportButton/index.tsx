@@ -1,5 +1,4 @@
 import { Tooltip, Button, Link } from "@nextui-org/react"
-import axios from "axios"
 import { useState } from "react"
 import { apiBaseUrl } from "~/constants/api"
 import { useErrorOccuredModal } from "~/contexts/ErrorOccuredModalContext"
@@ -12,7 +11,6 @@ export default function DownloadReportButton(props: any) {
     const [isLoading, setLoading] = useState(false)
 
     const { setErrorOccuredModalVisible } = useErrorOccuredModal();
-
 
     const downloadReport = async (e: any) => {
         e.preventDefault()

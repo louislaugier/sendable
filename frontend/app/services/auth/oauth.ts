@@ -3,7 +3,7 @@ import { fetchSalesforcePKCE } from "../salesforce/pkce";
 import { User } from "~/types/user";
 import { navigateToUrl } from "~/utils/url";
 
-export const handleAuthCode = (event: MessageEvent<AuthCodeEvent>, setUser: React.Dispatch<React.SetStateAction<User | null>>, auth: (data: any) => Promise<any>, setLoading: React.Dispatch<React.SetStateAction<boolean>>, authCodeKey: string, stateKey: string, codeVerifierKey?: string) => {
+export const handleAuthCode = (event: MessageEvent<AuthCodeEvent>, setUser: React.Dispatch<React.SetStateAction<User | null>>, auth: (data: any) => Promise<any>, setLoading: React.Dispatch<React.SetStateAction<boolean>>, authCodeKey: string, stateKey: string, salesforceCodeVerifierKey?: string) => {
     setLoading(true);
 
     if (event.origin !== window.location.origin) {
@@ -19,9 +19,9 @@ export const handleAuthCode = (event: MessageEvent<AuthCodeEvent>, setUser: Reac
             sessionStorage.removeItem(stateKey);
 
             let codeVerifier = undefined
-            if (codeVerifierKey) {
-                codeVerifier = sessionStorage.getItem(codeVerifierKey!) || undefined;
-                sessionStorage.removeItem(codeVerifierKey);
+            if (salesforceCodeVerifierKey) {
+                codeVerifier = sessionStorage.getItem(salesforceCodeVerifierKey!) || undefined;
+                sessionStorage.removeItem(salesforceCodeVerifierKey);
             }
 
             auth({ code, code_verifier: codeVerifier })
@@ -40,15 +40,15 @@ export const handleAuthCode = (event: MessageEvent<AuthCodeEvent>, setUser: Reac
     setLoading(false);
 };
 
-export const login = async (setLoading: React.Dispatch<React.SetStateAction<boolean>>, uniqueStateValue: string, stateKey: string, authCodeKey: string, clientId: string, redirectUri: string, authUrl: string, codeVerifierKey?: string, scope?: string) => {
+export const login = async (setLoading: React.Dispatch<React.SetStateAction<boolean>>, uniqueStateValue: string, stateKey: string, authCodeKey: string, clientId: string, redirectUri: string, authUrl: string, salesforceCodeVerifierKey?: string, scope?: string) => {
     setLoading(true);
 
     const loginUrl = new URL(authUrl);
 
     let pkceParams;
-    if (codeVerifierKey) {
+    if (salesforceCodeVerifierKey) {
         pkceParams = await fetchSalesforcePKCE();
-        sessionStorage.setItem(codeVerifierKey, pkceParams.code_verifier);
+        sessionStorage.setItem(salesforceCodeVerifierKey, pkceParams.code_verifier);
 
         loginUrl.searchParams.append('code_challenge', pkceParams.code_challenge);
         loginUrl.searchParams.append('code_challenge_method', 'S256');

@@ -7,5 +7,4 @@ export const zohoOauthRedirectUri = 'http://localhost:3000'
 
 export const mailchimpOauthRedirectUri = 'http://127.0.0.1:3000'
 
-// export const linkedinOauthRedirectUri = 'http://localhost:3000'
 export const linkedinOauthRedirectUri = 'http://localhost:3000'

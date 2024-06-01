@@ -6,8 +6,6 @@ import (
 	"github.com/google/uuid"
 )
 
-type AuthProvider string
-
 const (
 	GoogleProvider   AuthProvider = "google"
 	LinkedinProvider AuthProvider = "linkedin"
@@ -19,31 +17,33 @@ const (
 	MailchimpProvider AuthProvider = "mailchimp"
 )
 
-type User struct {
-	ID uuid.UUID `json:"id"`
+type (
+	AuthProvider string
+	User         struct {
+		ID uuid.UUID `json:"id"`
 
-	Email                 string `json:"email"`
-	IsEmailConfirmed      bool   `json:"isEmailConfirmed"`
-	EmailConfirmationCode *int   `json:"-"`
+		Email                 string `json:"email"`
+		IsEmailConfirmed      bool   `json:"isEmailConfirmed"`
+		EmailConfirmationCode *int   `json:"-"`
 
-	LastIPAddresses string `json:"-"`
-	LastUserAgent   string `json:"-"`
+		LastIPAddresses string `json:"-"`
+		LastUserAgent   string `json:"-"`
 
-	TwoFaPrivateKeyHash string `json:"-"`
+		TwoFaPrivateKeyHash string `json:"-"`
 
-	JWT string `json:"jwt"`
+		JWT string `json:"jwt"`
 
-	AuthProvider *AuthProvider `json:"authProvider,omitempty"`
+		AuthProvider *AuthProvider `json:"authProvider,omitempty"`
 
-	ValidationCounts *UserValidationCounts `json:"validationCounts,omitempty"`
-	CurrentPlan      *Subscription         `json:"currentPlan,omitempty"`
+		ValidationCounts *UserValidationCounts `json:"validationCounts,omitempty"`
+		CurrentPlan      *Subscription         `json:"currentPlan,omitempty"`
 
-	CreatedAt time.Time  `json:"createdAt"`
-	UpdatedAt time.Time  `json:"updatedAt"`
-	DeletedAt *time.Time `json:"deletedAt,omitempty"`
-}
-
-type ConfirmEmail struct {
-	Email                 string `json:"email"`
-	EmailConfirmationCode int    `json:"emailConfirmationCode"`
-}
+		CreatedAt time.Time  `json:"createdAt"`
+		UpdatedAt time.Time  `json:"updatedAt"`
+		DeletedAt *time.Time `json:"deletedAt,omitempty"`
+	}
+	ConfirmEmail struct {
+		Email                 string `json:"email"`
+		EmailConfirmationCode int    `json:"emailConfirmationCode"`
+	}
+)
