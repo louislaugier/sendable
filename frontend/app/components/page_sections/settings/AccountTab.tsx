@@ -1,4 +1,4 @@
-import { Button, Card, CardBody, Input, Snippet, useDisclosure } from "@nextui-org/react";
+import { Button, Card, CardBody, Divider, Input, Snippet, useDisclosure } from "@nextui-org/react";
 import QRCode from "qrcode.react";
 import { useContext, useState } from "react";
 import { EyeFilledIcon } from "~/components/icons/EyeFilledIcon";
@@ -49,11 +49,13 @@ export default function AccountTab() {
                             // }
                             className="max-w-xs"
                         />
-                        <div className="mt-4 mb-8">
+                        <div className="mt-4">
                             <Button isDisabled={!email || email === user?.email} color="primary" variant="shadow">
                                 Update
                             </Button>
                         </div>
+
+                        <Divider className="my-8"/>
 
                         <Input
                             label="Current password"
@@ -91,24 +93,26 @@ export default function AccountTab() {
                             type={isPasswordVisible ? "text" : "password"}
                             className="max-w-xs"
                         />
-                        <div className="mt-4 mb-8">
+                        <div className="mt-4">
                             <Button isDisabled={!password || password === passwordConfirmation} color="primary" variant="shadow">
                                 Update
                             </Button>
                         </div>
 
+                        <Divider className="my-8"/>
+
                         <div className="w-full text-center">
                             <p className="mb-2">Two-factor authentication (2FA){user?.is2faEnabled && <b> (enabled)</b>}:</p>
                             {!user?.is2faEnabled ? <>
                                 {isEnable2faClicked ? <div className="flex flex-col items-center">
-                                    <p className="text-sm">Scan the QR code below using your authenticator app or enter the following code manually:</p>
+                                    <p className="text-sm">Scan the QR code below using your authenticator app or save the following key:</p>
 
                                     <Snippet symbol='' className="text-sm mt-2 mb-4">{generated2faSecret}</Snippet>
                                     {user && generated2faSecret && <QRCode value={getQrCodeUrl(user?.email!, generated2faSecret)} />}
 
                                     <b className="text-sm mb-2 mt-4">Enter the six-digit code from the authenticator app</b>
                                     <p className="text-sm">After scanning the QR code, the app will display a six-digit code that you can enter below.</p>
-                                    <div className="flex my-4 space-x-2">
+                                    <div className="flex mt-4 space-x-2">
                                         <TwoFactorAuthCodeInput twoFactorAuthCode={twoFactorAuthCode} twoFactorAuthCodeErrorMsg={twoFactorAuthCodeErrorMsg} setTwoFactorAuthCode={setTwoFactorAuthCode} />
                                         <Button onClick={() => { }} className="mb-2" color="primary" variant="shadow">
                                             Confirm
@@ -129,12 +133,14 @@ export default function AccountTab() {
                                     </Button>
                                 </div>
                             </>}
+                        </div>
 
-                            <p className="mt-6 mb-2">Delete my account and personal data:</p>
+                        <Divider className="my-8"/>
+
+                        <p className="mb-2">Delete my account and personal data:</p>
                             <Button onClick={deleteAccountModal.onOpen} className="mb-2" color="danger" variant="bordered">
                                 Delete account
                             </Button>
-                        </div>
                     </CardBody>
                 </Card>
             </div>

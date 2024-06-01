@@ -17,7 +17,7 @@ func ZohoAuthSetEmailHandler(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "method not allowed", http.StatusMethodNotAllowed)
 	}
 
-	body := models.ZohoSetEmailRequest{}
+	body := models.AuthZohoSetEmailRequest{}
 	if err := json.NewDecoder(r.Body).Decode(&body); err != nil {
 		handleError(w, err, "Error decoding JSON", http.StatusBadRequest)
 		return
@@ -29,14 +29,11 @@ func ZohoAuthSetEmailHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	err := config.EmailClient.SendEmail(models.ConfirmEmailTemplate, "Email address confirmation", "Verify your email address", map[string]string{
+	go config.EmailClient.SendEmail(models.ConfirmEmailAddressTemplate, "Email address confirmation", "Verify your email address", map[string]string{
 		"email_confirmation_code": strconv.Itoa(*user.EmailConfirmationCode),
+		"is_new_account":          "false",
 		"domain":                  fmt.Sprintf("%s%s", config.DomainURL, config.APIVersionPrefix),
 	}, body.Email)
-	if err != nil {
-		handleError(w, err, "Internal Server Error", http.StatusBadRequest)
-		return
-	}
 
 	fmt.Fprint(w, http.StatusText(http.StatusOK))
 }

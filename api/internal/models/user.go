@@ -40,8 +40,4 @@ type (
 		UpdatedAt time.Time  `json:"updatedAt"`
 		DeletedAt *time.Time `json:"deletedAt,omitempty"`
 	}
-	ConfirmEmail struct {
-		Email                 string `json:"email"`
-		EmailConfirmationCode int    `json:"emailConfirmationCode"`
-	}
 )

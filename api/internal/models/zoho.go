@@ -1,14 +1,6 @@
 package models
 
 type (
-	ZohoAuthRequest struct {
-		Code string `json:"code"`
-	}
-
-	ZohoSetEmailRequest struct {
-		Email string `json:"email"`
-	}
-
 	ZohoUsersResponse struct {
 		Users []ZohoUser `json:"users"`
 	}

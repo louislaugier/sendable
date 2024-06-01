@@ -19,7 +19,7 @@ func GoogleAuthHandler(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "method not allowed", http.StatusMethodNotAllowed)
 	}
 
-	body := models.GoogleAuthRequest{}
+	body := models.AuthGoogleRequest{}
 
 	if err := json.NewDecoder(r.Body).Decode(&body); err != nil {
 		handleError(w, err, "Error decoding JSON", http.StatusBadRequest)

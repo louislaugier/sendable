@@ -1,10 +1,6 @@
 package models
 
 type (
-	HubspotAuthRequest struct {
-		Code string `json:"code"`
-	}
-
 	HubspotAccessTokenResponse struct {
 		AccessToken  string `json:"access_token"`
 		RefreshToken string `json:"refresh_token"`

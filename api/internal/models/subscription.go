@@ -36,7 +36,6 @@ type Subscription struct {
 
 func EmptyFreePlan() *Subscription {
 	return &Subscription{
-		UserID: nil,
-		Type:   FreePlan,
+		Type: FreePlan,
 	}
 }

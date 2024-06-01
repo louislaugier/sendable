@@ -1,18 +1,13 @@
-import { Tab, Button, Tabs, useDisclosure } from "@nextui-org/react";
+import { Tab, Button, Tabs } from "@nextui-org/react";
 import { useState } from "react";
 import TextEmailValidator from "./TextEmailValidator";
 import FileEmailValidator from "./FileEmailValidator";
-import { navigateToUrl } from "~/utils/url";
-import NewApiKeyModal from "~/components/modals/NewApiKeyModal";
-import ApiReference from "~/components/dropdowns/ApiReference";
 import ReachabilityReference from "~/components/dropdowns/ReachabilityReference";
+import ApiTab from "../../settings/ApiTab";
 
 export default function EmailValidatorTab(props: any) {
-
     const { remainingAppValidations, resetHistory } = props
     const [selectedTab, setSelectedTab] = useState<any>("validation");
-
-    const newApiKeyModal = useDisclosure();
 
     return (
         <>
@@ -27,7 +22,6 @@ export default function EmailValidatorTab(props: any) {
                     onSelectionChange={setSelectedTab}
                     className="mb-4"
                 >
-
                     <Tab
                         key="manual"
                         title={
@@ -81,23 +75,11 @@ export default function EmailValidatorTab(props: any) {
                         }
                         className="w-full"
                     >
-                        <div className="flex flex-col w-full">
-                            <ReachabilityReference />
-                            <div className="flex flex-col space-x-2 w-full items-center">
-                                <ApiReference />
-                                <Button onClick={newApiKeyModal.onOpen} color="primary" variant="shadow" className="mb-4" >
-                                    Generate new API key
-                                </Button>
-                                <Button onClick={() => navigateToUrl('/settings?tab=api')} color="primary" variant="bordered" className="my-4" >
-                                    Manage API keys
-                                </Button>
-                            </div>
-                        </div>
+                        <ApiTab />
                     </Tab>
                 </Tabs>
             </div>
 
-            <NewApiKeyModal isOpen={newApiKeyModal.isOpen} onClose={newApiKeyModal.onClose} onOpenChange={newApiKeyModal.onOpenChange} />
         </>
     )
 }

@@ -1,10 +1,5 @@
 package models
 
-type SalesforceAuthRequest struct {
-	Code         string `json:"code"`
-	CodeVerifier string `json:"code_verifier"`
-}
-
 type SalesforceUser struct {
 	Email    string              `json:"email"`
 	Name     string              `json:"name"`

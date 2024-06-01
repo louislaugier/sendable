@@ -105,20 +105,21 @@ export default function ValidationHistoryTable(props: any) {
                     <TableColumn>Origin</TableColumn>
                     <TableColumn className="flex justify-center items-center">Result</TableColumn> */}
                     <TableColumn>DATE</TableColumn>
-                    <TableColumn>TARGET</TableColumn>
                     <TableColumn>SOURCE</TableColumn>
-                    <TableColumn>STATUS</TableColumn>
+                    <TableColumn>TARGET</TableColumn>
                     <TableColumn>ORIGIN</TableColumn>
+                    <TableColumn>STATUS</TableColumn>
                     <TableColumn className="flex justify-center items-center">RESULT</TableColumn>
                 </TableHeader>
                 <TableBody>
                     {currentPageItems.length && currentPageItems.map((validation: Validation, i: number) =>
                         <TableRow key={i}>
                             <TableCell>{moment(validation.createdAt).format("YYYY-MM-DD HH:mm:ss").toString()}</TableCell>
-                            <TableCell>{validation.singleTargetEmail ? validation.singleTargetEmail : validation.bulkAddressCount ? `${validation.bulkAddressCount} addresses` : 'Processing...'}</TableCell>
                             <TableCell>
                                 <p>{validation.providerSource ? `${validation.providerSource.charAt(0).toUpperCase()}${validation.providerSource.slice(1)}` : validation.uploadFilename ? validation.uploadFilename : 'Text (manual)'}</p>
                             </TableCell>
+                            <TableCell>{validation.singleTargetEmail ? validation.singleTargetEmail : validation.bulkAddressCount ? `${validation.bulkAddressCount} addresses` : 'Processing...'}</TableCell>
+                            <TableCell>{validation.origin === ValidationOrigin.Platform ? 'Platform' : 'API'}</TableCell>
                             <TableCell>
                                 {validation.status === ValidationStatus.Completed ?
                                     <Chip
@@ -134,8 +135,7 @@ export default function ValidationHistoryTable(props: any) {
                                         <Chip color="danger" variant="dot">Failed</Chip>
                                 }
                             </TableCell>
-                            <TableCell>{validation.origin === ValidationOrigin.Platform ? 'Platform' : 'API'}</TableCell>
-                            <TableCell className="flex justify-center" style={{ height: '56px' }}>
+                            <TableCell className="flex justify-center items-center" style={{ height: '56px' }}>
                                 {validation.reportToken ? <DownloadReportButton validationId={validation.id} reportToken={validation.reportToken} tooltipContent="Download report" /> : validation.singleTargetReachability && validation.singleTargetEmail ?
                                     <>
                                         <ReachabilityChip reachability={validation.singleTargetReachability} email={validation.singleTargetEmail} />

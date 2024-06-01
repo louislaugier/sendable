@@ -36,6 +36,8 @@ func handleHTTP(mux *http.ServeMux) {
 	// TODO: signup
 	handle(mux, "/confirm_email_address", http.HandlerFunc(handlers.ConfirmEmailAddressHandler), true)
 
+	handle(mux, "/auth_google", http.HandlerFunc(handlers.GoogleAuthHandler), true)
+	handle(mux, "/auth_linkedin", http.HandlerFunc(handlers.LinkedinAuthHandler), true)
 	handle(mux, "/auth_salesforce", http.HandlerFunc(handlers.SalesforceAuthHandler), true)
 	handle(mux, "/auth_hubspot", http.HandlerFunc(handlers.HubspotAuthHandler), true)
 	handle(mux, "/auth_mailchimp", http.HandlerFunc(handlers.MailchimpAuthHandler), true)
@@ -44,23 +46,33 @@ func handleHTTP(mux *http.ServeMux) {
 		http.HandlerFunc(handlers.ZohoAuthSetEmailHandler),
 		false,
 	), true)
-	handle(mux, "/auth_google", http.HandlerFunc(handlers.GoogleAuthHandler), true)
-	handle(mux, "/auth_linkedin", http.HandlerFunc(handlers.LinkedinAuthHandler), true)
 
-	handle(mux, "/generate_jwt", middleware.ValidateAPIKey(
-		http.HandlerFunc(handlers.GenerateJWTHandler),
+	handle(mux, "/me", middleware.ValidateJWT(
+		http.HandlerFunc(handlers.MeHandler),
+		true,
+	), true)
+	handle(mux, "/update_email_address", middleware.ValidateJWT(
+		http.HandlerFunc(handlers.UpdateEmailAddressHandler),
+		true,
+	), true)
+	handle(mux, "/subscription_history",
+		middleware.ValidateJWT(
+			http.HandlerFunc(handlers.SubscriptionHistoryHandler),
+			true,
+		),
+		false,
+	)
+
+	handle(mux, "/api_keys", middleware.ValidateJWT(
+		http.HandlerFunc(handlers.APIKeysHandler),
+		true,
 	), true)
 	handle(mux, "/generate_api_key", middleware.ValidateJWT(
 		http.HandlerFunc(handlers.GenerateAPIKeyHandler),
 		true,
 	), true)
-	handle(mux, "/api_keys", middleware.ValidateJWT(
-		http.HandlerFunc(handlers.APIKeysHandler),
-		true,
-	), true)
-	handle(mux, "/me", middleware.ValidateJWT(
-		http.HandlerFunc(handlers.MeHandler),
-		true,
+	handle(mux, "/generate_jwt", middleware.ValidateAPIKey( // generate JWT as API consumer (platform users)
+		http.HandlerFunc(handlers.GenerateJWTHandler),
 	), true)
 
 	handle(mux, "/validate_email",

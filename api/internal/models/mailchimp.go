@@ -1,10 +1,6 @@
 package models
 
 type (
-	MailchimpAuthRequest struct {
-		Code string `json:"code"`
-	}
-
 	MailchimpTokenReponse struct {
 		AccessToken string `json:"access_token"`
 		Token       string `json:"token_"`

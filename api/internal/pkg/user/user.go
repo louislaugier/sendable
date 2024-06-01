@@ -17,8 +17,12 @@ const (
 	selectQuery                   = `SELECT "id", "email", "is_email_confirmed", "email_confirmation_code", "2fa_secret", "created_at", "updated_at" FROM public."user" WHERE %s AND "deleted_at" IS NULL LIMIT 1;`
 	selectUserByAPIKeySHA256Query = `SELECT "id", "email", "is_email_confirmed", "email_confirmation_code", "created_at", "updated_at" FROM public."user" WHERE "id" IN (SELECT "user_id" FROM public."api_key" WHERE "key_sha256" = $1 AND "deleted_at" IS NULL) AND "deleted_at" IS NULL LIMIT 1;`
 
-	updateEmailConfirmationQuery = "UPDATE public.user SET is_email_confirmed = true WHERE id = $1;"
-	updateIPsAndUserAgentQuery   = "UPDATE public.user SET last_ip_addresses = $1, last_user_agent = $2 WHERE id = $3;"
+	updatPasswordSHA256Query         = "UPDATE public.user SET password_sha256 = $1 WHERE id = $2;"
+	updateEmailAddressQuery          = "UPDATE public.user SET email = $1 WHERE id = $2;"
+	updateEmailConfirmationQuery     = "UPDATE public.user SET is_email_confirmed = true WHERE id = $1;"
+	updateEmailConfirmationCodeQuery = "UPDATE public.user SET email_confirmation_code = $1 WHERE id = $2;"
+
+	updateIPsAndUserAgentQuery = "UPDATE public.user SET last_ip_addresses = $1, last_user_agent = $2 WHERE id = $3;"
 )
 
 // InsertNew inserts a new user into the database.
@@ -35,6 +39,21 @@ func InsertNewTempZoho(user *models.User, encryptedPassword *string) error {
 // SetEmailConfirmed updates the is_email_confirmed field to true for a user with the given ID.
 func SetEmailConfirmed(userID uuid.UUID) error {
 	_, err := config.DB.Exec(updateEmailConfirmationQuery, userID)
+	return err
+}
+
+func SetEmailConfirmationCode(userID uuid.UUID, emailConfirmationCode int) error {
+	_, err := config.DB.Exec(updateEmailConfirmationCodeQuery, emailConfirmationCode, userID)
+	return err
+}
+
+func UpdateEmailAddress(userID uuid.UUID, email string) error {
+	_, err := config.DB.Exec(updateEmailAddressQuery, email, userID)
+	return err
+}
+
+func UpdatePasswordSHA256(userID uuid.UUID, encryptedPassword string) error {
+	_, err := config.DB.Exec(updatPasswordSHA256Query, encryptedPassword)
 	return err
 }
 
@@ -64,6 +83,11 @@ func GetByEmailAndPasswordSHA256(email, passwordSHA256 string) (*models.User, er
 func GetByID(ID uuid.UUID) (*models.User, error) {
 	query := fmt.Sprintf(selectQuery, "id = $1")
 	return getByCriteria(false, query, ID)
+}
+
+func GetByIDAndPasswordSha256(ID uuid.UUID, passwordSHA256 string) (*models.User, error) {
+	query := fmt.Sprintf(selectQuery, "id = $1 AND password_sha256 = $2")
+	return getByCriteria(false, query, ID, passwordSHA256)
 }
 
 // GetByTempZohoOauthData retrieves a user by temporary oauth data (Zoho flow).

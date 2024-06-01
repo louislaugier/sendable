@@ -48,8 +48,8 @@ func HubspotAuthHandler(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(user)
 }
 
-func decodeHubspotAuthRequestBody(r *http.Request) (models.HubspotAuthRequest, error) {
-	var body models.HubspotAuthRequest
+func decodeHubspotAuthRequestBody(r *http.Request) (models.AuthHubspotRequest, error) {
+	var body models.AuthHubspotRequest
 	if err := json.NewDecoder(r.Body).Decode(&body); err != nil {
 		log.Printf("Error decoding JSON: %v", err)
 		return body, fmt.Errorf("error decoding JSON")

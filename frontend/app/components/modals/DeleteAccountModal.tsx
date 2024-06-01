@@ -31,7 +31,7 @@ const DeleteAccountModal = (props: any) => {
                             <Input
                                 onPaste={(e) => e.preventDefault()}
                                 type="text"
-                                label={`To confirm, type "delete my account" below`}
+                                label={<>To confirm, type "<b>delete my account</b>" below:</>}
                                 value={inputValue}
                                 variant="bordered"
                                 errorMessage={inputValueErrorMsg}

@@ -50,8 +50,8 @@ func SalesforceAuthHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 // decodeSalesforceAuthRequestBody decodes the JSON request body.
-func decodeSalesforceAuthRequestBody(r *http.Request) (*models.SalesforceAuthRequest, error) {
-	var body models.SalesforceAuthRequest
+func decodeSalesforceAuthRequestBody(r *http.Request) (*models.AuthSalesforceRequest, error) {
+	var body models.AuthSalesforceRequest
 	if err := json.NewDecoder(r.Body).Decode(&body); err != nil {
 		log.Printf("Error decoding JSON: %v", err)
 		return nil, fmt.Errorf("error decoding JSON")

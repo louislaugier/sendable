@@ -3,7 +3,8 @@ package models
 type Template string
 
 const (
-	ConfirmEmailTemplate          Template = "confirm_email_address"
+	ConfirmEmailAddressTemplate   Template = "confirm_email_address"
+	UpdateEmailAddressTemplate    Template = "update_email_address"
 	EmailValidationReportTemplate Template = "email_validation_report"
-	EmailValidationErrorTemplate  Template = "error"
+	EmailValidationErrorTemplate  Template = "email_validation_error"
 )

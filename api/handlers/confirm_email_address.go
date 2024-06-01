@@ -9,12 +9,13 @@ import (
 	"net/http"
 )
 
+// ConfirmEmailAddressHandler is called directly from transactional emails
 func ConfirmEmailAddressHandler(w http.ResponseWriter, r *http.Request) {
 	if r.Method != http.MethodPost {
 		http.Error(w, "method not allowed", http.StatusMethodNotAllowed)
 	}
 
-	body := models.ConfirmEmail{}
+	body := models.ConfirmEmailAddressRequest{}
 	if err := json.NewDecoder(r.Body).Decode(&body); err != nil {
 		handleError(w, err, "Error decoding JSON", http.StatusBadRequest)
 		return
@@ -32,10 +33,18 @@ func ConfirmEmailAddressHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	err = user.SetEmailConfirmed(u.ID)
-	if err != nil {
-		handleError(w, err, "Internal Server Error", http.StatusInternalServerError)
-		return
+	if body.IsNewAccount {
+		err = user.SetEmailConfirmed(u.ID)
+		if err != nil {
+			handleError(w, err, "Internal Server Error", http.StatusInternalServerError)
+			return
+		}
+	} else {
+		err = user.UpdateEmailAddress(u.ID, u.Email)
+		if err != nil {
+			handleError(w, err, "Internal Server Error", http.StatusInternalServerError)
+			return
+		}
 	}
 
 	http.Redirect(w, r, fmt.Sprintf("%s/dashboard?email_confirmed=true", config.FrontendURL), http.StatusSeeOther)

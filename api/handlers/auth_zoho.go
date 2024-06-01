@@ -23,7 +23,7 @@ func ZohoAuthHandler(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "method not allowed", http.StatusMethodNotAllowed)
 	}
 
-	body := models.ZohoAuthRequest{}
+	body := models.AuthZohoRequest{}
 
 	if err := json.NewDecoder(r.Body).Decode(&body); err != nil {
 		handleError(w, err, "Error decoding JSON", http.StatusBadRequest)
@@ -63,7 +63,7 @@ func handleZohoUser(emails string, r *http.Request, accessToken string) (*models
 	}
 	if u == nil {
 		s := models.ZohoProvider
-		emailConfirmationCode, err := utils.GenerateSixDigitCode()
+		emailConfirmationCode, err := utils.GenerateRandomSixDigitCode()
 		if err != nil {
 			return nil, err
 		}

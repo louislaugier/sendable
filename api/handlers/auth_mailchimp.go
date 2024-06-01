@@ -22,7 +22,7 @@ func MailchimpAuthHandler(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "method not allowed", http.StatusMethodNotAllowed)
 	}
 
-	body := models.MailchimpAuthRequest{}
+	body := models.AuthMailchimpRequest{}
 
 	if err := json.NewDecoder(r.Body).Decode(&body); err != nil {
 		log.Printf("mailchimpAuthHandler: Error decoding JSON: %v", err)
