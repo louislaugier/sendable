@@ -14,7 +14,7 @@ import { googleOauthClientId } from "./constants/oauth/clientIds";
 import { AuthModalProvider } from "./contexts/AuthModalContext";
 import { ErrorOccurredModalProvider } from "./contexts/ErrorOccurredModalContext";
 import "swagger-ui-react/swagger-ui.css"
-import Breadcrumb from "./components/single_components/Breadcrumb";
+import Breadcrumb from "./components/Breadcrumb";
 import Footer from "./components/Footer";
 import Nav from "./components/Nav";
 

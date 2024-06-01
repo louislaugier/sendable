@@ -11,7 +11,7 @@ import { ChevronDownIcon } from "~/components/icons/ChevronDownIcon";
 import { FiExternalLink } from "react-icons/fi";
 import { pages } from "~/constants/pages";
 import { SubscriptionType } from "~/types/subscription";
-import { GoogleOneTap } from "./single_components/AuthButtons/GoogleAuthButton";
+import { GoogleOneTap } from "./buttons/AuthButtons/GoogleAuthButton";
 import SignupLoginModal from "./modals/SignupLoginModal";
 
 export default function Nav() {

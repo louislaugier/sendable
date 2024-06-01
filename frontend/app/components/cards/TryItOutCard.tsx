@@ -8,7 +8,7 @@ import { isValidEmail, } from "~/services/utils/email";
 import { Reachability } from "~/types/email";
 import { AuthModalType } from "~/types/modal";
 import { navigateToUrl } from "~/utils/url";
-import ReachabilityChip from "~/components/single_components/ReachabilityReference/ReachabilityChip";
+import ReachabilityChip from "~/components/dropdowns/ReachabilityReference/ReachabilityChip";
 
 export default function TryItOut() {
     const { user } = useContext(UserContext);

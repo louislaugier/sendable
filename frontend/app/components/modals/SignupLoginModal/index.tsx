@@ -1,7 +1,7 @@
 import { useContext, useState } from "react";
 import { Modal, ModalContent, ModalHeader, ModalBody, ModalFooter, Button } from "@nextui-org/react";
 import UserContext from "~/contexts/UserContext";
-import AuthButtons from "~/components/single_components/AuthButtons";
+import AuthButtons from "~/components/buttons/AuthButtons";
 
 export default function SignupLoginModal(props: any) {
     const { isOpen, onClose, onOpenChange, modalType } = props;

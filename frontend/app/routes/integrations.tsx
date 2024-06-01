@@ -6,9 +6,9 @@ import SalesforceFullLogo from "~/components/icons/logos/SalesforceFullLogo";
 import SendgridFullLogo from "~/components/icons/logos/SendgridFullLogo";
 import ZohoFullLogo from "~/components/icons/logos/ZohoFullLogo";
 import IntegrationCard from "~/components/cards/IntegrationCard";
-import HubspotAuthButton from "~/components/single_components/AuthButtons/HubspotAuthButton";
-import SalesforceAuthButton from "~/components/single_components/AuthButtons/SalesforceAuthButton";
-import ZohoAuthButton from "~/components/single_components/AuthButtons/ZohoAuthButton";
+import HubspotAuthButton from "~/components/buttons/AuthButtons/HubspotAuthButton";
+import SalesforceAuthButton from "~/components/buttons/AuthButtons/SalesforceAuthButton";
+import ZohoAuthButton from "~/components/buttons/AuthButtons/ZohoAuthButton";
 
 export const meta: MetaFunction = () => {
   return [

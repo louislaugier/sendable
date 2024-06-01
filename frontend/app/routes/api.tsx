@@ -7,9 +7,9 @@ import { AuthModalType } from "~/types/modal";
 import UserContext from "~/contexts/UserContext";
 import { navigateToUrl } from "~/utils/url";
 import CodeSnippetsSection from "~/components/page_sections/api/CodeSnippetsSection";
-import ApiReference from "~/components/single_components/ApiReference";
 import ApiLimitsTable from "~/components/tables/ApiLimitsTable";
 import NewApiKeyModal from "~/components/modals/NewApiKeyModal";
+import ApiReference from "~/components/dropdowns/ApiReference";
 
 export const meta: MetaFunction = () => {
   return [

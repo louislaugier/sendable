@@ -4,8 +4,8 @@ import TextEmailValidator from "./TextEmailValidator";
 import FileEmailValidator from "./FileEmailValidator";
 import { navigateToUrl } from "~/utils/url";
 import NewApiKeyModal from "~/components/modals/NewApiKeyModal";
-import ApiReference from "~/components/single_components/ApiReference";
-import ReachabilityReference from "~/components/single_components/ReachabilityReference";
+import ApiReference from "~/components/dropdowns/ApiReference";
+import ReachabilityReference from "~/components/dropdowns/ReachabilityReference";
 
 export default function EmailValidatorTab(props: any) {
 
