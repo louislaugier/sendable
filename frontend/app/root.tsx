@@ -12,7 +12,7 @@ import { UserProvider } from "./contexts/UserContext";
 import { GoogleOAuthProvider } from "@react-oauth/google";
 import { googleOauthClientId } from "./constants/oauth/clientIds";
 import { AuthModalProvider } from "./contexts/AuthModalContext";
-import { ErrorOccuredModalProvider } from "./contexts/ErrorOccuredModalContext";
+import { ErrorOccurredModalProvider } from "./contexts/ErrorOccurredModalContext";
 import "swagger-ui-react/swagger-ui.css"
 import Breadcrumb from "./components/single_components/Breadcrumb";
 import Footer from "./components/single_components/Footer";
@@ -32,7 +32,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
         <Links />
       </head>
       <body>
-        <ErrorOccuredModalProvider>
+        <ErrorOccurredModalProvider>
           <UserProvider>
             <AuthModalProvider>
 
@@ -51,13 +51,11 @@ export function Layout({ children }: { children: React.ReactNode }) {
                     <Footer />
 
                   </GoogleOAuthProvider>
-
                 </main>
               </NextUIProvider>
-
             </AuthModalProvider>
           </UserProvider>
-        </ErrorOccuredModalProvider>
+        </ErrorOccurredModalProvider>
         <ScrollRestoration />
         <Scripts />
       </body>

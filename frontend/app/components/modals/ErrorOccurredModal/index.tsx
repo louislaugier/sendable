@@ -1,6 +1,6 @@
 import { Modal, ModalContent, ModalHeader, ModalBody, ModalFooter, Button } from "@nextui-org/react";
 
-const ErrorOccuredModal = (props: any) => {
+const ErrorOccurredModal = (props: any) => {
     const { isOpen, onClose, onOpenChange } = props
 
     return (
@@ -16,7 +16,7 @@ const ErrorOccuredModal = (props: any) => {
                 {(onClose) => (
                     <>
                         <ModalHeader className="flex flex-col gap-1">Unexpected error</ModalHeader>
-                        <ModalBody>An error occured. Please try again.</ModalBody>
+                        <ModalBody>An error occurred. Please try again.</ModalBody>
                         <ModalFooter>
                             <Button color="danger" variant="bordered" onPress={onClose}>
                                 Close
@@ -29,4 +29,4 @@ const ErrorOccuredModal = (props: any) => {
     );
 };
 
-export default ErrorOccuredModal;
+export default ErrorOccurredModal;

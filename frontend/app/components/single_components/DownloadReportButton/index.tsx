@@ -1,7 +1,7 @@
 import { Tooltip, Button, Link } from "@nextui-org/react"
 import { useState } from "react"
 import { apiBaseUrl } from "~/constants/api"
-import { useErrorOccuredModal } from "~/contexts/ErrorOccuredModalContext"
+import { useErrorOccurredModal } from "~/contexts/ErrorOccurredModalContext"
 import DownloadIcon from "~/components/icons/DownloadIcon"
 import { navigateToUrl } from "~/utils/url"
 
@@ -10,7 +10,7 @@ export default function DownloadReportButton(props: any) {
 
     const [isLoading, setLoading] = useState(false)
 
-    const { setErrorOccuredModalVisible } = useErrorOccuredModal();
+    const { setErrorOccurredModalVisible } = useErrorOccurredModal();
 
     const downloadReport = async (e: any) => {
         e.preventDefault()
@@ -19,7 +19,7 @@ export default function DownloadReportButton(props: any) {
         try {
             navigateToUrl(`${apiBaseUrl}/reports/${validationId}.csv.zip?token=${reportToken}`)
         } catch (error) {
-            setErrorOccuredModalVisible(true)
+            setErrorOccurredModalVisible(true)
         }
 
         setLoading(false)
