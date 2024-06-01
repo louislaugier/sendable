@@ -5,14 +5,14 @@ import AuthModalContext from "~/contexts/AuthModalContext";
 import UserContext from "~/contexts/UserContext";
 import { AuthModalType } from "~/types/modal";
 import { isCurrentUrl } from "~/utils/url";
-import SignupLogin from "../../modals/SignupLoginModal";
-import { GoogleOneTap } from "../AuthButtons/GoogleAuthButton";
 import { Link as RemixLink } from "@remix-run/react";
 import { siteName } from "~/constants/app";
 import { ChevronDownIcon } from "~/components/icons/ChevronDownIcon";
 import { FiExternalLink } from "react-icons/fi";
 import { pages } from "~/constants/pages";
 import { SubscriptionType } from "~/types/subscription";
+import { GoogleOneTap } from "./single_components/AuthButtons/GoogleAuthButton";
+import SignupLoginModal from "./modals/SignupLoginModal";
 
 export default function Nav() {
     const { authModal, modalType, setModalType } = useContext(AuthModalContext);
@@ -165,7 +165,7 @@ export default function Nav() {
                 </NavbarContent>
             </Navbar>
 
-            <SignupLogin modalType={modalType} isOpen={authModal.isOpen} onClose={authModal.onClose} onOpen={authModal.onOpen} onOpenChange={authModal.onOpenChange} />
+            <SignupLoginModal modalType={modalType} isOpen={authModal.isOpen} onClose={authModal.onClose} onOpen={authModal.onOpen} onOpenChange={authModal.onOpenChange} />
         </>
     );
 }

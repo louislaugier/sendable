@@ -3,7 +3,7 @@ import { useContext } from "react";
 import AuthModalContext from "~/contexts/AuthModalContext";
 
 import { AuthModalType } from "~/types/modal";
-import TryItOut from "../../../cards/TryItOutCard";
+import TryItOut from "../../cards/TryItOutCard";
 import UserContext from "~/contexts/UserContext";
 import { navigateToUrl } from "~/utils/url";
 import { limits } from "~/constants/limits";

@@ -4,9 +4,9 @@ import validateEmail from "~/services/api/validate_email";
 import validateEmails from "~/services/api/validate_emails";
 import { isValidEmail } from "~/services/utils/email";
 import { Reachability } from "~/types/email";
-import ReachabilityChip from "../ReachabilityReference/ReachabilityChip";
-import { InvalidDescriptor, ReachableDescriptor, RiskyDescriptor, UnknownDescriptor } from "../ReachabilityReference/ReachabilityDescriptor";
 import RequestSent from "./RequestSent";
+import ReachabilityChip from "~/components/single_components/ReachabilityReference/ReachabilityChip";
+import { ReachableDescriptor, RiskyDescriptor, UnknownDescriptor, InvalidDescriptor } from "~/components/single_components/ReachabilityReference/ReachabilityDescriptor";
 
 export default function TextEmailValidator(props: any) {
     const { resetHistory } = props

@@ -1,8 +1,8 @@
-import { FeatureCard } from "~/components/cards/FeatureCard";
 import { GiCatch, GiConvergenceTarget } from "react-icons/gi";
 import { CiFileOn, CiServer, CiTrash, CiUser } from "react-icons/ci";
 import { RiSpamLine } from "react-icons/ri";
 import { BsMailbox2 } from "react-icons/bs";
+import { FeatureCard } from "~/components/cards/FeatureCard";
 
 const FeaturesSection: React.FC = () => {
     return (

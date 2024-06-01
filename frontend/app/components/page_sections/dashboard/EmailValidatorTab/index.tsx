@@ -2,10 +2,10 @@ import { Tab, Button, Tabs, useDisclosure } from "@nextui-org/react";
 import { useState } from "react";
 import TextEmailValidator from "./TextEmailValidator";
 import FileEmailValidator from "./FileEmailValidator";
-import ApiReference from "../ApiReference";
 import { navigateToUrl } from "~/utils/url";
-import ReachabilityReference from "../ReachabilityReference";
 import NewApiKeyModal from "~/components/modals/NewApiKeyModal";
+import ApiReference from "~/components/single_components/ApiReference";
+import ReachabilityReference from "~/components/single_components/ReachabilityReference";
 
 export default function EmailValidatorTab(props: any) {
 

@@ -2,7 +2,7 @@ import { Button, Link, Tab, Tabs } from "@nextui-org/react";
 import type { MetaFunction } from "@remix-run/node";
 import { useSearchParams } from "@remix-run/react";
 import { useCallback, useContext, useEffect, useState } from "react";
-import EmailValidatorTab from "~/components/single_components/EmailValidatorTab";
+import EmailValidatorTab from "~/components/page_sections/dashboard/EmailValidatorTab";
 import ValidationHistoryTable from "~/components/tables/ValidationHistoryTable";
 import { siteName } from "~/constants/app";
 import UserContext from "~/contexts/UserContext";

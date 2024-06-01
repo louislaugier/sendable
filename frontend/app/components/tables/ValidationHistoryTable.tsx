@@ -1,9 +1,9 @@
 import { Table, TableHeader, TableColumn, TableBody, TableRow, TableCell, Chip, Pagination, Select, SelectItem } from "@nextui-org/react";
 import moment from "moment";
 import { useState, useMemo } from "react";
-import DownloadReportButton from "~/components/single_components/DownloadReportButton";
 import ReachabilityChip from "~/components/single_components/ReachabilityReference/ReachabilityChip";
 import { Validation, ValidationOrigin, ValidationStatus } from "~/types/validation";
+import DownloadReportButton from "../single_components/DownloadReportButton";
 
 const rowsPerPageChoices: any = [
     {
