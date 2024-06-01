@@ -1,8 +1,8 @@
 export const pages = [
     { url: '/dashboard', label: 'Dashboard', requiresAuth: true },
-    { url: "/api", label: "API" },
     { url: "/integrations", label: "Integrations" },
     { url: "/pricing", label: "Pricing" },
+    { url: "/api", label: "API" },
     {
         label: "Resources",
         sublinks: [
