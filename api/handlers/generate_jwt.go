@@ -17,7 +17,7 @@ func GenerateJWTHandler(w http.ResponseWriter, r *http.Request) {
 	jwt, err := middleware.GenerateJWT(user.ID, user.Email)
 	if err != nil || jwt == nil {
 		log.Printf("Error generating JWT: %v", err)
-		http.Error(w, "Internal Sever Error", http.StatusInternalServerError)
+		http.Error(w, "Internal Server Error", http.StatusInternalServerError)
 		return
 	}
 

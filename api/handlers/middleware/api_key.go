@@ -21,7 +21,7 @@ func ValidateAPIKey(next http.Handler) http.Handler {
 		user, err := user.GetByAPIKeySHA256(utils.Encrypt(key))
 		if err != nil || user == nil {
 			log.Printf("Error fetching user: %v", err)
-			http.Error(w, "Internal Sever Error", http.StatusInternalServerError)
+			http.Error(w, "Internal Server Error", http.StatusInternalServerError)
 			return
 		}
 

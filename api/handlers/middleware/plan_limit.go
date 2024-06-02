@@ -39,7 +39,7 @@ func ValidatePlanLimit(next http.Handler) http.Handler {
 		validated, err := validateUserValidationCount(r, validationOrigin, maxCount)
 		if err != nil {
 			log.Printf("Failed to validate user count: %v", err)
-			http.Error(w, "Internal Sever Error", http.StatusInternalServerError)
+			http.Error(w, "Internal Server Error", http.StatusInternalServerError)
 			return
 		} else if !validated {
 			http.Error(w, "Monthly email validation limit reached. Upgrade your current plan to increase your limits.", http.StatusTooManyRequests)

@@ -88,7 +88,7 @@ func ValidateJWT(next http.Handler, requiresConfirmedEmail bool) http.Handler {
 
 		if err != nil {
 			log.Printf("Error parsing JWT: %v", err)
-			http.Error(w, "Internal Sever Error", http.StatusInternalServerError)
+			http.Error(w, "Internal Server Error", http.StatusInternalServerError)
 			return
 		}
 
@@ -98,18 +98,27 @@ func ValidateJWT(next http.Handler, requiresConfirmedEmail bool) http.Handler {
 			u, err := user.GetByID(userID)
 			if err != nil || u == nil {
 				log.Printf("Error fetching user: %v", err)
-				http.Error(w, "Internal Sever Error", http.StatusInternalServerError)
+				http.Error(w, "Internal Server Error", http.StatusInternalServerError)
 				return
 			} else if !u.IsEmailConfirmed && requiresConfirmedEmail {
 				http.Error(w, "Email address is not confirmed", http.StatusBadRequest)
 				return
 			}
 
+			if u.CurrentPlan.Type != models.FreePlan && u.DeletedAt != nil {
+				err := user.Reactivate(userID)
+				if err != nil {
+					log.Printf("Error reactivating user: %v", err)
+					http.Error(w, "Internal Server Error", http.StatusInternalServerError)
+					return
+				}
+			}
+
 			IPaddresses, userAgent := utils.GetIPsFromRequest(r), r.UserAgent()
 			err = user.UpdateIPsAndUserAgent(u.ID, IPaddresses, userAgent)
 			if err != nil {
 				log.Printf("Error updating user's IPs and user agent: %v", err)
-				http.Error(w, "Internal Sever Error", http.StatusInternalServerError)
+				http.Error(w, "Internal Server Error", http.StatusInternalServerError)
 				return
 			}
 

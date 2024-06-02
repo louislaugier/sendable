@@ -14,10 +14,31 @@ import (
 const (
 	insertQuery = "INSERT INTO public.user (id, email, is_email_confirmed, password_sha256, last_ip_addresses, last_user_agent, auth_provider) VALUES ($1, $2, $3, $4, $5, $6, $7);"
 
-	selectQuery               = `SELECT "id", "email", "is_email_confirmed", "email_confirmation_code", "2fa_secret", "created_at", "updated_at" FROM public."user" WHERE %s AND "deleted_at" IS NULL LIMIT 1;`
-	selectByAPIKeySHA256Query = `SELECT "id", "email", "is_email_confirmed", "email_confirmation_code", "created_at", "updated_at" FROM public."user" WHERE "id" IN (SELECT "user_id" FROM public."api_key" WHERE "key_sha256" = $1 AND "deleted_at" IS NULL) AND "deleted_at" IS NULL LIMIT 1;`
-	select2FASecretQuery      = `SELECT "2fa_secret" FROM public."user" WHERE "user_id" = $1 AND "deleted_at" IS NULL LIMIT 1;`
+	// get soft deleted users if they have an ongoing subscription and all non-soft-deleted users who don't have an ongoing subscription
+	selectQuery = `
+		SELECT 
+			u."id", 
+			u."email", 
+			u."is_email_confirmed", 
+			u."password_sha256", 
+			u."email_confirmation_code", 
+			u."2fa_secret", 
+			u."created_at", 
+			u."updated_at"
+		FROM 
+			public."user" u
+		LEFT JOIN 
+			public."subscription" s ON u."id" = s."user_id"
+		WHERE
+			%s
+			(u."deleted_at" IS NOT NULL AND s."cancelled_at" IS NULL) 
+			OR 
+			(u."deleted_at" IS NULL);
+	`
+	select2FASecretQuery = `SELECT "2fa_secret" FROM public."user" WHERE "user_id" = $1 AND "deleted_at" IS NULL LIMIT 1;`
 
+	reactivateQuery                  = "UPDATE public.user SET deleted_at = NULL WHERE id = $1;"
+	set2FASecretQuery                = "UPDATE public.user SET 2fa_secret = $1 WHERE id = $2;"
 	updatePasswordSHA256Query        = "UPDATE public.user SET password_sha256 = $1 WHERE id = $2;"
 	updateEmailAddressQuery          = "UPDATE public.user SET email = $1 WHERE id = $2;"
 	updateEmailConfirmationQuery     = "UPDATE public.user SET is_email_confirmed = true WHERE id = $1;"
@@ -59,7 +80,12 @@ func UpdatePasswordSHA256(userID uuid.UUID, encryptedPassword string) error {
 }
 
 func Set2FASecret(userID uuid.UUID, twoFactorAuthenticationSecret *string) error {
-	_, err := config.DB.Exec(updatePasswordSHA256Query, twoFactorAuthenticationSecret, userID)
+	_, err := config.DB.Exec(set2FASecretQuery, twoFactorAuthenticationSecret, userID)
+	return err
+}
+
+func Reactivate(userID uuid.UUID) error {
+	_, err := config.DB.Exec(reactivateQuery, userID)
 	return err
 }
 
@@ -114,8 +140,9 @@ func GetByTempZohoOauthData(comaSeparatedEmails string, lastIPs, lastUserAgent s
 }
 
 // GetByAPIKeySHA256 retrieves a user by API key SHA256 hash.
-func GetByAPIKeySHA256(apiKeySHA256 string) (*models.User, error) {
-	return getByCriteria(false, selectByAPIKeySHA256Query, apiKeySHA256)
+func GetByAPIKeySHA256(APIKeySHA256 string) (*models.User, error) {
+	query := fmt.Sprintf(selectQuery, `"id" IN (SELECT "user_id" FROM public."api_key" WHERE "key_sha256" = $1 AND "deleted_at" IS NULL)`)
+	return getByCriteria(false, query, APIKeySHA256)
 }
 
 func getByCriteria(isMinimalResponse bool, query string, args ...interface{}) (*models.User, error) {
