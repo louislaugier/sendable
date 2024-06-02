@@ -1,4 +1,4 @@
-import apiClient from "..";
+import apiClient from ".";
 
 const validateEmails = async (data: any, file?: File) => {
     try {

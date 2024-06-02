@@ -1,4 +1,4 @@
-import apiClient from "..";
+import apiClient from ".";
 
 const getValidationHistory = async (limit: number | undefined = undefined, offset: number | undefined = undefined) => {
     if (!apiClient.defaults.headers.common['Authorization']) return

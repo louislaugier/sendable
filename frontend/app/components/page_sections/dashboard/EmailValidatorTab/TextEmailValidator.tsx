@@ -1,12 +1,12 @@
 import { Textarea, Button, Chip } from "@nextui-org/react";
 import { useState } from "react";
-import validateEmail from "~/services/api/validate_email";
-import validateEmails from "~/services/api/validate_emails";
 import { isValidEmail } from "~/services/utils/email";
 import { Reachability } from "~/types/email";
 import RequestSent from "./RequestSent";
 import ReachabilityChip from "~/components/dropdowns/ReachabilityReference/ReachabilityChip";
 import { ReachableDescriptor, RiskyDescriptor, UnknownDescriptor, InvalidDescriptor } from "~/components/dropdowns/ReachabilityReference/ReachabilityDescriptor";
+import validateEmail from "~/services/api/validate_email";
+import validateEmails from "~/services/api/validate_emails";
 
 export default function TextEmailValidator(props: any) {
     const { resetHistory } = props

@@ -13,15 +13,13 @@ import (
 )
 
 const (
-	insertQuery = "INSERT INTO public.user (id, email, is_email_confirmed, password_sha256, last_ip_addresses, last_user_agent, auth_provider) VALUES ($1, $2, $3, $4, $5, $6, $7);"
+	insertQuery = "INSERT INTO public.user (id, email, is_email_confirmed, last_ip_addresses, last_user_agent, auth_provider) VALUES ($1, $2, $3, $4, $5, $6, $7);"
 
-	// get soft deleted users if they have an ongoing subscription (to be reactivated on auth) and all non-soft-deleted users
 	selectQuery = `
 		SELECT 
 			u."id", 
 			u."email", 
 			u."is_email_confirmed", 
-			u."password_sha256", 
 			u."email_confirmation_code", 
 			u."2fa_secret", 
 			u."created_at", 
@@ -32,9 +30,13 @@ const (
 			public."subscription" s ON u."id" = s."user_id"
 		WHERE
 			%s
-			(u."deleted_at" IS NOT NULL AND s."cancelled_at" IS NULL) 
-			OR 
-			(u."deleted_at" IS NULL);
+			AND
+			(
+				-- get soft deleted users if they have an ongoing subscription (to be reactivated on auth) and all non-soft-deleted users
+				(u."deleted_at" IS NOT NULL AND s."cancelled_at" IS NULL) 
+				OR 
+				(u."deleted_at" IS NULL)
+			);
 	`
 	select2FASecretQuery = `SELECT "2fa_secret" FROM public."user" WHERE "user_id" = $1 AND "deleted_at" IS NULL LIMIT 1;`
 
@@ -102,30 +104,30 @@ func UpdateIPsAndUserAgent(userID uuid.UUID, IPs, userAgent string) error {
 }
 
 func GetByEmailAndConfirmationCode(email string, confirmationCode int) (*models.User, error) {
-	query := fmt.Sprintf(selectQuery, "email = $1 AND email_confirmation_code = $2")
+	query := fmt.Sprintf(selectQuery, "u.email = $1 AND u.email_confirmation_code = $2")
 	return getByCriteria(false, query, email, confirmationCode)
 }
 
 // GetByEmailAndProvider retrieves a user by email and provider.
 func GetByEmailAndProvider(email string, provider models.AuthProvider) (*models.User, error) {
-	query := fmt.Sprintf(selectQuery, "email = $1 AND auth_provider = $2")
+	query := fmt.Sprintf(selectQuery, "u.email = $1 AND u.auth_provider = $2")
 	return getByCriteria(false, query, email, provider)
 }
 
 // GetByEmailAndPasswordSHA256 retrieves a user by email and password SHA256 hash.
 func GetByEmailAndPasswordSHA256(email, passwordSHA256 string) (*models.User, error) {
-	query := fmt.Sprintf(selectQuery, "email = $1 AND password_sha256 = $2")
+	query := fmt.Sprintf(selectQuery, "u.email = $1 AND u.password_sha256 = $2")
 	return getByCriteria(false, query, email, passwordSHA256)
 }
 
 // GetByID retrieves a user by ID.
 func GetByID(ID uuid.UUID) (*models.User, error) {
-	query := fmt.Sprintf(selectQuery, "id = $1")
+	query := fmt.Sprintf(selectQuery, "u.id = $1")
 	return getByCriteria(false, query, ID)
 }
 
 func GetByIDAndPasswordSHA256(ID uuid.UUID, passwordSHA256 string) (*models.User, error) {
-	query := fmt.Sprintf(selectQuery, "id = $1 AND password_sha256 = $2")
+	query := fmt.Sprintf(selectQuery, "u.id = $1 AND u.password_sha256 = $2")
 	return getByCriteria(false, query, ID, passwordSHA256)
 }
 
@@ -142,13 +144,13 @@ func Get2FASecretByID(ID uuid.UUID) (*string, error) {
 
 // GetByTempZohoOauthData retrieves a user by temporary oauth data (Zoho flow).
 func GetByTempZohoOauthData(comaSeparatedEmails string, lastIPs, lastUserAgent string) (*models.User, error) {
-	query := fmt.Sprintf(selectQuery, "email = $1 AND auth_provider = $2 AND last_ip_addresses = $3 AND last_user_agent = $4")
+	query := fmt.Sprintf(selectQuery, "u.email = $1 AND u.auth_provider = $2 AND u.last_ip_addresses = $3 AND u.last_user_agent = $4")
 	return getByCriteria(false, query, comaSeparatedEmails, models.ZohoProvider, lastIPs, lastUserAgent)
 }
 
 // GetByAPIKeySHA256 retrieves a user by API key SHA256 hash.
 func GetByAPIKeySHA256(APIKeySHA256 string) (*models.User, error) {
-	query := fmt.Sprintf(selectQuery, `"id" IN (SELECT "user_id" FROM public."api_key" WHERE "key_sha256" = $1 AND "deleted_at" IS NULL)`)
+	query := fmt.Sprintf(selectQuery, `"u.id" IN (SELECT "user_id" FROM public."api_key" WHERE "key_sha256" = $1 AND "deleted_at" IS NULL)`)
 	return getByCriteria(false, query, APIKeySHA256)
 }
 

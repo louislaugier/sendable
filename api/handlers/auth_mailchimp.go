@@ -51,7 +51,7 @@ func MailchimpAuthHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	if user.Is2FAEnabled {
-		json.NewEncoder(w).Encode(models.User{
+		json.NewEncoder(w).Encode(models.PreAuthUser{
 			ID:           user.ID,
 			Is2FAEnabled: true,
 		})

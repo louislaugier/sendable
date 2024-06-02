@@ -19,9 +19,10 @@ export default function ZohoAuthButton(props: any) {
 
   const [isLoading, setLoading] = useState(false);
 
+  const { setTemp2faUserId } = useContext(UserContext)
   useEffect(() => {
     const handle = (event: MessageEvent<AuthCodeEvent>) => {
-      handleAuthCode(event, setUser, zohoAuth, setLoading, zohoAuthCodeKey, zohoStateKey);
+      handleAuthCode(event, setUser, setTemp2faUserId, zohoAuth, setLoading, zohoAuthCodeKey, zohoStateKey);
     };
 
     window.addEventListener('message', handle);

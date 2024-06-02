@@ -19,8 +19,9 @@ export default function SalesforceAuthButton(props: any) {
 
   const [isLoading, setLoading] = useState(false);
 
+  const { setTemp2faUserId } = useContext(UserContext)
   useEffect(() => {
-    const handle = (event: MessageEvent<AuthCodeEvent>) => handleAuthCode(event, setUser, salesforceAuth, setLoading, salesforceAuthCodeKey, salesforceStateKey, salesforceCodeVerifierKey);
+    const handle = (event: MessageEvent<AuthCodeEvent>) => handleAuthCode(event, setUser, setTemp2faUserId, salesforceAuth, setLoading, salesforceAuthCodeKey, salesforceStateKey, salesforceCodeVerifierKey);
 
     window.addEventListener('message', handle);
     return () => window.removeEventListener('message', handle);

@@ -19,11 +19,19 @@ const (
 
 type (
 	AuthProvider string
-	User         struct {
+
+	PreAuthUser struct {
+		ID           uuid.UUID `json:"id"`
+		Is2FAEnabled bool      `json:"is2faEnabled"`
+	}
+
+	User struct {
 		ID                    uuid.UUID `json:"id"`
 		Email                 string    `json:"email"`
 		IsEmailConfirmed      bool      `json:"isEmailConfirmed"`
 		EmailConfirmationCode *int      `json:"-"`
+
+		PasswordSHA256 string `json:"passwordSha256"`
 
 		JWT                 string        `json:"jwt"`
 		AuthProvider        *AuthProvider `json:"authProvider,omitempty"`

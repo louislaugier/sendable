@@ -1,8 +1,8 @@
 import apiClient from "..";
 
-const generateApiKey = async (label: string) => {
+const twoFactorAuth = async (data: any) => {
     try {
-        const response = await apiClient.get(`generate_api_key?label=${label}`);
+        const response = await apiClient.post(`auth_2fa`, data);
         return response.data;
     } catch (error: any) {
         console.error('Error:', error);
@@ -10,4 +10,4 @@ const generateApiKey = async (label: string) => {
     }
 };
 
-export default generateApiKey;
+export default twoFactorAuth;

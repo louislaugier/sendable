@@ -46,6 +46,7 @@ func handleHTTP(mux *http.ServeMux) {
 		http.HandlerFunc(handlers.ZohoAuthSetEmailHandler),
 		false,
 	), true)
+	handle(mux, "/auth_2fa", http.HandlerFunc(handlers.Auth2FAHandler), true)
 
 	handle(mux, "/me", middleware.ValidateJWT(
 		http.HandlerFunc(handlers.MeHandler),

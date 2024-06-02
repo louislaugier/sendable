@@ -16,9 +16,10 @@ export default function MailchimpAuthButton() {
 
   const { setUser } = useContext(UserContext)
 
+  const { setTemp2faUserId } = useContext(UserContext)
   useEffect(() => {
     const handle = (event: MessageEvent<AuthCodeEvent>) => {
-      handleAuthCode(event, setUser, mailchimpAuth, setLoading, mailchimpAuthCodeKey, mailchimpStateKey);
+      handleAuthCode(event, setUser, setTemp2faUserId, mailchimpAuth, setLoading, mailchimpAuthCodeKey, mailchimpStateKey);
     };
 
     window.addEventListener('message', handle);

@@ -26,7 +26,7 @@ const DeleteAccountModal = (props: any) => {
                         <ModalHeader className="flex flex-col gap-1">Delete my account and personal data</ModalHeader>
                         <ModalBody>
                             <p>You are about to delete your account.</p>
-                            <p className="mb-2">{user?.currentPlan.type !== SubscriptionType.Free && <>Because your account has an ongoing plan <b>({user?.currentPlan.type})</b>, we will deactivate your account until the next scheduled billing date. Logging back in or using the API will reactivate your account.</>}</p>
+                            {user?.currentPlan.type !== SubscriptionType.Free && <p>Because your account has an ongoing plan <b>({user?.currentPlan.type})</b>, we will deactivate your account until the next scheduled billing date. Logging back in or using the API will reactivate your account.</p>}
 
                             <Input
                                 onPaste={(e) => e.preventDefault()}
@@ -38,16 +38,14 @@ const DeleteAccountModal = (props: any) => {
                                 onValueChange={setInputValue}
                                 placeholder={"Enter the text above"}
                                 labelPlacement="outside"
-                                className="max-w-xs"
+                                className="max-w-xs mt-2"
                             />
                         </ModalBody>
                         <ModalFooter>
                             <Button color={"primary"} variant="shadow" onPress={() => {
                                 setInputValueErrorMsg("")
 
-                                if (inputValue !== "delete my account") {
-                                    setInputValueErrorMsg(`You must exactly write "delete my account"`)
-                                }
+                                if (inputValue !== "delete my account") setInputValueErrorMsg(`You must exactly write "delete my account"`)
                             }}>
                                 Delete account
                             </Button>

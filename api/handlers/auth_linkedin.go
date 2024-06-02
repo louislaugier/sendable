@@ -57,7 +57,7 @@ func processLinkedinAuthenticatedUser(w http.ResponseWriter, r *http.Request, em
 	}
 
 	if u.Is2FAEnabled {
-		json.NewEncoder(w).Encode(models.User{
+		json.NewEncoder(w).Encode(models.PreAuthUser{
 			ID:           u.ID,
 			Is2FAEnabled: true,
 		})

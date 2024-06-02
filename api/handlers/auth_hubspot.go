@@ -41,7 +41,7 @@ func HubspotAuthHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	if user.Is2FAEnabled {
-		json.NewEncoder(w).Encode(models.User{
+		json.NewEncoder(w).Encode(models.PreAuthUser{
 			ID:           user.ID,
 			Is2FAEnabled: true,
 		})
@@ -100,8 +100,6 @@ func createConfirmedUserFromHubspotAuth(userInfo *models.HubspotUser, r *http.Re
 		LastIPAddresses:  utils.GetIPsFromRequest(r),
 		LastUserAgent:    r.UserAgent(),
 		AuthProvider:     &hubspotProvider,
-		CreatedAt:        time.Now(),
-		UpdatedAt:        time.Now(),
 		CurrentPlan:      models.EmptyFreePlan(),
 	}
 

@@ -1,6 +1,6 @@
 import { Modal, ModalContent, ModalHeader, ModalBody, ModalFooter, Button, Input, Snippet } from "@nextui-org/react";
 import { useState } from "react";
-import generateApiKey from "~/services/api/api_key";
+import generateApiKey from "~/services/api/generate_api_key";
 
 const NewApiKeyModal = (props: any) => {
     const [isLoading, setLoading] = useState(false);

@@ -19,9 +19,10 @@ export default function HubspotAuthButton(props: any) {
 
     const [isLoading, setLoading] = useState(false);
 
+    const { setTemp2faUserId } = useContext(UserContext)
     useEffect(() => {
         const handle = (event: MessageEvent<AuthCodeEvent>) => {
-            handleAuthCode(event, setUser, hubspotAuth, setLoading, hubspotAuthCodeKey, hubspotStateKey);
+            handleAuthCode(event, setUser, setTemp2faUserId, hubspotAuth, setLoading, hubspotAuthCodeKey, hubspotStateKey);
         };
 
         window.addEventListener('message', handle);

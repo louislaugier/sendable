@@ -17,9 +17,10 @@ export default function LinkedinAuthButton() {
 
     const { setUser } = useContext(UserContext)
 
+    const { setTemp2faUserId } = useContext(UserContext)
     useEffect(() => {
         const handle = (event: MessageEvent<AuthCodeEvent>) => {
-            handleAuthCode(event, setUser, linkedinAuth, setLoading, linkedinAuthCodeKey, linkedinStateKey);
+            handleAuthCode(event, setUser, setTemp2faUserId, linkedinAuth, setLoading, linkedinAuthCodeKey, linkedinStateKey);
         };
 
         window.addEventListener('message', handle);

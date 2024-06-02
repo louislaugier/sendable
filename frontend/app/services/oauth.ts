@@ -2,8 +2,9 @@ import { AuthCodeEvent } from "~/types/oauth";
 import { User } from "~/types/user";
 import { navigateToUrl } from "~/utils/url";
 import { fetchSalesforcePKCE } from "./utils/salesforce/pkce";
+import { Dispatch, SetStateAction } from "react";
 
-export const handleAuthCode = (event: MessageEvent<AuthCodeEvent>, setUser: React.Dispatch<React.SetStateAction<User | null>>, auth: (data: any) => Promise<any>, setLoading: React.Dispatch<React.SetStateAction<boolean>>, authCodeKey: string, stateKey: string, salesforceCodeVerifierKey?: string) => {
+export const handleAuthCode = (event: MessageEvent<AuthCodeEvent>, setUser: React.Dispatch<React.SetStateAction<User | null>>, setTemp2faUserId: Dispatch<SetStateAction<boolean>>, auth: (data: any) => Promise<any>, setLoading: React.Dispatch<React.SetStateAction<boolean>>, authCodeKey: string, stateKey: string, salesforceCodeVerifierKey?: string) => {
     setLoading(true);
 
     if (event.origin !== window.location.origin) {
@@ -27,8 +28,10 @@ export const handleAuthCode = (event: MessageEvent<AuthCodeEvent>, setUser: Reac
             auth({ code, code_verifier: codeVerifier })
                 .then((res: any) => {
                     if (res) {
-                        setUser(res)
-                        navigateToUrl('/dashboard')
+                        if (res.email) {
+                            setUser(res)
+                            navigateToUrl('/dashboard')
+                        } else if (res.is2faEnabled) setTemp2faUserId(res.userId)
                     }
                 })
                 .catch(error => {

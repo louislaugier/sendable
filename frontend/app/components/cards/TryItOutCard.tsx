@@ -3,12 +3,12 @@ import { useState, useContext } from "react";
 import AuthModalContext from "~/contexts/AuthModalContext";
 import UserContext from "~/contexts/UserContext";
 import { MailIcon } from "~/components/icons/MailIcon";
-import validateEmail from "~/services/api/validate_email";
 import { isValidEmail, } from "~/services/utils/email";
 import { Reachability } from "~/types/email";
 import { AuthModalType } from "~/types/modal";
 import { navigateToUrl } from "~/utils/url";
 import ReachabilityChip from "~/components/dropdowns/ReachabilityReference/ReachabilityChip";
+import validateEmail from "~/services/api/validate_email";
 
 export default function TryItOut() {
     const { user } = useContext(UserContext);

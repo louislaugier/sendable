@@ -9,15 +9,18 @@ import { navigateToUrl } from "~/utils/url";
 export default function GoogleAuthButton() {
     const [isLoading, setLoading] = useState(false);
 
-    const { setUser } = useContext(UserContext)
+    const { setUser, setTemp2faUserId } = useContext(UserContext)
 
     const onSuccess = async (tokenResponse: any) => {
         setLoading(true);
 
         try {
             let res = await googleAuth({ access_token: tokenResponse.access_token });
-            setUser(res)
-            navigateToUrl('/dashboard')
+
+            if (res.email) {
+                setUser(res)
+                navigateToUrl('/dashboard')
+            } else if (res.is2faEnabled) setTemp2faUserId(res.userId)
         } catch { }
 
         setLoading(false)

@@ -4,10 +4,14 @@ import { User, UserContextType } from "~/types/user";
 
 const UserContext = createContext<UserContextType>({
     user: null,
-    setUser: () => { }
+    setUser: () => { },
+    temp2faUserId: false,
+    setTemp2faUserId: () => { }
 });
 
 export const UserProvider: React.FC<React.PropsWithChildren<{}>> = ({ children }) => {
+    const [temp2faUserId, setTemp2faUserId] = useState<boolean>(false)
+
     // Initialize user state from localStorage to handle refreshes more consistently
     const [user, setUser] = useState<User | null>(() => {
         if (typeof window !== 'undefined') {
@@ -31,7 +35,7 @@ export const UserProvider: React.FC<React.PropsWithChildren<{}>> = ({ children }
     }, [user]);
 
     // Memorize the context value to prevent unnecessary re-renders
-    const value = useMemo(() => ({ user, setUser }), [user]);
+    const value = useMemo(() => ({ user, setUser, temp2faUserId, setTemp2faUserId }), [user]);
 
     return (
         <UserContext.Provider value={value}>

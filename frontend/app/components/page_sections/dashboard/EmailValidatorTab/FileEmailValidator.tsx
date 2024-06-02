@@ -2,9 +2,9 @@ import { Button, Checkbox, CheckboxGroup, Switch } from "@nextui-org/react";
 import { useState, useRef, useEffect } from "react";
 import { allowedFileTypes } from "~/constants/files";
 import { limits } from "~/constants/limits";
-import validateEmails from "~/services/api/validate_emails";
 import { getColumnNamesFromCSV, getColumnNamesFromXLS } from "~/utils/file";
 import RequestSent from "./RequestSent";
+import validateEmails from "~/services/api/validate_emails";
 
 export default function FileEmailValidator(props: any) {
     const { resetHistory } = props
