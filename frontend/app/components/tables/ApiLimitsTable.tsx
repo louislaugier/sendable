@@ -7,9 +7,9 @@ export default function ApiLimitsTable() {
             <Table removeWrapper aria-label="Example static collection table" className="mb-16">
                 <TableHeader>
                     <TableColumn>PLAN</TableColumn>
-                    <TableColumn>MONTHLY WEB APP LIMIT</TableColumn>
-                    <TableColumn>MONTHLY API LIMIT (SINGLE)</TableColumn>
-                    <TableColumn>MONTHLY API LIMIT (BULK)</TableColumn>
+                    <TableColumn>VIA PLATFORM</TableColumn>
+                    <TableColumn>VIA API</TableColumn>
+                    <TableColumn>VIA API (BULK)</TableColumn>
                 </TableHeader>
                 <TableBody>
                     <TableRow key="1">

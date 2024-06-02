@@ -54,7 +54,7 @@ export default function Api() {
           </Button>}
         </div>
 
-        <h3 className="text-lg mb-4">Limits</h3>
+        <h3 className="text-lg mb-4">Monthly email address validation limits</h3>
         <ApiLimitsTable />
       </div>
 
