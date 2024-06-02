@@ -67,6 +67,10 @@ func handleHTTP(mux *http.ServeMux) {
 		http.HandlerFunc(handlers.Disable2FAHandler),
 		true,
 	), true)
+	handle(mux, "/delete_account", middleware.ValidateJWT(
+		http.HandlerFunc(handlers.DeleteAccountHandler),
+		true,
+	), true)
 
 	handle(mux, "/subscription_history",
 		middleware.ValidateJWT(
