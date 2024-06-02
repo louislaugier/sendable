@@ -62,12 +62,12 @@ func handleZohoUser(emails string, r *http.Request, accessToken string) (*models
 		return nil, err
 	}
 	if u == nil {
-		s := models.ZohoProvider
 		emailConfirmationCode, err := utils.GenerateRandomSixDigitCode()
 		if err != nil {
 			return nil, err
 		}
 
+		s := models.ZohoProvider
 		u := &models.User{
 			ID:                    uuid.New(),
 			Email:                 emails,
