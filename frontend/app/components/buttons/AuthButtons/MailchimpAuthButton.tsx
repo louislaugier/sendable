@@ -14,9 +14,7 @@ const url = 'https://login.mailchimp.com/oauth2/authorize'
 export default function MailchimpAuthButton() {
   const [isLoading, setLoading] = useState(false);
 
-  const { setUser } = useContext(UserContext)
-
-  const { setTemp2faUserId } = useContext(UserContext)
+  const { setUser, setTemp2faUserId } = useContext(UserContext)
   useEffect(() => {
     const handle = (event: MessageEvent<AuthCodeEvent>) => {
       handleAuthCode(event, setUser, setTemp2faUserId, mailchimpAuth, setLoading, mailchimpAuthCodeKey, mailchimpStateKey);

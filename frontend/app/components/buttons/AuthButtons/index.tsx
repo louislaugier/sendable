@@ -24,7 +24,8 @@ export default function AuthButtons(props: any) {
 
     const [twoFactorAuthCode, setTwoFactorAuthCode] = useState("")
     const [twoFactorAuthCodeErrorMsg, setTwoFactorAuthCodeErrorMsg] = useState("")
-
+    console.log(temp2faUserId)
+    
     return (
         !!temp2faUserId ?
             <>

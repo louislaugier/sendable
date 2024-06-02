@@ -15,11 +15,9 @@ const scope = 'ZohoCRM.modules.contacts.READ ZohoCRM.modules.leads.READ ZohoCRM.
 export default function ZohoAuthButton(props: any) {
   const { customText } = props;
 
-  const { setUser } = useContext(UserContext)
-
   const [isLoading, setLoading] = useState(false);
 
-  const { setTemp2faUserId } = useContext(UserContext)
+  const { setUser, setTemp2faUserId } = useContext(UserContext)
   useEffect(() => {
     const handle = (event: MessageEvent<AuthCodeEvent>) => {
       handleAuthCode(event, setUser, setTemp2faUserId, zohoAuth, setLoading, zohoAuthCodeKey, zohoStateKey);

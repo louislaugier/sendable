@@ -15,11 +15,9 @@ const url = 'https://login.salesforce.com/services/oauth2/authorize'
 export default function SalesforceAuthButton(props: any) {
   const { customText } = props;
 
-  const { setUser } = useContext(UserContext)
-
   const [isLoading, setLoading] = useState(false);
 
-  const { setTemp2faUserId } = useContext(UserContext)
+  const { setUser, setTemp2faUserId } = useContext(UserContext)
   useEffect(() => {
     const handle = (event: MessageEvent<AuthCodeEvent>) => handleAuthCode(event, setUser, setTemp2faUserId, salesforceAuth, setLoading, salesforceAuthCodeKey, salesforceStateKey, salesforceCodeVerifierKey);
 
