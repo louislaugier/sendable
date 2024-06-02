@@ -19,8 +19,8 @@ export interface User {
 export interface UserContextType {
     user: User | null;
     setUser: Dispatch<SetStateAction<User | null>>;
-    temp2faUserId: boolean,
-    setTemp2faUserId: Dispatch<SetStateAction<boolean>>
+    temp2faUserId: string | null,
+    setTemp2faUserId: Dispatch<SetStateAction<string | null>>
 }
 
 export interface UserValidationCounts {

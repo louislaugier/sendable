@@ -26,7 +26,6 @@ func Verify2FA(code, secret string) bool {
 func GetCurrentCode(secret string, timestamp int64) string {
 	// Convert the secret from base32 to bytes
 	key, _ := base32.StdEncoding.DecodeString(strings.ToUpper(secret))
-
 	// Convert the timestamp to bytes
 	message := toBytes(timestamp / 30)
 
@@ -55,9 +54,9 @@ func GetCurrentCode(secret string, timestamp int64) string {
 }
 
 func toBytes(value int64) []byte {
-	var result []byte
-	for value > 0 {
-		result = append(result, byte(value&0xFF))
+	result := make([]byte, 8)
+	for i := 7; i >= 0; i-- {
+		result[i] = byte(value & 0xFF)
 		value >>= 8
 	}
 	return result

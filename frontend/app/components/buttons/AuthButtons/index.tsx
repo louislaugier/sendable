@@ -18,7 +18,7 @@ import { navigateToUrl } from "~/utils/url";
 export default function AuthButtons(props: any) {
     const { isSubmitButtonVisible, setSubmitButtonVisible } = props
 
-    const { setUser, temp2faUserId } = useContext(UserContext)
+    const { setUser, temp2faUserId, setTemp2faUserId } = useContext(UserContext)
 
     const [isLoading, setLoading] = useState(false)
 
@@ -36,9 +36,12 @@ export default function AuthButtons(props: any) {
 
                         try {
                             const res = await twoFactorAuth({ userId: temp2faUserId, twoFactorAuthenticationCode: twoFactorAuthCode })
+                            setTemp2faUserId(null)
                             setUser(res)
                             navigateToUrl('/dashboard')
-                        } catch { }
+                        } catch {
+                            setTwoFactorAuthCodeErrorMsg("Wrong 2FA code.")
+                        }
 
                         setLoading(false)
                     }} className="mb-2" color="primary" variant="shadow">

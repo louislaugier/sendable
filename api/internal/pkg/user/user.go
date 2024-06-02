@@ -38,13 +38,15 @@ const (
 				(u."deleted_at" IS NULL)
 			);
 	`
-	select2FASecretQuery = `SELECT "2fa_secret" FROM public."user" WHERE "user_id" = $1 AND "deleted_at" IS NULL LIMIT 1;`
+	select2FASecretQuery = `SELECT "2fa_secret" FROM public."user" WHERE "id" = $1 AND "deleted_at" IS NULL LIMIT 1;`
 
-	set2FASecretQuery                = "UPDATE public.user SET 2fa_secret = $1 WHERE id = $2;"
-	updatePasswordSHA256Query        = "UPDATE public.user SET password_sha256 = $1 WHERE id = $2;"
-	updateEmailAddressQuery          = "UPDATE public.user SET email = $1 WHERE id = $2;"
-	updateEmailConfirmationQuery     = "UPDATE public.user SET is_email_confirmed = true WHERE id = $1;"
-	updateEmailConfirmationCodeQuery = "UPDATE public.user SET email_confirmation_code = $1 WHERE id = $2;"
+	set2FASecretQuery = `UPDATE public.user SET "2fa_secret" = $1 WHERE id = $2;`
+	disable2FAQuery   = `UPDATE public.user SET "2fa_secret" = NULL WHERE id = $1;`
+
+	updatePasswordSHA256Query        = `UPDATE public.user SET "password_sha256" = $1 WHERE id = $2;`
+	updateEmailAddressQuery          = `UPDATE public.user SET "email" = $1 WHERE id = $2;`
+	updateEmailConfirmationQuery     = `UPDATE public.user SET "is_email_confirmed" = true WHERE id = $1;`
+	updateEmailConfirmationCodeQuery = `UPDATE public.user SET "email_confirmation_code" = $1 WHERE id = $2;`
 
 	updateIPsAndUserAgentQuery = "UPDATE public.user SET last_ip_addresses = $1, last_user_agent = $2 WHERE id = $3;"
 
@@ -85,6 +87,11 @@ func UpdatePasswordSHA256(userID uuid.UUID, encryptedPassword string) error {
 
 func Set2FASecret(userID uuid.UUID, twoFactorAuthenticationSecret *string) error {
 	_, err := config.DB.Exec(set2FASecretQuery, twoFactorAuthenticationSecret, userID)
+	return err
+}
+
+func Disable2FA(userID uuid.UUID) error {
+	_, err := config.DB.Exec(disable2FAQuery, userID)
 	return err
 }
 
@@ -134,7 +141,7 @@ func GetByIDAndPasswordSHA256(ID uuid.UUID, passwordSHA256 string) (*models.User
 func Get2FASecretByID(ID uuid.UUID) (*string, error) {
 	var secret *string
 
-	err := config.DB.QueryRow(select2FASecretQuery, ID).Scan(secret)
+	err := config.DB.QueryRow(select2FASecretQuery, ID).Scan(&secret)
 	if err != nil {
 		return nil, err
 	}

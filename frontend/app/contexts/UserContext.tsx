@@ -5,12 +5,12 @@ import { User, UserContextType } from "~/types/user";
 const UserContext = createContext<UserContextType>({
     user: null,
     setUser: () => { },
-    temp2faUserId: false,
+    temp2faUserId: null,
     setTemp2faUserId: () => { }
 });
 
 export const UserProvider: React.FC<React.PropsWithChildren<{}>> = ({ children }) => {
-    const [temp2faUserId, setTemp2faUserId] = useState<boolean>(false)
+    const [temp2faUserId, setTemp2faUserId] = useState<string | null>(null)
 
     // Initialize user state from localStorage to handle refreshes more consistently
     const [user, setUser] = useState<User | null>(() => {

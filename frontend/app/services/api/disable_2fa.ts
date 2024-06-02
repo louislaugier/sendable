@@ -1,8 +1,8 @@
 import apiClient from ".";
 
-const disable2fa = async () => {
+const disable2fa = async (data: any) => {
     try {
-        const response = await apiClient.get('disable_2fa');
+        const response = await apiClient.post('disable_2fa', data);
         return response.data;
     } catch (error: any) {
         console.error('Error:', error);

@@ -6,10 +6,14 @@ import { EyeSlashFilledIcon } from "~/components/icons/EyeSlashFilledIcon";
 import TwoFactorAuthCodeInput from "~/components/inputs/TwoFactorAuthCodeInput";
 import DeleteAccountModal from "~/components/modals/DeleteAccountModal";
 import UserContext from "~/contexts/UserContext";
+import disable2fa from "~/services/api/disable_2fa";
+import enable2fa from "~/services/api/enable_2fa";
 import { generate2faSecret, getQrCodeUrl } from "~/services/utils/2fa";
 
 export default function AccountTab() {
-    const { user } = useContext(UserContext)
+    const { user, setUser } = useContext(UserContext)
+
+    const [isLoading, setLoading] = useState(false)
 
     const [email, setEmail] = useState(user?.email ?? "")
     const [emailErrorMsg, setEmailErrorMsg] = useState("")
@@ -25,6 +29,13 @@ export default function AccountTab() {
     const [twoFactorAuthCodeErrorMsg, setTwoFactorAuthCodeErrorMsg] = useState("")
 
     const deleteAccountModal = useDisclosure()
+
+    const reset2faChanges = () => {
+        setEnable2faClicked(false)
+        setGenerated2faSecret("")
+        setTwoFactorAuthCode("")
+        setTwoFactorAuthCodeErrorMsg("")
+    }
 
     return (
         <>
@@ -55,7 +66,7 @@ export default function AccountTab() {
                             </Button>
                         </div>
 
-                        <Divider className="my-8"/>
+                        <Divider className="my-8" />
 
                         <Input
                             label="Current password"
@@ -99,7 +110,7 @@ export default function AccountTab() {
                             </Button>
                         </div>
 
-                        <Divider className="my-8"/>
+                        <Divider className="my-8" />
 
                         <div className="w-full text-center">
                             <p className="mb-2">Two-factor authentication (2FA){user?.is2faEnabled && <b> (enabled)</b>}:</p>
@@ -108,14 +119,28 @@ export default function AccountTab() {
                                     <p className="text-sm">Scan the QR code below using your authenticator app or save the following key:</p>
 
                                     <Snippet symbol='' className="text-sm mt-2 mb-4">{generated2faSecret}</Snippet>
-                                    {user && generated2faSecret && <QRCode value={getQrCodeUrl(user?.email!, generated2faSecret)} />}
+                                    {!!user && generated2faSecret && <QRCode value={getQrCodeUrl(user?.email!, generated2faSecret)} />}
 
                                     <b className="text-sm mb-2 mt-4">Enter the six-digit code from the authenticator app</b>
                                     <p className="text-sm">After scanning the QR code, the app will display a six-digit code that you can enter below.</p>
                                     <div className="flex mt-4 space-x-2">
                                         <TwoFactorAuthCodeInput twoFactorAuthCode={twoFactorAuthCode} twoFactorAuthCodeErrorMsg={twoFactorAuthCodeErrorMsg} setTwoFactorAuthCode={setTwoFactorAuthCode} />
-                                        <Button onClick={() => { }} className="mb-2" color="primary" variant="shadow">
-                                            Confirm
+                                        <Button isDisabled={isLoading} onClick={async () => {
+                                            setLoading(true);
+
+                                            try {
+                                                await enable2fa({ twoFactorAuthenticationCode: twoFactorAuthCode, twoFactorAuthenticationSecret: generated2faSecret })
+
+                                                reset2faChanges()
+
+                                                setUser((prevUser) => { return { ...prevUser!, is2faEnabled: true } })
+                                            } catch {
+                                                setTwoFactorAuthCodeErrorMsg("Wrong 2FA code.")
+                                            }
+
+                                            setLoading(false);
+                                        }} className="mb-2" color="primary" variant="shadow">
+                                            {isLoading ? "Loading..." : "Confirm"}
                                         </Button>
                                     </div>
                                 </div> : <Button onClick={() => {
@@ -128,22 +153,36 @@ export default function AccountTab() {
                                 <div className="flex mt-2 mb-4 space-x-2 justify-center">
                                     <TwoFactorAuthCodeInput twoFactorAuthCode={twoFactorAuthCode} twoFactorAuthCodeErrorMsg={twoFactorAuthCodeErrorMsg} setTwoFactorAuthCode={setTwoFactorAuthCode} />
 
-                                    <Button className="mb-2" color="primary" variant="shadow">
+                                    <Button onClick={async () => {
+                                        setLoading(true);
+
+                                        try {
+                                            await disable2fa({ twoFactorAuthenticationCode: twoFactorAuthCode })
+
+                                            reset2faChanges()
+
+                                            setUser((prevUser) => { return { ...prevUser!, is2faEnabled: false } })
+                                        } catch {
+                                            setTwoFactorAuthCodeErrorMsg("Wrong 2FA code.")
+                                        }
+
+                                        setLoading(false);
+                                    }} className="mb-2" color="primary" variant="shadow">
                                         Disable
                                     </Button>
                                 </div>
                             </>}
                         </div>
 
-                        <Divider className="my-8"/>
+                        <Divider className="my-8" />
 
                         <p className="mb-2">Delete my account and personal data:</p>
-                            <Button onClick={deleteAccountModal.onOpen} className="mb-2" color="danger" variant="bordered">
-                                Delete account
-                            </Button>
+                        <Button onClick={deleteAccountModal.onOpen} className="mb-2" color="danger" variant="bordered">
+                            Delete account
+                        </Button>
                     </CardBody>
                 </Card>
-            </div>
+            </div >
             <DeleteAccountModal isOpen={deleteAccountModal.isOpen} onClose={deleteAccountModal.onClose} onOpenChange={deleteAccountModal.onOpenChange} />
         </>
     )

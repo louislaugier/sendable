@@ -1,9 +1,11 @@
 import { Tabs, Tab } from "@nextui-org/react";
 import type { MetaFunction } from "@remix-run/node";
 import { useSearchParams } from "@remix-run/react";
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import AccountTab from "~/components/page_sections/settings/AccountTab";
 import { siteName } from "~/constants/app";
+import UserContext from "~/contexts/UserContext";
+import { navigateToUrl } from "~/utils/url";
 
 export const meta: MetaFunction = () => {
   return [
@@ -13,6 +15,9 @@ export const meta: MetaFunction = () => {
 };
 
 export default function Settings() {
+  const { user } = useContext(UserContext)
+  if (!user) navigateToUrl('/')
+
   const [searchParams, setSearchParams] = useSearchParams();
 
   const [selectedTab, setSelectedTab] = useState<any>(searchParams.get("tab") ?? "user");
@@ -24,6 +29,7 @@ export default function Settings() {
   }, [selectedTab, setSearchParams]);
 
   return (
+    !!user &&
     <>
       <div className="py-8 px-6">
 

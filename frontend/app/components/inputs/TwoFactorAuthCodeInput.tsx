@@ -6,7 +6,6 @@ export default function TwoFactorAuthCodeInput(props: any) {
     return (
         <>
             <Input
-                min={100000}
                 max={999999}
                 type="number"
                 variant="bordered"

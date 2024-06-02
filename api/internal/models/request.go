@@ -54,4 +54,7 @@ type (
 		TwoFactorAuthenticationCode   string `json:"twoFactorAuthenticationCode"`
 		TwoFactorAuthenticationSecret string `json:"twoFactorAuthenticationSecret"`
 	}
+	Disable2FARequest struct {
+		TwoFactorAuthenticationCode string `json:"twoFactorAuthenticationCode"`
+	}
 )

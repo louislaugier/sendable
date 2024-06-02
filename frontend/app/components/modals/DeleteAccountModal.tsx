@@ -36,7 +36,7 @@ const DeleteAccountModal = (props: any) => {
                                 variant="bordered"
                                 errorMessage={inputValueErrorMsg}
                                 onValueChange={setInputValue}
-                                placeholder={"Enter the text above"}
+                                placeholder={"delete my account"}
                                 labelPlacement="outside"
                                 className="max-w-xs mt-2"
                             />

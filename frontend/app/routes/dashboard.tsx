@@ -98,7 +98,7 @@ export default function Dashboard() {
       <div className="py-8 px-6">
         <div className="flex flex-col items-center mb-4">
           <h2 className="text-2xl">Dashboard</h2>
-          {user && <>
+          {!!user && <>
             <h3 className="text-lg mt-4 mb-2">Current plan: <b>{planType}{isPremiumOrEnterprise && ` (billed ${user?.currentPlan?.billingFrequency})`}</b></h3>
             {user.currentPlan.type !== SubscriptionType.Enterprise && <>
               <p>Remaining validations (this month): <b>{remainingAppValidations.toLocaleString()} / {appValidationLimit.toLocaleString()}</b> email addresses</p>

@@ -49,7 +49,7 @@ export default function Api() {
           }} color="primary" variant="shadow" className="mt-4 mb-16">
             {user ? 'Generate new API key' : 'Get an API key'}
           </Button>
-          {user && <Button onClick={() => navigateToUrl('/settings?tab=api')} color="primary" variant="bordered" className="my-4" >
+          {!!user && <Button onClick={() => navigateToUrl('/settings?tab=api')} color="primary" variant="bordered" className="my-4" >
             Manage API keys
           </Button>}
         </div>
@@ -58,7 +58,7 @@ export default function Api() {
         <ApiLimitsTable />
       </div>
 
-      {user && <NewApiKeyModal isOpen={newApiKeyModal.isOpen} onClose={newApiKeyModal.onClose} onOpenChange={newApiKeyModal.onOpenChange} />}
+      {!!user && <NewApiKeyModal isOpen={newApiKeyModal.isOpen} onClose={newApiKeyModal.onClose} onOpenChange={newApiKeyModal.onOpenChange} />}
     </>
   );
 }
