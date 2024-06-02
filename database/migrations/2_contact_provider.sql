@@ -15,3 +15,16 @@ CREATE TABLE IF NOT EXISTS public."contact_provider" (
     "created_at" TIMESTAMP NOT NULL DEFAULT now(),
     "updated_at" TIMESTAMP NOT NULL DEFAULT now()
 );
+
+CREATE
+OR REPLACE FUNCTION update_timestamp() RETURNS TRIGGER AS $ $ BEGIN NEW.updated_at = NOW();
+
+RETURN NEW;
+
+END;
+
+$ $ language 'plpgsql';
+
+CREATE TRIGGER update_contact_provider_timestamp BEFORE
+UPDATE
+    ON public."contact_provider" FOR EACH ROW EXECUTE PROCEDURE update_timestamp();
