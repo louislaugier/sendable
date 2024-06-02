@@ -7,6 +7,7 @@ import (
 	"email-validator/internal/pkg/validation"
 	"fmt"
 	"log"
+	"time"
 
 	"github.com/google/uuid"
 )
@@ -14,7 +15,7 @@ import (
 const (
 	insertQuery = "INSERT INTO public.user (id, email, is_email_confirmed, password_sha256, last_ip_addresses, last_user_agent, auth_provider) VALUES ($1, $2, $3, $4, $5, $6, $7);"
 
-	// get soft deleted users if they have an ongoing subscription and all non-soft-deleted users who don't have an ongoing subscription
+	// get soft deleted users if they have an ongoing subscription (to be reactivated on auth) and all non-soft-deleted users
 	selectQuery = `
 		SELECT 
 			u."id", 
@@ -37,7 +38,6 @@ const (
 	`
 	select2FASecretQuery = `SELECT "2fa_secret" FROM public."user" WHERE "user_id" = $1 AND "deleted_at" IS NULL LIMIT 1;`
 
-	reactivateQuery                  = "UPDATE public.user SET deleted_at = NULL WHERE id = $1;"
 	set2FASecretQuery                = "UPDATE public.user SET 2fa_secret = $1 WHERE id = $2;"
 	updatePasswordSHA256Query        = "UPDATE public.user SET password_sha256 = $1 WHERE id = $2;"
 	updateEmailAddressQuery          = "UPDATE public.user SET email = $1 WHERE id = $2;"
@@ -45,6 +45,8 @@ const (
 	updateEmailConfirmationCodeQuery = "UPDATE public.user SET email_confirmation_code = $1 WHERE id = $2;"
 
 	updateIPsAndUserAgentQuery = "UPDATE public.user SET last_ip_addresses = $1, last_user_agent = $2 WHERE id = $3;"
+
+	deleteQuery = "UPDATE public.user SET deleted_at = $1 WHERE id = $2;"
 )
 
 // InsertNew inserts a new user into the database.
@@ -84,8 +86,13 @@ func Set2FASecret(userID uuid.UUID, twoFactorAuthenticationSecret *string) error
 	return err
 }
 
+func Delete(userID uuid.UUID, timestamp time.Time) error {
+	_, err := config.DB.Exec(deleteQuery, timestamp, userID)
+	return err
+}
+
 func Reactivate(userID uuid.UUID) error {
-	_, err := config.DB.Exec(reactivateQuery, userID)
+	_, err := config.DB.Exec(deleteQuery, nil, userID)
 	return err
 }
 
