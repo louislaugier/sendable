@@ -28,11 +28,12 @@ export const handleAuthCode = (event: MessageEvent<AuthCodeEvent>, setUser: Reac
             auth({ code, code_verifier: codeVerifier })
                 .then((res: any) => {
                     if (res) {
-                        console.log(res)
                         if (res.email) {
                             setUser(res)
                             navigateToUrl('/dashboard')
-                        } else if (res.is2faEnabled) setTemp2faUserId(res.userId)
+                        } else if (res.is2faEnabled) {
+                            setTemp2faUserId(res.id)
+                        }
                     }
                 })
                 .catch(error => {

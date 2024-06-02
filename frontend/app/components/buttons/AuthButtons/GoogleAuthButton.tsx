@@ -20,7 +20,7 @@ export default function GoogleAuthButton() {
             if (res.email) {
                 setUser(res)
                 navigateToUrl('/dashboard')
-            } else if (res.is2faEnabled) setTemp2faUserId(res.userId)
+            } else if (res.is2faEnabled) setTemp2faUserId(res.id)
         } catch { }
 
         setLoading(false)

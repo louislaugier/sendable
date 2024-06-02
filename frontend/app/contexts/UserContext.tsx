@@ -35,7 +35,7 @@ export const UserProvider: React.FC<React.PropsWithChildren<{}>> = ({ children }
     }, [user]);
 
     // Memorize the context value to prevent unnecessary re-renders
-    const value = useMemo(() => ({ user, setUser, temp2faUserId, setTemp2faUserId }), [user]);
+    const value = useMemo(() => ({ user, setUser, temp2faUserId, setTemp2faUserId }), [user, temp2faUserId]);
 
     return (
         <UserContext.Provider value={value}>
