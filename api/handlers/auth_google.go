@@ -74,14 +74,28 @@ func processGoogleAuthenticatedUser(w http.ResponseWriter, r *http.Request, emai
 	}
 
 	if u == nil {
-		createConfirmedAccountAndBindJWT(w, r, email, &gp)
+		createConfirmedAccount(w, r, email, &gp)
+		return
+	}
+
+	if u.Is2FAEnabled {
+		json.NewEncoder(w).Encode(models.User{
+			ID:           u.ID,
+			Is2FAEnabled: true,
+		})
+
+		return
+	}
+
+	if err := middleware.GenerateAndBindJWT(u); err != nil {
+		handleError(w, err, "Error generating & binding JWT", http.StatusInternalServerError)
 		return
 	}
 
 	json.NewEncoder(w).Encode(u)
 }
 
-func createConfirmedAccountAndBindJWT(w http.ResponseWriter, r *http.Request, email string, provider *models.AuthProvider) {
+func createConfirmedAccount(w http.ResponseWriter, r *http.Request, email string, provider *models.AuthProvider) {
 	u := &models.User{
 		ID:               uuid.New(),
 		Email:            email,
@@ -93,11 +107,6 @@ func createConfirmedAccountAndBindJWT(w http.ResponseWriter, r *http.Request, em
 
 	if err := user.InsertNew(u, nil); err != nil {
 		handleError(w, err, "Error inserting new user", http.StatusInternalServerError)
-		return
-	}
-
-	if err := middleware.GenerateAndBindJWT(u); err != nil {
-		handleError(w, err, "Error generating and binding JWT", http.StatusInternalServerError)
 		return
 	}
 

@@ -50,8 +50,17 @@ func MailchimpAuthHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	if user.Is2FAEnabled {
+		json.NewEncoder(w).Encode(models.User{
+			ID:           user.ID,
+			Is2FAEnabled: true,
+		})
+
+		return
+	}
+
 	if err := middleware.GenerateAndBindJWT(user); err != nil {
-		handleError(w, fmt.Errorf("error generating & binding JWT to user %s: %v", userInfo.Login.Email, err), "Internal Server Error", http.StatusInternalServerError)
+		handleError(w, err, "Error generating & binding JWT", http.StatusInternalServerError)
 		return
 	}
 

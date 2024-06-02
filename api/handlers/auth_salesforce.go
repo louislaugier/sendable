@@ -41,6 +41,15 @@ func SalesforceAuthHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	if user.Is2FAEnabled {
+		json.NewEncoder(w).Encode(models.User{
+			ID:           user.ID,
+			Is2FAEnabled: true,
+		})
+
+		return
+	}
+
 	if err := middleware.GenerateAndBindJWT(user); err != nil {
 		handleError(w, err, "Error generating & binding JWT", http.StatusInternalServerError)
 		return
@@ -68,6 +77,7 @@ func processSalesforceUser(userInfo *models.SalesforceUser, accessToken string, 
 	if err != nil {
 		return nil, err
 	}
+
 	if u == nil {
 		u, err = createConfirmedUserFromSalesforceAuth(userInfo, r)
 		if err != nil {

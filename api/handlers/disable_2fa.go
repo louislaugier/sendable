@@ -13,7 +13,7 @@ func Disable2FAHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	u := middleware.GetUserFromRequest(r)
-	err := user.Update2FASecret(u.ID, nil)
+	err := user.Set2FASecret(u.ID, nil)
 	if err != nil {
 		handleError(w, err, "Internal Server Error", http.StatusInternalServerError)
 		return

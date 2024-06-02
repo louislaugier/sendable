@@ -1,5 +1,7 @@
 package models
 
+import "github.com/google/uuid"
+
 type (
 	AuthGoogleRequest struct {
 		AccessToken string `json:"access_token"`
@@ -23,6 +25,10 @@ type (
 	}
 	AuthZohoSetEmailRequest struct {
 		Email string `json:"email"`
+	}
+	Auth2FARequest struct {
+		UserID                      uuid.UUID `json:"userId"`
+		TwoFactorAuthenticationCode string    `json:"twoFactorAuthenticationCode"`
 	}
 
 	ValidateEmailRequest struct {

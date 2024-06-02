@@ -14,10 +14,10 @@ import (
 const (
 	insertQuery = "INSERT INTO public.user (id, email, is_email_confirmed, password_sha256, last_ip_addresses, last_user_agent, auth_provider) VALUES ($1, $2, $3, $4, $5, $6, $7);"
 
-	selectQuery                   = `SELECT "id", "email", "is_email_confirmed", "email_confirmation_code", "2fa_secret", "created_at", "updated_at" FROM public."user" WHERE %s AND "deleted_at" IS NULL LIMIT 1;`
-	selectUserByAPIKeySHA256Query = `SELECT "id", "email", "is_email_confirmed", "email_confirmation_code", "created_at", "updated_at" FROM public."user" WHERE "id" IN (SELECT "user_id" FROM public."api_key" WHERE "key_sha256" = $1 AND "deleted_at" IS NULL) AND "deleted_at" IS NULL LIMIT 1;`
+	selectQuery               = `SELECT "id", "email", "is_email_confirmed", "email_confirmation_code", "2fa_secret", "created_at", "updated_at" FROM public."user" WHERE %s AND "deleted_at" IS NULL LIMIT 1;`
+	selectByAPIKeySHA256Query = `SELECT "id", "email", "is_email_confirmed", "email_confirmation_code", "created_at", "updated_at" FROM public."user" WHERE "id" IN (SELECT "user_id" FROM public."api_key" WHERE "key_sha256" = $1 AND "deleted_at" IS NULL) AND "deleted_at" IS NULL LIMIT 1;`
+	select2FASecretQuery      = `SELECT "2fa_secret" FROM public."user" WHERE "user_id" = $1 AND "deleted_at" IS NULL LIMIT 1;`
 
-	update2FASecretQuery             = "UPDATE public.user SET 2fa_secret = $1 WHERE id = $2;"
 	updatePasswordSHA256Query        = "UPDATE public.user SET password_sha256 = $1 WHERE id = $2;"
 	updateEmailAddressQuery          = "UPDATE public.user SET email = $1 WHERE id = $2;"
 	updateEmailConfirmationQuery     = "UPDATE public.user SET is_email_confirmed = true WHERE id = $1;"
@@ -96,6 +96,17 @@ func GetByIDAndPasswordSHA256(ID uuid.UUID, passwordSHA256 string) (*models.User
 	return getByCriteria(false, query, ID, passwordSHA256)
 }
 
+func Get2FASecretByID(ID uuid.UUID) (*string, error) {
+	var secret *string
+
+	err := config.DB.QueryRow(select2FASecretQuery, ID).Scan(secret)
+	if err != nil {
+		return nil, err
+	}
+
+	return secret, nil
+}
+
 // GetByTempZohoOauthData retrieves a user by temporary oauth data (Zoho flow).
 func GetByTempZohoOauthData(comaSeparatedEmails string, lastIPs, lastUserAgent string) (*models.User, error) {
 	query := fmt.Sprintf(selectQuery, "email = $1 AND auth_provider = $2 AND last_ip_addresses = $3 AND last_user_agent = $4")
@@ -104,10 +115,10 @@ func GetByTempZohoOauthData(comaSeparatedEmails string, lastIPs, lastUserAgent s
 
 // GetByAPIKeySHA256 retrieves a user by API key SHA256 hash.
 func GetByAPIKeySHA256(apiKeySHA256 string) (*models.User, error) {
-	return getByCriteria(false, selectUserByAPIKeySHA256Query, apiKeySHA256)
+	return getByCriteria(false, selectByAPIKeySHA256Query, apiKeySHA256)
 }
 
-func getByCriteria(isMinimalQuery bool, query string, args ...interface{}) (*models.User, error) {
+func getByCriteria(isMinimalResponse bool, query string, args ...interface{}) (*models.User, error) {
 	rows, err := config.DB.Query(query, args...)
 	if err != nil {
 		return nil, err
@@ -126,7 +137,7 @@ func getByCriteria(isMinimalQuery bool, query string, args ...interface{}) (*mod
 			u.Is2FAEnabled = true
 		}
 
-		if !isMinimalQuery {
+		if !isMinimalResponse {
 			currentPlan, err := subscription.GetLatestActive(u.ID)
 			if err != nil {
 				log.Printf("Error getting user's current plan: %v", err)

@@ -1,6 +1,7 @@
 package handlers
 
 import (
+	"email-validator/handlers/middleware"
 	"email-validator/internal/models"
 	"email-validator/internal/pkg/oauth"
 	"email-validator/internal/pkg/user"
@@ -51,8 +52,21 @@ func processLinkedinAuthenticatedUser(w http.ResponseWriter, r *http.Request, em
 	}
 
 	if u == nil {
-		createConfirmedAccountAndBindJWT(w, r, email, &lp)
+		createConfirmedAccount(w, r, email, &lp)
+		return
+	}
 
+	if u.Is2FAEnabled {
+		json.NewEncoder(w).Encode(models.User{
+			ID:           u.ID,
+			Is2FAEnabled: true,
+		})
+
+		return
+	}
+
+	if err := middleware.GenerateAndBindJWT(u); err != nil {
+		handleError(w, err, "Error generating & binding JWT", http.StatusInternalServerError)
 		return
 	}
 

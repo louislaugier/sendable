@@ -53,7 +53,7 @@ func ZohoAuthHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	handleResponse(w, u)
+	handleZohoAuthResponse(w, u)
 }
 
 func handleZohoUser(emails string, r *http.Request, accessToken string) (*models.User, error) {
@@ -93,7 +93,16 @@ func handleZohoUser(emails string, r *http.Request, accessToken string) (*models
 	return u, nil
 }
 
-func handleResponse(w http.ResponseWriter, u *models.User) {
+func handleZohoAuthResponse(w http.ResponseWriter, u *models.User) {
+	if u.Is2FAEnabled {
+		json.NewEncoder(w).Encode(models.User{
+			ID:           u.ID,
+			Is2FAEnabled: true,
+		})
+
+		return
+	}
+
 	if err := middleware.GenerateAndBindJWT(u); err != nil {
 		handleError(w, err, "Error generating & binding JWT", http.StatusInternalServerError)
 		return
