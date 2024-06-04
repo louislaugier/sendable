@@ -1,27 +1,23 @@
 import { Select, SelectItem, Table, Pagination, TableHeader, TableColumn, TableBody } from "@nextui-org/react";
+import { useMemo, useState } from "react";
 
-const rowsPerPageChoices: any = [
-    {
-        label: "10",
-        value: 10
-    },
-    {
-        label: "25",
-        value: 25
-    },
-    {
-        label: "50",
-        value: 50
-    },
-    {
-        label: "100",
-        value: 100
-    },
-]
+const rowsPerPageChoices = [10, 25, 50, 100].map(value => ({ label: value.toString(), value }));
 
 export default function DynamicTable(props: any) {
-    const { loadedItems, totalCount, loadHistory, columnNames, children, page, rowsPerPage, currentPageItems, setPage, setRowsPerPage } = props;
+    const { loadedItems, totalCount, loadHistory, columnNames, rowToMap } = props;
+
+    const [page, setPage] = useState(1);
+    const [rowsPerPage, setRowsPerPage] = useState(10);
     const pages = Math.ceil(totalCount / rowsPerPage);
+
+    const currentPageItems = useMemo(() => {
+        if (loadedItems.length) {
+            const start = (page - 1) * rowsPerPage;
+            const end = start + rowsPerPage;
+
+            return loadedItems.slice(start, end);
+        } else return []
+    }, [page, loadedItems, totalCount, rowsPerPage]);
 
     return (
         <>
@@ -81,7 +77,7 @@ export default function DynamicTable(props: any) {
                         {columnNames.map((columnName: string, i: number) => <TableColumn className={i + 1 === columnNames.length ? 'flex justify-center items-center' : ''}>{columnName}</TableColumn>)}
                     </TableHeader>
                     <TableBody>
-                        {children}
+                        {currentPageItems.length && currentPageItems.map((item: any, i: number) => rowToMap(item, i))}
                     </TableBody>
                 </Table>
             </div>
