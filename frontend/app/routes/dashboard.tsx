@@ -28,9 +28,8 @@ export default function Dashboard() {
   const isEmailAddressConfirmedCall = !!searchParams.get("email_confirmed")
 
   if (!user) {
-    let url = '/'
-    if (isEmailAddressConfirmedCall) url = '/?email_confirmed=true'
-    navigateToUrl(url)
+    if (isEmailAddressConfirmedCall) navigateToUrl('/?email_confirmed=true')
+    else navigateToUrl('/')
   }
 
   const [selectedTab, setSelectedTab] = useState<any>(searchParams.get("tab") ?? "validation");
@@ -91,7 +90,6 @@ export default function Dashboard() {
   const remainingApiValidations = getRemainingApiValidations(user!)
 
   const isPremiumOrEnterprise = user?.currentPlan.type === SubscriptionType.Premium || user?.currentPlan.type === SubscriptionType.Enterprise
-
 
   return (
     <>

@@ -15,7 +15,7 @@ func Verify2FA(code, secret string) bool {
 
 	// Check the code for the current timestamp and the two surrounding ones
 	for i := -1; i <= 1; i++ {
-		if GetCurrentCode(secret, now+int64(i*30)) == code {
+		if getCurrentCode(secret, now+int64(i*30)) == code {
 			return true
 		}
 	}
@@ -23,7 +23,7 @@ func Verify2FA(code, secret string) bool {
 	return false
 }
 
-func GetCurrentCode(secret string, timestamp int64) string {
+func getCurrentCode(secret string, timestamp int64) string {
 	// Convert the secret from base32 to bytes
 	key, _ := base32.StdEncoding.DecodeString(strings.ToUpper(secret))
 	// Convert the timestamp to bytes
