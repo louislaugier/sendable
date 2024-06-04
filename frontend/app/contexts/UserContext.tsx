@@ -1,5 +1,6 @@
 import { createContext, useState, useEffect, useMemo } from "react";
 import apiClient from "~/services/api";
+import getUserData from "~/services/api/me";
 import { User, UserContextType } from "~/types/user";
 
 const UserContext = createContext<UserContextType>({
@@ -33,6 +34,18 @@ export const UserProvider: React.FC<React.PropsWithChildren<{}>> = ({ children }
             }
         }
     }, [user]);
+
+    useEffect(() => {
+        if (user) {
+            // Fetch the latest user data if a user is logged in
+            const fetchUserData = async () => {
+                const latestUserData = await getUserData();
+                setUser((prevUser: User | null) => { return { ...latestUserData, jwt: prevUser?.jwt } })
+            };
+
+            fetchUserData();
+        }
+    }, []); // Empty dependency array means this effect runs once after the initial 
 
     // Memorize the context value to prevent unnecessary re-renders
     const value = useMemo(() => ({ user, setUser, temp2faUserId, setTemp2faUserId }), [user, temp2faUserId]);

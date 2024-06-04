@@ -70,7 +70,7 @@ func GetCount(userID uuid.UUID) (*int, error) {
 
 func GetLatestActive(userID uuid.UUID) (*models.Subscription, error) {
 	rows, err := config.DB.Query(`
-		SELECT "billing_frequency", "type", "created_at"
+		SELECT "id", "billing_frequency", "type", "created_at"
 		FROM public."subscription"
 		WHERE "user_id" = $1 AND "cancelled_at" IS NULL
 		ORDER BY "created_at" DESC LIMIT 1;
@@ -84,7 +84,7 @@ func GetLatestActive(userID uuid.UUID) (*models.Subscription, error) {
 	for rows.Next() {
 		o := models.Subscription{}
 
-		err = rows.Scan(&o.BillingFrequency, &o.Type, &o.CreatedAt)
+		err = rows.Scan(&o.ID, &o.BillingFrequency, &o.Type, &o.CreatedAt)
 		if err != nil {
 			return nil, err
 		}

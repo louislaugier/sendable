@@ -31,7 +31,7 @@ type (
 		IsEmailConfirmed      bool      `json:"isEmailConfirmed"`
 		EmailConfirmationCode *int      `json:"-"`
 
-		PasswordSHA256 string `json:"passwordSha256"`
+		PasswordSHA256 *string `json:"passwordSha256,omitempty"`
 
 		JWT                 string        `json:"jwt"`
 		AuthProvider        *AuthProvider `json:"authProvider,omitempty"`

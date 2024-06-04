@@ -24,27 +24,29 @@ export default function AuthButtons(props: any) {
 
     const [twoFactorAuthCode, setTwoFactorAuthCode] = useState("")
     const [twoFactorAuthCodeErrorMsg, setTwoFactorAuthCodeErrorMsg] = useState("")
-    
+
+    const submit2fa = async () => {
+        setLoading(true)
+
+        try {
+            const res = await twoFactorAuth({ userId: temp2faUserId, twoFactorAuthenticationCode: twoFactorAuthCode })
+            setTemp2faUserId(null)
+            setUser(res)
+            navigateToUrl('/dashboard')
+        } catch {
+            setTwoFactorAuthCodeErrorMsg("Wrong 2FA code.")
+        }
+
+        setLoading(false)
+    }
+
     return (
         !!temp2faUserId ?
             <>
                 <p>Enter the code from your two-factor authenticaton app. </p>
                 <div className="flex mt-4 space-x-2">
-                    <TwoFactorAuthCodeInput twoFactorAuthCode={twoFactorAuthCode} twoFactorAuthCodeErrorMsg={twoFactorAuthCodeErrorMsg} setTwoFactorAuthCode={setTwoFactorAuthCode} />
-                    <Button isDisabled={isLoading} onClick={async () => {
-                        setLoading(true)
-
-                        try {
-                            const res = await twoFactorAuth({ userId: temp2faUserId, twoFactorAuthenticationCode: twoFactorAuthCode })
-                            setTemp2faUserId(null)
-                            setUser(res)
-                            navigateToUrl('/dashboard')
-                        } catch {
-                            setTwoFactorAuthCodeErrorMsg("Wrong 2FA code.")
-                        }
-
-                        setLoading(false)
-                    }} className="mb-2" color="primary" variant="shadow">
+                    <TwoFactorAuthCodeInput submit2fa={submit2fa} twoFactorAuthCode={twoFactorAuthCode} twoFactorAuthCodeErrorMsg={twoFactorAuthCodeErrorMsg} setTwoFactorAuthCode={setTwoFactorAuthCode} />
+                    <Button isDisabled={isLoading} onClick={submit2fa} className="mb-2" color="primary" variant="shadow">
                         {isLoading ? 'Loading...' : 'Confirm'}
                     </Button>
                 </div>

@@ -37,6 +37,22 @@ export default function AccountTab() {
         setTwoFactorAuthCodeErrorMsg("")
     }
 
+    const submitNew2fa = async () => {
+        setLoading(true);
+
+        try {
+            await enable2fa({ twoFactorAuthenticationCode: twoFactorAuthCode, twoFactorAuthenticationSecret: generated2faSecret })
+
+            reset2faChanges()
+
+            setUser((prevUser) => { return { ...prevUser!, is2faEnabled: true } })
+        } catch {
+            setTwoFactorAuthCodeErrorMsg("Wrong 2FA code.")
+        }
+
+        setLoading(false);
+    }
+
     return (
         <>
             <div className="flex flew-wrap pt-4">
@@ -124,22 +140,8 @@ export default function AccountTab() {
                                     <b className="text-sm mb-2 mt-4">Enter the six-digit code from the authenticator app</b>
                                     <p className="text-sm">After scanning the QR code, the app will display a six-digit code that you can enter below.</p>
                                     <div className="flex mt-4 space-x-2">
-                                        <TwoFactorAuthCodeInput twoFactorAuthCode={twoFactorAuthCode} twoFactorAuthCodeErrorMsg={twoFactorAuthCodeErrorMsg} setTwoFactorAuthCode={setTwoFactorAuthCode} />
-                                        <Button isDisabled={isLoading} onClick={async () => {
-                                            setLoading(true);
-
-                                            try {
-                                                await enable2fa({ twoFactorAuthenticationCode: twoFactorAuthCode, twoFactorAuthenticationSecret: generated2faSecret })
-
-                                                reset2faChanges()
-
-                                                setUser((prevUser) => { return { ...prevUser!, is2faEnabled: true } })
-                                            } catch {
-                                                setTwoFactorAuthCodeErrorMsg("Wrong 2FA code.")
-                                            }
-
-                                            setLoading(false);
-                                        }} className="mb-2" color="primary" variant="shadow">
+                                        <TwoFactorAuthCodeInput submit2fa={submitNew2fa} twoFactorAuthCode={twoFactorAuthCode} twoFactorAuthCodeErrorMsg={twoFactorAuthCodeErrorMsg} setTwoFactorAuthCode={setTwoFactorAuthCode} />
+                                        <Button isDisabled={isLoading} onClick={submitNew2fa} className="mb-2" color="primary" variant="shadow">
                                             {isLoading ? "Loading..." : "Confirm"}
                                         </Button>
                                     </div>
