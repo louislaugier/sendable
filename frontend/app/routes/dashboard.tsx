@@ -50,7 +50,6 @@ export default function Dashboard() {
   const [validations, setValidations] = useState<Array<Validation | null>>([]);
   const [validationsCount, setValidationsCount] = useState<number>(0);
 
-  const [isHistoryFetched, setHistoryFetched] = useState(false);
   const loadHistory = useCallback(async (limit: number | undefined = undefined, offset: number | undefined = undefined) => {
     try {
       const res = await getValidationHistory(limit, offset)
@@ -69,13 +68,6 @@ export default function Dashboard() {
 
     await loadHistory()
   }, [validations, validationsCount])
-
-  useEffect(() => {
-    if (user && !isHistoryFetched) {
-      loadHistory()
-      setHistoryFetched(true)
-    }
-  }, [validations, user, isHistoryFetched]);
 
   const goToPricing = async (e: any) => {
     e.preventDefault()

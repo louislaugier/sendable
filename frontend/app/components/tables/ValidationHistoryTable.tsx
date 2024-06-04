@@ -1,9 +1,11 @@
-import { TableRow, TableCell, Chip } from "@nextui-org/react";
+import { TableRow, TableCell, Chip, user } from "@nextui-org/react";
 import moment from "moment";
 import ReachabilityChip from "~/components/dropdowns/ReachabilityReference/ReachabilityChip";
 import { Validation, ValidationOrigin, ValidationStatus } from "~/types/validation";
 import DownloadReportButton from "../buttons/DownloadReportButton";
 import DynamicTable from "./DynamicTable";
+import { useState, useEffect, useContext } from "react";
+import UserContext from "~/contexts/UserContext";
 
 const columnNames = [
     "DATE",
@@ -16,6 +18,15 @@ const columnNames = [
 
 export default function ValidationHistoryTable(props: any) {
     const { validations, totalCount, loadHistory } = props;
+    const { user } = useContext(UserContext)
+
+    const [isHistoryFetched, setHistoryFetched] = useState(false);
+    useEffect(() => {
+        if (user && !isHistoryFetched) {
+            loadHistory()
+            setHistoryFetched(true)
+        }
+    }, [validations, user, isHistoryFetched]);
 
     const rowToMap = (validation: Validation, i: number) => <TableRow key={i}>
         <TableCell>{moment(validation.createdAt).format("YYYY-MM-DD HH:mm:ss").toString()}</TableCell>
