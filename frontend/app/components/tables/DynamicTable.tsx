@@ -1,4 +1,4 @@
-import { Select, SelectItem, Table, Pagination, TableHeader, TableColumn, TableBody } from "@nextui-org/react";
+import { Select, SelectItem, Table, Pagination, TableHeader, TableColumn, TableBody, TableRow, TableCell } from "@nextui-org/react";
 import { useMemo, useState } from "react";
 
 const rowsPerPageChoices = [10, 25, 50, 100].map(value => ({ label: value.toString(), value }));
@@ -26,8 +26,7 @@ export default function DynamicTable(props: any) {
                     defaultSelectedKeys={[rowsPerPage]}
                     items={rowsPerPageChoices}
                     label="Rows per page"
-                    style={{ width: "150px" }}
-                    className="mb-4"
+                    className="mb-4 w-[150px]"
                     onChange={async (e) => {
                         const newPerPageCount = Number(e.target.value);
                         if (loadedItems.length < totalCount) {
@@ -50,7 +49,7 @@ export default function DynamicTable(props: any) {
                 >
                     {(item: any) => <SelectItem key={item.value}>{item.label}</SelectItem>}
                 </Select >
-                <Table aria-label="Email validation history" className="mb-16" bottomContent={loadedItems.length &&
+                <Table aria-label="Email validation history" className="mb-16" bottomContent={!!loadedItems.length &&
                     <div className="flex w-full justify-center">
                         <Pagination
                             isCompact
@@ -77,7 +76,14 @@ export default function DynamicTable(props: any) {
                         {columnNames.map((columnName: string, i: number) => <TableColumn className={i + 1 === columnNames.length ? 'flex justify-center items-center' : ''}>{columnName}</TableColumn>)}
                     </TableHeader>
                     <TableBody>
-                        {currentPageItems.length && currentPageItems.map((item: any, i: number) => rowToMap(item, i))}
+                        {!!currentPageItems.length ? currentPageItems.map((item: any, i: number) => rowToMap(item, i)) : <TableRow>
+                            <TableCell><p>Nothing to see here yet.</p></TableCell>
+                            <TableCell><></></TableCell>
+                            <TableCell><></></TableCell>
+                            <TableCell><></></TableCell>
+                            <TableCell><></></TableCell>
+                            <TableCell><></></TableCell>
+                        </TableRow>}
                     </TableBody>
                 </Table>
             </div>
