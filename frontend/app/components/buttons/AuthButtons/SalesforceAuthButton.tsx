@@ -30,7 +30,7 @@ export default function SalesforceAuthButton(props: any) {
   };
 
   return (
-    <Button style={{ justifyContent: 'flex-start' }} isDisabled={isLoading} onClick={salesforceLogin} color='primary' variant="bordered" startContent={!customText && <SalesforceIcon />}>
+    <Button style={{ justifyContent: 'flex-start' }} isLoading={isLoading} onClick={salesforceLogin} color='primary' variant="bordered" startContent={!customText && <SalesforceIcon />}>
       <p className='text-red'>{isLoading ? 'Loading...' : customText ?? 'Log in with Salesforce'}</p>
     </Button>
   );

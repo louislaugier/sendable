@@ -7,17 +7,24 @@ import (
 	"fmt"
 	"log"
 	"net/http"
+	"time"
 
 	"github.com/rs/cors"
 )
 
-func handle(mux *http.ServeMux, path string, handler http.Handler, withBaseRateLimit bool) {
+func handle(mux *http.ServeMux, path string, handler http.Handler, withBaseRateLimit bool, customRateLimit ...*time.Duration) {
+	var rl *time.Duration
+	if len(customRateLimit) > 0 {
+		rl = customRateLimit[0]
+	}
+
 	if withBaseRateLimit {
 		mux.Handle(config.APIVersionPrefix+path,
 			middleware.BaseRateLimit(
 				middleware.Log(
 					handler,
 				),
+				rl,
 			),
 		)
 	} else {
@@ -45,7 +52,10 @@ func handleHTTP(mux *http.ServeMux) {
 	handle(mux, "/auth_zoho/set_email", middleware.ValidateJWT(
 		http.HandlerFunc(handlers.ZohoAuthSetEmailHandler),
 		false,
-	), true)
+	), true, func() *time.Duration {
+		rateLimit := time.Minute
+		return &rateLimit
+	}())
 	handle(mux, "/auth_2fa", http.HandlerFunc(handlers.Auth2FAHandler), true)
 
 	handle(mux, "/me", middleware.ValidateJWT(
@@ -55,7 +65,10 @@ func handleHTTP(mux *http.ServeMux) {
 	handle(mux, "/update_email_address", middleware.ValidateJWT(
 		http.HandlerFunc(handlers.UpdateEmailAddressHandler),
 		true,
-	), true)
+	), true, func() *time.Duration {
+		rateLimit := time.Minute
+		return &rateLimit
+	}())
 	handle(mux, "/update_password", middleware.ValidateJWT(
 		http.HandlerFunc(handlers.UpdateEmailAddressHandler),
 		true,
@@ -78,7 +91,7 @@ func handleHTTP(mux *http.ServeMux) {
 			http.HandlerFunc(handlers.SubscriptionHistoryHandler),
 			true,
 		),
-		false,
+		true,
 	)
 
 	handle(mux, "/api_keys", middleware.ValidateJWT(
@@ -114,7 +127,7 @@ func handleHTTP(mux *http.ServeMux) {
 			http.HandlerFunc(handlers.ValidationHistoryHandler),
 			true,
 		),
-		false,
+		true,
 	)
 	handle(mux, "/validation_reports/",
 		middleware.ValidateReportToken(

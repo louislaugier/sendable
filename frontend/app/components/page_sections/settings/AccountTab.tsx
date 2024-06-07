@@ -1,6 +1,6 @@
-import { Button, Card, CardBody, Divider, Input, Snippet, useDisclosure } from "@nextui-org/react";
+import { Button, Card, CardBody, CardHeader, Divider, Input, Snippet, useDisclosure } from "@nextui-org/react";
 import QRCode from "qrcode.react";
-import { useContext, useState } from "react";
+import { useContext, useEffect, useRef, useState } from "react";
 import { EyeFilledIcon } from "~/components/icons/EyeFilledIcon";
 import { EyeSlashFilledIcon } from "~/components/icons/EyeSlashFilledIcon";
 import TwoFactorAuthCodeInput from "~/components/inputs/TwoFactorAuthCodeInput";
@@ -8,12 +8,34 @@ import DeleteAccountModal from "~/components/modals/DeleteAccountModal";
 import UserContext from "~/contexts/UserContext";
 import disable2fa from "~/services/api/disable_2fa";
 import enable2fa from "~/services/api/enable_2fa";
+import updateEmailAddress from "~/services/api/update_email_address";
 import { generate2faSecret, getQrCodeUrl } from "~/services/utils/2fa";
 
 export default function AccountTab() {
     const { user, setUser } = useContext(UserContext)
 
-    const [isLoading, setLoading] = useState(false)
+    const [isUpdateEmailAddressEmailSent, setUpdateEmailAddressEmailSent] = useState(false)
+    const [emailUpdateCountdown, setEmailUpdateCountdown] = useState<number | null>(null);
+    const emailUpdateCountdownInterval = useRef<NodeJS.Timeout | null>(null);
+    useEffect(() => {
+        const startCountdown = () => {
+            setEmailUpdateCountdown(60);
+            emailUpdateCountdownInterval.current = setInterval(() => {
+                setEmailUpdateCountdown((prevCountdown) => {
+                    if (prevCountdown! <= 1) {
+                        clearInterval(emailUpdateCountdownInterval.current!);
+                        return null;
+                    } else return prevCountdown! - 1;
+                });
+            }, 1000);
+        };
+        if (isUpdateEmailAddressEmailSent) startCountdown();
+        return () => clearInterval(emailUpdateCountdownInterval.current!);
+    }, [isUpdateEmailAddressEmailSent]);
+
+    const [isUpdateEmailButtonLoading, setUdateEmailButtonLoading] = useState(false)
+    const [isUpdatePasswordButtonLoading, setUdatePasswordButtonLoading] = useState(false)
+    const [is2faButtonLoading, set2faButtonLoading] = useState(false)
 
     const [email, setEmail] = useState(user?.email ?? "")
     const [emailErrorMsg, setEmailErrorMsg] = useState("")
@@ -38,7 +60,9 @@ export default function AccountTab() {
     }
 
     const submitNew2fa = async () => {
-        setLoading(true);
+        set2faButtonLoading(true);
+
+        if (!twoFactorAuthCode) setTwoFactorAuthCodeErrorMsg('Enter your 2FA code.')
 
         try {
             await enable2fa({ twoFactorAuthenticationCode: twoFactorAuthCode, twoFactorAuthenticationSecret: generated2faSecret })
@@ -50,18 +74,23 @@ export default function AccountTab() {
             setTwoFactorAuthCodeErrorMsg("Wrong 2FA code.")
         }
 
-        setLoading(false);
+        set2faButtonLoading(false);
+    }
+
+    const resetEmailData = () => {
+        setEmailErrorMsg("")
+        setUpdateEmailAddressEmailSent(false)
     }
 
     return (
         <>
             <div className="flex flew-wrap pt-4">
                 <Card className="w-[600px] p-4">
-                    {/* <CardHeader className="flex gap-3">
+                    <CardHeader className="flex gap-3">
                         <div className="flex flex-col">
-                            <p className="text-md">User settings</p>
+                            <p className="text-md">Account settings</p>
                         </div>
-                    </CardHeader> */}
+                    </CardHeader>
                     <CardBody className="flex flex-col items-center">
                         <Input
                             type="email"
@@ -69,18 +98,28 @@ export default function AccountTab() {
                             value={email}
                             variant="bordered"
                             errorMessage={emailErrorMsg}
-                            onValueChange={setEmail}
+                            onValueChange={(val) => {
+                                if (isUpdateEmailAddressEmailSent) resetEmailData()
+
+                                setEmail(val)
+                            }}
                             placeholder={"Your email address"}
-                            // startContent={
-                            //     <MailIcon className="text-2xl text-default-400 pointer-events-none flex-shrink-0" />
-                            // }
                             className="max-w-xs"
+                            color={isUpdateEmailAddressEmailSent ? 'success' : undefined}
+                            description={isUpdateEmailAddressEmailSent && <p className="text-success">Please check your inbox to verify this new email address.</p>}
                         />
-                        <div className="mt-4">
-                            <Button isDisabled={!email || email === user?.email} color="primary" variant="shadow">
-                                Update
-                            </Button>
-                        </div>
+                        <Button className="mt-4" onClick={async () => {
+                            setUdateEmailButtonLoading(true)
+
+                            try {
+                                await updateEmailAddress({ email })
+                                setUpdateEmailAddressEmailSent(true)
+                            } catch { }
+
+                            setUdateEmailButtonLoading(false)
+                        }} isLoading={isUpdateEmailButtonLoading} isDisabled={emailUpdateCountdown! > 0 || !email || email === user?.email} color="primary" variant="shadow">
+                            {isUpdateEmailButtonLoading ? 'Loading...' : emailUpdateCountdown! > 0 ? `Update (${emailUpdateCountdown})` : 'Update'}
+                        </Button>
 
                         <Divider className="my-8" />
 
@@ -141,8 +180,8 @@ export default function AccountTab() {
                                     <p className="text-sm">After scanning the QR code, the app will display a six-digit code that you can enter below.</p>
                                     <div className="flex mt-4 space-x-2">
                                         <TwoFactorAuthCodeInput submit2fa={submitNew2fa} twoFactorAuthCode={twoFactorAuthCode} twoFactorAuthCodeErrorMsg={twoFactorAuthCodeErrorMsg} setTwoFactorAuthCode={setTwoFactorAuthCode} />
-                                        <Button isDisabled={isLoading} onClick={submitNew2fa} className="mb-2" color="primary" variant="shadow">
-                                            {isLoading ? "Loading..." : "Confirm"}
+                                        <Button isDisabled={is2faButtonLoading} onClick={submitNew2fa} className="mb-2" color="primary" variant="shadow">
+                                            {is2faButtonLoading ? "Loading..." : "Confirm"}
                                         </Button>
                                     </div>
                                 </div> : <Button onClick={() => {
@@ -156,7 +195,9 @@ export default function AccountTab() {
                                     <TwoFactorAuthCodeInput twoFactorAuthCode={twoFactorAuthCode} twoFactorAuthCodeErrorMsg={twoFactorAuthCodeErrorMsg} setTwoFactorAuthCode={setTwoFactorAuthCode} />
 
                                     <Button onClick={async () => {
-                                        setLoading(true);
+                                        set2faButtonLoading(true);
+
+                                        if (!twoFactorAuthCode) setTwoFactorAuthCodeErrorMsg('Enter your 2FA code.')
 
                                         try {
                                             await disable2fa({ twoFactorAuthenticationCode: twoFactorAuthCode })
@@ -168,9 +209,9 @@ export default function AccountTab() {
                                             setTwoFactorAuthCodeErrorMsg("Wrong 2FA code.")
                                         }
 
-                                        setLoading(false);
+                                        set2faButtonLoading(false);
                                     }} className="mb-2" color="primary" variant="shadow">
-                                        Disable
+                                        {is2faButtonLoading ? "Disabling..." : "Disable"}
                                     </Button>
                                 </div>
                             </>}

@@ -14,7 +14,9 @@ import (
 // BaseRateLimiter sets the rate limit to 1 request per second
 var (
 	BaseRateLimiter = models.RateLimiter{
-		Limit: time.Second,
+		Limit: config.BaseRateLimiterRequestFrequency,
+
+		CustomLimit: 0 * time.Second, // init to 0
 	}
 
 	RateLimitClientMap = make(map[string]*models.ClientInfo)
@@ -110,8 +112,13 @@ func isAccountConcurrencyLimitReached(user *models.User) bool {
 }
 
 // BaseRateLimit wraps an http.Handler and limits requests based on the base rate limiter
-func BaseRateLimit(h http.Handler) http.Handler {
-	return RateLimit(h, BaseRateLimiter)
+func BaseRateLimit(h http.Handler, customLimit *time.Duration) http.Handler {
+	rl := BaseRateLimiter
+	if customLimit != nil {
+		rl.CustomLimit = *customLimit
+	}
+
+	return RateLimit(h, rl)
 }
 
 // RateLimit wraps an http.Handler and limits requests based on the provided rate limiter
@@ -132,9 +139,15 @@ func RateLimit(next http.Handler, limiter models.RateLimiter) http.Handler {
 
 		now := time.Now()
 
+		// Use custom limit if it's set, otherwise use the default one
+		actualLimit := limiter.Limit
+		if limiter.CustomLimit > 0 {
+			actualLimit = limiter.CustomLimit
+		}
+
 		elapsed := now.Sub(clientInfo.LastRequestTime)
-		if elapsed < limiter.Limit {
-			time.Sleep(limiter.Limit - elapsed)
+		if elapsed < actualLimit {
+			time.Sleep(actualLimit - elapsed)
 		}
 
 		clientInfo.LastRequestTime = now

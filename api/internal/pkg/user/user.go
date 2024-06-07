@@ -32,8 +32,8 @@ const (
 			%s
 			AND
 			(
-				-- get soft deleted users if they have an ongoing subscription (to be reactivated on auth) and all non-soft-deleted users
-				(u."deleted_at" IS NOT NULL AND s."cancelled_at" IS NULL) 
+				-- get soft deleted users if they have an ongoing subscription & if deleted_at < 30 days from now (to be reactivated with cron) and all non-soft-deleted users
+				(u."deleted_at" IS NOT NULL AND u."deleted_at" >= current_timestamp - interval '30 days' AND s."cancelled_at" IS NULL) 
 				OR 
 				(u."deleted_at" IS NULL)
 			);

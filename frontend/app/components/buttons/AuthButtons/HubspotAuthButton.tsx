@@ -32,7 +32,7 @@ export default function HubspotAuthButton(props: any) {
     };
 
     return (
-        <Button style={{ justifyContent: 'flex-start' }} isDisabled={isLoading} onClick={hubspotLogin} variant="bordered" color="primary" startContent={!customText && <HubspotIcon />}>
+        <Button style={{ justifyContent: 'flex-start' }} isLoading={isLoading} onClick={hubspotLogin} variant="bordered" color="primary" startContent={!customText && <HubspotIcon />}>
             {isLoading ? 'Loading...' : customText ?? 'Log in with HubSpot'}
         </Button>
     );

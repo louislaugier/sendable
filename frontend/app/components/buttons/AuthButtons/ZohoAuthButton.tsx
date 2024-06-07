@@ -32,7 +32,7 @@ export default function ZohoAuthButton(props: any) {
   };
 
   return (
-    <Button style={{ justifyContent: 'flex-start' }} isDisabled={isLoading} onClick={zohoLogin} variant="bordered" color="primary" startContent={!customText && <ZohoIcon />}>
+    <Button style={{ justifyContent: 'flex-start' }} isLoading={isLoading} onClick={zohoLogin} variant="bordered" color="primary" startContent={!customText && <ZohoIcon />}>
       {isLoading ? 'Loading...' : customText ?? 'Log in with Zoho'}
     </Button>
   )

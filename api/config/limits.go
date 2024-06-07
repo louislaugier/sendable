@@ -7,6 +7,8 @@ import (
 )
 
 const (
+	BaseRateLimiterRequestFrequency = time.Second
+
 	UploadFileSizeLimit = 30 << 20 // 30MB
 
 	GuestEmailValidationFrequency  = time.Second * 30

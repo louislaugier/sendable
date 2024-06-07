@@ -41,7 +41,7 @@ export default function GoogleAuthButton() {
             <GoogleOneTap />
             <Button
                 style={{ justifyContent: 'flex-start' }}
-                isDisabled={isLoading}
+                isLoading={isLoading}
                 onClick={() => {
                     // setLoading(true);
                     googleLogin();

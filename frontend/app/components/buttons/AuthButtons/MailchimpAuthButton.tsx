@@ -29,7 +29,7 @@ export default function MailchimpAuthButton() {
   };
 
   return (
-    <Button style={{ justifyContent: 'flex-start' }} isDisabled={isLoading} onClick={mailchimpLogin} variant="bordered" color="primary" startContent={<MailchimpIcon />}>
+    <Button style={{ justifyContent: 'flex-start' }} isLoading={isLoading} onClick={mailchimpLogin} variant="bordered" color="primary" startContent={<MailchimpIcon />}>
       <p style={{ marginLeft: "7px" }}>{isLoading ? 'Loading...' : 'Log in with Mailchimp'}</p>
     </Button>
   );

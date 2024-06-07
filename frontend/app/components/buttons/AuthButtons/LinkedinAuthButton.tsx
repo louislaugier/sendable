@@ -30,7 +30,7 @@ export default function LinkedinAuthButton() {
     };
 
     return (
-        <Button style={{ justifyContent: 'flex-start' }} isDisabled={isLoading} onClick={linkedinLogin} variant="bordered" color="primary" startContent={<LinkedinIcon />}>
+        <Button style={{ justifyContent: 'flex-start' }} isLoading={isLoading} onClick={linkedinLogin} variant="bordered" color="primary" startContent={<LinkedinIcon />}>
             {isLoading ? 'Loading...' : 'Log in with LinkedIn'}
         </Button>
     );

@@ -46,7 +46,7 @@ export default function AuthButtons(props: any) {
                 <p>Enter the code from your two-factor authenticaton app. </p>
                 <div className="flex mt-4 space-x-2">
                     <TwoFactorAuthCodeInput submit2fa={submit2fa} twoFactorAuthCode={twoFactorAuthCode} twoFactorAuthCodeErrorMsg={twoFactorAuthCodeErrorMsg} setTwoFactorAuthCode={setTwoFactorAuthCode} />
-                    <Button isDisabled={isLoading} onClick={submit2fa} className="mb-2" color="primary" variant="shadow">
+                    <Button isLoading={isLoading} onClick={submit2fa} className="mb-2" color="primary" variant="shadow">
                         {isLoading ? 'Loading...' : 'Confirm'}
                     </Button>
                 </div>

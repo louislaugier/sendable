@@ -8,7 +8,8 @@ import (
 // RateLimiter defines the rate limit for each client
 type (
 	RateLimiter struct {
-		Limit time.Duration
+		Limit       time.Duration
+		CustomLimit time.Duration
 	}
 	ClientInfo struct {
 		LastRequestTime   time.Time
