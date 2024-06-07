@@ -47,6 +47,7 @@ export default function AccountTab() {
     const [newPassword, setNewPassword] = useState("")
     const [isNewPasswordVisible, setNewPasswordVisible] = useState(false)
     const [isNewPasswordSet, setNewPasswordSet] = useState(false)
+    const [passwordErrorsMsg, setPasswordErrorMsg] = useState("")
 
     const [isEnable2faClicked, setEnable2faClicked] = useState(false)
     const [generated2faSecret, setGenerated2faSecret] = useState("")
@@ -85,6 +86,11 @@ export default function AccountTab() {
         setUpdateEmailAddressEmailSent(false)
     }
 
+    const resetPasswordData = () => {
+        setPasswordErrorMsg("")
+        setNewPasswordSet(false)
+    }
+
     return (
         <>
             <div className="flex flew-wrap pt-4">
@@ -119,7 +125,9 @@ export default function AccountTab() {
                             try {
                                 await updateEmailAddress({ email })
                                 setUpdateEmailAddressEmailSent(true)
-                            } catch { }
+                            } catch {
+                                setEmailErrorMsg("An unexpected error has occurred. Please try again.")
+                            }
 
                             setUdateEmailButtonLoading(false)
                         }} isLoading={isUpdateEmailButtonLoading} isDisabled={!!user?.authProvider || emailUpdateCountdown! > 0 || !email || email === user?.email} color="primary" variant="shadow">
@@ -134,7 +142,11 @@ export default function AccountTab() {
                                 variant="bordered"
                                 placeholder="Enter your current password"
                                 value={currentPassword}
-                                onValueChange={setCurrentPassword}
+                                onValueChange={(val) => {
+                                    if (isNewPasswordSet) resetPasswordData()
+
+                                    setCurrentPassword(val)
+                                }}
                                 endContent={
                                     <button className="focus:outline-none" type="button" onClick={() => setPasswordVisible(!isPasswordVisible)}>
                                         {isPasswordVisible ? (
@@ -152,7 +164,11 @@ export default function AccountTab() {
                                 variant="bordered"
                                 placeholder="Enter a new password"
                                 value={newPassword}
-                                onValueChange={setNewPassword}
+                                onValueChange={(val) => {
+                                    if (isNewPasswordSet) resetPasswordData()
+
+                                    setNewPassword(val)
+                                }}
                                 endContent={
                                     <button className="focus:outline-none" type="button" onClick={() => setNewPasswordVisible(!isNewPasswordVisible)}>
                                         {isNewPasswordVisible ? (
@@ -173,7 +189,9 @@ export default function AccountTab() {
                                     try {
                                         await updatePassword({ currentPassword, newPassword })
                                         setNewPasswordSet(true)
-                                    } catch { }
+                                    } catch {
+                                        setPasswordErrorMsg("An unexpected error has occurred. Please try again.")
+                                    }
 
                                     setUdatePasswordButtonLoading(false)
                                 }} isLoading={isUpdatePasswordButtonLoading} isDisabled={!currentPassword || !newPassword || currentPassword === newPassword} color="primary" variant="shadow">

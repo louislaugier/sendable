@@ -70,7 +70,7 @@ func handleHTTP(mux *http.ServeMux) {
 		return &rateLimit
 	}())
 	handle(mux, "/update_password", middleware.ValidateJWT(
-		http.HandlerFunc(handlers.UpdateEmailAddressHandler),
+		http.HandlerFunc(handlers.UpdatePasswordHandler),
 		true,
 	), true)
 	handle(mux, "/enable_2fa", middleware.ValidateJWT(

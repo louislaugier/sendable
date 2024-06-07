@@ -29,6 +29,12 @@ func UpdateEmailAddressHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	u := middleware.GetUserFromRequest(r)
+	if u.AuthProvider != nil {
+		err := errors.New("account has an authentication provider, cannot update email address")
+		handleError(w, err, err.Error(), http.StatusBadRequest)
+		return
+	}
+
 	if body.Email == u.Email {
 		err := errors.New("new email address must be different from current")
 		handleError(w, err, err.Error(), http.StatusBadRequest)

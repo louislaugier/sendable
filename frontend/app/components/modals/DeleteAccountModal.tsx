@@ -1,15 +1,18 @@
 import { Modal, ModalContent, ModalHeader, ModalBody, ModalFooter, Button, Input } from "@nextui-org/react";
 import { useContext, useState } from "react";
 import UserContext from "~/contexts/UserContext";
+import deleteAccount from "~/services/api/delete_account";
 import { SubscriptionType } from "~/types/subscription";
 
 const DeleteAccountModal = (props: any) => {
     const { isOpen, onClose, onOpenChange } = props
 
-    const { user } = useContext(UserContext)
+    const { user, setUser } = useContext(UserContext)
 
     const [inputValue, setInputValue] = useState("")
-    const [inputValueErrorMsg, setInputValueErrorMsg] = useState("")
+    const [inputErrorMsg, setInputErrorMsg] = useState("")
+
+    const [isLoading, setLoading] = useState(false)
 
     return (
         <Modal
@@ -34,7 +37,7 @@ const DeleteAccountModal = (props: any) => {
                                 label={<>To confirm, type "<b>delete my account</b>" below:</>}
                                 value={inputValue}
                                 variant="bordered"
-                                errorMessage={inputValueErrorMsg}
+                                errorMessage={inputErrorMsg}
                                 onValueChange={setInputValue}
                                 placeholder={"delete my account"}
                                 labelPlacement="outside"
@@ -42,12 +45,23 @@ const DeleteAccountModal = (props: any) => {
                             />
                         </ModalBody>
                         <ModalFooter>
-                            <Button color={"primary"} variant="shadow" onPress={() => {
-                                setInputValueErrorMsg("")
+                            <Button isDisabled={inputValue !== "delete my account"} isLoading={isLoading} color={"primary"} variant="shadow" onPress={async () => {
+                                setLoading(true);
 
-                                if (inputValue !== "delete my account") setInputValueErrorMsg(`You must exactly write "delete my account"`)
+                                setInputErrorMsg("")
+
+                                if (inputValue !== "delete my account") setInputErrorMsg(`You must exactly write "delete my account"`)
+
+                                try {
+                                    await deleteAccount()
+                                    setUser(null)
+                                } catch {
+                                    setInputErrorMsg("An unexpected error has occurred. Please try again.")
+                                }
+
+                                setLoading(false);
                             }}>
-                                Delete account
+                                {isLoading ? 'Loading...' : 'Delete account'}
                             </Button>
                             <Button color="danger" variant="bordered" onPress={onClose}>
                                 Close
