@@ -38,10 +38,10 @@ export default function Dashboard() {
   const emailAddressConfirmedModal = useDisclosure()
 
   useEffect(() => {
-    let newSearchParams = searchParams
-    if (selectedTab && !newSearchParams.has("tab")) newSearchParams.append("tab", selectedTab)
+    let newSearchParams = new URLSearchParams();
+    if (selectedTab) newSearchParams.set("tab", selectedTab);
     setSearchParams(newSearchParams);
-  }, [selectedTab, searchParams, setSearchParams]);
+  }, [selectedTab, setSearchParams]);
 
   const [isEmailAddressConfirmedModalAck, setEmailAddressConfirmedModalAck] = useState(false)
   useEffect(() => {
