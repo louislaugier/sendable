@@ -17,7 +17,7 @@ export default function DynamicTable(props: any) {
 
             return loadedItems.slice(start, end);
         } else return []
-    }, [page, loadedItems, totalCount, rowsPerPage]);
+    }, [page, loadedItems, totalCount, rowsPerPage, loadHistory]);
 
     return (
         <>
@@ -77,12 +77,9 @@ export default function DynamicTable(props: any) {
                     </TableHeader>
                     <TableBody>
                         {!!currentPageItems.length ? currentPageItems.map((item: any, i: number) => rowToMap(item, i)) : <TableRow>
-                            <TableCell><p>Nothing to see here yet.</p></TableCell>
-                            <TableCell><></></TableCell>
-                            <TableCell><></></TableCell>
-                            <TableCell><></></TableCell>
-                            <TableCell><></></TableCell>
-                            <TableCell><></></TableCell>
+                            {columnNames.map((_: string, i: number) =>
+                                <TableCell>{i === 0 && <p>Nothing to see here yet.</p>}</TableCell>
+                            )}
                         </TableRow>}
                     </TableBody>
                 </Table>
