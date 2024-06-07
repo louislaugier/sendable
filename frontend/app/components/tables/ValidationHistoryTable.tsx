@@ -1,4 +1,4 @@
-import { TableRow, TableCell, Chip, user } from "@nextui-org/react";
+import { TableRow, TableCell, Chip } from "@nextui-org/react";
 import moment from "moment";
 import ReachabilityChip from "~/components/dropdowns/ReachabilityReference/ReachabilityChip";
 import { Validation, ValidationOrigin, ValidationStatus } from "~/types/validation";

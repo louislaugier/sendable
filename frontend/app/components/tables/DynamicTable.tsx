@@ -17,7 +17,7 @@ export default function DynamicTable(props: any) {
 
             return loadedItems.slice(start, end);
         } else return []
-    }, [page, loadedItems, totalCount, rowsPerPage, loadHistory]);
+    }, [page, loadedItems, totalCount, rowsPerPage]);
 
     return (
         <>
