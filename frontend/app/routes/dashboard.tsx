@@ -11,6 +11,7 @@ import getValidationHistory from "~/services/api/validation_history";
 import { SubscriptionType } from "~/types/subscription";
 import { Validation } from "~/types/validation";
 import { getApiValidationLimit, getAppValidationLimit, getRemainingApiValidations, getRemainingAppValidations } from "~/utils/limit";
+import { capitalize } from "~/utils/string";
 import { navigateToUrl } from "~/utils/url";
 
 export const meta: MetaFunction = () => {
@@ -74,7 +75,7 @@ export default function Dashboard() {
     navigateToUrl(`/pricing`)
   }
 
-  const planType = user?.currentPlan.type.charAt(0).toUpperCase()! + user?.currentPlan.type.slice(1)!
+  const planType = capitalize(user?.currentPlan.type!)
 
   const appValidationLimit = getAppValidationLimit(user!)
   const apiValidationLimit = getApiValidationLimit(user!)

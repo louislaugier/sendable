@@ -9,7 +9,9 @@ import UserContext from "~/contexts/UserContext";
 import disable2fa from "~/services/api/disable_2fa";
 import enable2fa from "~/services/api/enable_2fa";
 import updateEmailAddress from "~/services/api/update_email_address";
+import updatePassword from "~/services/api/update_password";
 import { generate2faSecret, getQrCodeUrl } from "~/services/utils/2fa";
+import { capitalize } from "~/utils/string";
 
 export default function AccountTab() {
     const { user, setUser } = useContext(UserContext)
@@ -40,10 +42,11 @@ export default function AccountTab() {
     const [email, setEmail] = useState(user?.email ?? "")
     const [emailErrorMsg, setEmailErrorMsg] = useState("")
 
-    const [password, setPassword] = useState("")
+    const [currentPassword, setCurrentPassword] = useState("")
     const [isPasswordVisible, setPasswordVisible] = useState(false)
-    const [passwordConfirmation, setPasswordConfirmation] = useState("")
-    const [isPasswordConfirmationVisible, setPasswordConfirmationVisible] = useState(false)
+    const [newPassword, setNewPassword] = useState("")
+    const [isNewPasswordVisible, setNewPasswordVisible] = useState(false)
+    const [isNewPasswordSet, setNewPasswordSet] = useState(false)
 
     const [isEnable2faClicked, setEnable2faClicked] = useState(false)
     const [generated2faSecret, setGenerated2faSecret] = useState("")
@@ -92,7 +95,9 @@ export default function AccountTab() {
                         </div>
                     </CardHeader>
                     <CardBody className="flex flex-col items-center">
+                        {user?.authProvider && <p className="mb-2">Authentication provider: <b>{capitalize(user.authProvider)}</b></p>}
                         <Input
+                            isDisabled={!!user?.authProvider}
                             type="email"
                             label="Email"
                             value={email}
@@ -105,7 +110,7 @@ export default function AccountTab() {
                             }}
                             placeholder={"Your email address"}
                             className="max-w-xs"
-                            color={isUpdateEmailAddressEmailSent ? 'success' : undefined}
+                            // color={isUpdateEmailAddressEmailSent ? 'success' : undefined}
                             description={isUpdateEmailAddressEmailSent && <p className="text-success">Please check your inbox to verify this new email address.</p>}
                         />
                         <Button className="mt-4" onClick={async () => {
@@ -117,55 +122,66 @@ export default function AccountTab() {
                             } catch { }
 
                             setUdateEmailButtonLoading(false)
-                        }} isLoading={isUpdateEmailButtonLoading} isDisabled={emailUpdateCountdown! > 0 || !email || email === user?.email} color="primary" variant="shadow">
+                        }} isLoading={isUpdateEmailButtonLoading} isDisabled={!!user?.authProvider || emailUpdateCountdown! > 0 || !email || email === user?.email} color="primary" variant="shadow">
                             {isUpdateEmailButtonLoading ? 'Loading...' : emailUpdateCountdown! > 0 ? `Update (${emailUpdateCountdown})` : 'Update'}
                         </Button>
 
                         <Divider className="my-8" />
 
-                        <Input
-                            label="Current password"
-                            variant="bordered"
-                            placeholder="Enter your current password"
-                            value={password}
-                            onValueChange={setPassword}
-                            endContent={
-                                <button className="focus:outline-none" type="button" onClick={() => setPasswordVisible(!isPasswordVisible)}>
-                                    {isPasswordVisible ? (
-                                        <EyeSlashFilledIcon className="text-2xl text-default-400 pointer-events-none" />
-                                    ) : (
-                                        <EyeFilledIcon className="text-2xl text-default-400 pointer-events-none" />
-                                    )}
-                                </button>
-                            }
-                            type={isPasswordVisible ? "text" : "password"}
-                            className="max-w-xs mb-2"
-                        />
-                        <Input
-                            label="New password"
-                            variant="bordered"
-                            placeholder="Enter a new password"
-                            value={passwordConfirmation}
-                            onValueChange={setPasswordConfirmation}
-                            endContent={
-                                <button className="focus:outline-none" type="button" onClick={() => setPasswordConfirmationVisible(!isPasswordConfirmationVisible)}>
-                                    {isPasswordConfirmationVisible ? (
-                                        <EyeSlashFilledIcon className="text-2xl text-default-400 pointer-events-none" />
-                                    ) : (
-                                        <EyeFilledIcon className="text-2xl text-default-400 pointer-events-none" />
-                                    )}
-                                </button>
-                            }
-                            type={isPasswordVisible ? "text" : "password"}
-                            className="max-w-xs"
-                        />
-                        <div className="mt-4">
-                            <Button isDisabled={!password || password === passwordConfirmation} color="primary" variant="shadow">
-                                Update
-                            </Button>
-                        </div>
+                        {!user?.authProvider && <>
+                            <Input
+                                label="Current password"
+                                variant="bordered"
+                                placeholder="Enter your current password"
+                                value={currentPassword}
+                                onValueChange={setCurrentPassword}
+                                endContent={
+                                    <button className="focus:outline-none" type="button" onClick={() => setPasswordVisible(!isPasswordVisible)}>
+                                        {isPasswordVisible ? (
+                                            <EyeSlashFilledIcon className="text-2xl text-default-400 pointer-events-none" />
+                                        ) : (
+                                            <EyeFilledIcon className="text-2xl text-default-400 pointer-events-none" />
+                                        )}
+                                    </button>
+                                }
+                                type={isPasswordVisible ? "text" : "password"}
+                                className="max-w-xs mb-2"
+                            />
+                            <Input
+                                label="New password"
+                                variant="bordered"
+                                placeholder="Enter a new password"
+                                value={newPassword}
+                                onValueChange={setNewPassword}
+                                endContent={
+                                    <button className="focus:outline-none" type="button" onClick={() => setNewPasswordVisible(!isNewPasswordVisible)}>
+                                        {isNewPasswordVisible ? (
+                                            <EyeSlashFilledIcon className="text-2xl text-default-400 pointer-events-none" />
+                                        ) : (
+                                            <EyeFilledIcon className="text-2xl text-default-400 pointer-events-none" />
+                                        )}
+                                    </button>
+                                }
+                                type={isPasswordVisible ? "text" : "password"}
+                                className="max-w-xs"
+                                description={isNewPasswordSet && <p className="text-success">Your password has been updated.</p>}
+                            />
+                            <div className="mt-4">
+                                <Button onClick={async () => {
+                                    setUdatePasswordButtonLoading(true)
 
-                        <Divider className="my-8" />
+                                    try {
+                                        await updatePassword({ currentPassword, newPassword })
+                                        setNewPasswordSet(true)
+                                    } catch { }
+
+                                    setUdatePasswordButtonLoading(false)
+                                }} isLoading={isUpdatePasswordButtonLoading} isDisabled={!currentPassword || !newPassword || currentPassword === newPassword} color="primary" variant="shadow">
+                                    {isUpdatePasswordButtonLoading ? 'Loading...' : 'Update'}
+                                </Button>
+                            </div>
+                            <Divider className="my-8" />
+                        </>}
 
                         <div className="w-full text-center">
                             <p className="mb-2">Two-factor authentication (2FA){user?.is2faEnabled && <b> (enabled)</b>}:</p>

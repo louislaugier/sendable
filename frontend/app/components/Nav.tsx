@@ -13,6 +13,7 @@ import { pages } from "~/constants/pages";
 import { SubscriptionType } from "~/types/subscription";
 import { GoogleOneTap } from "./buttons/AuthButtons/GoogleAuthButton";
 import SignupLoginModal from "./modals/SignupLoginModal";
+import { capitalize } from "~/utils/string";
 
 export default function Nav() {
     const { authModal, modalType, setModalType } = useContext(AuthModalContext);
@@ -90,7 +91,7 @@ export default function Nav() {
                                 <User
                                     as="button"
                                     className="transition-transform"
-                                    description={`${user.currentPlan.type.charAt(0).toUpperCase() + user.currentPlan.type.slice(1)} plan`}
+                                    description={capitalize(user.currentPlan.type)}
                                     name={user.email}
                                 />
                             </DropdownTrigger>

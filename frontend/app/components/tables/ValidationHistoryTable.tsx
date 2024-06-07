@@ -6,6 +6,7 @@ import DownloadReportButton from "../buttons/DownloadReportButton";
 import DynamicTable from "./DynamicTable";
 import { useState, useEffect, useContext } from "react";
 import UserContext from "~/contexts/UserContext";
+import { capitalize } from "~/utils/string";
 
 const columnNames = [
     "DATE",
@@ -32,7 +33,7 @@ export default function ValidationHistoryTable(props: any) {
         <TableCell>{moment(validation.createdAt).format("YYYY-MM-DD HH:mm:ss").toString()}</TableCell>
 
         <TableCell>
-            <p>{validation.providerSource ? `${validation.providerSource.charAt(0).toUpperCase()}${validation.providerSource.slice(1)}` : validation.uploadFilename ? validation.uploadFilename : 'Text (manual)'}</p>
+            <p>{validation.providerSource ? capitalize(validation.providerSource) : validation.uploadFilename ? validation.uploadFilename : 'Text (manual)'}</p>
         </TableCell>
 
         <TableCell>{validation.singleTargetEmail ? validation.singleTargetEmail : validation.bulkAddressCount ? `${validation.bulkAddressCount} addresses` : 'Processing...'}</TableCell>
