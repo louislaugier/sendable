@@ -1,6 +1,8 @@
 export interface Subscription {
+    id: string,
     type: SubscriptionType,
     billingFrequency: SubscriptionBillingFrequency
+    createdAt: string;
 }
 
 export enum SubscriptionType {

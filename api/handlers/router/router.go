@@ -66,8 +66,8 @@ func handleHTTP(mux *http.ServeMux) {
 		http.HandlerFunc(handlers.UpdateEmailAddressHandler),
 		true,
 	), true, func() *time.Duration {
-		rateLimit := time.Minute
-		return &rateLimit
+		rateLimitInterval := time.Minute
+		return &rateLimitInterval
 	}())
 	handle(mux, "/update_password", middleware.ValidateJWT(
 		http.HandlerFunc(handlers.UpdatePasswordHandler),
@@ -86,13 +86,10 @@ func handleHTTP(mux *http.ServeMux) {
 		true,
 	), true)
 
-	handle(mux, "/subscription_history",
-		middleware.ValidateJWT(
-			http.HandlerFunc(handlers.SubscriptionHistoryHandler),
-			true,
-		),
+	handle(mux, "/subscription_history", middleware.ValidateJWT(
+		http.HandlerFunc(handlers.SubscriptionHistoryHandler),
 		true,
-	)
+	), true)
 
 	handle(mux, "/api_keys", middleware.ValidateJWT(
 		http.HandlerFunc(handlers.APIKeysHandler),

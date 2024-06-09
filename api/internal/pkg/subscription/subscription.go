@@ -34,7 +34,7 @@ func GetMany(userID uuid.UUID, limit, offset int) ([]models.Subscription, error)
 	var subscriptions []models.Subscription
 	for rows.Next() {
 		var s models.Subscription
-		err := rows.Scan()
+		err := rows.Scan(&s.ID, &s.UserID, &s.BillingFrequency, &s.Type, &s.CreatedAt, &s.CancelledAt)
 		if err != nil {
 			return nil, err
 		}
