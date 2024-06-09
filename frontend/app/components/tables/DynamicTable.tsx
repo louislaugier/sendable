@@ -48,7 +48,7 @@ export default function DynamicTable(props: any) {
                 >
                     {(item: any) => <SelectItem key={item.value}>{item.label}</SelectItem>}
                 </Select >
-                <Table aria-label="Email validation history" className="mb-16" bottomContent={!!loadedItems.length &&
+                <Table aria-label="Email validation history" className="mb" bottomContent={!!loadedItems.length &&
                     <div className="flex w-full justify-center">
                         <Pagination
                             isCompact

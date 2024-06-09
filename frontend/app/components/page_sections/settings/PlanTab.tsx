@@ -51,7 +51,7 @@ export default function PlanTab() {
                 <Card className="w-full p-4">
                     <CardHeader className="flex gap-3">
                         <div className="flex flex-col">
-                            <p className="text-md">Subscription plan</p>
+                            <p className="text-md">Plan settings</p>
                         </div>
                     </CardHeader>
                     <CardBody className="flex flex-col items-center">

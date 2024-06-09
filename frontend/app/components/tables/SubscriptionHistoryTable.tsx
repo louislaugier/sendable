@@ -1,12 +1,16 @@
-import { TableRow, TableCell } from "@nextui-org/react";
+import { TableRow, TableCell, Chip } from "@nextui-org/react";
 import moment from "moment";
 import { Subscription } from "~/types/subscription";
 import DynamicTable from "./DynamicTable";
 import { useState, useEffect, useContext } from "react";
 import UserContext from "~/contexts/UserContext";
+import { capitalize } from "~/utils/string";
 
 const columnNames = [
     "DATE",
+    "PLAN TYPE",
+    "BILLING FREQUENCY",
+    "STATUS"
 ]
 
 export default function SubscriptionHistoryTable(props: any) {
@@ -23,7 +27,20 @@ export default function SubscriptionHistoryTable(props: any) {
 
     const rowToMap = (subscription: Subscription, i: number) => <TableRow key={i}>
         <TableCell>{moment(subscription.createdAt).format("YYYY-MM-DD HH:mm:ss").toString()}</TableCell>
-
+        <TableCell>{capitalize(subscription.type)}</TableCell>
+        <TableCell>{capitalize(subscription.billingFrequency)}</TableCell>
+        <TableCell>
+            {!subscription.cancelledAt ?
+                <Chip
+                    variant="dot"
+                    color="success"
+                >
+                    Active
+                </Chip>
+                :
+                <Chip color="warning" variant="dot">Cancelled on {moment(subscription.cancelledAt).format("YYYY-MM-DD HH:mm:ss").toString()}</Chip>
+            }
+        </TableCell>
     </TableRow>
 
     return (

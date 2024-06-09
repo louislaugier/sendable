@@ -3,6 +3,7 @@ export interface Subscription {
     type: SubscriptionType,
     billingFrequency: SubscriptionBillingFrequency
     createdAt: string;
+    cancelledAt: string;
 }
 
 export enum SubscriptionType {
