@@ -91,16 +91,21 @@ func handleHTTP(mux *http.ServeMux) {
 		true,
 	), true)
 
-	handle(mux, "/api_keys", middleware.ValidateJWT(
-		http.HandlerFunc(handlers.APIKeysHandler),
-		true,
+	handle(mux, "/generate_jwt", middleware.ValidateAPIKey( // generate JWT as API consumer (platform users)
+		http.HandlerFunc(handlers.GenerateJWTHandler),
 	), true)
 	handle(mux, "/generate_api_key", middleware.ValidateJWT(
 		http.HandlerFunc(handlers.GenerateAPIKeyHandler),
 		true,
 	), true)
-	handle(mux, "/generate_jwt", middleware.ValidateAPIKey( // generate JWT as API consumer (platform users)
-		http.HandlerFunc(handlers.GenerateJWTHandler),
+	handle(mux, "/api_keys", middleware.ValidateJWT(
+		http.HandlerFunc(handlers.APIKeysHandler),
+		true,
+	), true)
+
+	handle(mux, "/delete_api_key", middleware.ValidateJWT(
+		http.HandlerFunc(handlers.DeleteAPIKeyHandler),
+		true,
 	), true)
 
 	handle(mux, "/validate_email",

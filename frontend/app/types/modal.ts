@@ -5,11 +5,11 @@ export enum AuthModalType {
 
 export interface AuthModalContextProps {
     authModal: {
-        isOpen: boolean;
-        onOpen: () => void;
-        onClose: () => void;
-        onOpenChange: (isOpen: boolean) => void;
-    };
-    modalType: AuthModalType | undefined;
-    setModalType: React.Dispatch<React.SetStateAction<AuthModalType | undefined>>;
+        isOpen: boolean,
+        onOpen: () => void,
+        onClose: () => void,
+        onOpenChange: (isOpen: boolean) => void
+    },
+    modalType: AuthModalType | undefined,
+    setModalType: React.Dispatch<React.SetStateAction<AuthModalType | undefined>>
 }

@@ -14,6 +14,7 @@ import (
 func Enable2FAHandler(w http.ResponseWriter, r *http.Request) {
 	if r.Method != http.MethodPost {
 		http.Error(w, "method not allowed", http.StatusMethodNotAllowed)
+		return
 	}
 
 	body := models.Enable2FARequest{}

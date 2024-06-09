@@ -11,6 +11,7 @@ import (
 func SubscriptionHistoryHandler(w http.ResponseWriter, r *http.Request) {
 	if r.Method != http.MethodGet {
 		http.Error(w, "method not allowed", http.StatusMethodNotAllowed)
+		return
 	}
 
 	limit, offset := 10, 0

@@ -28,22 +28,22 @@ export default function PlanTab() {
 
     const loadSubscriptionHistory = useCallback(async (limit: number | undefined = undefined, offset: number | undefined = undefined) => {
         try {
-          const res = await getSubscriptionHistory(limit, offset)
-          if (res) {
-            setSubscriptions(prevSubscriptions => [...prevSubscriptions, ...res.subscriptions.filter((newItem: Subscription) => !prevSubscriptions.some(prevItem => prevItem?.id === newItem.id))]);
-            setSubscriptionsCount(res.count)
-          }
+            const res = await getSubscriptionHistory(limit, offset)
+            if (res?.subscriptions?.length && res.count) {
+                setSubscriptions(prevSubscriptions => [...prevSubscriptions, ...res.subscriptions.filter((newItem: Subscription) => !prevSubscriptions.some(prevItem => prevItem?.id === newItem.id))]);
+                setSubscriptionsCount(res.count)
+            }
         } catch (err) {
-          console.error(err)
+            console.error(err)
         }
-      }, [subscriptionsCount, subscriptions]);
-    
-      const resetSubscriptionHistory = useCallback(async () => {
+    }, [subscriptionsCount, subscriptions]);
+
+    const resetSubscriptionHistory = useCallback(async () => {
         setSubscriptions([])
         setSubscriptionsCount(0)
-    
+
         await loadSubscriptionHistory()
-      }, [subscriptions, setSubscriptionsCount])
+    }, [subscriptions, setSubscriptionsCount])
 
     return (
         <>
@@ -63,9 +63,11 @@ export default function PlanTab() {
                             <Button className="mt-4" as={Link} href={`/pricing`} onClick={goToPricing} color='primary' variant="shadow">
                                 Upgrade
                             </Button>
-                            <Button className="mt-4" as={Link} href={`/`} onClick={()=>{}} color='primary' variant="bordered">
-                                Manage subscription
-                            </Button>
+                            {isPremiumOrEnterprise &&
+                                <Button className="mt-4" as={Link} href={`/`} onClick={() => { }} color='primary' variant="bordered">
+                                    Manage subscription
+                                </Button>
+                            }
                         </>}
                         <Divider className="my-8" />
 

@@ -57,4 +57,7 @@ type (
 	Disable2FARequest struct {
 		TwoFactorAuthenticationCode string `json:"twoFactorAuthenticationCode"`
 	}
+	DeleteAPIKeyRequest struct {
+		ID *uuid.UUID `json:"id"`
+	}
 )

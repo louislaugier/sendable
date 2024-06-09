@@ -3,9 +3,9 @@ export enum ContactProviderType {
     Hubspot = "hubspot",
     Zoho = "zoho",
     Sendgrid = "sendgrid",
-    Brevo = "brevo",
+    Brevo = "brevo"
 }
 
 export interface ContactProvider {
-    type: ContactProviderType;
+    type: ContactProviderType
 }

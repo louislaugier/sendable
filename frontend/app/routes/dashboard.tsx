@@ -54,7 +54,7 @@ export default function Dashboard() {
   const loadHistory = useCallback(async (limit: number | undefined = undefined, offset: number | undefined = undefined) => {
     try {
       const res = await getValidationHistory(limit, offset)
-      if (res) {
+      if (res?.validations?.length && res.count) {
         setValidations(prevValidations => [...prevValidations, ...res.validations.filter((newItem: Validation) => !prevValidations.some(prevItem => prevItem?.id === newItem.id))]);
         setValidationsCount(res.count)
       }

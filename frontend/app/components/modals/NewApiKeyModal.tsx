@@ -5,7 +5,7 @@ import generateApiKey from "~/services/api/generate_api_key";
 const NewApiKeyModal = (props: any) => {
     const [isLoading, setLoading] = useState(false);
 
-    const { isOpen, onClose, onOpenChange } = props
+    const { isOpen, onClose, onOpenChange, resetApiKeys } = props
 
     const [label, setLabel] = useState()
     const [generatedKey, setGeneratedKey] = useState()
@@ -54,6 +54,8 @@ const NewApiKeyModal = (props: any) => {
                                 try {
                                     const res = await generateApiKey(label!)
                                     setGeneratedKey(res.key)
+
+                                    if (resetApiKeys) resetApiKeys()
                                 } catch { }
 
                                 setLoading(false)

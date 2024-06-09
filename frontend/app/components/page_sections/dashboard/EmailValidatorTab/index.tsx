@@ -3,7 +3,7 @@ import { useState } from "react";
 import TextEmailValidator from "./TextEmailValidator";
 import FileEmailValidator from "./FileEmailValidator";
 import ReachabilityReference from "~/components/dropdowns/ReachabilityReference";
-import ApiTab from "../../settings/ApiTab";
+import ApiTab from "./ApiTab";
 
 export default function EmailValidatorTab(props: any) {
     const { remainingAppValidations, resetHistory } = props

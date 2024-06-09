@@ -11,6 +11,7 @@ import (
 func APIKeysHandler(w http.ResponseWriter, r *http.Request) {
 	if r.Method != http.MethodGet {
 		http.Error(w, "method not allowed", http.StatusMethodNotAllowed)
+		return
 	}
 
 	limit, offset := 10, 0
@@ -29,10 +30,17 @@ func APIKeysHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	userID := middleware.GetUserFromRequest(r).ID
-	APIKeys, err := api_key.GetMany(userID, limit, offset)
+	history, err := api_key.GetMany(userID, limit, offset)
+	if err != nil {
+		handleError(w, err, "Internal Server Error", http.StatusInternalServerError)
+	}
+	totalCount, err := api_key.GetCount(userID)
 	if err != nil {
 		handleError(w, err, "Internal Server Error", http.StatusInternalServerError)
 	}
 
-	json.NewEncoder(w).Encode(APIKeys)
+	json.NewEncoder(w).Encode(map[string]interface{}{
+		"apiKeys": history,
+		"count":   totalCount,
+	})
 }

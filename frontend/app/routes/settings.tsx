@@ -3,6 +3,7 @@ import type { MetaFunction } from "@remix-run/node";
 import { useSearchParams } from "@remix-run/react";
 import { useContext, useEffect, useState } from "react";
 import AccountTab from "~/components/page_sections/settings/AccountTab";
+import ApiTab from "~/components/page_sections/settings/ApiTab";
 import PlanTab from "~/components/page_sections/settings/PlanTab";
 import { siteName } from "~/constants/app";
 import UserContext from "~/contexts/UserContext";
@@ -85,7 +86,7 @@ export default function Settings() {
                 </div>
               }
             >
-
+              <ApiTab />
             </Tab>
           </Tabs>
 
