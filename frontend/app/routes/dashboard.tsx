@@ -55,7 +55,7 @@ export default function Dashboard() {
     try {
       const res = await getValidationHistory(limit, offset)
       if (res) {
-        setValidations(prevValidations => [...prevValidations, ...res.validations])
+        setValidations(prevValidations => [...prevValidations, ...res.validations.filter((newItem: Validation) => !prevValidations.some(prevItem => prevItem?.id === newItem.id))]);
         setValidationsCount(res.count)
       }
     } catch (err) {

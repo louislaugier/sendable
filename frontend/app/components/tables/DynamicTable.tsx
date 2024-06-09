@@ -13,9 +13,8 @@ export default function DynamicTable(props: any) {
     const currentPageItems = useMemo(() => {
         if (loadedItems.length) {
             const start = (page - 1) * rowsPerPage;
-            const end = start + rowsPerPage;
 
-            return loadedItems.slice(start, end);
+            return loadedItems.slice(start, start + rowsPerPage);
         } else return []
     }, [page, loadedItems, totalCount, rowsPerPage]);
 
@@ -73,12 +72,12 @@ export default function DynamicTable(props: any) {
                     </div>
                 }>
                     <TableHeader>
-                        {columnNames.map((columnName: string, i: number) => <TableColumn className={i + 1 === columnNames.length ? 'flex justify-center items-center' : ''}>{columnName}</TableColumn>)}
+                        {columnNames.map((columnName: string, i: number) => <TableColumn key={i} className={i + 1 === columnNames.length ? 'flex justify-center items-center' : ''}>{columnName}</TableColumn>)}
                     </TableHeader>
                     <TableBody>
                         {!!currentPageItems.length ? currentPageItems.map((item: any, i: number) => rowToMap(item, i)) : <TableRow>
                             {columnNames.map((_: string, i: number) =>
-                                <TableCell>{i === 0 && <p>Nothing to see here yet.</p>}</TableCell>
+                                <TableCell key={i}>{i === 0 && <p>Nothing to see here yet.</p>}</TableCell>
                             )}
                         </TableRow>}
                     </TableBody>
