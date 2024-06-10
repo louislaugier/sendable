@@ -24,7 +24,7 @@ const DeleteApiKeyModal = (props: any) => {
                     <>
                         <ModalHeader className="flex flex-col gap-1">Delete API key</ModalHeader>
                         <ModalBody>
-                            <p>You are about to delete the following API key: {apiKey.label}</p>
+                            <p>You are about to delete the following API key: <b>{apiKey.label}</b></p>
 
                             <Input
                                 onPaste={(e) => e.preventDefault()}

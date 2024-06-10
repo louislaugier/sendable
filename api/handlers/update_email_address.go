@@ -54,8 +54,9 @@ func UpdateEmailAddressHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	go config.EmailClient.SendEmail(models.ConfirmEmailAddressTemplate, "New email address confirmation", "Verify your new email address", map[string]string{
+	err = config.EmailClient.SendEmail(models.ConfirmEmailAddressTemplate, "New email address confirmation", "Verify your new email address", map[string]string{
 		"email_confirmation_code": strconv.Itoa(*emailConfirmationCode),
+		"is_new_account":          "false",
 		"domain":                  fmt.Sprintf("%s%s", config.DomainURL, config.APIVersionPrefix),
 	}, body.Email)
 	if err != nil {

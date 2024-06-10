@@ -13,7 +13,7 @@ import (
 )
 
 const (
-	insertQuery = "INSERT INTO public.user (id, email, is_email_confirmed, last_ip_addresses, last_user_agent, auth_provider) VALUES ($1, $2, $3, $4, $5, $6, $7);"
+	insertQuery = "INSERT INTO public.user (id, email, is_email_confirmed, password_sha256, last_ip_addresses, last_user_agent, auth_provider) VALUES ($1, $2, $3, $4, $5, $6, $7);"
 
 	selectQuery = `
 		SELECT 

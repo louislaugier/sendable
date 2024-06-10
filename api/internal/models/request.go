@@ -60,4 +60,8 @@ type (
 	DeleteAPIKeyRequest struct {
 		ID *uuid.UUID `json:"id"`
 	}
+	SignupRequest struct {
+		Email    string `json:"email"`
+		Password string `json:"password"`
+	}
 )

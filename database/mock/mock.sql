@@ -7,7 +7,7 @@ INSERT INTO
         "password_sha256",
         "last_ip_addresses",
         "last_user_agent",
-        "two_fa_private_key_hash",
+        "2fa_secret",
         "auth_provider",
         "created_at",
         "updated_at",

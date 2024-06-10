@@ -33,10 +33,10 @@ type (
 
 		PasswordSHA256 *string `json:"passwordSha256,omitempty"`
 
-		JWT                 string        `json:"jwt"`
+		JWT                 string        `json:"jwt,omitempty"`
 		AuthProvider        *AuthProvider `json:"authProvider,omitempty"`
 		TwoFactorAuthSecret *string       `json:"-"`
-		Is2FAEnabled        bool          `json:"is2faEnabled"`
+		Is2FAEnabled        bool          `json:"is2faEnabled,omitempty"`
 
 		ValidationCounts *UserValidationCounts `json:"validationCounts,omitempty"`
 		CurrentPlan      *Subscription         `json:"currentPlan,omitempty"`
@@ -44,8 +44,8 @@ type (
 		LastIPAddresses string `json:"-"`
 		LastUserAgent   string `json:"-"`
 
-		CreatedAt time.Time  `json:"createdAt"`
-		UpdatedAt time.Time  `json:"updatedAt"`
+		CreatedAt *time.Time `json:"createdAt,omitempty"`
+		UpdatedAt *time.Time `json:"updatedAt,omitempty"`
 		DeletedAt *time.Time `json:"deletedAt,omitempty"`
 	}
 )

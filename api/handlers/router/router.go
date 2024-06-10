@@ -40,7 +40,7 @@ func handleHTTP(mux *http.ServeMux) {
 	handle(mux, "/healthz", http.HandlerFunc(handlers.HealthzHandler), true)
 
 	// TODO: login
-	// TODO: signup
+	handle(mux, "/signup", http.HandlerFunc(handlers.SignupHandler), true)
 	handle(mux, "/confirm_email_address", http.HandlerFunc(handlers.ConfirmEmailAddressHandler), true)
 
 	handle(mux, "/auth_google", http.HandlerFunc(handlers.GoogleAuthHandler), true)

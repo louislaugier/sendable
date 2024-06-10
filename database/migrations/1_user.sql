@@ -9,7 +9,7 @@ CREATE TYPE auth_provider AS ENUM (
 
 CREATE TABLE IF NOT EXISTS public."user" (
     "id" UUID PRIMARY KEY,
-    "email" VARCHAR NOT NULL,
+    "email" VARCHAR NOT NULL UNIQUE,
     "is_email_confirmed" BOOLEAN NOT NULL DEFAULT FALSE,
     "email_confirmation_code" INT,
     "password_sha256" VARCHAR,
@@ -17,8 +17,8 @@ CREATE TABLE IF NOT EXISTS public."user" (
     "last_user_agent" VARCHAR NOT NULL DEFAULT 'unknown',
     "2fa_secret" VARCHAR,
     "auth_provider" auth_provider,
-    "created_at" TIMESTAMP NOT NULL,
-    "updated_at" TIMESTAMP NOT NULL,
+    "created_at" TIMESTAMP NOT NULL DEFAULT NOW(),
+    "updated_at" TIMESTAMP NOT NULL DEFAULT NOW(),
     "deleted_at" TIMESTAMP,
     CONSTRAINT password_or_auth_provider_not_empty CHECK (
         "password_sha256" IS NOT NULL
@@ -26,15 +26,14 @@ CREATE TABLE IF NOT EXISTS public."user" (
     )
 );
 
-CREATE
-OR REPLACE FUNCTION update_timestamp() RETURNS TRIGGER AS $ $ BEGIN NEW.updated_at = NOW();
-
-RETURN NEW;
-
+CREATE OR REPLACE FUNCTION update_timestamp() RETURNS TRIGGER AS $$
+BEGIN
+    NEW.updated_at = NOW();
+    RETURN NEW;
 END;
+$$ LANGUAGE 'plpgsql';
 
-$ $ language 'plpgsql';
-
-CREATE TRIGGER update_user_timestamp BEFORE
-UPDATE
-    ON public."user" FOR EACH ROW EXECUTE PROCEDURE update_timestamp();
+CREATE TRIGGER update_user_timestamp
+BEFORE UPDATE ON public."user"
+FOR EACH ROW
+EXECUTE FUNCTION update_timestamp();
