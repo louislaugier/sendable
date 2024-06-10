@@ -102,7 +102,6 @@ func handleHTTP(mux *http.ServeMux) {
 		http.HandlerFunc(handlers.APIKeysHandler),
 		true,
 	), true)
-
 	handle(mux, "/delete_api_key", middleware.ValidateJWT(
 		http.HandlerFunc(handlers.DeleteAPIKeyHandler),
 		true,
@@ -131,6 +130,7 @@ func handleHTTP(mux *http.ServeMux) {
 		),
 		true,
 	)
+
 	handle(mux, "/validation_reports/",
 		middleware.ValidateReportToken(
 			http.StripPrefix(fmt.Sprintf("%s/validation_reports/", config.APIVersionPrefix),
