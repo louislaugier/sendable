@@ -39,9 +39,9 @@ func handle(mux *http.ServeMux, path string, handler http.Handler, withBaseRateL
 func handleHTTP(mux *http.ServeMux) {
 	handle(mux, "/healthz", http.HandlerFunc(handlers.HealthzHandler), true)
 
-	// TODO: login
 	handle(mux, "/signup", http.HandlerFunc(handlers.SignupHandler), true)
 	handle(mux, "/confirm_email_address", http.HandlerFunc(handlers.ConfirmEmailAddressHandler), true)
+	handle(mux, "/login", http.HandlerFunc(handlers.LoginHandler), true)
 
 	handle(mux, "/auth_google", http.HandlerFunc(handlers.GoogleAuthHandler), true)
 	handle(mux, "/auth_linkedin", http.HandlerFunc(handlers.LinkedinAuthHandler), true)
