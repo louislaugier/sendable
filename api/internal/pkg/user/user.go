@@ -139,17 +139,6 @@ func GetByIDAndPasswordSHA256(ID uuid.UUID, passwordSHA256 string) (*models.User
 	return getByCriteria(false, query, ID, passwordSHA256)
 }
 
-func Get2FASecretByID(ID uuid.UUID) (*string, error) {
-	var secret *string
-
-	err := config.DB.QueryRow(select2FASecretQuery, ID).Scan(&secret)
-	if err != nil {
-		return nil, err
-	}
-
-	return secret, nil
-}
-
 // GetByTempZohoOauthData retrieves a user by temporary oauth data (Zoho flow).
 func GetByTempZohoOauthData(comaSeparatedEmails string, lastIPs, lastUserAgent string) (*models.User, error) {
 	query := fmt.Sprintf(selectQuery, "u.email = $1 AND u.auth_provider = $2 AND u.last_ip_addresses = $3 AND u.last_user_agent = $4")

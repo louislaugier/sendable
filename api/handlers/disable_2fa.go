@@ -28,20 +28,15 @@ func Disable2FAHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	u := middleware.GetUserFromRequest(r)
-	secret, err := user.Get2FASecretByID(u.ID)
-	if err != nil {
-		handleError(w, err, "Internal Server Error", http.StatusInternalServerError)
-		return
-	}
 
-	ok := two_factor_auth.Verify2FA(body.TwoFactorAuthenticationCode, *secret)
+	ok := two_factor_auth.Verify2FA(body.TwoFactorAuthenticationCode, *u.TwoFactorAuthSecret)
 	if !ok {
 		err := errors.New("wrong 2FA code")
 		handleError(w, err, err.Error(), http.StatusBadRequest)
 		return
 	}
 
-	err = user.Disable2FA(u.ID)
+	err := user.Disable2FA(u.ID)
 	if err != nil {
 		handleError(w, err, "Internal Server Error", http.StatusInternalServerError)
 		return
