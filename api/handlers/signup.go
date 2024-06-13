@@ -46,7 +46,7 @@ func SignupHandler(w http.ResponseWriter, r *http.Request) {
 	}
 	if err := user.InsertNew(u, &pwd); err != nil {
 		if err.Error() == models.ErrEmailAlreadyTaken {
-			http.Error(w, "Email address already in use", http.StatusConflict)
+			http.Error(w, "Email address already in use.", http.StatusConflict)
 			return
 		}
 

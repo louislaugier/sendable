@@ -6,8 +6,10 @@ import EmailAddressConfirmedModal from "~/components/modals/EmailAddressConfirme
 import EmailValidatorTab from "~/components/page_sections/dashboard/EmailValidatorTab";
 import ValidationHistoryTable from "~/components/tables/ValidationHistoryTable";
 import { siteName } from "~/constants/app";
+import AuthModalContext from "~/contexts/AuthModalContext";
 import UserContext from "~/contexts/UserContext";
 import getValidationHistory from "~/services/api/validation_history";
+import { AuthModalType } from "~/types/modal";
 import { SubscriptionType } from "~/types/subscription";
 import { Validation } from "~/types/validation";
 import { getApiValidationLimit, getAppValidationLimit, getRemainingApiValidations, getRemainingAppValidations } from "~/utils/limit";
@@ -28,8 +30,19 @@ export default function Dashboard() {
 
   const isEmailAddressConfirmedCall = !!searchParams.get("email_confirmed")
 
+  const { authModal, setModalType } = useContext(AuthModalContext);
+
+  const isEmailAddressToConfirmCall = searchParams.get("email_to_confirm")
+  useEffect(() => {
+    if (!!isEmailAddressToConfirmCall) {
+      setModalType(AuthModalType.Signup)
+      authModal.onOpen()
+    }
+  }, [])
+
   if (!user) {
     if (isEmailAddressConfirmedCall) navigateToUrl('/?email_confirmed=true')
+    else if (!!isEmailAddressToConfirmCall) navigateToUrl(`/?email_to_confirm=${isEmailAddressToConfirmCall}`)
     else navigateToUrl('/')
   }
 

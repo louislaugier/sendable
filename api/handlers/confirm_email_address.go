@@ -48,5 +48,10 @@ func ConfirmEmailAddressHandler(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 
+	// if body.IsNewAccount {
+
+	// 	return
+	// }
+
 	http.Redirect(w, r, fmt.Sprintf("%s/dashboard?email_confirmed=true", config.FrontendURL), http.StatusSeeOther)
 }

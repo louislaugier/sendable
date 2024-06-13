@@ -1,13 +1,15 @@
 import { useDisclosure } from "@nextui-org/react";
 import type { MetaFunction } from "@remix-run/node";
 import { useSearchParams } from "@remix-run/react";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useContext } from "react";
 import EmailAddressConfirmedModal from "~/components/modals/EmailAddressConfirmedModal";
 import DataPrivacySection from "~/components/page_sections/_root/DataPrivacySection";
 import FeaturesSection from "~/components/page_sections/_root/FeaturesSection";
 import HeroSection from "~/components/page_sections/_root/HeroSection";
 import IntegrationsSection from "~/components/page_sections/_root/IntegrationsSection";
 import { siteName } from "~/constants/app";
+import AuthModalContext from "~/contexts/AuthModalContext";
+import { AuthModalType } from "~/types/modal";
 
 export const meta: MetaFunction = () => {
   return [
@@ -21,6 +23,16 @@ export default function Index() {
 
   const emailAddressConfirmedModal = useDisclosure()
   const isEmailAddressConfirmedCall = !!searchParams.get("email_confirmed")
+
+  const { authModal, setModalType } = useContext(AuthModalContext);
+
+  const isEmailAddressToConfirmCall = !!searchParams.get("email_to_confirm")
+  useEffect(() => {
+    if (isEmailAddressToConfirmCall) {
+      setModalType(AuthModalType.Signup)
+      authModal.onOpen()
+    }
+  }, [])
 
   const [isEmailAddressConfirmedModalAck, setEmailAddressConfirmedModalAck] = useState(false)
   useEffect(() => {
