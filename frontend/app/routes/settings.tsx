@@ -1,7 +1,8 @@
-import { Tabs, Tab } from "@nextui-org/react";
+import { Tabs, Tab, useDisclosure } from "@nextui-org/react";
 import type { MetaFunction } from "@remix-run/node";
 import { useSearchParams } from "@remix-run/react";
 import { useContext, useEffect, useState } from "react";
+import EmailAddressConfirmedModal from "~/components/modals/EmailAddressConfirmedModal";
 import AccountTab from "~/components/page_sections/settings/AccountTab";
 import ApiTab from "~/components/page_sections/settings/ApiTab";
 import PlanTab from "~/components/page_sections/settings/PlanTab";
@@ -18,7 +19,6 @@ export const meta: MetaFunction = () => {
 
 export default function Settings() {
   const { user } = useContext(UserContext)
-  if (!user) navigateToUrl('/')
 
   const [searchParams, setSearchParams] = useSearchParams();
 
@@ -29,6 +29,19 @@ export default function Settings() {
       setSearchParams({ tab: selectedTab });
     }
   }, [selectedTab, setSearchParams]);
+
+  const isEmailAddressConfirmedCall = !!searchParams.get("email_confirmed")
+
+  if (!user) {
+    if (isEmailAddressConfirmedCall) navigateToUrl('/?email_confirmed=true')
+    else navigateToUrl('/')
+  }
+
+  const emailAddressConfirmedModal = useDisclosure()
+  const [isEmailAddressConfirmedModalAck, setEmailAddressConfirmedModalAck] = useState(false)
+  useEffect(() => {
+    if (isEmailAddressConfirmedCall && !emailAddressConfirmedModal.isOpen && !isEmailAddressConfirmedModalAck) emailAddressConfirmedModal.onOpen()
+  }, [searchParams, emailAddressConfirmedModal, isEmailAddressConfirmedModalAck])
 
   return (
     !!user &&
@@ -92,6 +105,11 @@ export default function Settings() {
 
         </div>
       </div>
+
+      <EmailAddressConfirmedModal isOpen={emailAddressConfirmedModal.isOpen} onOpenChange={emailAddressConfirmedModal.onOpenChange} onClose={() => {
+        setEmailAddressConfirmedModalAck(true)
+        emailAddressConfirmedModal.onClose()
+      }} />
     </>
   );
 }

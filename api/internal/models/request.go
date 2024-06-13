@@ -40,6 +40,7 @@ type (
 
 	ConfirmEmailAddressRequest struct {
 		IsNewAccount          bool   `json:"isNewAccount"`
+		IsZohoConfirmation    bool   `json:"isZohoConfirmation"`
 		Email                 string `json:"email"`
 		EmailConfirmationCode int    `json:"emailConfirmationCode"`
 	}

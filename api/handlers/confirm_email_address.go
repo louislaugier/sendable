@@ -48,5 +48,10 @@ func ConfirmEmailAddressHandler(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 
-	http.Redirect(w, r, fmt.Sprintf("%s/dashboard?email_confirmed=true", config.FrontendURL), http.StatusSeeOther)
+	page := "dashboard"
+	if !body.IsNewAccount && !body.IsZohoConfirmation {
+		page = "settings"
+	}
+
+	http.Redirect(w, r, fmt.Sprintf("%s/%s?email_confirmed=true", page, config.FrontendURL), http.StatusSeeOther)
 }
