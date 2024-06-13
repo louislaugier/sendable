@@ -32,17 +32,8 @@ export default function Dashboard() {
 
   const { authModal, setModalType } = useContext(AuthModalContext);
 
-  const isEmailAddressToConfirmCall = searchParams.get("email_to_confirm")
-  useEffect(() => {
-    if (!!isEmailAddressToConfirmCall) {
-      setModalType(AuthModalType.Signup)
-      authModal.onOpen()
-    }
-  }, [])
-
   if (!user) {
     if (isEmailAddressConfirmedCall) navigateToUrl('/?email_confirmed=true')
-    else if (!!isEmailAddressToConfirmCall) navigateToUrl(`/?email_to_confirm=${isEmailAddressToConfirmCall}`)
     else navigateToUrl('/')
   }
 

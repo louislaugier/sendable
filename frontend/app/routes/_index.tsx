@@ -26,14 +26,6 @@ export default function Index() {
 
   const { authModal, setModalType } = useContext(AuthModalContext);
 
-  const isEmailAddressToConfirmCall = !!searchParams.get("email_to_confirm")
-  useEffect(() => {
-    if (isEmailAddressToConfirmCall) {
-      setModalType(AuthModalType.Signup)
-      authModal.onOpen()
-    }
-  }, [])
-
   const [isEmailAddressConfirmedModalAck, setEmailAddressConfirmedModalAck] = useState(false)
   useEffect(() => {
     if (isEmailAddressConfirmedCall && !emailAddressConfirmedModal.isOpen && !isEmailAddressConfirmedModalAck) emailAddressConfirmedModal.onOpen()

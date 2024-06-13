@@ -16,10 +16,6 @@ export default function SignupLoginModal(props: any) {
     const { user, setUser, setTemp2faUserId } = useContext(UserContext);
 
     const [searchParams] = useSearchParams();
-    const isEmailAddressToConfirmCall = searchParams.get("email_to_confirm")
-
-    const [isSubmitButtonVisible, setSubmitButtonVisible] = useState(!!isEmailAddressToConfirmCall ?? false)
-
     const close = () => {
         setSubmitButtonVisible(false);
         onClose()
@@ -29,7 +25,7 @@ export default function SignupLoginModal(props: any) {
     const [loginPassword, setLoginPassword] = useState("")
 
 
-    const [signupEmail, setSignupEmail] = useState(isEmailAddressToConfirmCall)
+    const [signupEmail, setSignupEmail] = useState()
     const [signupPassword, setSignupPassword] = useState("")
 
     const [isLoading, setLoading] = useState(false)
@@ -40,10 +36,13 @@ export default function SignupLoginModal(props: any) {
     const isSignup = modalType === AuthModalType.Signup
     const isLogin = modalType === AuthModalType.Login
 
-    const [isSignupEmailSent, setSignupEmailSent] = useState(!!isEmailAddressToConfirmCall ?? false)
+    const [isSignupEmailSent, setSignupEmailSent] = useState(false)
 
     const [signupConfirmationCode, setSignupConfirmationCode] = useState('')
     const [confirmationCodeError, setConfirmationCodeError] = useState('')
+
+    const [isSubmitButtonVisible, setSubmitButtonVisible] = useState(isSignupEmailSent ?? false)
+
 
     return (
         !user &&
@@ -85,7 +84,7 @@ export default function SignupLoginModal(props: any) {
                                                 setLoginError(res.error)
                                             }
                                         } else if (isSignup) {
-                                            if (!!isEmailAddressToConfirmCall) {
+                                            if (isSignupEmailSent) {
                                                 const res = await confirmEmail({ email: signupEmail, isNewAccount: true, emailConfirmationCode: signupConfirmationCode })
                                                 if (res.error) setConfirmationCodeError(res.error)
                                                 
