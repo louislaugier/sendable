@@ -1,7 +1,7 @@
 import { Input } from "@nextui-org/react"
 
 export default function TwoFactorAuthCodeInput(props: any) {
-    const { twoFactorAuthCode, twoFactorAuthCodeErrorMsg, setTwoFactorAuthCode, submit2fa } = props
+    const { twoFactorAuthCode, twoFactorAuthCodeErrorMsg, setTwoFactorAuthCode, submit2fa, label } = props
 
     return (
         <>
@@ -23,6 +23,8 @@ export default function TwoFactorAuthCodeInput(props: any) {
                 }
             </style>
             <Input
+                label={label!}
+                labelPlacement="outside"
                 onKeyDown={async (event: React.KeyboardEvent<HTMLInputElement>) => {
                     if (event.key === 'Enter' && submit2fa) await submit2fa()
                 }}

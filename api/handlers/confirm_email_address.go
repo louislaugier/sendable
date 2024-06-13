@@ -30,7 +30,7 @@ func ConfirmEmailAddressHandler(w http.ResponseWriter, r *http.Request) {
 		handleError(w, err, "User not found", http.StatusNotFound)
 		return
 	} else if u.EmailConfirmationCode != &body.EmailConfirmationCode {
-		handleError(w, err, "Invalid email confirmation code", http.StatusBadRequest)
+		handleError(w, err, "Invalid email confirmation code", http.StatusUnauthorized)
 		return
 	}
 
@@ -47,11 +47,6 @@ func ConfirmEmailAddressHandler(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 	}
-
-	// if body.IsNewAccount {
-
-	// 	return
-	// }
 
 	http.Redirect(w, r, fmt.Sprintf("%s/dashboard?email_confirmed=true", config.FrontendURL), http.StatusSeeOther)
 }
