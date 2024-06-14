@@ -82,8 +82,10 @@ export default function SignupLoginModal(props: any) {
                                             if (isSignupEmailSent) {
                                                 const res = await confirmEmail({ email: signupEmail, isNewAccount: true, emailConfirmationCode: parseInt(signupConfirmationCode) })
                                                 if (res.error) setConfirmationCodeError(res.error)
-
-                                                // should redirect to confirmation modal with link to sign in
+                                                else {
+                                                    setUser(res)
+                                                    navigateToUrl("/dashboard?email_confirmed=true")
+                                                }
                                             } else {
                                                 const res = await signup({ email: signupEmail, password: signupPassword })
 

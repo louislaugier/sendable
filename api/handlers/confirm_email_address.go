@@ -2,6 +2,7 @@ package handlers
 
 import (
 	"email-validator/config"
+	"email-validator/handlers/middleware"
 	"email-validator/internal/models"
 	"email-validator/internal/pkg/user"
 	"encoding/json"
@@ -53,5 +54,15 @@ func ConfirmEmailAddressHandler(w http.ResponseWriter, r *http.Request) {
 		page = "settings"
 	}
 
-	http.Redirect(w, r, fmt.Sprintf("%s/%s?email_confirmed=true", page, config.FrontendURL), http.StatusSeeOther)
+	if r.URL.Query().Get("magicLink") != "" {
+		http.Redirect(w, r, fmt.Sprintf("%s/%s?email_confirmed=true", config.FrontendURL, page), http.StatusSeeOther)
+		return
+	}
+
+	if err := middleware.GenerateAndBindJWT(u); err != nil {
+		handleError(w, err, "Error generating & binding JWT", http.StatusInternalServerError)
+		return
+	}
+
+	json.NewEncoder(w).Encode(u)
 }
