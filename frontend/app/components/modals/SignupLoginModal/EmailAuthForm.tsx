@@ -5,12 +5,12 @@ import { EyeSlashFilledIcon } from "~/components/icons/EyeSlashFilledIcon";
 import { AuthModalType } from "~/types/modal";
 
 export default function EmailAuthForm(props: any) {
-    const { signupEmail, signupPassword, setSignupEmail, setSignupPassword, loginEmail, loginPassword, setLoginEmail, setLoginPassword, modalType, loginError, signupError } = props
+    const { signupEmail, signupPassword, setSignupEmail, setSignupPassword, loginEmail, loginPassword, setLoginEmail, setLoginPassword, modalType, loginError, signupEmailError } = props
     const [isPasswordVisible, setPasswordVisible] = useState(false);
 
     const toggleVisibility = () => setPasswordVisible(!isPasswordVisible);
 
-    const isSignup = AuthModalType.Signup
+    const isSignup = modalType === AuthModalType.Signup
     const isLogin = modalType === AuthModalType.Login
 
     return (
@@ -22,6 +22,8 @@ export default function EmailAuthForm(props: any) {
                 label="Email"
                 placeholder="Enter your email"
                 variant="bordered"
+                errorMessage={isSignup ? signupEmailError : loginError}
+                isInvalid={!!signupEmailError || !!loginError}
             />
 
             <Input
@@ -40,7 +42,6 @@ export default function EmailAuthForm(props: any) {
                     </button>
                 }
                 type={isPasswordVisible ? "text" : "password"}
-                errorMessage={isSignup ? signupError : loginError}
             />
 
             <div className="flex py-2 px-1 justify-between">

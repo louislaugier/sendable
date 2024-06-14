@@ -24,14 +24,13 @@ export default function SignupLoginModal(props: any) {
     const [loginEmail, setLoginEmail] = useState("")
     const [loginPassword, setLoginPassword] = useState("")
 
-
     const [signupEmail, setSignupEmail] = useState()
     const [signupPassword, setSignupPassword] = useState("")
 
     const [isLoading, setLoading] = useState(false)
 
     const [loginError, setLoginError] = useState('')
-    const [signupError, setSignupError] = useState('')
+    const [signupEmailError, setSignupEmailError] = useState('')
 
     const isSignup = modalType === AuthModalType.Signup
     const isLogin = modalType === AuthModalType.Login
@@ -42,7 +41,6 @@ export default function SignupLoginModal(props: any) {
     const [confirmationCodeError, setConfirmationCodeError] = useState('')
 
     const [isSubmitButtonVisible, setSubmitButtonVisible] = useState(isSignupEmailSent ?? false)
-
 
     return (
         !user &&
@@ -62,13 +60,13 @@ export default function SignupLoginModal(props: any) {
                             <ModalBody>
                                 {isSignup && isSignupEmailSent ? <>
                                     <CodeConfirmationForm error={confirmationCodeError} code={signupConfirmationCode} setCode={setSignupConfirmationCode} />
-                                </> : <AuthButtons signupEmail={signupEmail} signupPassword={signupPassword} setSignupEmail={setSignupEmail} setSignupPassword={setSignupPassword} loginEmail={loginEmail} loginPassword={loginPassword} setLoginEmail={setLoginEmail} setLoginPassword={setLoginPassword} isSubmitButtonVisible={isSubmitButtonVisible} setSubmitButtonVisible={setSubmitButtonVisible} modalType={modalType} loginError={loginError} signupError={signupError} />}
+                                </> : <AuthButtons signupEmail={signupEmail} signupPassword={signupPassword} setSignupEmail={setSignupEmail} setSignupPassword={setSignupPassword} loginEmail={loginEmail} loginPassword={loginPassword} setLoginEmail={setLoginEmail} setLoginPassword={setLoginPassword} isSubmitButtonVisible={isSubmitButtonVisible} setSubmitButtonVisible={setSubmitButtonVisible} modalType={modalType} loginError={loginError}/>}
                             </ModalBody>
                             <ModalFooter>
                                 <Button color="danger" variant="bordered" onPress={onClose}>
                                     Close
                                 </Button>
-                                {isSubmitButtonVisible && <Button isLoading={isLoading} onClick={async () => {
+                                {isSubmitButtonVisible && <Button isDisabled={!!loginError || !!signupEmailError || (isLogin && (!loginEmail || !loginPassword)) || (isSignup && (!signupEmail || !signupPassword))} isLoading={isLoading} onClick={async () => {
                                     setLoading(true)
 
                                     try {
@@ -78,33 +76,29 @@ export default function SignupLoginModal(props: any) {
                                             if (res.email) {
                                                 setUser(res)
                                                 navigateToUrl('/dashboard')
-                                            } else if (res.is2faEnabled) {
-                                                setTemp2faUserId(res.id)
-                                            } else if (res.error) {
-                                                setLoginError(res.error)
-                                            }
+                                            } else if (res.is2faEnabled) setTemp2faUserId(res.id)
+                                            else if (res.error) setLoginError(res.error)
                                         } else if (isSignup) {
                                             if (isSignupEmailSent) {
                                                 const res = await confirmEmail({ email: signupEmail, isNewAccount: true, emailConfirmationCode: signupConfirmationCode })
                                                 if (res.error) setConfirmationCodeError(res.error)
-                                                
+
                                                 // should redirect to confirmation modal with link to sign in
                                             } else {
                                                 const res = await signup({ email: signupEmail, password: signupPassword })
 
-                                                if (res.error) setSignupError(res.error)
-
-                                                setSignupEmailSent(true)
+                                                if (res.error) setSignupEmailError(res.error)
+                                                else setSignupEmailSent(true)
                                             }
                                         }
                                     } catch {
                                         const err = 'An unexpected error has occurred. Please try again.'
                                         if (isLoading) setLoginError(err)
-                                        else if (isSignup) setSignupError(err)
+                                        else if (isSignup) setSignupEmailError(err)
                                     }
 
                                     setLoading(false)
-                                }} color="primary" variant="shadow" onPress={onClose}>
+                                }} color="primary" variant="shadow">
                                     {isLoading ? 'Loading' : isSignupEmailSent ? 'Submit' : modalType}
                                 </Button>}
                             </ModalFooter>
