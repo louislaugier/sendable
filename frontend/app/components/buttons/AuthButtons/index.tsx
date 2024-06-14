@@ -77,7 +77,7 @@ export default function AuthButtons(props: any) {
 
                     <Divider className="my-6" />
                     <div className="gap-2 flex flex-col" style={{ width: '220px' }}>
-                        <EmailAuthButton onClick={() => setSubmitButtonVisible(true)} />
+                        <EmailAuthButton modalType={modalType} onClick={() => setSubmitButtonVisible(true)} />
                     </div>
                 </div>
     )
