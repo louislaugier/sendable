@@ -29,7 +29,7 @@ func ConfirmEmailAddressHandler(w http.ResponseWriter, r *http.Request) {
 	} else if u == nil {
 		handleError(w, err, "User not found", http.StatusNotFound)
 		return
-	} else if u.EmailConfirmationCode != &body.EmailConfirmationCode {
+	} else if *u.EmailConfirmationCode != body.EmailConfirmationCode {
 		handleError(w, err, "Invalid email confirmation code", http.StatusUnauthorized)
 		return
 	}

@@ -60,13 +60,13 @@ export default function SignupLoginModal(props: any) {
                             <ModalBody>
                                 {isSignup && isSignupEmailSent ? <>
                                     <CodeConfirmationForm error={confirmationCodeError} code={signupConfirmationCode} setCode={setSignupConfirmationCode} />
-                                </> : <AuthButtons signupEmail={signupEmail} signupPassword={signupPassword} setSignupEmail={setSignupEmail} setSignupPassword={setSignupPassword} loginEmail={loginEmail} loginPassword={loginPassword} setLoginEmail={setLoginEmail} setLoginPassword={setLoginPassword} isSubmitButtonVisible={isSubmitButtonVisible} setSubmitButtonVisible={setSubmitButtonVisible} modalType={modalType} loginError={loginError}/>}
+                                </> : <AuthButtons signupEmail={signupEmail} signupPassword={signupPassword} setSignupEmail={setSignupEmail} setSignupPassword={setSignupPassword} loginEmail={loginEmail} loginPassword={loginPassword} setLoginEmail={setLoginEmail} setLoginPassword={setLoginPassword} isSubmitButtonVisible={isSubmitButtonVisible} setSubmitButtonVisible={setSubmitButtonVisible} modalType={modalType} loginError={loginError} />}
                             </ModalBody>
                             <ModalFooter>
                                 <Button color="danger" variant="bordered" onPress={onClose}>
                                     Close
                                 </Button>
-                                {isSubmitButtonVisible && <Button isDisabled={!!loginError || !!signupEmailError || (isLogin && (!loginEmail || !loginPassword)) || (isSignup && (!signupEmail || !signupPassword))} isLoading={isLoading} onClick={async () => {
+                                {isSubmitButtonVisible && <Button isDisabled={(isLogin && (!!loginError || !loginEmail || !loginPassword)) || (isSignup && (!signupEmail || !signupPassword))} isLoading={isLoading} onClick={async () => {
                                     setLoading(true)
 
                                     try {
@@ -80,7 +80,7 @@ export default function SignupLoginModal(props: any) {
                                             else if (res.error) setLoginError(res.error)
                                         } else if (isSignup) {
                                             if (isSignupEmailSent) {
-                                                const res = await confirmEmail({ email: signupEmail, isNewAccount: true, emailConfirmationCode: signupConfirmationCode })
+                                                const res = await confirmEmail({ email: signupEmail, isNewAccount: true, emailConfirmationCode: parseInt(signupConfirmationCode) })
                                                 if (res.error) setConfirmationCodeError(res.error)
 
                                                 // should redirect to confirmation modal with link to sign in
@@ -93,7 +93,7 @@ export default function SignupLoginModal(props: any) {
                                         }
                                     } catch {
                                         const err = 'An unexpected error has occurred. Please try again.'
-                                        if (isLoading) setLoginError(err)
+                                        if (isLogin) setLoginError(err)
                                         else if (isSignup) setSignupEmailError(err)
                                     }
 

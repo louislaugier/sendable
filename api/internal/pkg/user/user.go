@@ -13,7 +13,7 @@ import (
 )
 
 const (
-	insertQuery = "INSERT INTO public.user (id, email, is_email_confirmed, password_sha256, last_ip_addresses, last_user_agent, auth_provider) VALUES ($1, $2, $3, $4, $5, $6, $7);"
+	insertQuery = "INSERT INTO public.user (id, email, is_email_confirmed, email_confirmation_code, password_sha256, last_ip_addresses, last_user_agent, auth_provider) VALUES ($1, $2, $3, $4, $5, $6, $7, $8);"
 
 	selectQuery = `
 		SELECT 
@@ -56,12 +56,12 @@ const (
 
 // InsertNew inserts a new user into the database.
 func InsertNew(user *models.User, encryptedPassword *string) error {
-	_, err := config.DB.Exec(insertQuery, &user.ID, &user.Email, &user.IsEmailConfirmed, encryptedPassword, &user.LastIPAddresses, &user.LastUserAgent, &user.AuthProvider)
+	_, err := config.DB.Exec(insertQuery, &user.ID, &user.Email, &user.IsEmailConfirmed, &user.EmailConfirmationCode, encryptedPassword, &user.LastIPAddresses, &user.LastUserAgent, &user.AuthProvider)
 	return err
 }
 
 func InsertNewTempZoho(user *models.User, encryptedPassword *string) error {
-	_, err := config.DB.Exec(insertQuery, &user.ID, &user.Email, &user.IsEmailConfirmed, encryptedPassword, &user.LastIPAddresses, &user.LastUserAgent, &user.AuthProvider)
+	_, err := config.DB.Exec(insertQuery, &user.ID, &user.Email, &user.IsEmailConfirmed, &user.EmailConfirmationCode, encryptedPassword, &user.LastIPAddresses, &user.LastUserAgent, &user.AuthProvider)
 	return err
 }
 

@@ -58,9 +58,22 @@ func UpdateStatus(ID uuid.UUID, status models.ValidationStatus, bulkAddressCount
 
 func GetCurrentMonthLimitCounts(userID uuid.UUID) (*models.UserValidationCounts, error) {
 	counts := &models.UserValidationCounts{}
-	err := config.DB.QueryRow(getCurrentMonthCountsQuery, userID).Scan(&counts.AppValidationsCount, &counts.APIValidationsCount)
+
+	var (
+		appValidationsCount,
+		APIValidationsCount *int
+	)
+
+	err := config.DB.QueryRow(getCurrentMonthCountsQuery, userID).Scan(&appValidationsCount, &APIValidationsCount)
 	if err != nil {
 		return nil, err
+	}
+
+	if appValidationsCount != nil {
+		counts.AppValidationsCount = *appValidationsCount
+	}
+	if APIValidationsCount != nil {
+		counts.APIValidationsCount = *APIValidationsCount
 	}
 
 	return counts, nil
