@@ -60,7 +60,7 @@ export default function SignupLoginModal(props: any) {
                             <ModalBody>
                                 {isSignup && isSignupEmailSent ? <>
                                     <CodeConfirmationForm error={confirmationCodeError} code={signupConfirmationCode} setCode={setSignupConfirmationCode} />
-                                </> : <AuthButtons signupEmail={signupEmail} signupPassword={signupPassword} setSignupEmail={setSignupEmail} setSignupPassword={setSignupPassword} loginEmail={loginEmail} loginPassword={loginPassword} setLoginEmail={setLoginEmail} setLoginPassword={setLoginPassword} isSubmitButtonVisible={isSubmitButtonVisible} setSubmitButtonVisible={setSubmitButtonVisible} modalType={modalType} loginError={loginError} />}
+                                </> : <AuthButtons signupEmail={signupEmail} signupPassword={signupPassword} setSignupEmail={setSignupEmail} setSignupPassword={setSignupPassword} loginEmail={loginEmail} loginPassword={loginPassword} setLoginEmail={setLoginEmail} setLoginPassword={setLoginPassword} isSubmitButtonVisible={isSubmitButtonVisible} setSubmitButtonVisible={setSubmitButtonVisible} modalType={modalType} loginError={loginError} signupEmailError={signupEmailError} />}
                             </ModalBody>
                             <ModalFooter>
                                 <Button color="danger" variant="bordered" onPress={onClose}>
@@ -89,6 +89,7 @@ export default function SignupLoginModal(props: any) {
                                             } else {
                                                 const res = await signup({ email: signupEmail, password: signupPassword })
 
+                                                console.log(res)
                                                 if (res.error) setSignupEmailError(res.error)
                                                 else setSignupEmailSent(true)
                                             }

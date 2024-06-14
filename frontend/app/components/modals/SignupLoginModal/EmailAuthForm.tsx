@@ -23,7 +23,7 @@ export default function EmailAuthForm(props: any) {
                 placeholder="Enter your email"
                 variant="bordered"
                 errorMessage={isSignup ? signupEmailError : loginError}
-                isInvalid={!!signupEmailError || !!loginError}
+                isInvalid={isSignup && !!signupEmailError || isLogin && !!loginError}
             />
 
             <Input
