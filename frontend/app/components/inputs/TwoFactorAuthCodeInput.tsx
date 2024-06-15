@@ -34,6 +34,7 @@ export default function TwoFactorAuthCodeInput(props: any) {
                 variant="bordered"
                 value={twoFactorAuthCode}
                 errorMessage={twoFactorAuthCodeErrorMsg}
+                isInvalid={!!twoFactorAuthCodeErrorMsg}
                 onValueChange={setTwoFactorAuthCode}
                 placeholder={"ex: 213654"}
                 className="max-w-xs w-[115px]"

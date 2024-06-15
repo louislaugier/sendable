@@ -16,8 +16,8 @@ export default function EmailAuthForm(props: any) {
     return (
         <>
             <Input
-                onValueChange={modalType === isLogin ? setLoginEmail : setSignupEmail}
-                value={modalType === isLogin ? loginEmail : signupEmail}
+                onValueChange={isLogin ? setLoginEmail : setSignupEmail}
+                value={isLogin ? loginEmail : signupEmail}
                 autoFocus
                 label="Email"
                 placeholder="Enter your email"
@@ -27,8 +27,8 @@ export default function EmailAuthForm(props: any) {
             />
 
             <Input
-                onValueChange={modalType === isLogin ? setLoginPassword : setSignupPassword}
-                value={modalType === isLogin ? loginPassword : signupPassword}
+                onValueChange={isLogin ? setLoginPassword : setSignupPassword}
+                value={isLogin ? loginPassword : signupPassword}
                 label="Password"
                 variant="bordered"
                 placeholder={isSignup ? "Enter a password" : "Enter your password"}
@@ -52,7 +52,7 @@ export default function EmailAuthForm(props: any) {
                 >
                     Remember me
                 </Checkbox> */}
-                {modalType === isLogin && <Link color="primary" href="#" size="sm">
+                {isLogin && <Link color="primary" href="#" size="sm">
                     Forgot password?
                 </Link>}
             </div>

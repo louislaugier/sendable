@@ -17,7 +17,7 @@ export default function SignupLoginModal(props: any) {
 
     const [searchParams] = useSearchParams();
     const close = () => {
-        setSubmitButtonVisible(false);
+        // setSubmitButtonVisible(false);
         onClose()
     }
 
@@ -40,7 +40,7 @@ export default function SignupLoginModal(props: any) {
     const [signupConfirmationCode, setSignupConfirmationCode] = useState('')
     const [confirmationCodeError, setConfirmationCodeError] = useState('')
 
-    const [isSubmitButtonVisible, setSubmitButtonVisible] = useState(isSignupEmailSent ?? false)
+    const [isSubmitButtonVisible, setSubmitButtonVisible] = useState((isSignup && isSignupEmailSent) ?? false)
 
     return (
         !user &&
@@ -58,7 +58,7 @@ export default function SignupLoginModal(props: any) {
                         <>
                             <ModalHeader className="flex flex-col gap-1">{modalType}</ModalHeader>
                             <ModalBody>
-                                {isSignup && isSignupEmailSent ? <>
+                                {(isSignup && isSignupEmailSent) ? <>
                                     <CodeConfirmationForm error={confirmationCodeError} code={signupConfirmationCode} setCode={setSignupConfirmationCode} />
                                 </> : <AuthButtons signupEmail={signupEmail} signupPassword={signupPassword} setSignupEmail={setSignupEmail} setSignupPassword={setSignupPassword} loginEmail={loginEmail} loginPassword={loginPassword} setLoginEmail={setLoginEmail} setLoginPassword={setLoginPassword} isSubmitButtonVisible={isSubmitButtonVisible} setSubmitButtonVisible={setSubmitButtonVisible} modalType={modalType} loginError={loginError} signupEmailError={signupEmailError} />}
                             </ModalBody>
@@ -66,7 +66,7 @@ export default function SignupLoginModal(props: any) {
                                 <Button color="danger" variant="bordered" onPress={onClose}>
                                     Close
                                 </Button>
-                                {isSubmitButtonVisible && <Button isDisabled={(isLogin && (!!loginError || !loginEmail || !loginPassword)) || (isSignup && (!signupEmail || !signupPassword))} isLoading={isLoading} onClick={async () => {
+                                {isSubmitButtonVisible && <Button isDisabled={(isLogin && (!!loginError || !loginEmail || !loginPassword)) || (isSignup && (!signupEmail || !signupPassword || (isSignupEmailSent && signupConfirmationCode.length !== 6)))} isLoading={isLoading} onClick={async () => {
                                     setLoading(true)
 
                                     try {
