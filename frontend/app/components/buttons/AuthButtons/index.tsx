@@ -16,7 +16,7 @@ import twoFactorAuth from "~/services/api/auth/2fa";
 import { navigateToUrl } from "~/utils/url";
 
 export default function AuthButtons(props: any) {
-    const { isSubmitButtonVisible, setSubmitButtonVisible, signupEmail, signupPassword, setSignupEmail, setSignupPassword, loginEmail, loginPassword, setLoginEmail, setLoginPassword, modalType, loginError, signupEmailError } = props
+    const { isSignupButtonVisible, setSignupButtonVisible, isLoginButtonVisible, setLoginButtonVisible, isSignup, isLogin, signupEmail, signupPassword, setSignupEmail, setSignupPassword, loginEmail, loginPassword, setLoginEmail, setLoginPassword, modalType, loginError, signupEmailError } = props
 
     const { setUser, temp2faUserId, setTemp2faUserId } = useContext(UserContext)
 
@@ -52,8 +52,11 @@ export default function AuthButtons(props: any) {
                 </div>
             </>
             :
-            isSubmitButtonVisible ? <>
-                <Button onClick={() => setSubmitButtonVisible(false)} className="border-none" isIconOnly variant="ghost" aria-label="Back">
+            ((isSignup && isSignupButtonVisible) || (isLogin && isLoginButtonVisible)) ? <>
+                <Button onClick={() => {
+                    if (isSignup) setSignupButtonVisible(false)
+                    else if (isLogin) setLoginButtonVisible(false)
+                }} className="border-none" isIconOnly variant="ghost" aria-label="Back">
                     <ArrowBackIcon />
                 </Button>
 
@@ -77,7 +80,10 @@ export default function AuthButtons(props: any) {
 
                     <Divider className="my-6" />
                     <div className="gap-2 flex flex-col" style={{ width: '220px' }}>
-                        <EmailAuthButton modalType={modalType} onClick={() => setSubmitButtonVisible(true)} />
+                        <EmailAuthButton modalType={modalType} onClick={() => {
+                            if (isSignup) setSignupButtonVisible(true)
+                            else if (isLogin) setLoginButtonVisible(true)
+                        }} />
                     </div>
                 </div>
     )

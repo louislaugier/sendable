@@ -40,7 +40,8 @@ export default function SignupLoginModal(props: any) {
     const [signupConfirmationCode, setSignupConfirmationCode] = useState('')
     const [confirmationCodeError, setConfirmationCodeError] = useState('')
 
-    const [isSubmitButtonVisible, setSubmitButtonVisible] = useState((isSignup && isSignupEmailSent) ?? false)
+    const [isSignupButtonVisible, setSignupButtonVisible] = useState((isSignup && isSignupEmailSent) ?? false)
+    const [isLoginButtonVisible, setLoginButtonVisible] = useState(false)
 
     return (
         !user &&
@@ -60,39 +61,30 @@ export default function SignupLoginModal(props: any) {
                             <ModalBody>
                                 {(isSignup && isSignupEmailSent) ? <>
                                     <CodeConfirmationForm error={confirmationCodeError} code={signupConfirmationCode} setCode={setSignupConfirmationCode} />
-                                </> : <AuthButtons signupEmail={signupEmail} signupPassword={signupPassword} setSignupEmail={setSignupEmail} setSignupPassword={setSignupPassword} loginEmail={loginEmail} loginPassword={loginPassword} setLoginEmail={setLoginEmail} setLoginPassword={setLoginPassword} isSubmitButtonVisible={isSubmitButtonVisible} setSubmitButtonVisible={setSubmitButtonVisible} modalType={modalType} loginError={loginError} signupEmailError={signupEmailError} />}
+                                </> : <AuthButtons isSignup={isSignup} isLogin={isLogin} signupEmail={signupEmail} signupPassword={signupPassword} setSignupEmail={setSignupEmail} setSignupPassword={setSignupPassword} loginEmail={loginEmail} loginPassword={loginPassword} setLoginEmail={setLoginEmail} setLoginPassword={setLoginPassword} isSignupButtonVisible={isSignupButtonVisible} setSignupButtonVisible={setSignupButtonVisible} isLoginButtonVisible={isLoginButtonVisible} setLoginButtonVisible={setLoginButtonVisible} modalType={modalType} loginError={loginError} signupEmailError={signupEmailError} />}
                             </ModalBody>
                             <ModalFooter>
                                 <Button color="danger" variant="bordered" onPress={onClose}>
                                     Close
                                 </Button>
-                                {isSubmitButtonVisible && <Button isDisabled={(isLogin && (!!loginError || !loginEmail || !loginPassword)) || (isSignup && (!signupEmail || !signupPassword || (isSignupEmailSent && signupConfirmationCode.length !== 6)))} isLoading={isLoading} onClick={async () => {
+
+                                {(isSignup && isSignupButtonVisible) && <Button isDisabled={!signupEmail || !signupPassword || (isSignupEmailSent && signupConfirmationCode.length !== 6)} isLoading={isLoading} onClick={async () => {
                                     setLoading(true)
 
                                     try {
-                                        if (isLogin) {
-                                            const res = await login({ email: loginEmail, password: loginPassword })
-
-                                            if (res.email) {
+                                        if (isSignupEmailSent) {
+                                            const res = await confirmEmail({ email: signupEmail, isNewAccount: true, emailConfirmationCode: parseInt(signupConfirmationCode) })
+                                            if (res.error) setConfirmationCodeError(res.error)
+                                            else {
                                                 setUser(res)
-                                                navigateToUrl('/dashboard')
-                                            } else if (res.is2faEnabled) setTemp2faUserId(res.id)
-                                            else if (res.error) setLoginError(res.error)
-                                        } else if (isSignup) {
-                                            if (isSignupEmailSent) {
-                                                const res = await confirmEmail({ email: signupEmail, isNewAccount: true, emailConfirmationCode: parseInt(signupConfirmationCode) })
-                                                if (res.error) setConfirmationCodeError(res.error)
-                                                else {
-                                                    setUser(res)
-                                                    navigateToUrl("/dashboard?email_confirmed=true")
-                                                }
-                                            } else {
-                                                const res = await signup({ email: signupEmail, password: signupPassword })
-
-                                                console.log(res)
-                                                if (res.error) setSignupEmailError(res.error)
-                                                else setSignupEmailSent(true)
+                                                navigateToUrl("/dashboard?email_confirmed=true")
                                             }
+                                        } else {
+                                            const res = await signup({ email: signupEmail, password: signupPassword })
+
+                                            console.log(res)
+                                            if (res.error) setSignupEmailError(res.error)
+                                            else setSignupEmailSent(true)
                                         }
                                     } catch {
                                         const err = 'An unexpected error has occurred. Please try again.'
@@ -102,7 +94,29 @@ export default function SignupLoginModal(props: any) {
 
                                     setLoading(false)
                                 }} color="primary" variant="shadow">
-                                    {isLoading ? 'Loading' : isSignupEmailSent ? 'Submit' : modalType}
+                                    {isLoading ? 'Loading' : isSignupEmailSent ? 'Submit' : AuthModalType.Signup}
+                                </Button>}
+
+                                {(isLogin && isLoginButtonVisible) && <Button isDisabled={!!loginError || !loginEmail || !loginPassword} isLoading={isLoading} onClick={async () => {
+                                    setLoading(true)
+
+                                    try {
+                                        const res = await login({ email: loginEmail, password: loginPassword })
+
+                                        if (res.email) {
+                                            setUser(res)
+                                            navigateToUrl('/dashboard')
+                                        } else if (res.is2faEnabled) setTemp2faUserId(res.id)
+                                        else if (res.error) setLoginError(res.error)
+                                    } catch {
+                                        const err = 'An unexpected error has occurred. Please try again.'
+                                        if (isLogin) setLoginError(err)
+                                        else if (isSignup) setSignupEmailError(err)
+                                    }
+
+                                    setLoading(false)
+                                }} color="primary" variant="shadow">
+                                    {isLoading ? 'Loading' : isSignupEmailSent ? 'Submit' : AuthModalType.Login}
                                 </Button>}
                             </ModalFooter>
                         </>

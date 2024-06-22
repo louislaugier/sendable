@@ -109,6 +109,7 @@ export default function AccountTab() {
                             value={email}
                             variant="bordered"
                             errorMessage={emailErrorMsg}
+                            isInvalid={!!emailErrorMsg}
                             onValueChange={(val) => {
                                 if (isUpdateEmailAddressEmailSent) resetEmailData()
 

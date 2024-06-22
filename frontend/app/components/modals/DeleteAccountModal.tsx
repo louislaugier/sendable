@@ -38,6 +38,7 @@ const DeleteAccountModal = (props: any) => {
                                 value={inputValue}
                                 variant="bordered"
                                 errorMessage={inputErrorMsg}
+                                isInvalid={!!inputErrorMsg}
                                 onValueChange={setInputValue}
                                 placeholder={"delete my account"}
                                 labelPlacement="outside"

@@ -33,6 +33,7 @@ const DeleteApiKeyModal = (props: any) => {
                                 value={inputValue}
                                 variant="bordered"
                                 errorMessage={inputErrorMsg}
+                                isInvalid={!!inputErrorMsg}
                                 onValueChange={setInputValue}
                                 placeholder={apiKey.label}
                                 labelPlacement="outside"
