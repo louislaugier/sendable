@@ -16,7 +16,7 @@ import twoFactorAuth from "~/services/api/auth/2fa";
 import { navigateToUrl } from "~/utils/url";
 
 export default function AuthButtons(props: any) {
-    const { isSignupButtonVisible, setSignupButtonVisible, isLoginButtonVisible, setLoginButtonVisible, isSignup, isLogin, signupEmail, signupPassword, setSignupEmail, setSignupPassword, loginEmail, loginPassword, setLoginEmail, setLoginPassword, modalType, loginError, signupEmailError } = props
+    const { isSignupButtonVisible, setSignupButtonVisible, isLoginButtonVisible, setLoginButtonVisible, isSignup, isLogin, signupEmail, signupPassword, setSignupEmail, setSignupPassword, loginEmail, loginPassword, setLoginEmail, setLoginPassword, modalType, loginError, signupEmailError, signupPasswordError } = props
 
     const { setUser, temp2faUserId, setTemp2faUserId } = useContext(UserContext)
 
@@ -60,7 +60,7 @@ export default function AuthButtons(props: any) {
                     <ArrowBackIcon />
                 </Button>
 
-                <EmailAuthForm loginError={loginError} signupEmailError={signupEmailError} signupEmail={signupEmail} signupPassword={signupPassword} setSignupEmail={setSignupEmail} setSignupPassword={setSignupPassword} loginEmail={loginEmail} loginPassword={loginPassword} setLoginEmail={setLoginEmail} setLoginPassword={setLoginPassword} modalType={modalType} />
+                <EmailAuthForm loginError={loginError} signupEmailError={signupEmailError} signupEmail={signupEmail} signupPassword={signupPassword} setSignupEmail={setSignupEmail} setSignupPassword={setSignupPassword} loginEmail={loginEmail} loginPassword={loginPassword} setLoginEmail={setLoginEmail} setLoginPassword={setLoginPassword} modalType={modalType} signupPasswordError={signupPasswordError} />
             </> :
                 <div className="flex flex-col py-4" style={{ width: '90%', alignItems: 'center', margin: 'auto' }}>
                     <div className="gap-2 flex flex-col" style={{ width: '220px' }}>

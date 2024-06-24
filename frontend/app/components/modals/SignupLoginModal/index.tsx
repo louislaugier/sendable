@@ -9,6 +9,7 @@ import CodeConfirmationForm from "../../forms/CodeConfirmationForm";
 import confirmEmail from "~/services/api/confirm_email_address";
 import login from "~/services/api/login";
 import { navigateToUrl } from "~/utils/url";
+import { isValidPassword } from "~/utils/password";
 
 export default function SignupLoginModal(props: any) {
     const { isOpen, onClose, onOpenChange, modalType } = props;
@@ -31,6 +32,7 @@ export default function SignupLoginModal(props: any) {
 
     const [loginError, setLoginError] = useState('')
     const [signupEmailError, setSignupEmailError] = useState('')
+    const [signupPasswordError, setSignupPasswordError] = useState('')
 
     const isSignup = modalType === AuthModalType.Signup
     const isLogin = modalType === AuthModalType.Login
@@ -61,7 +63,7 @@ export default function SignupLoginModal(props: any) {
                             <ModalBody>
                                 {(isSignup && isSignupEmailSent) ? <>
                                     <CodeConfirmationForm error={confirmationCodeError} code={signupConfirmationCode} setCode={setSignupConfirmationCode} />
-                                </> : <AuthButtons isSignup={isSignup} isLogin={isLogin} signupEmail={signupEmail} signupPassword={signupPassword} setSignupEmail={setSignupEmail} setSignupPassword={setSignupPassword} loginEmail={loginEmail} loginPassword={loginPassword} setLoginEmail={setLoginEmail} setLoginPassword={setLoginPassword} isSignupButtonVisible={isSignupButtonVisible} setSignupButtonVisible={setSignupButtonVisible} isLoginButtonVisible={isLoginButtonVisible} setLoginButtonVisible={setLoginButtonVisible} modalType={modalType} loginError={loginError} signupEmailError={signupEmailError} />}
+                                </> : <AuthButtons isSignup={isSignup} isLogin={isLogin} signupEmail={signupEmail} signupPassword={signupPassword} setSignupEmail={setSignupEmail} setSignupPassword={setSignupPassword} loginEmail={loginEmail} loginPassword={loginPassword} setLoginEmail={setLoginEmail} setLoginPassword={setLoginPassword} isSignupButtonVisible={isSignupButtonVisible} setSignupButtonVisible={setSignupButtonVisible} isLoginButtonVisible={isLoginButtonVisible} setLoginButtonVisible={setLoginButtonVisible} modalType={modalType} loginError={loginError} signupEmailError={signupEmailError} signupPasswordError={signupPasswordError} />}
                             </ModalBody>
                             <ModalFooter>
                                 <Button color="danger" variant="bordered" onPress={onClose}>
@@ -70,6 +72,11 @@ export default function SignupLoginModal(props: any) {
 
                                 {(isSignup && isSignupButtonVisible) && <Button isDisabled={!signupEmail || !signupPassword || (isSignupEmailSent && signupConfirmationCode.length !== 6)} isLoading={isLoading} onClick={async () => {
                                     setLoading(true)
+
+                                    if (!isValidPassword(signupPassword)) {
+                                        setSignupPasswordError('Password must be between 8-64 characters long and must contain at least one uppercase letter (A-Z), one lowercase letter (a-z), one numeral (1-9), one special character and must not contain any spaces.')
+                                        return
+                                    }
 
                                     try {
                                         if (isSignupEmailSent) {

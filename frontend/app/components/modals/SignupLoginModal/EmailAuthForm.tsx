@@ -5,7 +5,7 @@ import { EyeSlashFilledIcon } from "~/components/icons/EyeSlashFilledIcon";
 import { AuthModalType } from "~/types/modal";
 
 export default function EmailAuthForm(props: any) {
-    const { signupEmail, signupPassword, setSignupEmail, setSignupPassword, loginEmail, loginPassword, setLoginEmail, setLoginPassword, modalType, loginError, signupEmailError } = props
+    const { signupEmail, signupPassword, setSignupEmail, setSignupPassword, loginEmail, loginPassword, setLoginEmail, setLoginPassword, modalType, loginError, signupEmailError, signupPasswordError } = props
     const [isPasswordVisible, setPasswordVisible] = useState(false);
 
     const toggleVisibility = () => setPasswordVisible(!isPasswordVisible);
@@ -42,6 +42,8 @@ export default function EmailAuthForm(props: any) {
                     </button>
                 }
                 type={isPasswordVisible ? "text" : "password"}
+                errorMessage={signupPasswordError}
+                isInvalid={!!signupPasswordError}
             />
 
             <div className="flex py-2 px-1 justify-between">
