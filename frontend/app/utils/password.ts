@@ -1,7 +1,10 @@
 export function isValidPassword(password: string) {
+    let errorMessage = '';
+
     // Check length
     if (password.length < 8 || password.length > 64) {
-        return false;
+        errorMessage = 'Password must be between 8-64 characters long.';
+        return { isValid: false, errorMessage };
     }
 
     // Check complexity
@@ -10,23 +13,31 @@ export function isValidPassword(password: string) {
     const hasNumber = /[0-9]/.test(password);
     const hasSpecialChar = /[!@#$%^&*(),.?":{}|<>]/.test(password);
 
-    if (!hasUppercase || !hasLowercase || !hasNumber || !hasSpecialChar) {
-        return false;
+    if (!hasUppercase) {
+        errorMessage = 'Password must contain at least 1 uppercase letter (A-Z).';
+        return { isValid: false, errorMessage };
+    }
+
+    if (!hasLowercase) {
+        errorMessage = 'Password must contain at least 1 lowercase letter (a-z).';
+        return { isValid: false, errorMessage };
+    }
+
+    if (!hasNumber) {
+        errorMessage = 'Password must contain at least 1 numeral (0-9).';
+        return { isValid: false, errorMessage };
+    }
+
+    if (!hasSpecialChar) {
+        errorMessage = 'Password must contain at least 1 special character.';
+        return { isValid: false, errorMessage };
     }
 
     // Check for spaces
     if (/\s/.test(password)) {
-        return false;
+        errorMessage = 'Password must not contain any spaces.';
+        return { isValid: false, errorMessage };
     }
 
-    // Check for easily guessable information
-    // Note: This is a simple check, real implementation might require more comprehensive user data
-    const guessablePatterns = [/username/i, /email/i, /firstname/i, /lastname/i, /\d{4}/]; // Example patterns
-    for (let pattern of guessablePatterns) {
-        if (pattern.test(password)) {
-            return false;
-        }
-    }
-
-    return true;
+    return { isValid: true, errorMessage };
 }

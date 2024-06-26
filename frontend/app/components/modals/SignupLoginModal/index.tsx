@@ -73,9 +73,11 @@ export default function SignupLoginModal(props: any) {
                                 {(isSignup && isSignupButtonVisible) && <Button isDisabled={!signupEmail || !signupPassword || (isSignupEmailSent && signupConfirmationCode.length !== 6)} isLoading={isLoading} onClick={async () => {
                                     setLoading(true)
 
-                                    if (!isValidPassword(signupPassword)) {
-                                        setSignupPasswordError('Password must be between 8-64 characters long and must contain at least one uppercase letter (A-Z), one lowercase letter (a-z), one numeral (1-9), one special character and must not contain any spaces.')
-                                        return
+                                    const { isValid, errorMessage } = isValidPassword(signupPassword);
+                                    if (!isValid) {
+                                        setSignupPasswordError(errorMessage);
+                                        setLoading(false);
+                                        return;
                                     }
 
                                     try {
@@ -89,7 +91,6 @@ export default function SignupLoginModal(props: any) {
                                         } else {
                                             const res = await signup({ email: signupEmail, password: signupPassword })
 
-                                            console.log(res)
                                             if (res.error) setSignupEmailError(res.error)
                                             else setSignupEmailSent(true)
                                         }
