@@ -42,7 +42,7 @@ type (
 		IsNewAccount          bool   `json:"isNewAccount"`
 		IsZohoConfirmation    bool   `json:"isZohoConfirmation"`
 		Email                 string `json:"email"`
-		EmailConfirmationCode int    `json:"emailConfirmationCode"`
+		EmailConfirmationCode *int   `json:"emailConfirmationCode"`
 	}
 	UpdateEmailAddressRequest struct {
 		Email string `json:"email"`
@@ -71,5 +71,10 @@ type (
 	}
 	ResetPasswordRequest struct {
 		Email string `json:"email"`
+	}
+	SetPasswordRequest struct {
+		Email                 string `json:"email"`
+		EmailConfirmationCode *int   `json:"emailConfirmationCode"`
+		Password              string `json:"password"`
 	}
 )

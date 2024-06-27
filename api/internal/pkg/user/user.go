@@ -111,6 +111,11 @@ func UpdateIPsAndUserAgent(userID uuid.UUID, IPs, userAgent string) error {
 	return err
 }
 
+func GetByEmail(email string) (*models.User, error) {
+	query := fmt.Sprintf(selectQuery, "u.email = $1")
+	return getByCriteria(false, query, email)
+}
+
 func GetByEmailAndConfirmationCode(email string, confirmationCode int) (*models.User, error) {
 	query := fmt.Sprintf(selectQuery, "u.email = $1 AND u.email_confirmation_code = $2")
 	return getByCriteria(false, query, email, confirmationCode)

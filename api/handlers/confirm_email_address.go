@@ -6,6 +6,7 @@ import (
 	"email-validator/internal/models"
 	"email-validator/internal/pkg/user"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"net/http"
 )
@@ -21,13 +22,17 @@ func ConfirmEmailAddressHandler(w http.ResponseWriter, r *http.Request) {
 	if err := json.NewDecoder(r.Body).Decode(&body); err != nil {
 		handleError(w, err, "Error decoding JSON", http.StatusBadRequest)
 		return
+	} else if body.Email == "" || body.EmailConfirmationCode == nil {
+		err := errors.New("missing email & emailConfirmationCode pair in body")
+		handleError(w, err, err.Error(), http.StatusBadRequest)
+		return
 	}
 
-	u, err := user.GetByEmailAndConfirmationCode(body.Email, body.EmailConfirmationCode)
+	u, err := user.GetByEmailAndConfirmationCode(body.Email, *body.EmailConfirmationCode)
 	if err != nil {
 		handleError(w, err, "Internal Server Error", http.StatusInternalServerError)
 		return
-	} else if u == nil || *u.EmailConfirmationCode != body.EmailConfirmationCode {
+	} else if u == nil || *u.EmailConfirmationCode != *body.EmailConfirmationCode {
 		handleError(w, err, "Invalid code.", http.StatusUnauthorized)
 		return
 	}

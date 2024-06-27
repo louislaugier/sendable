@@ -1,7 +1,6 @@
 package handlers
 
 import (
-	"email-validator/config"
 	"email-validator/internal/models"
 	"email-validator/internal/pkg/user"
 	"email-validator/internal/pkg/utils"
@@ -9,26 +8,25 @@ import (
 	"errors"
 	"fmt"
 	"net/http"
-	"strconv"
 )
 
-func ResetPasswordHandler(w http.ResponseWriter, r *http.Request) {
+func SetPasswordHandler(w http.ResponseWriter, r *http.Request) {
 	if r.Method != http.MethodPost {
 		http.Error(w, "method not allowed", http.StatusMethodNotAllowed)
 		return
 	}
 
-	body := models.ResetPasswordRequest{}
+	body := models.SetPasswordRequest{}
 	if err := json.NewDecoder(r.Body).Decode(&body); err != nil {
 		handleError(w, err, "Error decoding JSON", http.StatusBadRequest)
 		return
-	} else if body.Email == "" {
-		err := errors.New("missing email in body")
+	} else if body.EmailConfirmationCode == nil || body.Password == "" {
+		err := errors.New("missing email, emailConfirmationCode and/or password in body")
 		handleError(w, err, err.Error(), http.StatusBadRequest)
 		return
 	}
 
-	u, err := user.GetByEmail(body.Email)
+	u, err := user.GetByEmailAndConfirmationCode(body.Email, *body.EmailConfirmationCode)
 	if err != nil {
 		handleError(w, err, "Internal Server Error", http.StatusBadRequest)
 		return
@@ -41,22 +39,7 @@ func ResetPasswordHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	emailConfirmationCode, err := utils.GenerateRandomSixDigitCode()
-	if err != nil {
-		handleError(w, err, "Internal Server Error", http.StatusBadRequest)
-		return
-	}
-
-	err = user.SetEmailConfirmationCode(u.ID, *emailConfirmationCode)
-	if err != nil {
-		handleError(w, err, "Internal Server Error", http.StatusBadRequest)
-		return
-	}
-
-	err = config.EmailClient.SendEmail(models.ResetPasswordTemplate, "Password reset", "Reset your account's password", map[string]string{
-		"email_confirmation_code": strconv.Itoa(*emailConfirmationCode),
-		"domain":                  fmt.Sprintf("%s%s", config.DomainURL, config.APIVersionPrefix),
-	}, body.Email)
+	err = user.UpdatePasswordSHA256(u.ID, utils.Encrypt(body.Password))
 	if err != nil {
 		handleError(w, err, "Internal Server Error", http.StatusBadRequest)
 		return
