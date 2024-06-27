@@ -46,7 +46,7 @@ const (
 
 	updatePasswordSHA256Query        = `UPDATE public.user SET "password_sha256" = $1 WHERE id = $2;`
 	updateEmailAddressQuery          = `UPDATE public.user SET "email" = $1 WHERE id = $2;`
-	updateEmailConfirmationQuery     = `UPDATE public.user SET "is_email_confirmed" = true WHERE id = $1;`
+	updateEmailConfirmationQuery     = `UPDATE public.user SET "is_email_confirmed" = true, "email_confirmation_code" = NULL WHERE id = $1;`
 	updateEmailConfirmationCodeQuery = `UPDATE public.user SET "email_confirmation_code" = $1 WHERE id = $2;`
 
 	updateIPsAndUserAgentQuery = "UPDATE public.user SET last_ip_addresses = $1, last_user_agent = $2 WHERE id = $3;"
