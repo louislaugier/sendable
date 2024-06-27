@@ -26,6 +26,12 @@ func SetPasswordHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	ok, err := utils.IsValidPassword(body.Password)
+	if !ok || err != nil {
+		http.Error(w, fmt.Sprintf("Invalid password: %s", err.Error()), http.StatusBadRequest)
+		return
+	}
+
 	u, err := user.GetByEmailAndConfirmationCode(body.Email, *body.EmailConfirmationCode)
 	if err != nil {
 		handleError(w, err, "Internal Server Error", http.StatusBadRequest)

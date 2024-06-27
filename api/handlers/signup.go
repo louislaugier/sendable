@@ -30,6 +30,12 @@ func SignupHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	ok, err := utils.IsValidPassword(body.Password)
+	if !ok || err != nil {
+		http.Error(w, fmt.Sprintf("Invalid password: %s", err.Error()), http.StatusBadRequest)
+		return
+	}
+
 	pwd := utils.Encrypt(body.Password)
 	confirmationCode, err := utils.GenerateRandomSixDigitCode()
 	if err != nil {

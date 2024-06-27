@@ -27,6 +27,12 @@ func UpdatePasswordHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	ok, err := utils.IsValidPassword(body.NewPassword)
+	if !ok || err != nil {
+		http.Error(w, fmt.Sprintf("invalid new password: %s", err.Error()), http.StatusBadRequest)
+		return
+	}
+
 	requesterUser := middleware.GetUserFromRequest(r)
 	u, err := user.GetByIDAndPasswordSHA256(requesterUser.ID, utils.Encrypt(body.CurrentPassword))
 	if err != nil {
