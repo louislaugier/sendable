@@ -1,7 +1,8 @@
-import { Button, Link, Tab, Tabs, useDisclosure } from "@nextui-org/react";
+import { Button, Chip, Link, Progress, Tab, Tabs, useDisclosure } from "@nextui-org/react";
 import type { MetaFunction } from "@remix-run/node";
 import { useSearchParams } from "@remix-run/react";
 import { useCallback, useContext, useEffect, useState } from "react";
+import CurrentPlanChip from "~/components/chips/CurrentPlanChip";
 import EmailAddressConfirmedModal from "~/components/modals/EmailAddressConfirmedModal";
 import EmailValidatorTab from "~/components/page_sections/dashboard/EmailValidatorTab";
 import ValidationHistoryTable from "~/components/tables/ValidationHistoryTable";
@@ -94,11 +95,17 @@ export default function Dashboard() {
         <div className="flex flex-col items-center mb-4">
           <h2 className="text-2xl">Dashboard</h2>
           {!!user && <>
-            <h3 className="text-lg mt-4 mb-2">Current plan: <b>{planType}{isPremiumOrEnterprise && ` (billed ${user?.currentPlan?.billingFrequency})`}</b></h3>
+            {/* <h3 className="text-lg mt-4 mb-2">Current plan: <b>{planType}{isPremiumOrEnterprise && ` (billed ${user?.currentPlan?.billingFrequency})`}</b></h3> */}
+            <h3 className="text-lg mt-4 mb-2">Current plan: <CurrentPlanChip />{isPremiumOrEnterprise && <b className="text-sm"> (billed yearly)</b>}</h3>
+
             {user.currentPlan.type !== SubscriptionType.Enterprise && <>
               <p>Remaining validations (this month): <b>{remainingAppValidations.toLocaleString()} / {appValidationLimit.toLocaleString()}</b> email addresses</p>
+              <Progress aria-label="Remaining validations (this month)" value={100 - (remainingAppValidations / appValidationLimit * 100)} className="max-w-md mb-2 mt-1" />
+
               <p>Remaining API validations (this month): <b>{remainingApiValidations.toLocaleString()} / {apiValidationLimit.toLocaleString()}</b> email addresses</p>
-              <Button className="mt-4" as={Link} href={`/pricing`} onClick={goToPricing} color='primary' variant="shadow">
+              <Progress aria-label="Remaining API validations (this month)" value={100 - (remainingApiValidations / apiValidationLimit * 100)} className="max-w-md mb-4 mt-1" />
+
+              <Button as={Link} href={`/pricing`} onClick={goToPricing} color='primary' variant="shadow">
                 Upgrade
               </Button>
             </>}
