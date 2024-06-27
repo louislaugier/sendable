@@ -39,7 +39,7 @@ export default function Blog() {
       {isBlogRoot ? <div className="py-8 px-6">
 
         <div className="flex flex-col items-center mb-16">
-          <h2 className="text-2xl">Blog</h2>
+          <h1 className="text-2xl">Blog</h1>
         </div>
 
 

@@ -18,7 +18,7 @@ export default function Pricing() {
     <div className="py-10 px-6 flex flex-col justify-center items-center">
 
       <div className="flex flex-col items-center mb-8">
-        <h2 className="text-2xl">Pricing</h2>
+        <h1 className="text-2xl">Pricing</h1>
       </div>
 
       <div className="flex">

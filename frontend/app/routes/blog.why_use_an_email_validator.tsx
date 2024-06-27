@@ -13,7 +13,7 @@ export default function WhyUseAnEmailValidator() {
     <div className="py-8 px-6">
 
       <div className="flex flex-col items-center mb-16">
-        <h2 className="text-2xl">Why use an email validator?</h2>
+        <h1 className="text-2xl">Why use an email validator?</h1>
       </div>
 
       <div className="flex flex-wrap justify-between">

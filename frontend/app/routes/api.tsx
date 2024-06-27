@@ -30,7 +30,7 @@ export default function Api() {
       <div className="py-8 px-6">
 
         <div className="flex flex-col items-center mb-12">
-          <h2 className="text-2xl">API</h2>
+          <h1 className="text-2xl">API</h1>
         </div>
 
         <ApiReference />

@@ -2,7 +2,6 @@ import { Accordion, AccordionItem, Card, CardBody } from "@nextui-org/react";
 import { ReachableDescriptor, RiskyDescriptor, UnknownDescriptor, InvalidDescriptor } from "./ReachabilityDescriptor";
 
 export default function ReachabilityReference() {
-
     return (
         <>
             <style>
@@ -16,7 +15,7 @@ export default function ReachabilityReference() {
                 }
             </style>
             <Accordion id='validation-docs-toggle'>
-                <AccordionItem key="1" aria-label="Toggle reachability reference" subtitle="Press to expand" title="Reachability reference">
+                <AccordionItem as={'h3'} key="1" aria-label="Toggle reachability reference" subtitle="Press to expand" title="Reachability reference">
                     <Card>
                         <CardBody>
                             <div className="flex flex-col my-4 gap-3 text-sm">

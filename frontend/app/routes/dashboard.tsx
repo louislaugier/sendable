@@ -93,7 +93,7 @@ export default function Dashboard() {
     <>
       <div className="py-8 px-6">
         <div className="flex flex-col items-center mb-4">
-          <h2 className="text-2xl">Dashboard</h2>
+          <h1 className="text-2xl">Dashboard</h1>
           {!!user && <>
             {/* <h3 className="text-lg mt-4 mb-2">Current plan: <b>{planType}{isPremiumOrEnterprise && ` (billed ${user?.currentPlan?.billingFrequency})`}</b></h3> */}
             <h3 className="text-lg mt-4 mb-2">Current plan: <CurrentPlanChip />{isPremiumOrEnterprise && <b className="text-sm"> (billed yearly)</b>}</h3>
