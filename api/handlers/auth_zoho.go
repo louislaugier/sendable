@@ -97,8 +97,7 @@ func handleZohoUser(emails string, r *http.Request, accessToken string) (*models
 func handleZohoAuthResponse(w http.ResponseWriter, u *models.User) {
 	if u.Is2FAEnabled {
 		json.NewEncoder(w).Encode(models.PreAuthUser{
-			ID:           u.ID,
-			Is2FAEnabled: true,
+			ID: u.ID,
 		})
 
 		return

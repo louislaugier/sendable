@@ -166,7 +166,7 @@ export default function Nav() {
                 </NavbarContent>
             </Navbar>
 
-            <SignupLoginModal modalType={modalType} isOpen={authModal.isOpen} onClose={authModal.onClose} onOpen={authModal.onOpen} onOpenChange={authModal.onOpenChange} />
+            <SignupLoginModal isOpen={authModal.isOpen} onClose={authModal.onClose} onOpen={authModal.onOpen} onOpenChange={authModal.onOpenChange} />
         </>
     );
 }

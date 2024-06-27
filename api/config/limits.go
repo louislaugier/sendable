@@ -6,6 +6,8 @@ import (
 	"time"
 )
 
+const Infinity = math.MaxInt64
+
 const (
 	BaseRateLimiterRequestFrequency = time.Second
 
@@ -19,18 +21,18 @@ var (
 	ConcurrentSingleValidationsLimits = map[models.SubscriptionType]int{
 		models.FreePlan:               1,
 		models.PremiumSubscription:    3,
-		models.EnterpriseSubscription: math.MaxInt64, // Infinity
+		models.EnterpriseSubscription: Infinity,
 	}
 
 	MonthlyAppValidationsLimits = map[models.SubscriptionType]int{
 		models.FreePlan:               500,
 		models.PremiumSubscription:    500000,
-		models.EnterpriseSubscription: math.MaxInt64, // Infinity
+		models.EnterpriseSubscription: Infinity,
 	}
 
 	MonthlyAPISingleValidationsLimits = map[models.SubscriptionType]int{
 		models.FreePlan:               30,
 		models.PremiumSubscription:    30000,
-		models.EnterpriseSubscription: math.MaxInt64, // Infinity
+		models.EnterpriseSubscription: Infinity,
 	}
 )

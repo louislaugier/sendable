@@ -1,13 +1,16 @@
 package handlers
 
 import (
+	"email-validator/config"
 	"email-validator/handlers/middleware"
 	"email-validator/internal/models"
 	"email-validator/internal/pkg/user"
 	"email-validator/internal/pkg/utils"
 	"encoding/json"
+	"fmt"
 	"log"
 	"net/http"
+	"strconv"
 )
 
 func LoginHandler(w http.ResponseWriter, r *http.Request) {
@@ -35,10 +38,26 @@ func LoginHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if u.Is2FAEnabled {
+	if !u.IsEmailConfirmed {
+		err = config.EmailClient.SendEmail(models.ConfirmEmailAddressTemplate, "Activate your account", "Verify your email address", map[string]string{
+			"email_confirmation_code": strconv.Itoa(*u.EmailConfirmationCode),
+			"is_new_account":          "true",
+			"domain":                  fmt.Sprintf("%s%s", config.DomainURL, config.APIVersionPrefix),
+		}, body.Email)
+		if err != nil {
+			handleError(w, err, "Internal Server Error", http.StatusBadRequest)
+			return
+		}
+
+		json.NewEncoder(w).Encode(models.UnconfirmedUser{
+			ID:    u.ID,
+			Email: u.Email,
+		})
+
+		return
+	} else if u.Is2FAEnabled {
 		json.NewEncoder(w).Encode(models.PreAuthUser{
-			ID:           u.ID,
-			Is2FAEnabled: true,
+			ID: u.ID,
 		})
 
 		return

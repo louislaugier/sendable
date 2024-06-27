@@ -10,9 +10,12 @@ import confirmEmail from "~/services/api/confirm_email_address";
 import login from "~/services/api/login";
 import { navigateToUrl } from "~/utils/url";
 import { isValidPassword } from "~/utils/password";
+import AuthModalContext from "~/contexts/AuthModalContext";
 
 export default function SignupLoginModal(props: any) {
-    const { isOpen, onClose, onOpenChange, modalType } = props;
+    const { modalType, setModalType } = useContext(AuthModalContext);
+
+    const { isOpen, onClose, onOpenChange } = props;
 
     const { user, setUser, setTemp2faUserId } = useContext(UserContext);
 
@@ -112,8 +115,14 @@ export default function SignupLoginModal(props: any) {
                                         const res = await login({ email: loginEmail, password: loginPassword })
 
                                         if (res.email) {
-                                            setUser(res)
-                                            navigateToUrl('/dashboard')
+                                            if (!res.isEmailConfirmed && loginEmail === res.email) {
+                                                setSignupEmail(res.email)
+                                                setSignupEmailSent(true)
+                                                setModalType(AuthModalType.Signup)
+                                            } else {
+                                                setUser(res)
+                                                navigateToUrl("/dashboard")
+                                            }
                                         } else if (res.is2faEnabled) setTemp2faUserId(res.id)
                                         else if (res.error) setLoginError(res.error)
                                     } catch {
