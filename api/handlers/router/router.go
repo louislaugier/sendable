@@ -42,6 +42,11 @@ func handleHTTP(mux *http.ServeMux) {
 	handle(mux, "/signup", http.HandlerFunc(handlers.SignupHandler), true)
 	handle(mux, "/confirm_email_address", http.HandlerFunc(handlers.ConfirmEmailAddressHandler), true)
 	handle(mux, "/login", http.HandlerFunc(handlers.LoginHandler), true)
+	handle(mux, "/reset_password", http.HandlerFunc(handlers.ResetPasswordHandler), true, func() *time.Duration {
+		rateLimit := time.Minute
+		return &rateLimit
+	}())
+	handle(mux, "/set_password", http.HandlerFunc(handlers.SetPasswordHandler), true)
 
 	handle(mux, "/auth_google", http.HandlerFunc(handlers.GoogleAuthHandler), true)
 	handle(mux, "/auth_linkedin", http.HandlerFunc(handlers.LinkedinAuthHandler), true)
