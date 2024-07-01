@@ -63,7 +63,7 @@ export default function SignupLoginModal(props: any) {
                 <ModalContent>
                     {(onClose) => (
                         <>
-                            <ModalHeader className="flex flex-col gap-1">{isLogin && isForgotPassVisible ? 'Password reset' : modalType}</ModalHeader>
+                            <ModalHeader className="flex flex-col gap-1">{isLogin && isForgotPassVisible ? 'Reset password' : modalType}</ModalHeader>
                             <ModalBody>
                                 {(isSignup && isSignupEmailSent) ? <>
                                     <CodeConfirmationForm error={confirmationCodeError} code={signupConfirmationCode} setCode={setSignupConfirmationCode} />
