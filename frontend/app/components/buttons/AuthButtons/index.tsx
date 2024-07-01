@@ -16,7 +16,7 @@ import twoFactorAuth from "~/services/api/auth/2fa";
 import { navigateToUrl } from "~/utils/url";
 
 export default function AuthButtons(props: any) {
-    const { isSignupButtonVisible, setSignupButtonVisible, isLoginButtonVisible, setLoginButtonVisible, isSignup, isLogin, signupEmail, signupPassword, setSignupEmail, setSignupPassword, loginEmail, loginPassword, setLoginEmail, setLoginPassword, modalType, loginError, signupEmailError, signupPasswordError } = props
+    const { isSignupButtonVisible, setSignupButtonVisible, isLoginButtonVisible, setLoginButtonVisible, isSignup, isLogin, signupEmail, signupPassword, setSignupEmail, setSignupPassword, loginEmail, loginPassword, setLoginEmail, setLoginPassword, modalType, loginError, signupEmailError, signupPasswordError, isForgotPassVisible, setForgotPassVisible } = props
 
     const { setUser, temp2faUserId, setTemp2faUserId } = useContext(UserContext)
 
@@ -55,12 +55,15 @@ export default function AuthButtons(props: any) {
             ((isSignup && isSignupButtonVisible) || (isLogin && isLoginButtonVisible)) ? <>
                 <Button onClick={() => {
                     if (isSignup) setSignupButtonVisible(false)
-                    else if (isLogin) setLoginButtonVisible(false)
+                    else if (isLogin) {
+                        if (isForgotPassVisible) setForgotPassVisible(false)
+                        else setLoginButtonVisible(false)
+                    }
                 }} className="border-none" isIconOnly variant="ghost" aria-label="Back">
                     <ArrowBackIcon />
                 </Button>
 
-                <EmailAuthForm loginError={loginError} signupEmailError={signupEmailError} signupEmail={signupEmail} signupPassword={signupPassword} setSignupEmail={setSignupEmail} setSignupPassword={setSignupPassword} loginEmail={loginEmail} loginPassword={loginPassword} setLoginEmail={setLoginEmail} setLoginPassword={setLoginPassword} modalType={modalType} signupPasswordError={signupPasswordError} />
+                <EmailAuthForm loginError={loginError} signupEmailError={signupEmailError} signupEmail={signupEmail} signupPassword={signupPassword} setSignupEmail={setSignupEmail} setSignupPassword={setSignupPassword} loginEmail={loginEmail} loginPassword={loginPassword} setLoginEmail={setLoginEmail} setLoginPassword={setLoginPassword} modalType={modalType} signupPasswordError={signupPasswordError} isForgotPassVisible={isForgotPassVisible} setForgotPassVisible={setForgotPassVisible} />
             </> :
                 <div className="flex flex-col py-4" style={{ width: '90%', alignItems: 'center', margin: 'auto' }}>
                     <div className="gap-2 flex flex-col" style={{ width: '220px' }}>

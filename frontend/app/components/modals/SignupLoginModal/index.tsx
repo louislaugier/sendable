@@ -19,7 +19,6 @@ export default function SignupLoginModal(props: any) {
 
     const { user, setUser, setTemp2faUserId } = useContext(UserContext);
 
-    const [searchParams] = useSearchParams();
     const close = () => {
         // setSubmitButtonVisible(false);
         onClose()
@@ -48,6 +47,8 @@ export default function SignupLoginModal(props: any) {
     const [isSignupButtonVisible, setSignupButtonVisible] = useState((isSignup && isSignupEmailSent) ?? false)
     const [isLoginButtonVisible, setLoginButtonVisible] = useState(false)
 
+    const [isForgotPassVisible, setForgotPassVisible] = useState(false)
+
     return (
         !user &&
         <>
@@ -62,11 +63,12 @@ export default function SignupLoginModal(props: any) {
                 <ModalContent>
                     {(onClose) => (
                         <>
-                            <ModalHeader className="flex flex-col gap-1">{modalType}</ModalHeader>
+                            <ModalHeader className="flex flex-col gap-1">{isLogin && isForgotPassVisible ? 'Password reset' : modalType}</ModalHeader>
                             <ModalBody>
                                 {(isSignup && isSignupEmailSent) ? <>
                                     <CodeConfirmationForm error={confirmationCodeError} code={signupConfirmationCode} setCode={setSignupConfirmationCode} />
-                                </> : <AuthButtons isSignup={isSignup} isLogin={isLogin} signupEmail={signupEmail} signupPassword={signupPassword} setSignupEmail={setSignupEmail} setSignupPassword={setSignupPassword} loginEmail={loginEmail} loginPassword={loginPassword} setLoginEmail={setLoginEmail} setLoginPassword={setLoginPassword} isSignupButtonVisible={isSignupButtonVisible} setSignupButtonVisible={setSignupButtonVisible} isLoginButtonVisible={isLoginButtonVisible} setLoginButtonVisible={setLoginButtonVisible} modalType={modalType} loginError={loginError} signupEmailError={signupEmailError} signupPasswordError={signupPasswordError} />}
+                                </> :
+                                    <AuthButtons isSignup={isSignup} isLogin={isLogin} signupEmail={signupEmail} signupPassword={signupPassword} setSignupEmail={setSignupEmail} setSignupPassword={setSignupPassword} loginEmail={loginEmail} loginPassword={loginPassword} setLoginEmail={setLoginEmail} setLoginPassword={setLoginPassword} isSignupButtonVisible={isSignupButtonVisible} setSignupButtonVisible={setSignupButtonVisible} isLoginButtonVisible={isLoginButtonVisible} setLoginButtonVisible={setLoginButtonVisible} modalType={modalType} loginError={loginError} signupEmailError={signupEmailError} signupPasswordError={signupPasswordError} isForgotPassVisible={isForgotPassVisible} setForgotPassVisible={setForgotPassVisible} />}
                             </ModalBody>
                             <ModalFooter>
                                 <Button color="danger" variant="bordered" onPress={onClose}>
@@ -133,7 +135,7 @@ export default function SignupLoginModal(props: any) {
 
                                     setLoading(false)
                                 }} color="primary" variant="shadow">
-                                    {isLoading ? 'Loading' : isSignupEmailSent ? 'Submit' : AuthModalType.Login}
+                                    {isLoading ? 'Loading' : (isSignup && isSignupEmailSent) || (isLogin && isForgotPassVisible) ? 'Submit' : AuthModalType.Login}
                                 </Button>}
                             </ModalFooter>
                         </>
