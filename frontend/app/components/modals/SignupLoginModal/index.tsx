@@ -4,7 +4,6 @@ import UserContext from "~/contexts/UserContext";
 import AuthButtons from "~/components/buttons/AuthButtons";
 import { AuthModalType } from "~/types/modal";
 import signup from "~/services/api/signup";
-import { useSearchParams } from "@remix-run/react";
 import CodeConfirmationForm from "../../forms/CodeConfirmationForm";
 import confirmEmail from "~/services/api/confirm_email_address";
 import login from "~/services/api/login";
