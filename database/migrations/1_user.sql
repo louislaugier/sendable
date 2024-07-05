@@ -33,7 +33,7 @@ BEGIN
 END;
 $$ LANGUAGE 'plpgsql';
 
-CREATE TRIGGER update_user_timestamp
+CREATE OR REPLACE TRIGGER update_user_timestamp
 BEFORE UPDATE ON public."user"
 FOR EACH ROW
 EXECUTE FUNCTION update_timestamp();

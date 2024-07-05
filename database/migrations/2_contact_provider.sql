@@ -16,7 +16,7 @@ CREATE TABLE IF NOT EXISTS public."contact_provider" (
     "updated_at" TIMESTAMP NOT NULL DEFAULT now()
 );
 
-CREATE TRIGGER update_contact_provider_timestamp
+CREATE OR REPLACE TRIGGER update_contact_provider_timestamp
 BEFORE UPDATE ON public."contact_provider"
 FOR EACH ROW
 EXECUTE FUNCTION update_timestamp();
