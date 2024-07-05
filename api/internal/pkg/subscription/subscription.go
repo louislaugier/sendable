@@ -82,14 +82,14 @@ func GetLatestActive(userID uuid.UUID) (*models.Subscription, error) {
 	var subscription *models.Subscription
 
 	for rows.Next() {
-		o := models.Subscription{}
+		s := models.Subscription{}
 
-		err = rows.Scan(&o.ID, &o.BillingFrequency, &o.Type, &o.CreatedAt)
+		err = rows.Scan(&s.ID, &s.BillingFrequency, &s.Type, &s.CreatedAt)
 		if err != nil {
 			return nil, err
 		}
 
-		subscription = &o
+		subscription = &s
 	}
 
 	return subscription, nil

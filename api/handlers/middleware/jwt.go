@@ -2,6 +2,7 @@ package middleware
 
 import (
 	"context"
+	"email-validator/config"
 	"email-validator/internal/models"
 	"email-validator/internal/pkg/user"
 	"email-validator/internal/pkg/utils"
@@ -46,15 +47,17 @@ func GenerateAndBindJWT(user *models.User) error {
 
 // GenerateJWT generates a new JWT token for the user.
 func GenerateJWT(userID uuid.UUID, userEmail string) (*string, error) {
+	now := time.Now()
+
 	claims := CustomClaims{
 		UserID:    userID,
 		UserEmail: userEmail,
 		StandardClaims: jwt.StandardClaims{
-			Issuer:    "https://sendable.email",
+			Issuer:    config.FrontendURL,
 			Subject:   userID.String(),
-			ExpiresAt: time.Now().AddDate(0, 0, 30).Unix(),
-			IssuedAt:  time.Now().Unix(),
-			Audience:  "https://api.sendable.email",
+			ExpiresAt: now.AddDate(0, 0, 30).Unix(),
+			IssuedAt:  now.Unix(),
+			Audience:  config.DomainURL,
 			Id:        uuid.New().String(),
 		},
 	}
