@@ -20,12 +20,14 @@ func ValidationHistoryHandler(w http.ResponseWriter, r *http.Request) {
 		limit, err = strconv.Atoi(r.URL.Query().Get("limit"))
 		if err != nil {
 			handleError(w, err, "Invalid query params", http.StatusBadRequest)
+			return
 		}
 	}
 	if r.URL.Query().Get("offset") != "" {
 		offset, err = strconv.Atoi(r.URL.Query().Get("offset"))
 		if err != nil {
 			handleError(w, err, "Invalid query params", http.StatusBadRequest)
+			return
 		}
 	}
 
@@ -33,10 +35,12 @@ func ValidationHistoryHandler(w http.ResponseWriter, r *http.Request) {
 	history, err := validation.GetMany(userID, limit, offset)
 	if err != nil {
 		handleError(w, err, "Internal Server Error", http.StatusInternalServerError)
+		return
 	}
 	totalCount, err := validation.GetCount(userID)
 	if err != nil {
 		handleError(w, err, "Internal Server Error", http.StatusInternalServerError)
+		return
 	}
 
 	json.NewEncoder(w).Encode(map[string]interface{}{

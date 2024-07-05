@@ -68,6 +68,7 @@ func ValidateEmailHandler(w http.ResponseWriter, r *http.Request) {
 
 	if err := validation.InsertNew(v); err != nil {
 		handleError(w, err, "Internal Server Error", http.StatusInternalServerError)
+		return
 	}
 
 	json.NewEncoder(w).Encode(resp)
