@@ -10,6 +10,8 @@ import login from "~/services/api/login";
 import { navigateToUrl } from "~/utils/url";
 import { isValidPassword } from "~/utils/password";
 import AuthModalContext from "~/contexts/AuthModalContext";
+import resetPassword from "~/services/api/reset_password";
+import { isValidEmail } from "~/services/utils/email";
 
 export default function SignupLoginModal(props: any) {
     const { modalType, setModalType } = useContext(AuthModalContext);
@@ -26,7 +28,7 @@ export default function SignupLoginModal(props: any) {
     const [loginEmail, setLoginEmail] = useState("")
     const [loginPassword, setLoginPassword] = useState("")
 
-    const [signupEmail, setSignupEmail] = useState()
+    const [signupEmail, setSignupEmail] = useState("")
     const [signupPassword, setSignupPassword] = useState("")
 
     const [isLoading, setLoading] = useState(false)
@@ -77,6 +79,12 @@ export default function SignupLoginModal(props: any) {
                                 {(isSignup && isSignupButtonVisible) && <Button isDisabled={!signupEmail || !signupPassword || (isSignupEmailSent && signupConfirmationCode.length !== 6)} isLoading={isLoading} onClick={async () => {
                                     setLoading(true)
 
+                                    if (!isValidEmail(signupEmail)){
+                                        setSignupEmailError('Please enter a valid email address')
+                                        setLoading(false)
+                                        return
+                                    }
+
                                     const { isValid, errorMessage } = isValidPassword(signupPassword);
                                     if (!isValid) {
                                         setSignupPasswordError(errorMessage);
@@ -99,9 +107,7 @@ export default function SignupLoginModal(props: any) {
                                             else setSignupEmailSent(true)
                                         }
                                     } catch {
-                                        const err = 'An unexpected error has occurred. Please try again.'
-                                        if (isLogin) setLoginError(err)
-                                        else if (isSignup) setSignupEmailError(err)
+                                        setSignupEmailError('An unexpected error has occurred. Please try again.')
                                     }
 
                                     setLoading(false)
@@ -109,14 +115,19 @@ export default function SignupLoginModal(props: any) {
                                     {isLoading ? 'Loading' : isSignupEmailSent ? 'Submit' : AuthModalType.Signup}
                                 </Button>}
 
-                                {(isLogin && isLoginButtonVisible) && <Button isDisabled={!!loginError || !loginEmail || !loginPassword} isLoading={isLoading} onClick={async () => {
+                                {(isLogin && isLoginButtonVisible && !isForgotPassVisible) && <Button isDisabled={!!loginError || !loginEmail || !loginPassword} isLoading={isLoading} onClick={async () => {
                                     setLoading(true)
+
+                                    if (!isValidEmail(loginEmail)) {
+                                        setLoginError('Please enter a valid email address')
+                                        setLoading(false)
+                                        return
+                                    }
 
                                     try {
                                         const res = await login({ email: loginEmail, password: loginPassword })
 
-                                        if (res.email) {
-                                            if (!res.isEmailConfirmed && loginEmail === res.email) {
+                                        if (res.email) if (!res.isEmailConfirmed && loginEmail === res.email) {
                                                 setSignupEmail(res.email)
                                                 setSignupEmailSent(true)
                                                 setModalType(AuthModalType.Signup)
@@ -124,12 +135,36 @@ export default function SignupLoginModal(props: any) {
                                                 setUser(res)
                                                 navigateToUrl("/dashboard")
                                             }
-                                        } else if (res.is2faEnabled) setTemp2faUserId(res.id)
+                                        else if (res.is2faEnabled) setTemp2faUserId(res.id)
                                         else if (res.error) setLoginError(res.error)
                                     } catch {
-                                        const err = 'An unexpected error has occurred. Please try again.'
-                                        if (isLogin) setLoginError(err)
-                                        else if (isSignup) setSignupEmailError(err)
+                                        setLoginError('An unexpected error has occurred. Please try again.')
+                                    }
+
+                                    setLoading(false)
+                                }} color="primary" variant="shadow">
+                                    {isLoading ? 'Loading' : (isSignup && isSignupEmailSent) || (isLogin && isForgotPassVisible) ? 'Submit' : AuthModalType.Login}
+                                </Button>}
+
+                                {(isLogin && isForgotPassVisible) && <Button isDisabled={!loginEmail} isLoading={isLoading} onClick={async () => {
+                                    setLoading(true)
+
+                                    if (!isValidEmail(loginEmail)){
+                                        setLoginError('Please enter a valid email address')
+                                        setLoading(false)
+                                        return
+                                    }
+
+                                    try {
+                                        const res = await resetPassword({ email: loginEmail })
+                                        if (res.error) {
+                                            setLoginError(res.error);
+                                            setLoading(false);
+                                            return
+                                        }
+                            
+                                    } catch {
+                                        setLoginError('An unexpected error has occurred. Please try again.')
                                     }
 
                                     setLoading(false)
