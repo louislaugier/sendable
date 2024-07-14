@@ -12,6 +12,7 @@ import { isValidPassword } from "~/utils/password";
 import AuthModalContext from "~/contexts/AuthModalContext";
 import resetPassword from "~/services/api/reset_password";
 import { isValidEmail } from "~/services/utils/email";
+import setPassword from "~/services/api/set_password";
 
 export default function SignupLoginModal(props: any) {
     const { modalType, setModalType } = useContext(AuthModalContext);
@@ -42,13 +43,133 @@ export default function SignupLoginModal(props: any) {
 
     const [isSignupEmailSent, setSignupEmailSent] = useState(false)
 
+    const [isResetPasswordEmailSent, setResetPasswordEmailSent] = useState(false)
+
     const [signupConfirmationCode, setSignupConfirmationCode] = useState('')
     const [confirmationCodeError, setConfirmationCodeError] = useState('')
+
+    const [resetPasswordConfirmationCode, setResetPasswordConfirmationCode] = useState('')
+    const [resetPasswordConfirmationCodeError, setResetPasswordConfirmationCodeError] = useState('')
+
+    const [newPassword, setNewPassword] = useState('')
+    const [newPasswordConfirmation, setNewPasswordConfirmation] = useState('')
+
+    const [isPasswordUpdated, setPasswordUpdated] = useState(false)
 
     const [isSignupButtonVisible, setSignupButtonVisible] = useState((isSignup && isSignupEmailSent) ?? false)
     const [isLoginButtonVisible, setLoginButtonVisible] = useState(false)
 
     const [isForgotPassVisible, setForgotPassVisible] = useState(false)
+
+    const emailSignupOrConfirmEmail = async () => {
+        setLoading(true)
+
+        if (!isValidEmail(signupEmail)) {
+            setSignupEmailError('Please enter a valid email address')
+            setLoading(false)
+            return
+        }
+
+        const { isValid, errorMessage } = isValidPassword(signupPassword);
+        if (!isValid) {
+            setSignupPasswordError(errorMessage);
+            setLoading(false);
+            return;
+        }
+
+        try {
+            if (isSignupEmailSent) {
+                const res = await confirmEmail({ email: signupEmail, isNewAccount: true, emailConfirmationCode: parseInt(signupConfirmationCode) })
+                if (res.error) setConfirmationCodeError(res.error)
+                else {
+                    setUser(res)
+                    navigateToUrl("/dashboard?email_confirmed=true")
+                }
+            } else {
+                const res = await signup({ email: signupEmail, password: signupPassword })
+
+                if (res.error) setSignupEmailError(res.error)
+                else setSignupEmailSent(true)
+            }
+        } catch {
+            setSignupEmailError('An unexpected error has occurred. Please try again.')
+        }
+
+        setLoading(false)
+    }
+
+    const emailLogin = async () => {
+        setLoading(true)
+
+        if (!isValidEmail(loginEmail)) {
+            setLoginError('Please enter a valid email address')
+            setLoading(false)
+            return
+        }
+
+        try {
+            const res = await login({ email: loginEmail, password: loginPassword })
+
+            if (res.email) if (!res.isEmailConfirmed && loginEmail === res.email) {
+                setSignupEmail(res.email)
+                setSignupEmailSent(true)
+                setModalType(AuthModalType.Signup)
+            } else {
+                setUser(res)
+                navigateToUrl("/dashboard")
+            }
+            else if (res.is2faEnabled) setTemp2faUserId(res.id)
+            else if (res.error) setLoginError(res.error)
+        } catch {
+            setLoginError('An unexpected error has occurred. Please try again.')
+        }
+
+        setLoading(false)
+    }
+
+    const forgotPassword = async () => {
+        setLoading(true)
+
+        if (!isValidEmail(loginEmail)) {
+            setLoginError('Please enter a valid email address')
+            setLoading(false)
+            return
+        }
+
+        try {
+            const res = await resetPassword({ email: loginEmail })
+            if (res.error) {
+                setLoginError(res.error);
+                setLoading(false);
+                return
+            }
+
+            setResetPasswordEmailSent(true)
+        } catch {
+            setLoginError('An unexpected error has occurred. Please try again.')
+        }
+
+        setLoading(false)
+    }
+
+    const setNewPasswordWithCode = async () => {
+        setLoading(true)
+
+        try {
+            const res = await setPassword({ email: loginEmail, emailConfirmationCode: resetPasswordConfirmationCode, password: newPassword })
+            if (res.error) {
+                setLoginError(res.error);
+                setLoading(false);
+                return
+            }
+
+            setPasswordUpdated(true)
+        } catch {
+            setLoginError('An unexpected error has occurred. Please try again.')
+        }
+
+        setLoading(false)
+    }
 
     return (
         !user &&
@@ -66,110 +187,44 @@ export default function SignupLoginModal(props: any) {
                         <>
                             <ModalHeader className="flex flex-col gap-1">{isLogin && isForgotPassVisible ? 'Reset password' : modalType}</ModalHeader>
                             <ModalBody>
+                                {/* signup email confirmation code */}
                                 {(isSignup && isSignupEmailSent) ? <>
                                     <CodeConfirmationForm error={confirmationCodeError} code={signupConfirmationCode} setCode={setSignupConfirmationCode} />
                                 </> :
-                                    <AuthButtons isSignup={isSignup} isLogin={isLogin} signupEmail={signupEmail} signupPassword={signupPassword} setSignupEmail={setSignupEmail} setSignupPassword={setSignupPassword} loginEmail={loginEmail} loginPassword={loginPassword} setLoginEmail={setLoginEmail} setLoginPassword={setLoginPassword} isSignupButtonVisible={isSignupButtonVisible} setSignupButtonVisible={setSignupButtonVisible} isLoginButtonVisible={isLoginButtonVisible} setLoginButtonVisible={setLoginButtonVisible} modalType={modalType} loginError={loginError} signupEmailError={signupEmailError} signupPasswordError={signupPasswordError} isForgotPassVisible={isForgotPassVisible} setForgotPassVisible={setForgotPassVisible} />}
+                                    // reset password confirmation code
+                                    (isLogin && isResetPasswordEmailSent) ? <>
+                                        <CodeConfirmationForm error={resetPasswordConfirmationCodeError} code={resetPasswordConfirmationCode} setCode={setResetPasswordConfirmationCode} />
+                                        {/* TODO: password + confirm inputs */}
+                                    </>
+                                        :
+                                        isPasswordUpdated ? <>
+                                            {/* TODO: password has been updated, you can now login */}
+                                        </> :
+                                            <AuthButtons isSignup={isSignup} isLogin={isLogin} signupEmail={signupEmail} signupPassword={signupPassword} setSignupEmail={setSignupEmail} setSignupPassword={setSignupPassword} loginEmail={loginEmail} loginPassword={loginPassword} setLoginEmail={setLoginEmail} setLoginPassword={setLoginPassword} isSignupButtonVisible={isSignupButtonVisible} setSignupButtonVisible={setSignupButtonVisible} isLoginButtonVisible={isLoginButtonVisible} setLoginButtonVisible={setLoginButtonVisible} modalType={modalType} loginError={loginError} signupEmailError={signupEmailError} signupPasswordError={signupPasswordError} isForgotPassVisible={isForgotPassVisible} setForgotPassVisible={setForgotPassVisible} />}
                             </ModalBody>
                             <ModalFooter>
                                 <Button color="danger" variant="bordered" onPress={onClose}>
                                     Close
                                 </Button>
 
-                                {(isSignup && isSignupButtonVisible) && <Button isDisabled={!signupEmail || !signupPassword || (isSignupEmailSent && signupConfirmationCode.length !== 6)} isLoading={isLoading} onClick={async () => {
-                                    setLoading(true)
-
-                                    if (!isValidEmail(signupEmail)){
-                                        setSignupEmailError('Please enter a valid email address')
-                                        setLoading(false)
-                                        return
-                                    }
-
-                                    const { isValid, errorMessage } = isValidPassword(signupPassword);
-                                    if (!isValid) {
-                                        setSignupPasswordError(errorMessage);
-                                        setLoading(false);
-                                        return;
-                                    }
-
-                                    try {
-                                        if (isSignupEmailSent) {
-                                            const res = await confirmEmail({ email: signupEmail, isNewAccount: true, emailConfirmationCode: parseInt(signupConfirmationCode) })
-                                            if (res.error) setConfirmationCodeError(res.error)
-                                            else {
-                                                setUser(res)
-                                                navigateToUrl("/dashboard?email_confirmed=true")
-                                            }
-                                        } else {
-                                            const res = await signup({ email: signupEmail, password: signupPassword })
-
-                                            if (res.error) setSignupEmailError(res.error)
-                                            else setSignupEmailSent(true)
-                                        }
-                                    } catch {
-                                        setSignupEmailError('An unexpected error has occurred. Please try again.')
-                                    }
-
-                                    setLoading(false)
-                                }} color="primary" variant="shadow">
+                                {/* Email signup & confirm email address */}
+                                {(isSignup && isSignupButtonVisible) && <Button isDisabled={!signupEmail || !signupPassword || (isSignupEmailSent && signupConfirmationCode.length !== 6)} isLoading={isLoading} onClick={emailSignupOrConfirmEmail} color="primary" variant="shadow">
                                     {isLoading ? 'Loading' : isSignupEmailSent ? 'Submit' : AuthModalType.Signup}
                                 </Button>}
 
-                                {(isLogin && isLoginButtonVisible && !isForgotPassVisible) && <Button isDisabled={!!loginError || !loginEmail || !loginPassword} isLoading={isLoading} onClick={async () => {
-                                    setLoading(true)
-
-                                    if (!isValidEmail(loginEmail)) {
-                                        setLoginError('Please enter a valid email address')
-                                        setLoading(false)
-                                        return
-                                    }
-
-                                    try {
-                                        const res = await login({ email: loginEmail, password: loginPassword })
-
-                                        if (res.email) if (!res.isEmailConfirmed && loginEmail === res.email) {
-                                                setSignupEmail(res.email)
-                                                setSignupEmailSent(true)
-                                                setModalType(AuthModalType.Signup)
-                                            } else {
-                                                setUser(res)
-                                                navigateToUrl("/dashboard")
-                                            }
-                                        else if (res.is2faEnabled) setTemp2faUserId(res.id)
-                                        else if (res.error) setLoginError(res.error)
-                                    } catch {
-                                        setLoginError('An unexpected error has occurred. Please try again.')
-                                    }
-
-                                    setLoading(false)
-                                }} color="primary" variant="shadow">
-                                    {isLoading ? 'Loading' : (isSignup && isSignupEmailSent) || (isLogin && isForgotPassVisible) ? 'Submit' : AuthModalType.Login}
+                                {/* Email login */}
+                                {(isLogin && isLoginButtonVisible && !isForgotPassVisible) && <Button isDisabled={!!loginError || !loginEmail || !loginPassword} isLoading={isLoading} onClick={emailLogin} color="primary" variant="shadow">
+                                    {isLoading ? 'Loading' : AuthModalType.Login}
                                 </Button>}
 
-                                {(isLogin && isForgotPassVisible) && <Button isDisabled={!loginEmail} isLoading={isLoading} onClick={async () => {
-                                    setLoading(true)
+                                {/* Forgot password */}
+                                {(isLogin && isForgotPassVisible && !isResetPasswordEmailSent) && <Button isDisabled={!loginEmail} isLoading={isLoading} onClick={forgotPassword} color="primary" variant="shadow">
+                                    {isLoading ? 'Loading' : 'Submit'}
+                                </Button>}
 
-                                    if (!isValidEmail(loginEmail)){
-                                        setLoginError('Please enter a valid email address')
-                                        setLoading(false)
-                                        return
-                                    }
-
-                                    try {
-                                        const res = await resetPassword({ email: loginEmail })
-                                        if (res.error) {
-                                            setLoginError(res.error);
-                                            setLoading(false);
-                                            return
-                                        }
-                            
-                                    } catch {
-                                        setLoginError('An unexpected error has occurred. Please try again.')
-                                    }
-
-                                    setLoading(false)
-                                }} color="primary" variant="shadow">
-                                    {isLoading ? 'Loading' : (isSignup && isSignupEmailSent) || (isLogin && isForgotPassVisible) ? 'Submit' : AuthModalType.Login}
+                                {/* Set new password with confirmation code */}
+                                {(isLogin && isResetPasswordEmailSent && !isPasswordUpdated) && <Button isDisabled={isResetPasswordEmailSent && resetPasswordConfirmationCode.length !== 6} isLoading={isLoading} onClick={setNewPasswordWithCode} color="primary" variant="shadow">
+                                    {isLoading ? 'Loading' : 'Submit'}
                                 </Button>}
                             </ModalFooter>
                         </>

@@ -15,9 +15,10 @@ export default function EmailAuthForm(props: any) {
 
     return (
         isForgotPassVisible ? <>
+            {/* forgot password email input */}
             <Input
-                onValueChange={isLogin ? setLoginEmail : setSignupEmail}
-                value={isLogin ? loginEmail : signupEmail}
+                onValueChange={setLoginEmail}
+                value={loginEmail}
                 autoFocus
                 label="Email"
                 placeholder="Enter your email"
@@ -27,6 +28,7 @@ export default function EmailAuthForm(props: any) {
             />
         </> :
             <>
+                {/* signup / login email input */}
                 <Input
                     onValueChange={isLogin ? setLoginEmail : setSignupEmail}
                     value={isLogin ? loginEmail : signupEmail}
@@ -37,7 +39,7 @@ export default function EmailAuthForm(props: any) {
                     errorMessage={isSignup ? signupEmailError : loginError}
                     isInvalid={(isSignup && !!signupEmailError) || (isLogin && !!loginError)}
                 />
-
+                {/* signup / login password input */}
                 <Input
                     onValueChange={isLogin ? setLoginPassword : setSignupPassword}
                     value={isLogin ? loginPassword : signupPassword}

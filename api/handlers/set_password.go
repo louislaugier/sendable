@@ -34,14 +34,14 @@ func SetPasswordHandler(w http.ResponseWriter, r *http.Request) {
 
 	u, err := user.GetByEmailAndConfirmationCode(body.Email, *body.EmailConfirmationCode)
 	if err != nil {
-		handleError(w, err, "Internal Server Error", http.StatusBadRequest)
+		handleError(w, err, "Internal Server Error", http.StatusInternalServerError)
 		return
 	} else if u == nil {
-		handleError(w, err, "User not found", http.StatusNotFound)
+		handleError(w, err, "Invalid code.", http.StatusUnauthorized)
 		return
 	} else if u.AuthProvider != nil {
 		err := fmt.Errorf("account was created with %s, cannot set a password", *u.AuthProvider)
-		handleError(w, err, err.Error(), http.StatusBadRequest)
+		handleError(w, err, err.Error(), http.StatusUnauthorized)
 		return
 	}
 
