@@ -33,10 +33,10 @@ func ResetPasswordHandler(w http.ResponseWriter, r *http.Request) {
 		handleError(w, err, "Internal Server Error", http.StatusBadRequest)
 		return
 	} else if u == nil {
-		handleError(w, err, "User not found", http.StatusNotFound)
+		handleError(w, err, "User not found.", http.StatusNotFound)
 		return
 	} else if u.AuthProvider != nil {
-		err := fmt.Errorf("account was created with %s, cannot set a password", *u.AuthProvider)
+		err := fmt.Errorf("account was created with %s, cannot set a password.", *u.AuthProvider)
 		handleError(w, err, err.Error(), http.StatusBadRequest)
 		return
 	}

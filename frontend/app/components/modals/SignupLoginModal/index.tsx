@@ -1,5 +1,5 @@
-import { useContext, useState } from "react";
-import { Modal, ModalContent, ModalHeader, ModalBody, ModalFooter, Button } from "@nextui-org/react";
+import { Ref, useContext, useRef, useState } from "react";
+import { Modal, ModalContent, ModalHeader, ModalBody, ModalFooter, Button, Input } from "@nextui-org/react";
 import UserContext from "~/contexts/UserContext";
 import AuthButtons from "~/components/buttons/AuthButtons";
 import { AuthModalType } from "~/types/modal";
@@ -13,6 +13,8 @@ import AuthModalContext from "~/contexts/AuthModalContext";
 import resetPassword from "~/services/api/reset_password";
 import { isValidEmail } from "~/services/utils/email";
 import setPassword from "~/services/api/set_password";
+import { EyeFilledIcon } from "~/components/icons/EyeFilledIcon";
+import { EyeSlashFilledIcon } from "~/components/icons/EyeSlashFilledIcon";
 
 export default function SignupLoginModal(props: any) {
     const { modalType, setModalType } = useContext(AuthModalContext);
@@ -26,7 +28,7 @@ export default function SignupLoginModal(props: any) {
         onClose()
     }
 
-    const [loginEmail, setLoginEmail] = useState("")
+    const [loginEmail, setLoginEmail] = useState("") // also used to reset password
     const [loginPassword, setLoginPassword] = useState("")
 
     const [signupEmail, setSignupEmail] = useState("")
@@ -171,6 +173,17 @@ export default function SignupLoginModal(props: any) {
         setLoading(false)
     }
 
+    const [isNewPasswordVisible, setNewPasswordVisible] = useState(false)
+    const [isNewPasswordConfirmationVisible, setNewPasswordConfirmationVisible] = useState(false)
+
+    const toggleNewPasswordVisibility = () => setNewPasswordVisible(!isNewPasswordVisible);
+    const toggleNewPasswordConfirmationVisibility = () => setNewPasswordConfirmationVisible(!isNewPasswordConfirmationVisible);
+
+    const [newPasswordError, setNewPasswordError] = useState('')
+    const [newPasswordConfirmationError, setNewPasswordConfirmationError] = useState('')
+
+    const submitRef = useRef<any>()
+
     return (
         !user &&
         <>
@@ -194,13 +207,57 @@ export default function SignupLoginModal(props: any) {
                                     // reset password confirmation code
                                     (isLogin && isResetPasswordEmailSent) ? <>
                                         <CodeConfirmationForm error={resetPasswordConfirmationCodeError} code={resetPasswordConfirmationCode} setCode={setResetPasswordConfirmationCode} />
-                                        {/* TODO: password + confirm inputs */}
+                                        <Input
+                                            onKeyDown={async (event: React.KeyboardEvent<HTMLInputElement>) => {
+                                                if (event.key === 'Enter') submitRef.current?.click()
+                                            }}
+                                            onValueChange={setNewPassword}
+                                            value={newPassword}
+                                            label="New password"
+                                            variant="bordered"
+                                            placeholder={"Enter a new password"}
+                                            endContent={
+                                                <button className="focus:outline-none" type="button" onClick={toggleNewPasswordVisibility}>
+                                                    {isNewPasswordVisible ? (
+                                                        <EyeSlashFilledIcon className="text-2xl text-default-400 pointer-events-none" />
+                                                    ) : (
+                                                        <EyeFilledIcon className="text-2xl text-default-400 pointer-events-none" />
+                                                    )}
+                                                </button>
+                                            }
+                                            type={isNewPasswordVisible ? "text" : "password"}
+                                            errorMessage={newPasswordError}
+                                            isInvalid={!!newPasswordError}
+                                        />
+                                        <Input
+                                            onKeyDown={async (event: React.KeyboardEvent<HTMLInputElement>) => {
+                                                if (event.key === 'Enter') submitRef.current?.click()
+                                            }}
+                                            onValueChange={setNewPasswordConfirmation}
+                                            value={newPasswordConfirmation}
+                                            label="Confirm new password"
+                                            variant="bordered"
+                                            placeholder={"Confirm the new password"}
+                                            endContent={
+                                                <button className="focus:outline-none" type="button" onClick={toggleNewPasswordConfirmationVisibility}>
+                                                    {isNewPasswordConfirmationVisible ? (
+                                                        <EyeSlashFilledIcon className="text-2xl text-default-400 pointer-events-none" />
+                                                    ) : (
+                                                        <EyeFilledIcon className="text-2xl text-default-400 pointer-events-none" />
+                                                    )}
+                                                </button>
+                                            }
+                                            type={isNewPasswordConfirmationVisible ? "text" : "password"}
+                                            errorMessage={newPasswordConfirmationError}
+                                            isInvalid={!!newPasswordConfirmationError}
+                                        />
                                     </>
                                         :
                                         isPasswordUpdated ? <>
                                             {/* TODO: password has been updated, you can now login */}
+                                            <p>TODO: password has been updated, you can now login */</p>
                                         </> :
-                                            <AuthButtons isSignup={isSignup} isLogin={isLogin} signupEmail={signupEmail} signupPassword={signupPassword} setSignupEmail={setSignupEmail} setSignupPassword={setSignupPassword} loginEmail={loginEmail} loginPassword={loginPassword} setLoginEmail={setLoginEmail} setLoginPassword={setLoginPassword} isSignupButtonVisible={isSignupButtonVisible} setSignupButtonVisible={setSignupButtonVisible} isLoginButtonVisible={isLoginButtonVisible} setLoginButtonVisible={setLoginButtonVisible} modalType={modalType} loginError={loginError} signupEmailError={signupEmailError} signupPasswordError={signupPasswordError} isForgotPassVisible={isForgotPassVisible} setForgotPassVisible={setForgotPassVisible} />}
+                                            <AuthButtons isSignup={isSignup} isLogin={isLogin} signupEmail={signupEmail} signupPassword={signupPassword} setSignupEmail={setSignupEmail} setSignupPassword={setSignupPassword} loginEmail={loginEmail} loginPassword={loginPassword} setLoginEmail={setLoginEmail} setLoginPassword={setLoginPassword} isSignupButtonVisible={isSignupButtonVisible} setSignupButtonVisible={setSignupButtonVisible} isLoginButtonVisible={isLoginButtonVisible} setLoginButtonVisible={setLoginButtonVisible} modalType={modalType} loginError={loginError} signupEmailError={signupEmailError} signupPasswordError={signupPasswordError} isForgotPassVisible={isForgotPassVisible} setForgotPassVisible={setForgotPassVisible} submitRef={submitRef} />}
                             </ModalBody>
                             <ModalFooter>
                                 <Button color="danger" variant="bordered" onPress={onClose}>
@@ -208,22 +265,22 @@ export default function SignupLoginModal(props: any) {
                                 </Button>
 
                                 {/* Email signup & confirm email address */}
-                                {(isSignup && isSignupButtonVisible) && <Button isDisabled={!signupEmail || !signupPassword || (isSignupEmailSent && signupConfirmationCode.length !== 6)} isLoading={isLoading} onClick={emailSignupOrConfirmEmail} color="primary" variant="shadow">
+                                {(isSignup && isSignupButtonVisible) && <Button ref={submitRef} isDisabled={!signupEmail || !signupPassword || (isSignupEmailSent && signupConfirmationCode.length !== 6)} isLoading={isLoading} onClick={emailSignupOrConfirmEmail} color="primary" variant="shadow">
                                     {isLoading ? 'Loading' : isSignupEmailSent ? 'Submit' : AuthModalType.Signup}
                                 </Button>}
 
                                 {/* Email login */}
-                                {(isLogin && isLoginButtonVisible && !isForgotPassVisible) && <Button isDisabled={!!loginError || !loginEmail || !loginPassword} isLoading={isLoading} onClick={emailLogin} color="primary" variant="shadow">
+                                {(isLogin && isLoginButtonVisible && !isForgotPassVisible) && <Button ref={submitRef} isDisabled={!!loginError || !loginEmail || !loginPassword} isLoading={isLoading} onClick={emailLogin} color="primary" variant="shadow">
                                     {isLoading ? 'Loading' : AuthModalType.Login}
                                 </Button>}
 
                                 {/* Forgot password */}
-                                {(isLogin && isForgotPassVisible && !isResetPasswordEmailSent) && <Button isDisabled={!loginEmail} isLoading={isLoading} onClick={forgotPassword} color="primary" variant="shadow">
+                                {(isLogin && isForgotPassVisible && !isResetPasswordEmailSent) && <Button ref={submitRef} isDisabled={!loginEmail} isLoading={isLoading} onClick={forgotPassword} color="primary" variant="shadow">
                                     {isLoading ? 'Loading' : 'Submit'}
                                 </Button>}
 
                                 {/* Set new password with confirmation code */}
-                                {(isLogin && isResetPasswordEmailSent && !isPasswordUpdated) && <Button isDisabled={isResetPasswordEmailSent && resetPasswordConfirmationCode.length !== 6} isLoading={isLoading} onClick={setNewPasswordWithCode} color="primary" variant="shadow">
+                                {(isLogin && isResetPasswordEmailSent && !isPasswordUpdated) && <Button ref={submitRef} isDisabled={isResetPasswordEmailSent && resetPasswordConfirmationCode.length !== 6} isLoading={isLoading} onClick={setNewPasswordWithCode} color="primary" variant="shadow">
                                     {isLoading ? 'Loading' : 'Submit'}
                                 </Button>}
                             </ModalFooter>
