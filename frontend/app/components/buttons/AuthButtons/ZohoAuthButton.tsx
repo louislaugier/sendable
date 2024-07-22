@@ -8,6 +8,8 @@ import { Button } from '@nextui-org/button';
 import ZohoIcon from '~/components/icons/logos/ZohoFullLogo';
 import UserContext from '~/contexts/UserContext';
 import { handleAuthCode, login } from '~/services/oauth';
+import { Tooltip } from '@nextui-org/react';
+import { siteName } from '~/constants/app';
 
 const url = 'https://accounts.zoho.com/oauth/v2/auth'
 const scope = 'ZohoCRM.modules.contacts.READ ZohoCRM.modules.leads.READ ZohoCRM.modules.vendors.READ ZohoCRM.modules.accounts.READ ZohoCRM.users.READ'
@@ -27,13 +29,18 @@ export default function ZohoAuthButton(props: any) {
     return () => window.removeEventListener('message', handle);
   }, []);
 
-  const zohoLogin = async () => {
-    await login(setLoading, zohoUniqueStateValue, zohoStateKey, zohoAuthCodeKey, zohoOauthClientId, zohoOauthRedirectUri, url, undefined, scope);
-  };
+  // const zohoLogin = async () => {
+  //   await login(setLoading, zohoUniqueStateValue, zohoStateKey, zohoAuthCodeKey, zohoOauthClientId, zohoOauthRedirectUri, url, undefined, scope);
+  // };
 
   return (
-    <Button style={{ justifyContent: 'flex-start' }} isLoading={isLoading} onClick={zohoLogin} variant="bordered" color="primary" startContent={!customText && <ZohoIcon />}>
-      {isLoading ? 'Loading...' : customText ?? 'Log in with Zoho'}
-    </Button>
+    // <Button style={{ justifyContent: 'flex-start' }} isLoading={isLoading} onClick={zohoLogin} variant="bordered" color="primary" startContent={!customText && <ZohoIcon />}>
+    <Tooltip content={`Zoho SSO is temporarily disabled for authentication on ${siteName}. You may still import contacts from a Zoho CRM once logged in.`}>
+      <div className='w-full'>
+        <Button className='w-full' isDisabled style={{ justifyContent: 'flex-start' }} isLoading={isLoading} variant="bordered" color="primary" startContent={!customText && <ZohoIcon />}>
+          {isLoading ? 'Loading...' : customText ?? 'Log in with Zoho'}
+        </Button>
+      </div>
+    </Tooltip>
   )
 }

@@ -1,7 +1,7 @@
 import { Input } from "@nextui-org/react"
 
 export default function TwoFactorAuthCodeInput(props: any) {
-    const { twoFactorAuthCode, twoFactorAuthCodeErrorMsg, setTwoFactorAuthCode, submit2fa, label } = props
+    const { twoFactorAuthCode, twoFactorAuthCodeErrorMsg, setTwoFactorAuthCode, submit2fa, label, submitRef } = props
 
     return (
         <>
@@ -26,7 +26,10 @@ export default function TwoFactorAuthCodeInput(props: any) {
                 label={label!}
                 labelPlacement="outside"
                 onKeyDown={async (event: React.KeyboardEvent<HTMLInputElement>) => {
-                    if (event.key === 'Enter' && submit2fa) await submit2fa()
+                    if (event.key === 'Enter') {
+                        if (submit2fa) await submit2fa() // in settings
+                        else submitRef.current?.click()
+                    }
                 }}
                 id="input2fa"
                 max={999999}

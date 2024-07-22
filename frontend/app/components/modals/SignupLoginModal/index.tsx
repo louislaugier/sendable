@@ -169,9 +169,9 @@ export default function SignupLoginModal(props: any) {
         }
 
         try {
-            const res = await setPassword({ email: loginEmail, emailConfirmationCode: resetPasswordConfirmationCode, password: newPassword })
+            const res = await setPassword({ email: loginEmail, emailConfirmationCode: parseInt(resetPasswordConfirmationCode), password: newPassword })
             if (res.error) {
-                setConfirmationCodeError(res.error);
+                setResetPasswordConfirmationCodeError(res.error);
                 setLoading(false);
                 return
             }
@@ -213,11 +213,11 @@ export default function SignupLoginModal(props: any) {
                             <ModalBody>
                                 {/* signup email confirmation code */}
                                 {(isSignup && isSignupEmailSent) ? <>
-                                    <CodeConfirmationForm error={confirmationCodeError} code={signupConfirmationCode} setCode={setSignupConfirmationCode} />
+                                    <CodeConfirmationForm submitRef={submitRef} error={confirmationCodeError} code={signupConfirmationCode} setCode={setSignupConfirmationCode} />
                                 </> :
                                     // reset password confirmation code
-                                    (isLogin && isResetPasswordEmailSent) ? <>
-                                        <CodeConfirmationForm error={resetPasswordConfirmationCodeError} code={resetPasswordConfirmationCode} setCode={setResetPasswordConfirmationCode} />
+                                    (isLogin && isResetPasswordEmailSent && !isPasswordUpdated) ? <>
+                                        <CodeConfirmationForm submitRef={submitRef} error={resetPasswordConfirmationCodeError} code={resetPasswordConfirmationCode} setCode={setResetPasswordConfirmationCode} />
                                         <Input
                                             onKeyDown={async (event: React.KeyboardEvent<HTMLInputElement>) => {
                                                 if (event.key === 'Enter') submitRef.current?.click()
@@ -270,9 +270,13 @@ export default function SignupLoginModal(props: any) {
 
                                                 onClose()
 
+                                                setPasswordUpdated(false)
+                                                setResetPasswordEmailSent(false)
+                                                setForgotPassVisible(false)
+
                                                 setModalType(AuthModalType.Login);
                                                 authModal.onOpen();
-                                            }} href='/'>log into your account.</Link>.</p>
+                                            }} href='/'>log into your account</Link>.</p>
                                         </> :
                                             <AuthButtons isSignup={isSignup} isLogin={isLogin} signupEmail={signupEmail} signupPassword={signupPassword} setSignupEmail={setSignupEmail} setSignupPassword={setSignupPassword} loginEmail={loginEmail} loginPassword={loginPassword} setLoginEmail={setLoginEmail} setLoginPassword={setLoginPassword} isSignupButtonVisible={isSignupButtonVisible} setSignupButtonVisible={setSignupButtonVisible} isLoginButtonVisible={isLoginButtonVisible} setLoginButtonVisible={setLoginButtonVisible} modalType={modalType} loginError={loginError} signupEmailError={signupEmailError} signupPasswordError={signupPasswordError} isForgotPassVisible={isForgotPassVisible} setForgotPassVisible={setForgotPassVisible} submitRef={submitRef} />}
                             </ModalBody>

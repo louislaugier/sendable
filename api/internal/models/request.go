@@ -28,7 +28,7 @@ type (
 	}
 	Auth2FARequest struct {
 		UserID                      uuid.UUID `json:"userId"`
-		TwoFactorAuthenticationCode string    `json:"twoFactorAuthenticationCode"`
+		TwoFactorAuthenticationCode *int      `json:"twoFactorAuthenticationCode"`
 	}
 
 	ValidateEmailRequest struct {
@@ -52,11 +52,11 @@ type (
 		NewPassword     string `json:"newPassword"`
 	}
 	Enable2FARequest struct {
-		TwoFactorAuthenticationCode   string `json:"twoFactorAuthenticationCode"`
+		TwoFactorAuthenticationCode   *int   `json:"twoFactorAuthenticationCode"`
 		TwoFactorAuthenticationSecret string `json:"twoFactorAuthenticationSecret"`
 	}
 	Disable2FARequest struct {
-		TwoFactorAuthenticationCode string `json:"twoFactorAuthenticationCode"`
+		TwoFactorAuthenticationCode *int `json:"twoFactorAuthenticationCode"`
 	}
 	DeleteAPIKeyRequest struct {
 		ID *uuid.UUID `json:"id"`

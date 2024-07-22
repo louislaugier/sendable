@@ -22,7 +22,7 @@ func Auth2FAHandler(w http.ResponseWriter, r *http.Request) {
 	if err := json.NewDecoder(r.Body).Decode(&body); err != nil {
 		handleError(w, err, "Error decoding JSON", http.StatusBadRequest)
 		return
-	} else if body.UserID == uuid.Nil || body.TwoFactorAuthenticationCode == "" {
+	} else if body.UserID == uuid.Nil || body.TwoFactorAuthenticationCode == nil {
 		err := errors.New("missing userId & twoFactorAuthenticationCode pair in body")
 		handleError(w, err, err.Error(), http.StatusBadRequest)
 		return
@@ -38,7 +38,7 @@ func Auth2FAHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	ok := two_factor_auth.Verify2FA(body.TwoFactorAuthenticationCode, *user.TwoFactorAuthSecret)
+	ok := two_factor_auth.Verify2FA(*body.TwoFactorAuthenticationCode, *user.TwoFactorAuthSecret)
 	if !ok {
 		err := errors.New("wrong userId & twoFactorAuthenticationCode pair")
 		handleError(w, err, err.Error(), http.StatusBadRequest)

@@ -79,9 +79,7 @@ export default function TextEmailValidator(props: any) {
         }
     };
 
-    const handleRemoveEmail = (emailToRemove: string) => {
-        setValidEmails(validEmails.filter(email => email !== emailToRemove));
-    };
+    const handleRemoveEmail = (emailToRemove: string) => setValidEmails(validEmails.filter(email => email !== emailToRemove));
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const input = e.target.value;
@@ -151,6 +149,12 @@ export default function TextEmailValidator(props: any) {
                                             :
                                             <InvalidDescriptor nochip />
                             }
+                        </div>
+
+                        <div className="w-full flex justify-center">
+                            <Button onClick={reset} color="primary" variant="shadow">
+                                New validation batch
+                            </Button>
                         </div>
                     </>
                         :

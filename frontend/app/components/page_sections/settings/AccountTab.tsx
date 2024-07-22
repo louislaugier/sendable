@@ -69,7 +69,7 @@ export default function AccountTab() {
         if (!twoFactorAuthCode) setTwoFactorAuthCodeErrorMsg('Enter your 2FA code.')
 
         try {
-            await enable2fa({ twoFactorAuthenticationCode: twoFactorAuthCode, twoFactorAuthenticationSecret: generated2faSecret })
+            await enable2fa({ twoFactorAuthenticationCode: parseInt(twoFactorAuthCode), twoFactorAuthenticationSecret: generated2faSecret })
 
             reset2faChanges()
 
@@ -235,7 +235,7 @@ export default function AccountTab() {
                                         if (!twoFactorAuthCode) setTwoFactorAuthCodeErrorMsg('Enter your 2FA code.')
 
                                         try {
-                                            await disable2fa({ twoFactorAuthenticationCode: twoFactorAuthCode })
+                                            await disable2fa({ twoFactorAuthenticationCode: parseInt(twoFactorAuthCode) })
 
                                             reset2faChanges()
 

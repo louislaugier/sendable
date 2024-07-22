@@ -29,7 +29,7 @@ export default function AuthButtons(props: any) {
         setLoading(true)
 
         try {
-            const res = await twoFactorAuth({ userId: temp2faUserId, twoFactorAuthenticationCode: twoFactorAuthCode })
+            const res = await twoFactorAuth({ userId: temp2faUserId, twoFactorAuthenticationCode: parseInt(twoFactorAuthCode) })
             setTemp2faUserId(null)
             setUser(res)
             navigateToUrl('/dashboard')

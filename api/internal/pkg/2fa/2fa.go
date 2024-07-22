@@ -9,13 +9,13 @@ import (
 	"time"
 )
 
-func Verify2FA(code, secret string) bool {
+func Verify2FA(code int, secret string) bool {
 	// Get the current timestamp
 	now := time.Now().Unix()
 
 	// Check the code for the current timestamp and the two surrounding ones
 	for i := -1; i <= 1; i++ {
-		if getCurrentCode(secret, now+int64(i*30)) == code {
+		if getCurrentCode(secret, now+int64(i*30)) == strconv.Itoa(code) {
 			return true
 		}
 	}
