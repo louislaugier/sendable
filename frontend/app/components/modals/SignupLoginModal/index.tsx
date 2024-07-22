@@ -1,5 +1,5 @@
 import { Ref, useContext, useRef, useState } from "react";
-import { Modal, ModalContent, ModalHeader, ModalBody, ModalFooter, Button, Input } from "@nextui-org/react";
+import { Modal, ModalContent, ModalHeader, ModalBody, ModalFooter, Button, Input, Link } from "@nextui-org/react";
 import UserContext from "~/contexts/UserContext";
 import AuthButtons from "~/components/buttons/AuthButtons";
 import { AuthModalType } from "~/types/modal";
@@ -17,7 +17,7 @@ import { EyeFilledIcon } from "~/components/icons/EyeFilledIcon";
 import { EyeSlashFilledIcon } from "~/components/icons/EyeSlashFilledIcon";
 
 export default function SignupLoginModal(props: any) {
-    const { modalType, setModalType } = useContext(AuthModalContext);
+    const { authModal, modalType, setModalType } = useContext(AuthModalContext);
 
     const { isOpen, onClose, onOpenChange } = props;
 
@@ -157,10 +157,21 @@ export default function SignupLoginModal(props: any) {
     const setNewPasswordWithCode = async () => {
         setLoading(true)
 
+        const { isValid, errorMessage } = isValidPassword(newPassword);
+        if (!isValid) {
+            setNewPasswordError(errorMessage);
+            setLoading(false);
+            return;
+        } else if (newPassword !== newPasswordConfirmation) {
+            setNewPasswordConfirmationError("Passwords do not match.");
+            setLoading(false);
+            return;
+        }
+
         try {
             const res = await setPassword({ email: loginEmail, emailConfirmationCode: resetPasswordConfirmationCode, password: newPassword })
             if (res.error) {
-                setLoginError(res.error);
+                setConfirmationCodeError(res.error);
                 setLoading(false);
                 return
             }
@@ -254,8 +265,14 @@ export default function SignupLoginModal(props: any) {
                                     </>
                                         :
                                         isPasswordUpdated ? <>
-                                            {/* TODO: password has been updated, you can now login */}
-                                            <p>TODO: password has been updated, you can now login */</p>
+                                            <p>Password has been updated, you can now <Link style={{ textDecoration: 'underline' }} onClick={(e: any) => {
+                                                e.preventDefault()
+
+                                                onClose()
+
+                                                setModalType(AuthModalType.Login);
+                                                authModal.onOpen();
+                                            }} href='/'>log into your account.</Link>.</p>
                                         </> :
                                             <AuthButtons isSignup={isSignup} isLogin={isLogin} signupEmail={signupEmail} signupPassword={signupPassword} setSignupEmail={setSignupEmail} setSignupPassword={setSignupPassword} loginEmail={loginEmail} loginPassword={loginPassword} setLoginEmail={setLoginEmail} setLoginPassword={setLoginPassword} isSignupButtonVisible={isSignupButtonVisible} setSignupButtonVisible={setSignupButtonVisible} isLoginButtonVisible={isLoginButtonVisible} setLoginButtonVisible={setLoginButtonVisible} modalType={modalType} loginError={loginError} signupEmailError={signupEmailError} signupPasswordError={signupPasswordError} isForgotPassVisible={isForgotPassVisible} setForgotPassVisible={setForgotPassVisible} submitRef={submitRef} />}
                             </ModalBody>
