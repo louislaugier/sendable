@@ -127,7 +127,7 @@ export default function Nav() {
                                         <DropdownItem
                                             key="subscription"
                                             description="Go to Stripe customer dashboard"
-                                        // href or onClick: stripe target blank 
+                                        // TODO: href & onClick: stripe external URL with target _blank 
                                         >
                                             <div className="flex">Manage subscription <FiExternalLink style={{ marginLeft: 5 }} /></div>
                                         </DropdownItem>

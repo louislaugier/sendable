@@ -70,7 +70,7 @@ export default function PlanTab() {
                         </>}
 
                         {isPremiumOrEnterprise &&
-                            <Button className="mt-4" as={Link} href={`/`} onClick={() => { }} color='primary' variant="bordered">
+                            <Button className="mt-4" as={Link} href={`/`} target="_blank" color='primary' variant="bordered">
                                 Manage subscription <FiExternalLink />
                             </Button>
                         }
