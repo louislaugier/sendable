@@ -1,20 +1,25 @@
-import { Card, Button, Divider, Tooltip } from "@nextui-org/react";
+import { Card, Button, Divider, Tooltip, Chip } from "@nextui-org/react";
 import { useContext } from "react";
 import AuthModalContext from "~/contexts/AuthModalContext";
 import { CheckIconRound } from "~/components/icons/CheckIconRound";
 import { AuthModalType } from "~/types/modal";
 import { FiHelpCircle } from "react-icons/fi";
+import UserContext from "~/contexts/UserContext";
+import { capitalize } from "~/utils/string";
+import { SubscriptionType } from "~/types/subscription";
 
 export default function PricingCard(props: any) {
     const { authModal, setModalType } = useContext(AuthModalContext);
 
     const { isYearly, plan, index } = props
 
+    const { user } = useContext(UserContext)
+
     return (
         <>
             <Card key={index} className="max-w-md p-6 pb-0" style={{ width: 320 }}>
                 <div>
-                    <h4 className="text-lg font-bold">{plan.name}</h4>
+                    <h4 className="text-lg font-bold">{capitalize(plan.name)}</h4>
                     <p className="text-accents8">
                         {plan.description}
                     </p>
@@ -23,18 +28,41 @@ export default function PricingCard(props: any) {
                     {isYearly && <p className="text-md text-gray-500" style={{ textDecoration: 'line-through' }}>
                         ${parseInt(plan.monthlyPrice.replace('$', '')) * 12} /yr
                     </p>}
+
                     <div>
                         <p className="text-2xl inline-block">{isYearly ? plan.yearlyPrice : plan.monthlyPrice}</p>
                         <p className="text-accents8 inline-block ml-1">{isYearly ? '/yr' : '/mo'}</p>
                         {isYearly && <p className="text-accents8 inline-block ml-1">(~${Math.ceil(plan.yearlyPrice.replace('$', '') / 12)} /mo)</p>}
                     </div>
-                    <Button className="mt-7 mb-12" onClick={() => {
-                        setModalType(AuthModalType.Signup);
-                        authModal.onOpen();
-                    }} color="primary" variant="shadow">
-                        Get Started Free
-                    </Button>
+
+                    {user ?
+                        plan.name === SubscriptionType.Free && user.currentPlan.type === SubscriptionType.Free ||
+                            plan.name === SubscriptionType.Premium && user.currentPlan.type === SubscriptionType.Premium ||
+                            plan.name === SubscriptionType.Enterprise && user.currentPlan.type === SubscriptionType.Enterprise
+                            ? <>
+                                <Chip className="mt-7 mb-12" color={plan.name === SubscriptionType.Free ? "warning" : plan.name === SubscriptionType.Premium ? "secondary" : "success"}>Your current plan</Chip>
+                            </>
+                            :
+                            plan.name !== SubscriptionType.Free && user.currentPlan.type !== SubscriptionType.Enterprise && !(user.currentPlan.type === SubscriptionType.Premium && plan.name === SubscriptionType.Premium) ?
+                                <Button className="mt-7 mb-12" onClick={() => {
+                                }} color="primary" variant="shadow">
+                                    Upgrade
+                                </Button>
+                                :
+                                <Button className="mt-7 mb-12" onClick={() => {
+                                }} color="primary" variant="shadow">
+                                    Downgrade
+                                </Button>
+                        :
+                        <Button className="mt-7 mb-12" onClick={() => {
+                            setModalType(AuthModalType.Signup);
+                            authModal.onOpen();
+                        }} color="primary" variant="shadow">
+                            Get Started Free
+                        </Button>
+                    }
                     <Divider />
+
                     <ul className="list-none">
                         {plan.features.map((feature: any, index: number) => (
                             <li key={index} className="flex py-2 gap-2 items-center">
@@ -53,7 +81,7 @@ export default function PricingCard(props: any) {
                         ))}
                     </ul>
                 </div>
-            </Card>
+            </Card >
         </>
     )
 }

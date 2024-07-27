@@ -1,9 +1,10 @@
+import { SubscriptionType } from "~/types/subscription";
 import { siteName } from "./app";
 import { limits } from "./limits";
 
 export const pricingPlans = [
     {
-        name: "Free",
+        name: SubscriptionType.Free,
         description: "Dive into email validation effortlessly with our free plan. Enjoy essential features at no cost.",
         monthlyPrice: "$0",
         yearlyPrice: "$0",
@@ -25,7 +26,7 @@ export const pricingPlans = [
         ]
     },
     {
-        name: "Premium",
+        name: SubscriptionType.Premium,
         description: "Elevate your email validation with our premium offering, access advanced features tailored to your needs.",
         monthlyPrice: "$29",
         yearlyPrice: "$229",
@@ -50,7 +51,7 @@ export const pricingPlans = [
         ]
     },
     {
-        name: "Enterprise",
+        name: SubscriptionType.Enterprise,
         description: "Scale your email validation seamlessly with our top-tier solution for high-volume requirements.",
         monthlyPrice: "$99",
         yearlyPrice: "$899",

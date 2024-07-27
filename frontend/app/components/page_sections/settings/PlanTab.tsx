@@ -1,5 +1,6 @@
 import { Card, CardHeader, CardBody, Divider, Button, Link } from "@nextui-org/react";
 import { useCallback, useContext, useState } from "react";
+import CurrentPlanChip from "~/components/chips/CurrentPlanChip";
 import SubscriptionHistoryTable from "~/components/tables/SubscriptionHistoryTable";
 import UserContext from "~/contexts/UserContext";
 import getSubscriptionHistory from "~/services/api/subscription_history";
@@ -56,7 +57,7 @@ export default function PlanTab() {
                     </CardHeader>
                     <CardBody className="flex flex-col items-center">
 
-                        <p>Current plan: <b>{planType}{isPremiumOrEnterprise && ` (billed ${user?.currentPlan?.billingFrequency})`}</b></p>
+                        <p>Current plan: <CurrentPlanChip />{isPremiumOrEnterprise && ` (billed ${user?.currentPlan?.billingFrequency})`}</p>
                         {user?.currentPlan.type !== SubscriptionType.Enterprise && <>
                             <p className="mt-4">Remaining validations (this month): <b>{remainingAppValidations.toLocaleString()} / {appValidationLimit.toLocaleString()}</b> email addresses</p>
                             <p>Remaining API validations (this month): <b>{remainingApiValidations.toLocaleString()} / {apiValidationLimit.toLocaleString()}</b> email addresses</p>

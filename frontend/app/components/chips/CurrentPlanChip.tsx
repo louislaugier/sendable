@@ -9,9 +9,9 @@ export default function CurrentPlanChip() {
     return (
         <>
             {
-                user?.currentPlan.type === SubscriptionType.Free ? <Chip color="default">Free</Chip> :
-                    user?.currentPlan.type === SubscriptionType.Premium ? <Chip color="primary">Premium</Chip> :
-                        user?.currentPlan.type === SubscriptionType.Enterprise ? <Chip color="secondary">Enterprise</Chip> :
+                user?.currentPlan.type === SubscriptionType.Free ? <Chip color="warning">Free</Chip> :
+                    user?.currentPlan.type === SubscriptionType.Premium ? <Chip color="secondary">Premium</Chip> :
+                        user?.currentPlan.type === SubscriptionType.Enterprise ? <Chip color="success">Enterprise</Chip> :
                             <></>
             }
         </>

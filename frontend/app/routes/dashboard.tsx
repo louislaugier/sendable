@@ -95,8 +95,7 @@ export default function Dashboard() {
         <div className="flex flex-col items-center mb-4">
           <h1 className="text-2xl">Dashboard</h1>
           {!!user && <>
-            {/* <h3 className="text-lg mt-4 mb-2">Current plan: <b>{planType}{isPremiumOrEnterprise && ` (billed ${user?.currentPlan?.billingFrequency})`}</b></h3> */}
-            <h3 className="text-lg mt-4 mb-2">Current plan: <CurrentPlanChip />{isPremiumOrEnterprise && <b className="text-sm"> (billed yearly)</b>}</h3>
+            <h3 className="text-lg mt-4 mb-2">Current plan: <CurrentPlanChip />{isPremiumOrEnterprise && ` (billed ${user?.currentPlan?.billingFrequency})`}</h3>
 
             {user.currentPlan.type !== SubscriptionType.Enterprise && <>
               <p>Remaining validations (this month): <b>{remainingAppValidations.toLocaleString()} / {appValidationLimit.toLocaleString()}</b> email addresses</p>
