@@ -15,6 +15,10 @@ export default function PricingCard(props: any) {
 
     const { user } = useContext(UserContext)
 
+    const isFree = plan.name === SubscriptionType.Free
+    const isPremium = plan.name === SubscriptionType.Premium
+    const isEnterprise = plan.name === SubscriptionType.Enterprise
+    
     return (
         <>
             <Card key={index} className="max-w-md p-6 pb-0" style={{ width: 320 }}>
@@ -36,14 +40,14 @@ export default function PricingCard(props: any) {
                     </div>
 
                     {user ?
-                        plan.name === SubscriptionType.Free && user.currentPlan.type === SubscriptionType.Free ||
-                            plan.name === SubscriptionType.Premium && user.currentPlan.type === SubscriptionType.Premium ||
-                            plan.name === SubscriptionType.Enterprise && user.currentPlan.type === SubscriptionType.Enterprise
+                        isFree && user.currentPlan.type === SubscriptionType.Free ||
+                            isPremium && user.currentPlan.type === SubscriptionType.Premium ||
+                            isEnterprise && user.currentPlan.type === SubscriptionType.Enterprise
                             ? <>
-                                <Chip className="mt-7 mb-12" color={plan.name === SubscriptionType.Free ? "warning" : plan.name === SubscriptionType.Premium ? "secondary" : "success"}>Your current plan</Chip>
+                                <Chip className="mt-7 mb-12" color={isFree ? "warning" : isPremium ? "secondary" : "success"}>Your current plan</Chip>
                             </>
                             :
-                            plan.name !== SubscriptionType.Free && user.currentPlan.type !== SubscriptionType.Enterprise && !(user.currentPlan.type === SubscriptionType.Premium && plan.name === SubscriptionType.Premium) ?
+                            plan.name !== SubscriptionType.Free && user.currentPlan.type !== SubscriptionType.Enterprise && !(user.currentPlan.type === SubscriptionType.Premium && isPremium) ?
                                 <Button className="mt-7 mb-12" onClick={() => {
                                 }} color="primary" variant="shadow">
                                     Upgrade

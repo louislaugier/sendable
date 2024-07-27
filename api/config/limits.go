@@ -27,13 +27,13 @@ var (
 
 	MonthlyAppValidationsLimits = map[models.SubscriptionType]int{
 		models.FreePlan:               500,
-		models.PremiumSubscription:    500000,
+		models.PremiumSubscription:    10000,
 		models.EnterpriseSubscription: Infinity,
 	}
 
 	MonthlyAPISingleValidationsLimits = map[models.SubscriptionType]int{
 		models.FreePlan:               30,
-		models.PremiumSubscription:    30000,
+		models.PremiumSubscription:    3000,
 		models.EnterpriseSubscription: Infinity,
 	}
 )

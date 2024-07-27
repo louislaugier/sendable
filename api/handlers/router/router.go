@@ -95,6 +95,10 @@ func handleHTTP(mux *http.ServeMux) {
 		http.HandlerFunc(handlers.SubscriptionHistoryHandler),
 		true,
 	), true)
+	handle(mux, "/subscribe", middleware.ValidateJWT(
+		http.HandlerFunc(handlers.Subscribe),
+		true,
+	), true)
 
 	handle(mux, "/generate_jwt", middleware.ValidateAPIKey( // generate JWT as API consumer (platform users)
 		http.HandlerFunc(handlers.GenerateJWTHandler),

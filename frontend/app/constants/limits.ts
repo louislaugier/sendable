@@ -5,12 +5,12 @@ export const limits = {
         apiConcurrency: 1
     },
     premium: {
-        app: 500000,
-        api: 30000,
+        app: 10000,
+        api: 3000,
         apiConcurrency: 3
     },
     enterprise: {
         apiBulkConcurrency: 3,
     },
-    uploadFileSizeMegaBytes: 30
+    uploadFileSizeMegaBytes: 30,
 }
