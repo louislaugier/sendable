@@ -76,7 +76,7 @@ export default function CodeSnippetsSection() {
                 }
             </style>
             <Tabs aria-label="Get bearer token" className="justify-center">
-                <Tab className="flex gap-8" key="terminal" title="Terminal">
+                <Tab className="flex gap-8" key="terminal" title="Terminal (bash)">
                     <Snippet>
                         <span>curl -X GET \</span>
                         <span>-H "X-API-Key: YourApiKeyHere" \</span>

@@ -79,7 +79,10 @@ export default function TextEmailValidator(props: any) {
         }
     };
 
-    const handleRemoveEmail = (emailToRemove: string) => setValidEmails(validEmails.filter(email => email !== emailToRemove));
+    const handleRemoveEmail = (emailToRemove: string) => {
+        setValidEmails(validEmails.filter(email => email !== emailToRemove));
+        setEmailsStr(emailsStr.split(',').filter(email => email !== emailToRemove).join(','));
+    }
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const input = e.target.value;
@@ -119,16 +122,16 @@ export default function TextEmailValidator(props: any) {
                         value={emailsStr}
                         onChange={handleChange}
                         variant="faded"
-                        label="Email addresses"
+                        label="Email addresses to validate"
                         placeholder="hello@domain.com,noreply@domain.com"
                         // TODO: or semicolon
-                        description="Enter a list of email addresses to validate separated by a comma."
+                        description="Enter a list of email addresses separated by a comma or semicolon."
                         className="my-6 w-full"
                         onKeyDown={handleKeyDown}
                     />
                 </div>
                 <div className="w-full flex justify-center">
-                    <Button onClick={submitEmails} isDisabled={!emailsStr} color="primary" variant="shadow">
+                    <Button onClick={submitEmails} isDisabled={!validEmails.length} color="primary" variant="shadow">
                         {isLoading ? 'Checking reachability...' : 'Check reachability'}
                     </Button>
                 </div>
