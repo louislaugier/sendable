@@ -10,9 +10,24 @@ export default function Breadcrumb() {
         const paths = pathname.split('/').filter(Boolean);
         const breadcrumbs = [];
 
+        const findPage: any = (url: string, pages: Array<any>) => {
+            for (const page of pages) {
+                if (page.url === url) {
+                    return page;
+                }
+                if (page.sublinks) {
+                    const sublink = findPage(url, page.sublinks);
+                    if (sublink  && sublink.url !== '/blog') {
+                        return sublink;
+                    }
+                }
+            }
+            return null;
+        };
+
         for (let i = 0; i < paths.length; i++) {
             const currentPath = `/${paths.slice(0, i + 1).join('/')}`;
-            const page = pages.find((item) => item.url === currentPath);
+            const page = findPage(currentPath, pages);
 
             if (page) {
                 breadcrumbs.push(
@@ -23,7 +38,8 @@ export default function Breadcrumb() {
 
                 // Handle sublinks within "Resources" or other sections (if applicable)
                 if (page.sublinks && i !== paths.length - 1) {
-                    const sublink = page.sublinks.find((sublink) => sublink.url === `/${paths[i + 1]}`);
+                    const sublinkPath = `/${paths.slice(0, i + 2).join('/')}`;
+                    const sublink = findPage(sublinkPath, page.sublinks);
 
                     if (sublink) {
                         breadcrumbs.push(
