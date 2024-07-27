@@ -13,7 +13,8 @@ const (
 
 	UploadFileSizeLimit = 30 << 20 // 30MB
 
-	GuestEmailValidationFrequency  = time.Second * 30
+	GuestEmailValidationFrequency = time.Second * 30
+
 	ConcurrentBulkValidationsLimit = 3
 )
 
