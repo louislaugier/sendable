@@ -5,7 +5,7 @@ import { EyeSlashFilledIcon } from "~/components/icons/EyeSlashFilledIcon";
 import { AuthModalType } from "~/types/modal";
 
 export default function EmailAuthForm(props: any) {
-    const { signupEmail, signupPassword, setSignupEmail, setSignupPassword, loginEmail, loginPassword, setLoginEmail, setLoginPassword, modalType, loginError, signupEmailError, signupPasswordError, isForgotPassVisible, setForgotPassVisible, submitRef } = props
+    const { signupEmail, signupPassword, setSignupEmail, setSignupPassword, loginEmail, loginPassword, setLoginEmail, setLoginPassword, modalType, loginError, signupEmailError, signupPasswordError, isForgotPassVisible, setForgotPassVisible, submitRef, setLoginError } = props
     const [isPasswordVisible, setPasswordVisible] = useState(false);
 
     const toggleVisibility = () => setPasswordVisible(!isPasswordVisible);
@@ -36,7 +36,10 @@ export default function EmailAuthForm(props: any) {
                     onKeyDown={async (event: React.KeyboardEvent<HTMLInputElement>) => {
                         if (event.key === 'Enter') submitRef.current?.click()
                     }}
-                    onValueChange={isLogin ? setLoginEmail : setSignupEmail}
+                    onValueChange={isLogin ? (val) => {
+                        setLoginError("")
+                        setLoginEmail(val)
+                    } : setSignupEmail}
                     value={isLogin ? loginEmail : signupEmail}
                     autoFocus
                     label="Email"

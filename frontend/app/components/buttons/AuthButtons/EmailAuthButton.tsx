@@ -7,7 +7,7 @@ export default function EmailAuthButton(props: any) {
         <>
             <Button style={{ justifyContent: 'flex-start' }} onClick={props.onClick} variant="bordered" color="primary" startContent={<MailIcon className="text-2xl" />
             }>
-                {modalType} with e-mail
+                {modalType} with email
             </Button>
         </>
     )

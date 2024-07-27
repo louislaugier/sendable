@@ -67,7 +67,7 @@ export default function SignupLoginModal(props: any) {
         setLoading(true)
 
         if (!isValidEmail(signupEmail)) {
-            setSignupEmailError('Please enter a valid email address')
+            setSignupEmailError('Please enter a valid email address.')
             setLoading(false)
             return
         }
@@ -104,7 +104,7 @@ export default function SignupLoginModal(props: any) {
         setLoading(true)
 
         if (!isValidEmail(loginEmail)) {
-            setLoginError('Please enter a valid email address')
+            setLoginError('Please enter a valid email address.')
             setLoading(false)
             return
         }
@@ -133,7 +133,7 @@ export default function SignupLoginModal(props: any) {
         setLoading(true)
 
         if (!isValidEmail(loginEmail)) {
-            setLoginError('Please enter a valid email address')
+            setLoginError('Please enter a valid email address.')
             setLoading(false)
             return
         }
@@ -278,7 +278,7 @@ export default function SignupLoginModal(props: any) {
                                                 authModal.onOpen();
                                             }} href='/'>log into your account</Link>.</p>
                                         </> :
-                                            <AuthButtons isSignup={isSignup} isLogin={isLogin} signupEmail={signupEmail} signupPassword={signupPassword} setSignupEmail={setSignupEmail} setSignupPassword={setSignupPassword} loginEmail={loginEmail} loginPassword={loginPassword} setLoginEmail={setLoginEmail} setLoginPassword={setLoginPassword} isSignupButtonVisible={isSignupButtonVisible} setSignupButtonVisible={setSignupButtonVisible} isLoginButtonVisible={isLoginButtonVisible} setLoginButtonVisible={setLoginButtonVisible} modalType={modalType} loginError={loginError} signupEmailError={signupEmailError} signupPasswordError={signupPasswordError} isForgotPassVisible={isForgotPassVisible} setForgotPassVisible={setForgotPassVisible} submitRef={submitRef} />}
+                                            <AuthButtons isSignup={isSignup} isLogin={isLogin} signupEmail={signupEmail} signupPassword={signupPassword} setSignupEmail={setSignupEmail} setSignupPassword={setSignupPassword} loginEmail={loginEmail} loginPassword={loginPassword} setLoginEmail={setLoginEmail} setLoginPassword={setLoginPassword} isSignupButtonVisible={isSignupButtonVisible} setSignupButtonVisible={setSignupButtonVisible} isLoginButtonVisible={isLoginButtonVisible} setLoginButtonVisible={setLoginButtonVisible} modalType={modalType} loginError={loginError} setLoginError={setLoginError} signupEmailError={signupEmailError} signupPasswordError={signupPasswordError} isForgotPassVisible={isForgotPassVisible} setForgotPassVisible={setForgotPassVisible} submitRef={submitRef} />}
                             </ModalBody>
                             <ModalFooter>
                                 <Button color="danger" variant="bordered" onPress={onClose}>
