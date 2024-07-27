@@ -80,15 +80,17 @@ export default function TextEmailValidator(props: any) {
     };
 
     const handleRemoveEmail = (emailToRemove: string) => {
-        setValidEmails(validEmails.filter(email => email !== emailToRemove));
-        setEmailsStr(emailsStr.split(',').filter(email => email !== emailToRemove).join(','));
+        const emails = emailsStr.split(/[,;]/).map(email => email.trim()).filter(email => email !== emailToRemove);
+
+        setValidEmails(emails.filter(email => isValidEmail(email)));
+        setEmailsStr(emails.join(','));
     }
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const input = e.target.value;
         setEmailsStr(input);
 
-        const emails = input.split(',').map(email => email.trim()).filter(email => email);
+        const emails = input.split(/[,;]/).map(email => email.trim()).filter(email => email);
         const newValidEmails = emails.filter(email => isValidEmail(email));
 
         setValidEmails([...new Set(newValidEmails)]);
@@ -124,14 +126,13 @@ export default function TextEmailValidator(props: any) {
                         variant="faded"
                         label="Email addresses to validate"
                         placeholder="hello@domain.com,noreply@domain.com"
-                        // TODO: or semicolon
-                        description="Enter a list of email addresses separated by a comma or semicolon."
+                        description="Enter a list of email addresses separated by commas or semicolons."
                         className="my-6 w-full"
                         onKeyDown={handleKeyDown}
                     />
                 </div>
                 <div className="w-full flex justify-center">
-                    <Button onClick={submitEmails} isDisabled={!validEmails.length} color="primary" variant="shadow">
+                    <Button onClick={submitEmails} isDisabled={!emailsStr} color="primary" variant="shadow">
                         {isLoading ? 'Checking reachability...' : 'Check reachability'}
                     </Button>
                 </div>
