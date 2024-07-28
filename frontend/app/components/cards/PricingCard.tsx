@@ -7,6 +7,7 @@ import { FiHelpCircle } from "react-icons/fi";
 import UserContext from "~/contexts/UserContext";
 import { capitalize } from "~/utils/string";
 import { SubscriptionType } from "~/types/subscription";
+import UpgradeAccountButton from "../buttons/UpgradeButton";
 
 export default function PricingCard(props: any) {
     const { authModal, setModalType } = useContext(AuthModalContext);
@@ -18,7 +19,7 @@ export default function PricingCard(props: any) {
     const isFree = plan.name === SubscriptionType.Free
     const isPremium = plan.name === SubscriptionType.Premium
     const isEnterprise = plan.name === SubscriptionType.Enterprise
-    
+
     return (
         <>
             <Card key={index} className="max-w-md p-6 pb-0" style={{ width: 320 }}>
@@ -30,13 +31,13 @@ export default function PricingCard(props: any) {
                 </div>
                 <div className="py-4">
                     {isYearly && <p className="text-md text-gray-500" style={{ textDecoration: 'line-through' }}>
-                        ${parseInt(plan.monthlyPrice.replace('$', '')) * 12} /yr
+                        ${(plan.monthlyPrice * 12).toLocaleString()} /yr
                     </p>}
 
                     <div>
-                        <p className="text-2xl inline-block">{isYearly ? plan.yearlyPrice : plan.monthlyPrice}</p>
+                        <p className="text-2xl inline-block">{isYearly ? `$${plan.yearlyPrice.toLocaleString()}` : `$${plan.monthlyPrice.toLocaleString()}`}</p>
                         <p className="text-accents8 inline-block ml-1">{isYearly ? '/yr' : '/mo'}</p>
-                        {isYearly && <p className="text-accents8 inline-block ml-1">(~${Math.ceil(plan.yearlyPrice.replace('$', '') / 12)} /mo)</p>}
+                        {isYearly && <p className="text-accents8 inline-block ml-1">(~${Math.ceil(plan.yearlyPrice / 12).toLocaleString()} /mo)</p>}
                     </div>
 
                     {user ?
@@ -48,10 +49,9 @@ export default function PricingCard(props: any) {
                             </>
                             :
                             plan.name !== SubscriptionType.Free && user.currentPlan.type !== SubscriptionType.Enterprise && !(user.currentPlan.type === SubscriptionType.Premium && isPremium) ?
-                                <Button className="mt-7 mb-12" onClick={() => {
-                                }} color="primary" variant="shadow">
-                                    Upgrade
-                                </Button>
+                                <>
+                                    <UpgradeAccountButton priceId={isYearly ? plan?.stripeYearlyPriceId : plan?.stripeMonthlyPriceId} />
+                                </>
                                 :
                                 <Button className="mt-7 mb-12" onClick={() => {
                                 }} color="primary" variant="shadow">

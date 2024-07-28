@@ -2,7 +2,13 @@ module email-validator
 
 go 1.22
 
-require github.com/joho/godotenv v1.5.1
+require (
+	github.com/getbrevo/brevo-go v1.0.0
+	github.com/google/uuid v1.6.0
+	github.com/joho/godotenv v1.5.1
+	github.com/lib/pq v1.10.9
+	github.com/stripe/stripe-go/v72 v72.122.0
+)
 
 require (
 	cloud.google.com/go/compute v1.23.4 // indirect
@@ -12,16 +18,13 @@ require (
 	github.com/extrame/ole2 v0.0.0-20160812065207-d69429661ad7 // indirect
 	github.com/extrame/xls v0.0.1 // indirect
 	github.com/felixge/httpsnoop v1.0.4 // indirect
-	github.com/getbrevo/brevo-go v1.0.0 // indirect
 	github.com/go-logr/logr v1.4.1 // indirect
 	github.com/go-logr/stdr v1.2.2 // indirect
 	github.com/golang/groupcache v0.0.0-20210331224755-41bb18bfe9da // indirect
 	github.com/golang/protobuf v1.5.3 // indirect
 	github.com/google/s2a-go v0.1.7 // indirect
-	github.com/google/uuid v1.6.0 // indirect
 	github.com/googleapis/enterprise-certificate-proxy v0.3.2 // indirect
 	github.com/googleapis/gax-go/v2 v2.12.2 // indirect
-	github.com/lib/pq v1.10.9 // indirect
 	github.com/rs/cors v1.10.1 // indirect
 	github.com/tealeg/xlsx v1.0.5 // indirect
 	go.opencensus.io v0.24.0 // indirect

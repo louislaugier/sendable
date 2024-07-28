@@ -4,6 +4,7 @@ import (
 	"email-validator/config"
 	"email-validator/handlers"
 	"email-validator/handlers/middleware"
+	"email-validator/handlers/webhooks"
 	"fmt"
 	"log"
 	"net/http"
@@ -95,10 +96,23 @@ func handleHTTP(mux *http.ServeMux) {
 		http.HandlerFunc(handlers.SubscriptionHistoryHandler),
 		true,
 	), true)
-	handle(mux, "/subscribe", middleware.ValidateJWT(
-		http.HandlerFunc(handlers.Subscribe),
+
+	handle(mux, "/generate_stripe_checkout", middleware.ValidateJWT(
+		http.HandlerFunc(handlers.GenerateStripeCheckoutHandler),
 		true,
 	), true)
+	handle(mux, "/generate_stripe_customer_portal", middleware.ValidateJWT(
+		http.HandlerFunc(handlers.GenerateStripeCustomerPortalHandler),
+		true,
+	), true)
+	handle(mux, "/subscribe_to_plan", // TODO: attach webhook signature middleware
+		http.HandlerFunc(webhooks.SubscribeToPlanHandler),
+		true,
+	)
+	handle(mux, "/unsubscribe_from_plan", // TODO: attach webhook signature middleware
+		http.HandlerFunc(webhooks.UnsubscribeFromPlanHandler),
+		true,
+	)
 
 	handle(mux, "/generate_jwt", middleware.ValidateAPIKey( // generate JWT as API consumer (platform users)
 		http.HandlerFunc(handlers.GenerateJWTHandler),

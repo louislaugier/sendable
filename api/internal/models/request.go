@@ -77,7 +77,7 @@ type (
 		EmailConfirmationCode *int   `json:"emailConfirmationCode"`
 		Password              string `json:"password"`
 	}
-	SubscribeRequest struct {
-		//
+	CheckoutRequest struct {
+		PriceID string `json:"priceId"`
 	}
 )

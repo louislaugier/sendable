@@ -8,4 +8,6 @@ func Load() {
 	initDatabaseConnection()
 
 	initTransactionalEmailsClient()
+
+	initStripeClient()
 }
