@@ -1,6 +1,7 @@
 package webhooks
 
 import (
+	"email-validator/config"
 	"io"
 	"log"
 	"net/http"
@@ -27,7 +28,7 @@ func SubscribeToPlanHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	event, err := webhook.ConstructEvent(payload, r.Header.Get("Stripe-Signature"), "your-webhook-secret")
+	event, err := webhook.ConstructEvent(payload, r.Header.Get("Stripe-Signature"), config.StripeWebhookSecret)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return

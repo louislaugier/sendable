@@ -9,6 +9,7 @@ INSERT INTO
         "last_user_agent",
         "2fa_secret",
         "auth_provider",
+        "stripe_customer_id",
         "created_at",
         "updated_at",
         "deleted_at"
@@ -24,10 +25,27 @@ VALUES
         'insomnia/8.6.1',
         NULL,
         'hubspot',
+        NULL,
         '2024-04-25 00:34:02.828087',
         '2024-04-25 00:34:02.828087',
         NULL
-    );
+    ),
+    (
+        '66608f5e-82fb-4e80-b069-40f852cac077',
+        'l.laugier@pm.me',
+        't',
+        NULL,
+        'd47284017a0e7d5ad865ca5b40aab2f94a4aece129b285e1f00f54767621586b',
+        '172.19.0.1',
+        'insomnia/8.6.1',
+        NULL,
+        NULL,
+        'cus_QYnFrnvXU62Eq6',
+        '2024-04-25 00:34:02.828087',
+        '2024-04-25 00:34:02.828087',
+        NULL 
+    )
+    ;
 
 INSERT INTO
     "public"."subscription" (
@@ -35,15 +53,17 @@ INSERT INTO
         "user_id",
         "billing_frequency",
         "type",
+        "stripe_subscription_id",
         "created_at",
         "cancelled_at"
     )
 VALUES
     (
         'af7c1fe6-d669-414e-b066-e9733f0de7a8',
-        '66608f5e-82fb-4e80-b069-40f852cac076',
+        '66608f5e-82fb-4e80-b069-40f852cac077',
         'yearly',
         'enterprise',
+        'sub_1PhffoRsG6IPgooN9UtBTApl',
         '2024-05-03 14:10:20.996654',
         NULL
     );

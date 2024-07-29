@@ -23,6 +23,7 @@ const (
 			u."is_email_confirmed", 
 			u."email_confirmation_code", 
 			u."2fa_secret", 
+			u."stripe_customer_id", 
 			u."created_at", 
 			u."updated_at"
 		FROM 
@@ -167,7 +168,7 @@ func getByCriteria(isMinimalResponse bool, query string, args ...interface{}) (*
 
 	for rows.Next() {
 		u := models.User{}
-		err = rows.Scan(&u.ID, &u.Email, &u.AuthProvider, &u.IsEmailConfirmed, &u.EmailConfirmationCode, &u.TwoFactorAuthSecret, &u.CreatedAt, &u.UpdatedAt)
+		err = rows.Scan(&u.ID, &u.Email, &u.AuthProvider, &u.IsEmailConfirmed, &u.EmailConfirmationCode, &u.TwoFactorAuthSecret, &u.StripeCustomerID, &u.CreatedAt, &u.UpdatedAt)
 		if err != nil {
 			return nil, err
 		}

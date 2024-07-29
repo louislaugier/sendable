@@ -118,17 +118,16 @@ func ValidateJWT(next http.Handler, requiresConfirmedEmail bool) http.Handler {
 				}
 			}
 
-			// if u.StripeCustomerID != nil {
-			// s, err := stripe.CreateCustomerPortalSession(u.StripeCustomerID)
-			s, err := stripe.CreateCustomerPortalSession("cus_QYnFrnvXU62Eq6")
-			if err != nil {
-				log.Printf("Error generating Stripe customer portal: %v", err)
-				http.Error(w, "Internal Server Error", http.StatusInternalServerError)
-				return
-			}
+			if u.StripeCustomerID != nil {
+				s, err := stripe.CreateCustomerPortalSession(*u.StripeCustomerID)
+				if err != nil {
+					log.Printf("Error generating Stripe customer portal: %v", err)
+					http.Error(w, "Internal Server Error", http.StatusInternalServerError)
+					return
+				}
 
-			u.StripeCustomerPortalURL = &s.URL
-			// }
+				u.StripeCustomerPortalURL = &s.URL
+			}
 
 			IPaddresses, userAgent := utils.GetIPsFromRequest(r), r.UserAgent()
 			err = user.UpdateIPsAndUserAgent(u.ID, IPaddresses, userAgent)
