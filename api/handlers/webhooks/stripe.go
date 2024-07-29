@@ -43,14 +43,12 @@ func StripeWebhookHandler(w http.ResponseWriter, r *http.Request) {
 
 	switch event.Type {
 	case "customer.subscription.created":
-		// Insert subscription for user in DB
-		//
-		// TODO: prevent 2 or more ongoing subscriptions at the same time except if (in that case cancel current one):
-		// - latest valid ongoing subscription is user's only subscription and is less than 7 days old (ongoing trial)
-		// - latest valid ongoing subscription = premium and NEW incoming subscription = enterprise
+		// TODO: insert subscription for user in DB
+		// prevent more than 1 ongoing subscription at the same time
 		log.Println("ok123")
 	case "customer.subscription.deleted":
 		log.Println("ok456")
+		// TODO: update subscription for user in DB (set cancelled_at to now)
 	}
 
 	w.WriteHeader(http.StatusOK)
