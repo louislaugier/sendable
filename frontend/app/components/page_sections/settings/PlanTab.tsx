@@ -72,7 +72,7 @@ export default function PlanTab() {
 
                           {/* TODO: show only if any */}
                           <Button className="mt-4" as={Link} href={`/referral`} onClick={goToReferral} color='primary' variant="bordered">
-                            View discounts (referral bonuses)
+                            Manage referral discounts
                         </Button>
 
                         <Divider className="my-8" />

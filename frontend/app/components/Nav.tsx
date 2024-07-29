@@ -123,6 +123,13 @@ export default function Nav() {
                                     >
                                         Settings
                                     </DropdownItem>
+                                    <DropdownItem
+                                        key="referral"
+                                        href="/referral"
+                                        description="Manage your referral bonuses"
+                                    >
+                                        Referral
+                                    </DropdownItem>
                                     {(user.currentPlan?.type === SubscriptionType.Premium || user.currentPlan?.type === SubscriptionType.Enterprise) &&
                                         <DropdownItem
                                             key="subscription"

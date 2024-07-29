@@ -8,8 +8,8 @@ import { capitalize } from "~/utils/string";
 
 const columnNames = [
     "DATE",
-    "PLAN TYPE",
-    "BILLING FREQUENCY",
+    "PLAN",
+    "BILLING PERIOD",
     "STATUS"
 ]
 
