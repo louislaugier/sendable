@@ -43,8 +43,9 @@ func StripeWebhookHandler(w http.ResponseWriter, r *http.Request) {
 
 	switch event.Type {
 	case "customer.subscription.created":
+		// TODO: prevent more than 1 ongoing subscription at the same time
+		// TODO: if user.stripe_customer_id == undefined, assign it & update it
 		// TODO: insert subscription for user in DB
-		// prevent more than 1 ongoing subscription at the same time
 		log.Println("ok123")
 	case "customer.subscription.deleted":
 		log.Println("ok456")
