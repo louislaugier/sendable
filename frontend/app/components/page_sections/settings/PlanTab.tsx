@@ -56,11 +56,6 @@ export default function PlanTab() {
 
                         <p>Current plan: <CurrentPlanChip />{(isPremiumOrEnterprise && user?.currentPlan?.billingFrequency) && <b>{` (billed ${user?.currentPlan?.billingFrequency})`}</b>}</p>
 
-                        {/* TODO: show only if any */}
-                        <Button className="mt-4" as={Link} href={`/referral`} onClick={goToReferral} color='primary' variant="bordered">
-                            View my referral discounts
-                        </Button>
-
                         {user?.currentPlan.type !== SubscriptionType.Enterprise && <>
                             <p className="mt-4">Remaining validations (this month): <b>{remainingAppValidations.toLocaleString()} / {appValidationLimit.toLocaleString()}</b> email addresses</p>
                             <p>Remaining API validations (this month): <b>{remainingApiValidations.toLocaleString()} / {apiValidationLimit.toLocaleString()}</b> email addresses</p>
@@ -70,10 +65,15 @@ export default function PlanTab() {
                         </>}
 
                         {isPremiumOrEnterprise &&
-                            <Button className="mt-4" as={Link} href={`/`} target="_blank" color='primary' variant="bordered">
+                            <Button className="mt-4" as={Link} href={user?.stripeCustomerPortalUrl} target="_blank" color='primary' variant="bordered">
                                 Manage subscription <FiExternalLink />
                             </Button>
                         }
+
+                          {/* TODO: show only if any */}
+                          <Button className="mt-4" as={Link} href={`/referral`} onClick={goToReferral} color='primary' variant="bordered">
+                            View discounts (referral bonuses)
+                        </Button>
 
                         <Divider className="my-8" />
 

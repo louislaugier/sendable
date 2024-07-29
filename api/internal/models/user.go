@@ -44,6 +44,9 @@ type (
 		ValidationCounts *UserValidationCounts `json:"validationCounts,omitempty"`
 		CurrentPlan      *Subscription         `json:"currentPlan,omitempty"`
 
+		StripeCustomerID        *string `json:"-"`
+		StripeCustomerPortalURL *string `json:"stripeCustomerPortalUrl,omitempty"`
+
 		LastIPAddresses string `json:"-"`
 		LastUserAgent   string `json:"-"`
 

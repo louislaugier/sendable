@@ -5,11 +5,12 @@ import (
 	"fmt"
 
 	"github.com/stripe/stripe-go/v72"
-	"github.com/stripe/stripe-go/v72/checkout/session"
+	bs "github.com/stripe/stripe-go/v72/billingportal/session"
+	cs "github.com/stripe/stripe-go/v72/checkout/session"
 )
 
 func CreateCheckoutSession(priceID string) (*stripe.CheckoutSession, error) {
-	s, err := session.New(&stripe.CheckoutSessionParams{
+	s, err := cs.New(&stripe.CheckoutSessionParams{
 		PaymentMethodTypes: stripe.StringSlice([]string{"card"}),
 		LineItems: []*stripe.CheckoutSessionLineItemParams{
 			{
@@ -24,6 +25,20 @@ func CreateCheckoutSession(priceID string) (*stripe.CheckoutSession, error) {
 
 	if err != nil {
 		return nil, err
+	}
+
+	return s, nil
+}
+
+func CreateCustomerPortalSession(customerID string) (*stripe.BillingPortalSession, error) {
+	s, err := bs.New(&stripe.BillingPortalSessionParams{
+		Customer:  stripe.String(customerID),
+		ReturnURL: stripe.String(config.FrontendURL),
+	})
+
+	if err != nil {
+		return nil, err
+
 	}
 
 	return s, nil

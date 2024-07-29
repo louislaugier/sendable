@@ -77,7 +77,10 @@ type (
 		EmailConfirmationCode *int   `json:"emailConfirmationCode"`
 		Password              string `json:"password"`
 	}
-	CheckoutRequest struct {
+	GenerateStripeCheckoutRequest struct {
 		PriceID string `json:"priceId"`
+	}
+	GenerateStripeCustomerPortalRequest struct {
+		CustomerID string `json:"customerId"`
 	}
 )

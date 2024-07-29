@@ -16,7 +16,7 @@ func GenerateStripeCheckoutHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	body := models.CheckoutRequest{}
+	body := models.GenerateStripeCheckoutRequest{}
 	if err := json.NewDecoder(r.Body).Decode(&body); err != nil {
 		handleError(w, err, "Error decoding JSON", http.StatusBadRequest)
 		return

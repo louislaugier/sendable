@@ -4,7 +4,7 @@ import { Fragment, useContext } from "react";
 import AuthModalContext from "~/contexts/AuthModalContext";
 import UserContext from "~/contexts/UserContext";
 import { AuthModalType } from "~/types/modal";
-import { isCurrentUrl } from "~/utils/url";
+import { isCurrentUrl, navigateToUrl } from "~/utils/url";
 import { Link as RemixLink } from "@remix-run/react";
 import { siteName } from "~/constants/app";
 import { ChevronDownIcon } from "~/components/icons/ChevronDownIcon";
@@ -126,8 +126,9 @@ export default function Nav() {
                                     {(user.currentPlan?.type === SubscriptionType.Premium || user.currentPlan?.type === SubscriptionType.Enterprise) &&
                                         <DropdownItem
                                             key="subscription"
-                                            description="Go to Stripe customer dashboard"
-                                        // TODO: href & onClick: stripe external URL with target _blank 
+                                            description="Go to Stripe customer portal"
+                                            href={user?.stripeCustomerPortalUrl}
+                                            target="blank"
                                         >
                                             <div className="flex">Manage subscription <FiExternalLink style={{ marginLeft: 5 }} /></div>
                                         </DropdownItem>

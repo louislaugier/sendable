@@ -13,7 +13,8 @@ export interface User {
     updatedAt: string,
     deletedAt?: string,
     currentPlan: Subscription,
-    validationCounts: UserValidationCounts
+    validationCounts: UserValidationCounts,
+    stripeCustomerPortalUrl?: string
 }
 
 export interface UserContextType {

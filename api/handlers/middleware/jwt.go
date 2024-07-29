@@ -4,6 +4,7 @@ import (
 	"context"
 	"email-validator/config"
 	"email-validator/internal/models"
+	"email-validator/internal/pkg/stripe"
 	"email-validator/internal/pkg/user"
 	"email-validator/internal/pkg/utils"
 	"errors"
@@ -116,6 +117,18 @@ func ValidateJWT(next http.Handler, requiresConfirmedEmail bool) http.Handler {
 					return
 				}
 			}
+
+			// if u.StripeCustomerID != nil {
+			// s, err := stripe.CreateCustomerPortalSession(u.StripeCustomerID)
+			s, err := stripe.CreateCustomerPortalSession("cus_QYnFrnvXU62Eq6")
+			if err != nil {
+				log.Printf("Error generating Stripe customer portal: %v", err)
+				http.Error(w, "Internal Server Error", http.StatusInternalServerError)
+				return
+			}
+
+			u.StripeCustomerPortalURL = &s.URL
+			// }
 
 			IPaddresses, userAgent := utils.GetIPsFromRequest(r), r.UserAgent()
 			err = user.UpdateIPsAndUserAgent(u.ID, IPaddresses, userAgent)
