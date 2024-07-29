@@ -28,7 +28,7 @@ func SubscribeToPlanHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	event, err := webhook.ConstructEvent(payload, r.Header.Get("Stripe-Signature"), config.StripeWebhookSecret)
+	event, err := webhook.ConstructEvent(payload, r.Header.Get("Stripe-Signature"), config.StripeSubscriptionWebhookSecret)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return

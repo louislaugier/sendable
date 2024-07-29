@@ -28,7 +28,7 @@ func UnsubscribeFromPlanHandler(w http.ResponseWriter, r *http.Request) {
 
 	event := stripe.Event{}
 
-	event, err = webhook.ConstructEvent(payload, r.Header.Get("Stripe-Signature"), config.StripeWebhookSecret)
+	event, err = webhook.ConstructEvent(payload, r.Header.Get("Stripe-Signature"), config.StripeUnsubscriptionWebhookSecret)
 	if err != nil {
 		log.Printf("Error verifying webhook signature: %v", err)
 		http.Error(w, "Invalid signature", http.StatusBadRequest)

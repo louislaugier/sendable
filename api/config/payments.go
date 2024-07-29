@@ -6,9 +6,12 @@ import (
 	"github.com/stripe/stripe-go/v72"
 )
 
-var StripeWebhookSecret string
+var StripeSubscriptionWebhookSecret string
+var StripeUnsubscriptionWebhookSecret string
 
 func initStripeClient() {
 	stripe.Key = os.Getenv("STRIPE_SECRET_KEY")
-	StripeWebhookSecret = os.Getenv("STRIPE_WEBHOOK_SECRET")
+
+	StripeSubscriptionWebhookSecret = os.Getenv("STRIPE_SUBSCRIPTION_WEBHOOK_SECRET")
+	StripeUnsubscriptionWebhookSecret = os.Getenv("STRIPE_UNSUBSCRIPTION_WEBHOOK_SECRET")
 }
