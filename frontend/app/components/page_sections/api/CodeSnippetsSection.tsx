@@ -24,7 +24,9 @@ async function getToken(): Promise<string | null> {
     }
 }`
 
-const goCode = `import (
+const goCode = `package myPackage
+
+import (
     "net/http"
 )
 

@@ -101,12 +101,8 @@ func handleHTTP(mux *http.ServeMux) {
 		http.HandlerFunc(handlers.GenerateStripeCheckoutHandler),
 		true,
 	), true)
-	handle(mux, "/subscribe_to_plan", // TODO: attach webhook signature middleware
-		http.HandlerFunc(webhooks.SubscribeToPlanHandler),
-		true,
-	)
-	handle(mux, "/unsubscribe_from_plan", // TODO: attach webhook signature middleware
-		http.HandlerFunc(webhooks.UnsubscribeFromPlanHandler),
+	handle(mux, "/webhook/stripe", // TODO: attach webhook signature middleware
+		http.HandlerFunc(webhooks.StripeWebhookHandler),
 		true,
 	)
 

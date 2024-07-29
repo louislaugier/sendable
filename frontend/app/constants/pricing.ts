@@ -22,6 +22,9 @@ export const pricingPlans = [
             {
                 content: `${limits.free.api.toLocaleString()} free API single validations`,
                 tooltip: `You can validate up to ${limits.free.api.toLocaleString()} email addresses programmatically every month for free using ${siteName}'s API (${limits.free.apiConcurrency.toLocaleString()} email address at a time).`
+            },
+            {
+                content: "Deferred Support"
             }
         ]
     },
@@ -47,9 +50,9 @@ export const pricingPlans = [
                 content: `${limits.premium.api.toLocaleString()} API single validations`,
                 tooltip: `You can validate up to ${limits.premium.api.toLocaleString()} email addresses programmatically every month using ${siteName}'s API (max ${limits.premium.apiConcurrency.toLocaleString()} parallel validations, 1 email address per validation).`
             },
-            // {
-            //     content: "24 / 7 Support"
-            // }
+            {
+                content: "Deferred Support"
+            }
         ]
     },
     {
