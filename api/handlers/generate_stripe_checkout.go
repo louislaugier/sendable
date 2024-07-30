@@ -1,15 +1,13 @@
 package handlers
 
 import (
+	"email-validator/handlers/middleware"
 	"email-validator/internal/models"
 	"email-validator/internal/pkg/stripe"
 	"encoding/json"
 	"net/http"
 )
 
-// TODO: prevent 2 or more ongoing subscriptions at the same time except if (in that case cancel current one):
-// - latest valid ongoing subscription is user's only subscription and is less than 7 days old (ongoing trial)
-// - latest valid ongoing subscription = premium and NEW incoming subscription = enterprise
 func GenerateStripeCheckoutHandler(w http.ResponseWriter, r *http.Request) {
 	if r.Method != http.MethodPost {
 		http.Error(w, "method not allowed", http.StatusMethodNotAllowed)
@@ -22,7 +20,9 @@ func GenerateStripeCheckoutHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	s, err := stripe.CreateCheckoutSession(body.PriceID)
+	user := middleware.GetUserFromRequest(r)
+
+	s, err := stripe.CreateCheckoutSession(body.PriceID, user.Email, user.StripeCustomerID)
 	if err != nil {
 		handleError(w, err, "Internal Server Error", http.StatusInternalServerError)
 		return

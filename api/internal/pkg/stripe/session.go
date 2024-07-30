@@ -9,7 +9,7 @@ import (
 	cs "github.com/stripe/stripe-go/v72/checkout/session"
 )
 
-func CreateCheckoutSession(priceID string) (*stripe.CheckoutSession, error) {
+func CreateCheckoutSession(priceID, userEmail string, customerID *string) (*stripe.CheckoutSession, error) {
 	s, err := cs.New(&stripe.CheckoutSessionParams{
 		PaymentMethodTypes: stripe.StringSlice([]string{"card"}),
 		LineItems: []*stripe.CheckoutSessionLineItemParams{
@@ -18,9 +18,11 @@ func CreateCheckoutSession(priceID string) (*stripe.CheckoutSession, error) {
 				Quantity: stripe.Int64(1),
 			},
 		},
-		Mode:       stripe.String(string(stripe.CheckoutSessionModeSubscription)),
-		SuccessURL: stripe.String(fmt.Sprintf("%s/pricing?subscription=success", config.FrontendURL)),
-		CancelURL:  stripe.String(fmt.Sprintf("%s/pricing?subscription=cancel", config.FrontendURL)),
+		Mode:          stripe.String(string(stripe.CheckoutSessionModeSubscription)),
+		SuccessURL:    stripe.String(fmt.Sprintf("%s/pricing?subscription=success", config.FrontendURL)),
+		CancelURL:     stripe.String(fmt.Sprintf("%s/pricing?subscription=cancel", config.FrontendURL)),
+		Customer:      customerID,
+		CustomerEmail: &userEmail,
 	})
 
 	if err != nil {

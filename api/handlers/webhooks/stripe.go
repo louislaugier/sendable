@@ -2,7 +2,11 @@ package webhooks
 
 import (
 	"email-validator/config"
+	"email-validator/internal/models"
+	stp "email-validator/internal/pkg/stripe"
+	"email-validator/internal/pkg/user"
 	"encoding/json"
+	"fmt"
 	"io"
 	"log"
 	"net/http"
@@ -10,6 +14,8 @@ import (
 	"github.com/stripe/stripe-go/v72"
 	"github.com/stripe/stripe-go/v72/webhook"
 )
+
+// TODO: clean logs
 
 // This webhook is triggered when a payment is succesfully received for a subscription plan
 func StripeWebhookHandler(w http.ResponseWriter, r *http.Request) {
@@ -38,19 +44,62 @@ func StripeWebhookHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	customerID := subscription.Customer.ID
+	customerEmail := subscription.Customer.Email
+
 	subscriptionID := subscription.ID
-	log.Println(customerID, subscriptionID)
 
 	switch event.Type {
 	case "customer.subscription.created":
-		// TODO: prevent more than 1 ongoing subscription at the same time
-		// TODO: if user.stripe_customer_id == undefined, assign it & update it
-		// TODO: insert subscription for user in DB
-		log.Println("ok123")
+		handleNewSubscription(customerID, customerEmail, w)
 	case "customer.subscription.deleted":
-		log.Println("ok456")
-		// TODO: update subscription for user in DB (set cancelled_at to now)
+		handleUnsubscription(subscriptionID, w)
 	}
 
 	w.WriteHeader(http.StatusOK)
+}
+
+func handleNewSubscription(customerID, customerEmail string, w http.ResponseWriter) {
+	log.Println("ok123")
+	var (
+		u   *models.User
+		err error
+	)
+
+	u, err = user.GetByStripeCustomerID(customerID)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	} else if u == nil {
+		u, err = user.GetByEmail(customerEmail)
+		if err != nil {
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+			return
+		} else if u == nil {
+			http.Error(w, fmt.Sprintf("user not found with customer email %s", customerEmail), http.StatusNotFound)
+			return
+		}
+
+		err = user.SetStripeCustomerID(u.ID, customerID)
+		if err != nil {
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+			return
+		}
+	}
+
+	if u.CurrentPlan.Type != models.FreePlan {
+		// TODO: cancel current subscription for user in DB (set cancelled_at to now where id = u.CurrentPlan.ID)
+
+		err = stp.CancelSubscription(u.CurrentPlan.StripeSubscriptionID)
+		if err != nil {
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+			return
+		}
+	}
+
+	// TODO: insert subscription
+}
+
+func handleUnsubscription(subscriptionID string, w http.ResponseWriter) {
+	log.Println("ok456")
+	// TODO: cancel subscription for user in DB where stripe_subscription_id = subscriptionID
 }

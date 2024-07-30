@@ -49,6 +49,7 @@ const (
 	updateEmailAddressQuery          = `UPDATE public.user SET "email" = $1 WHERE id = $2;`
 	updateEmailConfirmationQuery     = `UPDATE public.user SET "is_email_confirmed" = true, "email_confirmation_code" = NULL WHERE id = $1;`
 	updateEmailConfirmationCodeQuery = `UPDATE public.user SET "email_confirmation_code" = $1 WHERE id = $2;`
+	updateStripeCustomerID           = `UPDATE public.user SET "stripe_customer_id" = $1 WHERE id = $1;`
 
 	updateIPsAndUserAgentQuery = "UPDATE public.user SET last_ip_addresses = $1, last_user_agent = $2 WHERE id = $3;"
 
@@ -63,6 +64,11 @@ func InsertNew(user *models.User, encryptedPassword *string) error {
 
 func InsertNewTempZoho(user *models.User, encryptedPassword *string) error {
 	_, err := config.DB.Exec(insertQuery, &user.ID, &user.Email, &user.IsEmailConfirmed, &user.EmailConfirmationCode, encryptedPassword, &user.LastIPAddresses, &user.LastUserAgent, &user.AuthProvider)
+	return err
+}
+
+func SetStripeCustomerID(userID uuid.UUID, stripeCustomerID string) error {
+	_, err := config.DB.Exec(updateStripeCustomerID, stripeCustomerID, userID)
 	return err
 }
 
@@ -115,6 +121,11 @@ func UpdateIPsAndUserAgent(userID uuid.UUID, IPs, userAgent string) error {
 func GetByEmail(email string) (*models.User, error) {
 	query := fmt.Sprintf(selectQuery, "u.email = $1")
 	return getByCriteria(false, query, email)
+}
+
+func GetByStripeCustomerID(stripeCustomerID string) (*models.User, error) {
+	query := fmt.Sprintf(selectQuery, "u.stripe_customer_id = $1")
+	return getByCriteria(false, query, stripeCustomerID)
 }
 
 func GetByEmailAndConfirmationCode(email string, confirmationCode int) (*models.User, error) {

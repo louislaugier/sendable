@@ -8,7 +8,7 @@ CREATE TABLE IF NOT EXISTS public."subscription" (
     "user_id" UUID REFERENCES public."user"(id) NOT NULL,
     "billing_frequency" subscription_billing_frequency NOT NULL,
     "type" subscription_type NOT NULL,
-    "stripe_subscription_id" VARCHAR,
+    "stripe_subscription_id" VARCHAR NOT NULL UNIQUE,
     "created_at" TIMESTAMP NOT NULL DEFAULT now(),
     "cancelled_at" TIMESTAMP
 );

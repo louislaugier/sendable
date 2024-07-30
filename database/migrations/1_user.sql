@@ -17,7 +17,7 @@ CREATE TABLE IF NOT EXISTS public."user" (
     "last_user_agent" VARCHAR NOT NULL DEFAULT 'unknown',
     "2fa_secret" VARCHAR,
     "auth_provider" auth_provider,
-    "stripe_customer_id" VARCHAR,
+    "stripe_customer_id" VARCHAR UNIQUE,
     "created_at" TIMESTAMP NOT NULL DEFAULT NOW(),
     "updated_at" TIMESTAMP NOT NULL DEFAULT NOW(),
     "deleted_at" TIMESTAMP,

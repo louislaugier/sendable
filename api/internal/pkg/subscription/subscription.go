@@ -15,7 +15,7 @@ const (
 	`
 
 	getManyQuery = `
-		SELECT id, user_id, billing_frequency, type, created_at, cancelled_at
+		SELECT id, user_id, billing_frequency, type, stripe_subscription_id, created_at, cancelled_at
 		FROM public.subscription
 		WHERE user_id = $1
 		ORDER BY created_at DESC
@@ -34,7 +34,7 @@ func GetMany(userID uuid.UUID, limit, offset int) ([]models.Subscription, error)
 	var subscriptions []models.Subscription
 	for rows.Next() {
 		var s models.Subscription
-		err := rows.Scan(&s.ID, &s.UserID, &s.BillingFrequency, &s.Type, &s.CreatedAt, &s.CancelledAt)
+		err := rows.Scan(&s.ID, &s.UserID, &s.BillingFrequency, &s.Type, &s.StripeSubscriptionID, &s.CreatedAt, &s.CancelledAt)
 		if err != nil {
 			return nil, err
 		}
