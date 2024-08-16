@@ -7,7 +7,6 @@ import (
 	"email-validator/internal/pkg/validation"
 	"fmt"
 	"log"
-	"time"
 
 	"github.com/google/uuid"
 )
@@ -53,7 +52,7 @@ const (
 
 	updateIPsAndUserAgentQuery = "UPDATE public.user SET last_ip_addresses = $1, last_user_agent = $2 WHERE id = $3;"
 
-	deleteQuery = "UPDATE public.user SET deleted_at = $1 WHERE id = $2;"
+	deleteQuery = "UPDATE public.user SET deleted_at = now() WHERE id = $1;"
 )
 
 // InsertNew inserts a new user into the database.
@@ -103,8 +102,8 @@ func Disable2FA(userID uuid.UUID) error {
 	return err
 }
 
-func Delete(userID uuid.UUID, timestamp time.Time) error {
-	_, err := config.DB.Exec(deleteQuery, timestamp, userID)
+func Delete(userID uuid.UUID) error {
+	_, err := config.DB.Exec(deleteQuery, userID)
 	return err
 }
 

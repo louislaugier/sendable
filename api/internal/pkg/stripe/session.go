@@ -32,6 +32,7 @@ func CreateCheckoutSession(priceID, userEmail string, customerID *string) (*stri
 	return s, nil
 }
 
+// Web interface on Stripe to view & cancel subscription
 func CreateCustomerPortalSession(customerID string) (*stripe.BillingPortalSession, error) {
 	s, err := bs.New(&stripe.BillingPortalSessionParams{
 		Customer:  stripe.String(customerID),

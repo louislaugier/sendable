@@ -8,6 +8,8 @@ import (
 )
 
 const (
+	insertQuery = "INSERT INTO public.subscription (id, user_id, billing_frequency, type, stripe_subscription_id) VALUES ($1, $2, $3, $4, $5);"
+
 	getCountQuery = `
 		SELECT COUNT(*)
 		FROM public.subscription
@@ -22,7 +24,19 @@ const (
 		LIMIT $2
 		OFFSET $3;
 	`
+
+	cancelByIDQuery = `
+		UPDATE public.subscription SET "cancelled_at" = now() WHERE id = $1;
+	`
+	CancelByStripeSubscriptionIDQuery = `
+		UPDATE public.subscription SET "cancelled_at" = now() WHERE stripe_subscription_id = $1;
+	`
 )
+
+func InsertNew(subscription *models.Subscription) error {
+	_, err := config.DB.Exec(insertQuery, &subscription.ID, &subscription.UserID, &subscription.BillingFrequency, &subscription.Type, &subscription.StripeSubscriptionID)
+	return err
+}
 
 func GetMany(userID uuid.UUID, limit, offset int) ([]models.Subscription, error) {
 	rows, err := config.DB.Query(getManyQuery, userID, limit, offset)
@@ -93,4 +107,14 @@ func GetLatestActive(userID uuid.UUID) (*models.Subscription, error) {
 	}
 
 	return subscription, nil
+}
+
+func CancelByID(ID uuid.UUID) error {
+	_, err := config.DB.Exec(cancelByIDQuery, ID)
+	return err
+}
+
+func CancelByStripeSubscriptionID(stripeSubscriptionID string) error {
+	_, err := config.DB.Exec(CancelByStripeSubscriptionIDQuery, stripeSubscriptionID)
+	return err
 }

@@ -5,7 +5,6 @@ import (
 	"email-validator/internal/pkg/user"
 	"fmt"
 	"net/http"
-	"time"
 )
 
 func DeleteAccountHandler(w http.ResponseWriter, r *http.Request) {
@@ -15,7 +14,7 @@ func DeleteAccountHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	u := middleware.GetUserFromRequest(r)
-	err := user.Delete(u.ID, time.Now())
+	err := user.Delete(u.ID)
 	if err != nil {
 		handleError(w, err, "Internal Server Error", http.StatusBadRequest)
 		return

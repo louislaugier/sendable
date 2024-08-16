@@ -4,19 +4,19 @@ import (
 	"email-validator/config"
 	"email-validator/internal/models"
 	stp "email-validator/internal/pkg/stripe"
+	"email-validator/internal/pkg/subscription"
 	"email-validator/internal/pkg/user"
 	"encoding/json"
 	"fmt"
 	"io"
-	"log"
 	"net/http"
 
+	"github.com/google/uuid"
 	"github.com/stripe/stripe-go/v72"
 	"github.com/stripe/stripe-go/v72/webhook"
 )
 
-// TODO: clean logs
-
+// TODO: test locally with CLI (cf .env duplicated STRIPE_WEBHOOK_SECRET)
 // This webhook is triggered when a payment is succesfully received for a subscription plan
 func StripeWebhookHandler(w http.ResponseWriter, r *http.Request) {
 	if r.Method != http.MethodPost {
@@ -48,21 +48,26 @@ func StripeWebhookHandler(w http.ResponseWriter, r *http.Request) {
 
 	subscriptionID := subscription.ID
 
+	productID := subscription.Items.Data[0].Plan.Product.ID
+	planInterval := subscription.Items.Data[0].Plan.Interval
+
 	switch event.Type {
-	case "customer.subscription.created":
-		handleNewSubscription(customerID, customerEmail, w)
-	case "customer.subscription.deleted":
+	case string(models.StripeCustomerSubscriptionCreated):
+		handleNewSubscription(customerID, customerEmail, subscriptionID, productID, string(planInterval), w)
+	case string(models.StripeCustomerSubscriptionDeleted):
 		handleUnsubscription(subscriptionID, w)
 	}
 
 	w.WriteHeader(http.StatusOK)
 }
 
-func handleNewSubscription(customerID, customerEmail string, w http.ResponseWriter) {
-	log.Println("ok123")
+func handleNewSubscription(customerID, customerEmail, subscriptionID, productID, planInterval string, w http.ResponseWriter) {
 	var (
 		u   *models.User
 		err error
+
+		billingFrequency models.SubscriptionBillingFrequency
+		subscriptionType models.SubscriptionType
 	)
 
 	u, err = user.GetByStripeCustomerID(customerID)
@@ -87,19 +92,49 @@ func handleNewSubscription(customerID, customerEmail string, w http.ResponseWrit
 	}
 
 	if u.CurrentPlan.Type != models.FreePlan {
-		// TODO: cancel current subscription for user in DB (set cancelled_at to now where id = u.CurrentPlan.ID)
+		err = subscription.CancelByID(*u.CurrentPlan.ID)
+		if err != nil {
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+			return
+		}
 
-		err = stp.CancelSubscription(u.CurrentPlan.StripeSubscriptionID)
+		err = stp.CancelSubscription(*u.CurrentPlan.StripeSubscriptionID)
 		if err != nil {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 			return
 		}
 	}
 
-	// TODO: insert subscription
+	if planInterval == string(stripe.PlanIntervalMonth) {
+		billingFrequency = models.MonthlyBilling
+	} else if planInterval == string(stripe.PlanIntervalYear) {
+		billingFrequency = models.YearlyBilling
+	}
+
+	if productID == string(models.StripePremiumProductID) {
+		subscriptionType = models.PremiumSubscription
+	} else if productID == string(models.StripeEnterpriseProductID) {
+		subscriptionType = models.EnterpriseSubscription
+	}
+
+	ID, userID := uuid.New(), u.ID
+	err = subscription.InsertNew(&models.Subscription{
+		ID:                   &ID,
+		UserID:               &userID,
+		BillingFrequency:     &billingFrequency,
+		Type:                 subscriptionType,
+		StripeSubscriptionID: &subscriptionID,
+	})
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
 }
 
 func handleUnsubscription(subscriptionID string, w http.ResponseWriter) {
-	log.Println("ok456")
-	// TODO: cancel subscription for user in DB where stripe_subscription_id = subscriptionID
+	err := subscription.CancelByStripeSubscriptionID(subscriptionID)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
 }

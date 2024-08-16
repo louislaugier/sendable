@@ -1,6 +1,6 @@
 import { Button, Checkbox, CheckboxGroup, Switch } from "@nextui-org/react";
 import { useState, useRef, useEffect } from "react";
-import { allowedFileTypes } from "~/constants/files";
+import { allowedFileTypes } from "~/constants/file";
 import { limits } from "~/constants/limits";
 import { getColumnNamesFromCSV, getColumnNamesFromXLS } from "~/utils/file";
 import RequestSent from "./RequestSent";

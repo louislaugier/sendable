@@ -30,7 +30,7 @@ type Subscription struct {
 	BillingFrequency *SubscriptionBillingFrequency `json:"billingFrequency,omitempty"`
 	Type             SubscriptionType              `json:"type"`
 
-	StripeSubscriptionID string `json:"-"`
+	StripeSubscriptionID *string `json:"-"`
 
 	CreatedAt   *time.Time `json:"createdAt,omitempty"`
 	CancelledAt *time.Time `json:"cancelledAt,omitempty"`
