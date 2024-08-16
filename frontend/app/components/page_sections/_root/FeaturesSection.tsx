@@ -13,14 +13,9 @@ const FeaturesSection: React.FC = () => {
                 </h2>
                 <div className="flex py-12" style={{ flexWrap: 'wrap', justifyContent: 'space-between' }}>
                     <FeatureCard
-                        title="99% accuracy Guaranteed"
+                        title="99% accuracy without contacting the target"
                         icon={<GiConvergenceTarget size="20px" />}
-                        description="Email verification makes a difference only when it’s accurate, and our system guarantees you 99% accurate results. Take us for a test drive and see for yourself."
-                    />
-                    <FeatureCard
-                        title="Validation from files"
-                        icon={<CiFileOn size="20px" />}
-                        description="You can upload CSV, XLS, XLSX and TXT files containing up to 1,000,000 email addresses at a time. This makes it easy to validate emails in bulk. It takes our email verifier 45 minutes on average to scrub an email list of 100,000 contacts."
+                        description="Email verification makes a difference only when it’s accurate and silent, and our system guarantees you 99% accurate results. Take us for a test drive and see for yourself."
                     />
 
                     <FeatureCard
@@ -31,17 +26,17 @@ const FeaturesSection: React.FC = () => {
                     <FeatureCard
                         title="Disposable Email Check"
                         icon={<CiTrash size="20px" />}
-                        description="These temporary email accounts self-destruct and end up bouncing. We run a thorough email list cleaning to weed them out for you."
+                        description="These temporary email accounts self-destruct and end up bouncing. We run a thorough disposable address domain scan to filter them out for you."
                     />
                     <FeatureCard
                         title="Catch-All Email Check"
                         icon={<GiCatch size="20px" />}
-                        description="We identify catch-all domains and addresses so you can isolate them from your list. All these domains will return a “risky” result and you can then sort them."
+                        description="A catch-all address is meant to catch all emails sent to any non-existing email accounts on a given domain name. We identify catch-all addresses so you can isolate them from your list."
                     />
                     <FeatureCard
                         title="MX Record and SMTP Server Check"
                         icon={<CiServer size="20px" />}
-                        description="Our API will tell you if an MX Record was found for the domain we check, which would let us test the recipient by questioning the SMTP server. This way, you’ll know if a certain email address is genuine or fake."
+                        description="Our API will tell you if an MX Record was found for the target's domain, which would let us test the recipient by questioning the SMTP server. This way, you’ll know if a certain email address is genuine or fake."
                     />
                     <FeatureCard
                         title="Full Inbox / Disabled Account Check"
@@ -52,6 +47,12 @@ const FeaturesSection: React.FC = () => {
                         title="Role Account Check"
                         icon={<CiUser size="20px" />}
                         description="Detect role-based email addresses to ensure your messages are reaching real individuals and not just functional inboxes. Identifying role accounts improves your email marketing effectiveness and helps maintain a clean contact list."
+                    />
+
+                    <FeatureCard
+                        title="Validation from files and external platforms"
+                        icon={<CiFileOn size="20px" />}
+                        description="You can upload CSV, XLS, XLSX and TXT files containing up to 1,000,000 email addresses at a time. You may also import addresses from CRMs and marketing platforms. This makes it easy to validate emails in bulk. It takes our email verifier 30 minutes on average to check an email list of 100,000 contacts."
                     />
                 </div>
             </div>
