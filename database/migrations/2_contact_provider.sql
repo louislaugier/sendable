@@ -11,7 +11,8 @@ CREATE TABLE IF NOT EXISTS public."contact_provider" (
     "id" SERIAL PRIMARY KEY,
     "type" contact_provider_type NOT NULL,
     "user_id" UUID REFERENCES public."user"(id),
-    "latest_access_token" VARCHAR NOT NULL,
+    "latest_access_token" VARCHAR,
+    "api_key" VARCHAR,
     "created_at" TIMESTAMP NOT NULL DEFAULT now(),
     "updated_at" TIMESTAMP NOT NULL DEFAULT now()
 );
