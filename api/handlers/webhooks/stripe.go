@@ -43,6 +43,7 @@ func StripeWebhookHandler(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
 	}
+
 	customerID := subscription.Customer.ID
 	customerEmail := subscription.Customer.Email
 
@@ -91,29 +92,15 @@ func handleNewSubscription(customerID, customerEmail, subscriptionID, productID,
 		}
 	}
 
-	if u.CurrentPlan.Type != models.FreePlan {
-		err = subscription.CancelByID(*u.CurrentPlan.ID)
-		if err != nil {
-			http.Error(w, err.Error(), http.StatusInternalServerError)
-			return
-		}
-
-		err = stp.CancelSubscription(*u.CurrentPlan.StripeSubscriptionID)
-		if err != nil {
-			http.Error(w, err.Error(), http.StatusInternalServerError)
-			return
-		}
-	}
-
 	if planInterval == string(stripe.PlanIntervalMonth) {
 		billingFrequency = models.MonthlyBilling
 	} else if planInterval == string(stripe.PlanIntervalYear) {
 		billingFrequency = models.YearlyBilling
 	}
 
-	if productID == string(models.StripePremiumProductID) {
+	if productID == string(config.StripePremiumProductID) {
 		subscriptionType = models.PremiumSubscription
-	} else if productID == string(models.StripeEnterpriseProductID) {
+	} else if productID == string(config.StripeEnterpriseProductID) {
 		subscriptionType = models.EnterpriseSubscription
 	}
 
@@ -128,6 +115,21 @@ func handleNewSubscription(customerID, customerEmail, subscriptionID, productID,
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
+	}
+
+	previousPlan := u.CurrentPlan
+	if previousPlan.Type != models.FreePlan {
+		err = subscription.CancelByID(*previousPlan.ID)
+		if err != nil {
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+			return
+		}
+
+		err = stp.CancelSubscription(*previousPlan.StripeSubscriptionID)
+		if err != nil {
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+			return
+		}
 	}
 }
 

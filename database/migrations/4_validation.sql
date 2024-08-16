@@ -6,7 +6,7 @@ CREATE type reachability AS ENUM ('safe', 'risky', 'unknown', 'invalid');
 
 CREATE TABLE IF NOT EXISTS public."validation" (
     "id" UUID PRIMARY KEY,
-    "user_id" UUID REFERENCES public."user"(id) NOT NULL,
+    "user_id" UUID REFERENCES public."user"(id),
     "guest_ip" VARCHAR,
     "guest_user_agent" VARCHAR,
     "single_target_email" VARCHAR,
