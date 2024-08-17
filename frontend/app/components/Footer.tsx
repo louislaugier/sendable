@@ -8,18 +8,41 @@ export default function Footer() {
 
     return (
         <footer className="bg-black text-white pt-6 pb-2">
-            <div className="container mx-auto flex justify-between items-start" style={{ maxWidth: 200 }}>
-                <div className="text-center text-sm">
-                    {pages.map((page, index) => (
-                        page.requiresAuth && !user ? <></> :
-                            <div key={index} className="mb-2">
-                                <a href={page.url} className="block">
-                                    {page.label}
-                                </a>
-                            </div>
-                    ))}
+            <div className="container mx-auto flex flex-col md:flex-row justify-between items-start" style={{ maxWidth: 1200 }}>
+                {/* First Column: Main Pages */}
+                <div className="w-full md:w-1/3 text-center text-sm mb-4 md:mb-0">
+                    {pages.filter(page => !page.requiresAuth || (page.requiresAuth && user) || page.label === 'Resources')
+                        .map((page, index) => (
+                            page.label === 'Resources' ? null :
+                                <div key={index} className="mb-2">
+                                    <a href={page.url} className="block">
+                                        {page.label}
+                                    </a>
+                                </div>
+                        ))}
                 </div>
-                <div className="text-center text-sm">
+
+                {/* Middle Column: Blog, FAQ, Business Inquiry */}
+                <div className="w-full md:w-1/3 text-center text-sm mb-4 md:mb-0">
+                    <div className="mb-2">
+                        <a href="/blog" className="block">
+                            Blog
+                        </a>
+                    </div>
+                    <div className="mb-2">
+                        <a href="/faq" className="block">
+                            FAQ
+                        </a>
+                    </div>
+                    <div className="mb-2">
+                        <a href={`mailto:${contactEmail}`} className="block">
+                            Business inquiry
+                        </a>
+                    </div>
+                </div>
+
+                {/* Third Column: Privacy Policy, Terms of Use */}
+                <div className="w-full md:w-1/3 text-center text-sm">
                     <div className="mb-2">
                         <a href="/privacy-policy" className="block">
                             Privacy Policy
@@ -28,11 +51,6 @@ export default function Footer() {
                     <div className="mb-2">
                         <a href="/terms-of-use" className="block">
                             Terms of Use
-                        </a>
-                    </div>
-                    <div className="mb-2">
-                        <a href={`mailto:${contactEmail}`} className="block">
-                            Contact Us
                         </a>
                     </div>
                 </div>

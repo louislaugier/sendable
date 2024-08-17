@@ -36,10 +36,13 @@ type (
 
 		PasswordSHA256 *string `json:"passwordSha256,omitempty"`
 
-		JWT                 string        `json:"jwt,omitempty"`
-		AuthProvider        *AuthProvider `json:"authProvider,omitempty"`
-		TwoFactorAuthSecret *string       `json:"-"`
-		Is2FAEnabled        bool          `json:"is2faEnabled,omitempty"`
+		JWT string `json:"jwt,omitempty"`
+
+		AuthProvider     *AuthProvider     `json:"authProvider,omitempty"`
+		ContactProviders []ContactProvider `json:"contactProviders,omitempty"`
+
+		TwoFactorAuthSecret *string `json:"-"`
+		Is2FAEnabled        bool    `json:"is2faEnabled,omitempty"`
 
 		ValidationCounts *UserValidationCounts `json:"validationCounts,omitempty"`
 		CurrentPlan      *Subscription         `json:"currentPlan,omitempty"`

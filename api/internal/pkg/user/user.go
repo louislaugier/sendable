@@ -9,6 +9,7 @@ import (
 	"log"
 
 	"github.com/google/uuid"
+	"github.com/lib/pq"
 )
 
 const (
@@ -24,9 +25,18 @@ const (
 			u."2fa_secret", 
 			u."stripe_customer_id", 
 			u."created_at", 
-			u."updated_at"
+			u."updated_at",
+			json_agg(json_build_object(
+				'id', cp."id",
+				'type', cp."type",
+				'latestAccessToken', cp."latest_access_token",
+				'createdAt', cp."created_at",
+				'updatedAt', cp."updated_at"
+			)) AS contact_providers
 		FROM 
 			public."user" u
+		LEFT JOIN 
+			public."contact_provider" cp ON u."id" = cp."user_id"
 		LEFT JOIN 
 			public."subscription" s ON u."id" = s."user_id"
 		WHERE
@@ -37,7 +47,17 @@ const (
 				(u."deleted_at" IS NOT NULL AND u."deleted_at" >= current_timestamp - interval '30 days' AND s."cancelled_at" IS NULL) 
 				OR 
 				(u."deleted_at" IS NULL)
-			);
+			)
+		GROUP BY 
+			u."id", 
+			u."email", 
+			u."auth_provider", 
+			u."is_email_confirmed", 
+			u."email_confirmation_code", 
+			u."2fa_secret", 
+			u."stripe_customer_id", 
+			u."created_at", 
+			u."updated_at";
 	`
 	select2FASecretQuery = `SELECT "2fa_secret" FROM public."user" WHERE "id" = $1 AND "deleted_at" IS NULL LIMIT 1;`
 
@@ -178,7 +198,8 @@ func getByCriteria(isMinimalResponse bool, query string, args ...interface{}) (*
 
 	for rows.Next() {
 		u := models.User{}
-		err = rows.Scan(&u.ID, &u.Email, &u.AuthProvider, &u.IsEmailConfirmed, &u.EmailConfirmationCode, &u.TwoFactorAuthSecret, &u.StripeCustomerID, &u.CreatedAt, &u.UpdatedAt)
+		var contactProviders []models.ContactProvider
+		err = rows.Scan(&u.ID, &u.Email, &u.AuthProvider, &u.IsEmailConfirmed, &u.EmailConfirmationCode, &u.TwoFactorAuthSecret, &u.StripeCustomerID, &u.CreatedAt, &u.UpdatedAt, pq.Array(&contactProviders))
 		if err != nil {
 			return nil, err
 		}
@@ -204,6 +225,7 @@ func getByCriteria(isMinimalResponse bool, query string, args ...interface{}) (*
 			}
 		}
 
+		u.ContactProviders = contactProviders
 		user = &u
 	}
 

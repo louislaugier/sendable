@@ -4,18 +4,18 @@ import { siteName } from "~/constants/app";
 
 export const meta: MetaFunction = () => {
   return [
-    { title: `${siteName} - Referral` },
-    { name: "description", content: "Welcome to Remix! - Referral" },
+    { title: `${siteName} - FAQ` },
+    { name: "description", content: "Welcome to Remix! - FAQ" },
   ];
 };
 
-export default function Referral() {
+export default function Faq() {
 
   return (
     <div className="py-8 px-6">
 
       <div className="flex flex-col items-center mb-16">
-        <h1 className="text-2xl">Referral</h1>
+        <h1 className="text-2xl">FAQ</h1>
       </div>
 
       <div className="flex flex-wrap justify-between">

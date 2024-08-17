@@ -19,7 +19,10 @@ import { navigateToUrl } from "~/utils/url";
 
 export const meta: MetaFunction = () => {
   return [
-    { title: `${siteName} - Dashboard` },
+    { title: `Dashboard - ${siteName}` },
+    // { title: `Dashboard | ${siteName}` },
+    // { title: `Dashboard · ${siteName}` },
+    // { title: `${siteName} - Dashboard` },
     { name: "description", content: "Welcome to Remix! - Dashboard" },
   ];
 };

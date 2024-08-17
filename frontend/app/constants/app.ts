@@ -2,6 +2,6 @@ import { getEnv } from "~/services/utils/env";
 
 export const appUrl = getEnv("APP_URL");
 
-export const siteName = "Email Validator";
+export const siteName = "Sendable";
 
-export const contactEmail = "contact@example.com";
+export const contactEmail = "support@sendable.email";
