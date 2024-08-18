@@ -1,15 +1,17 @@
 package user
 
 import (
+	"database/sql"
 	"email-validator/config"
 	"email-validator/internal/models"
 	"email-validator/internal/pkg/subscription"
 	"email-validator/internal/pkg/validation"
+	"encoding/json"
 	"fmt"
 	"log"
+	"time"
 
 	"github.com/google/uuid"
-	"github.com/lib/pq"
 )
 
 const (
@@ -30,8 +32,9 @@ const (
 				'id', cp."id",
 				'type', cp."type",
 				'latestAccessToken', cp."latest_access_token",
-				'createdAt', cp."created_at",
-				'updatedAt', cp."updated_at"
+				'apiKey', cp."api_key",
+				'createdAt', to_char(cp."created_at", 'YYYY-MM-DD"T"HH24:MI:SS.MS"Z"'),
+				'updatedAt', to_char(cp."updated_at", 'YYYY-MM-DD"T"HH24:MI:SS.MS"Z"')
 			)) AS contact_providers
 		FROM 
 			public."user" u
@@ -43,7 +46,6 @@ const (
 			%s
 			AND
 			(
-				-- get soft deleted users if they have an ongoing subscription & if deleted_at < 30 days from now (to be reactivated with cron) and all non-soft-deleted users
 				(u."deleted_at" IS NOT NULL AND u."deleted_at" >= current_timestamp - interval '30 days' AND s."cancelled_at" IS NULL) 
 				OR 
 				(u."deleted_at" IS NULL)
@@ -57,8 +59,10 @@ const (
 			u."2fa_secret", 
 			u."stripe_customer_id", 
 			u."created_at", 
-			u."updated_at";
+			u."updated_at"
+		;
 	`
+
 	select2FASecretQuery = `SELECT "2fa_secret" FROM public."user" WHERE "id" = $1 AND "deleted_at" IS NULL LIMIT 1;`
 
 	set2FASecretQuery = `UPDATE public.user SET "2fa_secret" = $1 WHERE id = $2;`
@@ -198,11 +202,47 @@ func getByCriteria(isMinimalResponse bool, query string, args ...interface{}) (*
 
 	for rows.Next() {
 		u := models.User{}
-		var contactProviders []models.ContactProvider
-		err = rows.Scan(&u.ID, &u.Email, &u.AuthProvider, &u.IsEmailConfirmed, &u.EmailConfirmationCode, &u.TwoFactorAuthSecret, &u.StripeCustomerID, &u.CreatedAt, &u.UpdatedAt, pq.Array(&contactProviders))
+		var contactProvidersJSON []byte
+		var createdAt, updatedAt sql.NullTime
+		err = rows.Scan(&u.ID, &u.Email, &u.AuthProvider, &u.IsEmailConfirmed, &u.EmailConfirmationCode,
+			&u.TwoFactorAuthSecret, &u.StripeCustomerID, &createdAt, &updatedAt, &contactProvidersJSON)
 		if err != nil {
 			return nil, err
 		}
+
+		// Convert sql.NullTime to time.Time
+		if createdAt.Valid {
+			u.CreatedAt = &createdAt.Time
+		}
+		if updatedAt.Valid {
+			u.UpdatedAt = &updatedAt.Time
+		}
+
+		// Unmarshal JSON array into slice of ContactProvider
+		var contactProviders []models.ContactProvider
+		err = json.Unmarshal(contactProvidersJSON, &contactProviders)
+		if err != nil {
+			return nil, fmt.Errorf("error unmarshalling contact providers: %v", err)
+		}
+
+		for i := range contactProviders {
+			// Convert strings to time.Time for createdAt and updatedAt
+			t, err := time.Parse(time.RFC3339, contactProviders[i].CreatedAt.String())
+			if err == nil {
+				contactProviders[i].CreatedAt = t
+			}
+
+			if contactProviders[i].UpdatedAt != nil {
+				t, err := time.Parse(time.RFC3339, contactProviders[i].UpdatedAt.String())
+				if err == nil {
+					contactProviders[i].UpdatedAt = &t
+				}
+			}
+
+			contactProviders[i].UserID = u.ID
+		}
+
+		u.ContactProviders = contactProviders
 		if u.TwoFactorAuthSecret != nil {
 			u.Is2FAEnabled = true
 		}
@@ -225,7 +265,6 @@ func getByCriteria(isMinimalResponse bool, query string, args ...interface{}) (*
 			}
 		}
 
-		u.ContactProviders = contactProviders
 		user = &u
 	}
 

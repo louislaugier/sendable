@@ -19,7 +19,7 @@ CREATE TABLE IF NOT EXISTS public."user" (
     "auth_provider" auth_provider,
     "stripe_customer_id" VARCHAR UNIQUE,
     "created_at" TIMESTAMP NOT NULL DEFAULT NOW(),
-    "updated_at" TIMESTAMP NOT NULL DEFAULT NOW(),
+    "updated_at" TIMESTAMP,
     "deleted_at" TIMESTAMP,
     CONSTRAINT password_or_auth_provider_not_empty CHECK (
         "password_sha256" IS NOT NULL
