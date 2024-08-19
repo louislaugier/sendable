@@ -27,13 +27,6 @@ CREATE TABLE IF NOT EXISTS public."user" (
     )
 );
 
-CREATE OR REPLACE FUNCTION update_timestamp() RETURNS TRIGGER AS $$
-BEGIN
-    NEW.updated_at = NOW();
-    RETURN NEW;
-END;
-$$ LANGUAGE 'plpgsql';
-
 CREATE OR REPLACE TRIGGER update_user_timestamp
 BEFORE UPDATE ON public."user"
 FOR EACH ROW
