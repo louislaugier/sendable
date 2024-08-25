@@ -25,7 +25,7 @@ export const handleAuthCode = (event: MessageEvent<AuthCodeEvent>, setUser: Reac
                 sessionStorage.removeItem(salesforceCodeVerifierKey);
             }
 
-            auth({ code, code_verifier: codeVerifier })
+            auth({ code, codeVerifier })
                 .then((res: any) => {
                     if (res) {
                         if (res.email) {

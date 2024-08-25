@@ -40,9 +40,9 @@ func handle(mux *http.ServeMux, path string, handler http.Handler, withBaseRateL
 func handleHTTP(mux *http.ServeMux) {
 	handle(mux, "/healthz", http.HandlerFunc(handlers.HealthzHandler), true)
 
-	handle(mux, "/signup", http.HandlerFunc(handlers.SignupHandler), true)
+	handle(mux, "/email_signup", http.HandlerFunc(handlers.SignupHandler), true)
 	handle(mux, "/confirm_email_address", http.HandlerFunc(handlers.ConfirmEmailAddressHandler), true)
-	handle(mux, "/login", http.HandlerFunc(handlers.LoginHandler), true)
+	handle(mux, "/auth_email", http.HandlerFunc(handlers.LoginHandler), true)
 	handle(mux, "/reset_password", http.HandlerFunc(handlers.ResetPasswordHandler), true, func() *time.Duration {
 		rateLimit := time.Minute
 		return &rateLimit
@@ -105,6 +105,11 @@ func handleHTTP(mux *http.ServeMux) {
 		http.HandlerFunc(webhooks.StripeWebhookHandler),
 		true,
 	)
+
+	handle(mux, "/set_provider_api_key", middleware.ValidateJWT(
+		http.HandlerFunc(handlers.SetProviderAPIKeyHandler),
+		true,
+	), true)
 
 	handle(mux, "/generate_jwt", middleware.ValidateAPIKey( // generate JWT as API consumer (platform users)
 		http.HandlerFunc(handlers.GenerateJWTHandler),

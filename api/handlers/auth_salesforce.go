@@ -32,7 +32,7 @@ func SalesforceAuthHandler(w http.ResponseWriter, r *http.Request) {
 
 	accessToken, userInfo, err := oauth.VerifySalesforceCode(body.Code, body.CodeVerifier)
 	if err != nil {
-		handleError(w, err, "Invalid code & code_verifier", http.StatusUnauthorized)
+		handleError(w, err, "Invalid code & codeVerifier", http.StatusUnauthorized)
 		return
 	}
 
@@ -66,7 +66,7 @@ func decodeSalesforceAuthRequestBody(r *http.Request) (*models.AuthSalesforceReq
 		return nil, fmt.Errorf("error decoding JSON")
 	}
 	if body.Code == "" || body.CodeVerifier == "" {
-		return nil, fmt.Errorf("missing code & code_verifier pair")
+		return nil, fmt.Errorf("missing code & codeVerifier pair")
 	}
 	return &body, nil
 }

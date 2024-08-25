@@ -1,8 +1,8 @@
 import apiClient from ".";
 
-const login = async (data: any) => {
+const authEmail = async (data: any) => {
     try {
-        const response = await apiClient.post('login', data);
+        const response = await apiClient.post('auth_email', data);
         return response.data;
     } catch (error: any) {
         if (error?.message?.includes('401')) return { error: error?.response?.data }
@@ -13,4 +13,4 @@ const login = async (data: any) => {
     }
 };
 
-export default login;
+export default authEmail;

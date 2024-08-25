@@ -4,7 +4,7 @@ import "github.com/google/uuid"
 
 type (
 	AuthGoogleRequest struct {
-		AccessToken string `json:"access_token"`
+		AccessToken string `json:"accessToken"`
 		JWT         string `json:"jwt"`
 	}
 	AuthHubspotRequest struct {
@@ -18,7 +18,7 @@ type (
 	}
 	AuthSalesforceRequest struct {
 		Code         string `json:"code"`
-		CodeVerifier string `json:"code_verifier"`
+		CodeVerifier string `json:"codeVerifier"`
 	}
 	AuthZohoRequest struct {
 		Code string `json:"code"`
@@ -82,5 +82,9 @@ type (
 	}
 	GenerateStripeCustomerPortalRequest struct {
 		CustomerID string `json:"customerId"`
+	}
+	SetProviderAPIKeyRequest struct {
+		Provider *ContactProviderType `json:"provider"`
+		APIKey   string               `json:"apiKey"`
 	}
 )

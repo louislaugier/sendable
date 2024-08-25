@@ -3,10 +3,9 @@ import { Modal, ModalContent, ModalHeader, ModalBody, ModalFooter, Button, Input
 import UserContext from "~/contexts/UserContext";
 import AuthButtons from "~/components/buttons/AuthButtons";
 import { AuthModalType } from "~/types/modal";
-import signup from "~/services/api/signup";
+import signup from "~/services/api/email_signup";
 import CodeConfirmationForm from "../../forms/CodeConfirmationForm";
 import confirmEmail from "~/services/api/confirm_email_address";
-import login from "~/services/api/login";
 import { navigateToUrl } from "~/utils/url";
 import { isValidPassword } from "~/utils/password";
 import AuthModalContext from "~/contexts/AuthModalContext";
@@ -15,6 +14,7 @@ import { isValidEmail } from "~/services/utils/email";
 import setPassword from "~/services/api/set_password";
 import { EyeFilledIcon } from "~/components/icons/EyeFilledIcon";
 import { EyeSlashFilledIcon } from "~/components/icons/EyeSlashFilledIcon";
+import authEmail from "~/services/api/auth_email";
 
 export default function SignupLoginModal(props: any) {
     const { authModal, modalType, setModalType } = useContext(AuthModalContext);
@@ -110,7 +110,7 @@ export default function SignupLoginModal(props: any) {
         }
 
         try {
-            const res = await login({ email: loginEmail, password: loginPassword })
+            const res = await authEmail({ email: loginEmail, password: loginPassword })
 
             if (res.email) if (!res.isEmailConfirmed && loginEmail === res.email) {
                 setSignupEmail(res.email)

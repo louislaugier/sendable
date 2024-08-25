@@ -1,8 +1,8 @@
 import apiClient from ".";
 
-const signup = async (data: any) => {
+const emailSignup = async (data: any) => {
     try {
-        const response = await apiClient.post('signup', data);
+        const response = await apiClient.post('email_signup', data);
         return response.data;
     } catch (error: any) {
         if (error?.message?.includes('409')) return { error: error?.response?.data }
@@ -13,4 +13,4 @@ const signup = async (data: any) => {
     }
 };
 
-export default signup;
+export default emailSignup;

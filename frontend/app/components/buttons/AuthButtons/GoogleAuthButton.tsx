@@ -15,7 +15,7 @@ export default function GoogleAuthButton() {
         setLoading(true);
 
         try {
-            let res = await googleAuth({ access_token: tokenResponse.access_token });
+            let res = await googleAuth({ accessToken: tokenResponse.access_token });
 
             if (res.email) {
                 setUser(res)
