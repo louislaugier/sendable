@@ -11,7 +11,32 @@ import (
 	brevo "github.com/getbrevo/brevo-go/lib"
 )
 
-func GetContacts(client *brevo.APIClient, limit, offset int64, modifiedSince, createdSince *time.Time) ([]models.BrevoContact, int64, error) {
+func GetContacts(client *brevo.APIClient, modifiedSince, createdSince *time.Time) ([]models.BrevoContact, error) {
+	var allContacts []models.BrevoContact
+	var offset int64 = 0
+	const limit int64 = 50 // You can adjust this limit based on API constraints or preferences
+
+	for {
+		contacts, _, err := GetContactsPaginated(client, limit, offset, modifiedSince, createdSince)
+		if err != nil {
+			return nil, err
+		}
+
+		allContacts = append(allContacts, contacts...)
+
+		// If the number of contacts retrieved is less than the limit, we've reached the end
+		if int64(len(contacts)) < limit {
+			break
+		}
+
+		// Increment the offset for the next batch
+		offset += limit
+	}
+
+	return allContacts, nil
+}
+
+func GetContactsPaginated(client *brevo.APIClient, limit, offset int64, modifiedSince, createdSince *time.Time) ([]models.BrevoContact, int, error) {
 	opts := &brevo.GetContactsOpts{
 		Limit:  optional.NewInt64(limit),
 		Offset: optional.NewInt64(offset),
@@ -43,30 +68,5 @@ func GetContacts(client *brevo.APIClient, limit, offset int64, modifiedSince, cr
 		brevoContacts = append(brevoContacts, *contact)
 	}
 
-	return brevoContacts, contacts.Count, nil
-}
-
-func GetAllContacts(client *brevo.APIClient, modifiedSince, createdSince *time.Time) ([]models.BrevoContact, error) {
-	var allContacts []models.BrevoContact
-	var offset int64 = 0
-	const limit int64 = 50 // You can adjust this limit based on API constraints or preferences
-
-	for {
-		contacts, _, err := GetContacts(client, limit, offset, modifiedSince, createdSince)
-		if err != nil {
-			return nil, err
-		}
-
-		allContacts = append(allContacts, contacts...)
-
-		// If the number of contacts retrieved is less than the limit, we've reached the end
-		if int64(len(contacts)) < limit {
-			break
-		}
-
-		// Increment the offset for the next batch
-		offset += limit
-	}
-
-	return allContacts, nil
+	return brevoContacts, int(contacts.Count), nil
 }

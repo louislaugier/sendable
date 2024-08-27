@@ -2,19 +2,22 @@ package sendgrid
 
 import (
 	"compress/gzip"
-	"email-validator/internal/models"
-	"encoding/csv"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"io"
 	"log"
 	"net/http"
+	"strings"
 	"time"
+
+	"email-validator/internal/models"
 
 	"github.com/sendgrid/rest"
 )
 
-func GetContacts(client *Client) ([]models.SendgridContact, error) {
+// TODO: listIDs & segmentIDs
+func GetContacts(client *Client, listIDs, segmentIDs []string) ([]models.SendgridContact, error) {
 	// Construct the full URL
 	fullURL := "https://api.sendgrid.com/v3/marketing/contacts/exports"
 
@@ -27,7 +30,8 @@ func GetContacts(client *Client) ([]models.SendgridContact, error) {
 		},
 		Body: []byte(`{
 			"list_ids": [],
-			"contact_sample": false
+			"segment_ids": [],
+			"file_type": "json"
 		}`),
 	}
 
@@ -81,11 +85,8 @@ func GetContacts(client *Client) ([]models.SendgridContact, error) {
 			break
 		}
 
-		fmt.Println("SendGrid export in progress, checking again...")
-		time.Sleep(10 * time.Second) // Add a delay to avoid rapid polling
+		time.Sleep(3 * time.Second) // Add a delay to avoid rapid polling
 	}
-
-	log.Println("ok")
 
 	// Step 3: Download the Exported Data
 	resp, err := http.Get(url)
@@ -94,47 +95,98 @@ func GetContacts(client *Client) ([]models.SendgridContact, error) {
 	}
 	defer resp.Body.Close()
 
-	var reader io.Reader = resp.Body
-
-	// Check if the response is compressed
-	if resp.Header.Get("Content-Encoding") == "gzip" {
-		reader, err = gzip.NewReader(resp.Body)
+	// Check if the response is gzipped and decompress it
+	var reader io.Reader
+	if resp.Header.Get("Content-Encoding") == "x-gzip" {
+		gzipReader, err := gzip.NewReader(resp.Body)
 		if err != nil {
 			return nil, fmt.Errorf("failed to create gzip reader: %w", err)
 		}
-		defer reader.(*gzip.Reader).Close()
+		defer gzipReader.Close()
+		reader = gzipReader
+	} else {
+		reader = resp.Body
 	}
 
-	// Step 4: Read CSV Data
-	csvReader := csv.NewReader(reader)
-	csvReader.FieldsPerRecord = -1 // Allow variable number of fields per record
-	csvReader.Comma = ','
+	// Read the response body
+	bodyBytes, err := io.ReadAll(reader)
+	if err != nil {
+		return nil, fmt.Errorf("failed to read response body: %w", err)
+	}
 
+	// Split the response body into separate JSON objects
+	parts := strings.Split(string(bodyBytes), "}\n{")
 	var contacts []models.SendgridContact
 
-	for {
-		record, err := csvReader.Read()
-		if err == io.EOF {
-			break
+	for i, part := range parts {
+		if i > 0 {
+			// Add back the removed curly braces between parts
+			part = "{" + part
 		}
+		if i < len(parts)-1 {
+			part = part + "}"
+		}
+
+		var result map[string]interface{}
+		err = json.Unmarshal([]byte(part), &result)
 		if err != nil {
-			log.Println(err)
-			return nil, fmt.Errorf("error reading CSV data: %w", err)
+			return nil, fmt.Errorf("failed to unmarshal JSON part: %w", err)
 		}
 
-		log.Println(record)
-
-		// Assuming models.SendgridContact has fields matching the CSV columns
-		contact := models.SendgridContact{
-			Email: record[0],
+		if email, ok := result["email"]; ok {
+			if emailStr, ok := email.(string); ok {
+				contacts = append(contacts, models.SendgridContact{
+					Email: emailStr,
+				})
+			}
 		}
-		contacts = append(contacts, contact)
 	}
 
+	log.Println(len(contacts))
+
+	// Return the contacts (currently empty, you'll need to populate this from result)
 	return contacts, nil
 }
 
 func GetContactsCount(client *Client) (int, error) {
+	// Construct the URL for retrieving contacts count
+	fullURL := "https://api.sendgrid.com/v3/marketing/contacts/count"
 
-	return 0, nil
+	// Create a new request to SendGrid API
+	request := rest.Request{
+		Method:  rest.Get,
+		BaseURL: fullURL,
+		Headers: map[string]string{
+			"Authorization": "Bearer " + client.APIKey,
+		},
+	}
+
+	// Send the request to the API
+	response, err := rest.Send(request)
+	if err != nil {
+		return 0, fmt.Errorf("failed to send request: %w", err)
+	}
+
+	// Check for a successful response status
+	if response.StatusCode != http.StatusOK {
+		return 0, fmt.Errorf("failed to retrieve contacts count: %s", response.Body)
+	}
+
+	// Parse the response body to extract the contact count
+	var resp map[string]interface{}
+	if err := json.Unmarshal([]byte(response.Body), &resp); err != nil {
+		return 0, fmt.Errorf("failed to parse response: %w", err)
+	}
+
+	countResponse, ok := resp["contact_count"]
+	if !ok {
+		return 0, errors.New("failed to parse response, no contact_count field")
+	}
+
+	count, ok := countResponse.(float64)
+	if !ok {
+		return 0, errors.New("failed to parse response, contact_count is not a float64")
+	}
+
+	return int(count), nil
 }
