@@ -45,3 +45,28 @@ func GetContacts(client *brevo.APIClient, limit, offset int64, modifiedSince, cr
 
 	return brevoContacts, contacts.Count, nil
 }
+
+func GetAllContacts(client *brevo.APIClient, modifiedSince, createdSince *time.Time) ([]models.BrevoContact, error) {
+	var allContacts []models.BrevoContact
+	var offset int64 = 0
+	const limit int64 = 50 // You can adjust this limit based on API constraints or preferences
+
+	for {
+		contacts, _, err := GetContacts(client, limit, offset, modifiedSince, createdSince)
+		if err != nil {
+			return nil, err
+		}
+
+		allContacts = append(allContacts, contacts...)
+
+		// If the number of contacts retrieved is less than the limit, we've reached the end
+		if int64(len(contacts)) < limit {
+			break
+		}
+
+		// Increment the offset for the next batch
+		offset += limit
+	}
+
+	return allContacts, nil
+}

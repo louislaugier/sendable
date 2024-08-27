@@ -10,7 +10,7 @@ func HealthzHandler(w http.ResponseWriter, _ *http.Request) {
 	fmt.Fprint(w, http.StatusText(http.StatusOK))
 }
 
-func handleError(w http.ResponseWriter, err error, message string, statusCode int) {
-	log.Printf("%s: %v", message, err)
-	http.Error(w, message, statusCode)
+func handleError(w http.ResponseWriter, errorToLog error, messageToReturn string, statusCode int) {
+	log.Printf("%s: %v", messageToReturn, errorToLog)
+	http.Error(w, messageToReturn, statusCode)
 }

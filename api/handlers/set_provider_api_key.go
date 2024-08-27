@@ -27,38 +27,33 @@ func SetProviderAPIKeyHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	var (
-		contacts   []string
-		totalCount int64
-	)
+	var totalCount int64
 
 	switch *provider {
 	case models.BrevoContactProvider:
 		client := brevo.NewClient(req.APIKey)
 
-		brevoContacts, count, err := brevo.GetContacts(client, 1, 0, nil, nil)
+		_, count, err := brevo.GetContacts(client, 1, 0, nil, nil)
 		if err != nil {
 			http.Error(w, "invalid Brevo API key", http.StatusUnauthorized)
 			log.Println(err)
 			return
 		}
 
-		for _, c := range brevoContacts {
-			contacts = append(contacts, c.Email)
-		}
 		totalCount = count
 	case models.SendgridContactProvider:
 		client := sendgrid.NewClient(req.APIKey)
 
-		sendgridContacts, err := sendgrid.GetContacts(client)
-		if err != nil {
-			http.Error(w, "invalid SendGrid API key or insufficient permissions/scopes", http.StatusUnauthorized)
-			return
-		}
+		go sendgrid.GetContacts(client)
+		totalCount = int64(0)
 
-		for _, c := range sendgridContacts {
-			contacts = append(contacts, c.Email)
-		}
+		// count, err := sendgrid.GetContactsCount(client)
+		// if err != nil {
+		// 	http.Error(w, "invalid SendGrid API key or insufficient permissions/scopes", http.StatusUnauthorized)
+		// 	return
+		// }
+
+		// totalCount = int64(count)
 	default:
 		http.Error(w, "unsupported provider", http.StatusBadRequest)
 		return
@@ -68,7 +63,6 @@ func SetProviderAPIKeyHandler(w http.ResponseWriter, r *http.Request) {
 	// insert/update contact_provider in DB
 
 	json.NewEncoder(w).Encode(map[string]interface{}{
-		"contacts":   contacts,
-		"totalCount": totalCount,
+		"contactsCount": totalCount,
 	})
 }
