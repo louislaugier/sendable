@@ -1,12 +1,16 @@
 package handlers
 
 import (
+	"email-validator/handlers/middleware"
 	"email-validator/internal/models"
 	"email-validator/internal/pkg/brevo"
+	"email-validator/internal/pkg/contact_provider"
 	"email-validator/internal/pkg/sendgrid"
 	"encoding/json"
 	"log"
 	"net/http"
+
+	"github.com/google/uuid"
 )
 
 func SetProviderAPIKeyHandler(w http.ResponseWriter, r *http.Request) {
@@ -22,7 +26,8 @@ func SetProviderAPIKeyHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	provider := req.Provider
-	if provider == nil || req.APIKey == "" {
+	newAPIKey := req.APIKey
+	if provider == nil || newAPIKey == "" {
 		http.Error(w, "invalid payload: missing 'provider' and/or 'apiKey' fields in JSON body", http.StatusBadRequest)
 		return
 	}
@@ -31,7 +36,7 @@ func SetProviderAPIKeyHandler(w http.ResponseWriter, r *http.Request) {
 
 	switch *provider {
 	case models.BrevoContactProvider:
-		client := brevo.NewClient(req.APIKey)
+		client := brevo.NewClient(newAPIKey)
 
 		_, count, err := brevo.GetContactsPaginated(client, 1, 0, nil, nil)
 		if err != nil {
@@ -42,13 +47,7 @@ func SetProviderAPIKeyHandler(w http.ResponseWriter, r *http.Request) {
 
 		totalCount = count
 	case models.SendgridContactProvider:
-		client := sendgrid.NewClient(req.APIKey)
-
-		// go func() {
-		// 	_, err := sendgrid.GetContacts(client, nil, nil)
-		// 	log.Println(err)
-		// }()
-		// totalCount = int64(0)
+		client := sendgrid.NewClient(newAPIKey)
 
 		count, err := sendgrid.GetContactsCount(client)
 		if err != nil {
@@ -64,7 +63,37 @@ func SetProviderAPIKeyHandler(w http.ResponseWriter, r *http.Request) {
 
 	}
 
-	// insert/update contact_provider in DB
+	user := middleware.GetUserFromRequest(r)
+
+	var existingProviderID *uuid.UUID
+	for _, p := range user.ContactProviders {
+		if p.Type == *provider {
+			if p.APIKey == &newAPIKey {
+				http.Error(w, "old and new api must not match", http.StatusBadRequest)
+				return
+			}
+
+			existingProviderID = &p.ID
+			break
+		}
+	}
+
+	var err error
+	if existingProviderID != nil {
+		err = contact_provider.UpdateAPIKey(*existingProviderID, newAPIKey)
+	} else {
+		err = contact_provider.InsertNew(&models.ContactProvider{
+			ID:     uuid.New(),
+			UserID: user.ID,
+			Type:   *provider,
+			APIKey: &newAPIKey,
+		})
+
+	}
+	if err != nil {
+		http.Error(w, "internal server error", http.StatusInternalServerError)
+		return
+	}
 
 	json.NewEncoder(w).Encode(map[string]interface{}{
 		"contactsCount": totalCount,

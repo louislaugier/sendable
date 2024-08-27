@@ -106,7 +106,7 @@ func handleHTTP(mux *http.ServeMux) {
 		true,
 	)
 
-	handle(mux, "/set_provider_api_key", middleware.ValidateJWT(
+	handle(mux, "/upsert_provider_api_key", middleware.ValidateJWT(
 		http.HandlerFunc(handlers.SetProviderAPIKeyHandler),
 		true,
 	), true)
