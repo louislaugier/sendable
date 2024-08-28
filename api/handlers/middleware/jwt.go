@@ -139,14 +139,14 @@ func ValidateJWT(next http.Handler, requiresConfirmedEmail bool) http.Handler {
 				return
 			}
 
-			providers := u.ContactProviders
+			providers := append([]models.ContactProvider(nil), u.ContactProviders...)
 			ctx := context.WithValue(r.Context(), userContactProvidersKey, providers)
-
 			for i := range u.ContactProviders {
+				l := *u.ContactProviders[i].APIKey
+				lastChars := l[len(l)-5:]
+
 				u.ContactProviders[i].APIKey = nil
 
-				// TODO
-				lastChars := ""
 				u.ContactProviders[i].LatestAPIKeyChars = &lastChars
 			}
 

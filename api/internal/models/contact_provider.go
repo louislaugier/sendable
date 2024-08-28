@@ -26,7 +26,7 @@ type (
 		Type              ContactProviderType `json:"type"`
 		LatestAccessToken *string             `json:"latestAccessToken,omitempty"`
 		APIKey            *string             `json:"apiKey,omitempty"`
-		LatestAPIKeyChars *string             `json:"latestApiChars,omitempty"`
+		LatestAPIKeyChars *string             `json:"latestApiKeyChars,omitempty"`
 
 		CreatedAt time.Time  `json:"createdAt"`
 		UpdatedAt *time.Time `json:"updatedAt,omitempty"`
