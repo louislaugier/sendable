@@ -140,7 +140,7 @@ func ValidateJWT(next http.Handler, requiresConfirmedEmail bool) http.Handler {
 			}
 
 			providers := u.ContactProviders
-			ctx := context.WithValue(r.Context(), userContactProvidersKey, &providers)
+			ctx := context.WithValue(r.Context(), userContactProvidersKey, providers)
 
 			for i := range u.ContactProviders {
 				u.ContactProviders[i].APIKey = nil

@@ -27,14 +27,14 @@ func GetUserFromRequest(r *http.Request) *models.User {
 	return user.(*models.User)
 }
 
-func GetContactProvidersFromContext(r *http.Request) *[]models.ContactProvider {
+func GetContactProvidersFromContext(r *http.Request) []models.ContactProvider {
 	contactProviders := GetValueFromContext(r.Context(), userContactProvidersKey)
 
 	if contactProviders == nil {
 		return nil
 	}
 
-	return contactProviders.(*[]models.ContactProvider)
+	return contactProviders.([]models.ContactProvider)
 }
 
 // Extracts file data from the request context

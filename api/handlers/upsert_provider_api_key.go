@@ -7,7 +7,6 @@ import (
 	"email-validator/internal/pkg/contact_provider"
 	"email-validator/internal/pkg/sendgrid"
 	"encoding/json"
-	"log"
 	"net/http"
 
 	"github.com/google/uuid"
@@ -64,12 +63,8 @@ func SetProviderAPIKeyHandler(w http.ResponseWriter, r *http.Request) {
 	userID := middleware.GetUserFromRequest(r).ID
 
 	var existingProviderID *uuid.UUID
-	for _, p := range *middleware.GetContactProvidersFromContext(r) {
+	for _, p := range middleware.GetContactProvidersFromContext(r) {
 		if p.Type == *provider {
-			log.Println(p.APIKey)
-			if p.APIKey == nil {
-				return // temp
-			}
 			if *p.APIKey == newAPIKey {
 				http.Error(w, "old and new API keys must not match", http.StatusBadRequest)
 				return
