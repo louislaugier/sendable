@@ -68,7 +68,7 @@ func SetProviderAPIKeyHandler(w http.ResponseWriter, r *http.Request) {
 		if p.Type == *provider {
 			log.Println(p.APIKey)
 			if p.APIKey == nil {
-				return
+				return // temp
 			}
 			if *p.APIKey == newAPIKey {
 				http.Error(w, "old and new API keys must not match", http.StatusBadRequest)
