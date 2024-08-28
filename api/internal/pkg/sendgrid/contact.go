@@ -6,7 +6,6 @@ import (
 	"errors"
 	"fmt"
 	"io"
-	"log"
 	"net/http"
 	"strings"
 	"time"
@@ -81,7 +80,6 @@ func GetContacts(client *Client, listIDs, segmentIDs []string) ([]models.Sendgri
 		if status == "ready" {
 			fmt.Println("SendGrid export completed.")
 			url = statusResponse["urls"].([]interface{})[0].(string)
-			log.Println(url)
 			break
 		}
 
@@ -141,8 +139,6 @@ func GetContacts(client *Client, listIDs, segmentIDs []string) ([]models.Sendgri
 			}
 		}
 	}
-
-	log.Println(len(contacts))
 
 	// Return the contacts (currently empty, you'll need to populate this from result)
 	return contacts, nil

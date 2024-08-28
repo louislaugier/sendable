@@ -12,7 +12,7 @@ func GetOriginFromRequest(r *http.Request) string {
 }
 
 // GetValueFromContext retrieves the value from the context by a key name.
-func GetValueFromContext(ctx context.Context, key userContextKey) interface{} {
+func GetValueFromContext(ctx context.Context, key contextKey) interface{} {
 	return ctx.Value(key)
 }
 
@@ -25,6 +25,16 @@ func GetUserFromRequest(r *http.Request) *models.User {
 	}
 
 	return user.(*models.User)
+}
+
+func GetContactProvidersFromContext(r *http.Request) *[]models.ContactProvider {
+	contactProviders := GetValueFromContext(r.Context(), userContactProvidersKey)
+
+	if contactProviders == nil {
+		return nil
+	}
+
+	return contactProviders.(*[]models.ContactProvider)
 }
 
 // Extracts file data from the request context

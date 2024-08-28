@@ -7,7 +7,6 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	"log"
 	"net/http"
 )
 
@@ -33,7 +32,6 @@ func SetPasswordHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	log.Println(body.Email, body.EmailConfirmationCode)
 	u, err := user.GetByEmailAndConfirmationCode(body.Email, *body.EmailConfirmationCode)
 	if err != nil {
 		handleError(w, err, "Internal Server Error", http.StatusInternalServerError)

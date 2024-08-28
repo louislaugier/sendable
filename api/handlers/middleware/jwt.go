@@ -26,10 +26,12 @@ type CustomClaims struct {
 	jwt.StandardClaims
 }
 
-type userContextKey string
+type contextKey string
 
-const userKey userContextKey = "user"
-const fileDataKey userContextKey = "file_data"
+const userKey contextKey = "user"
+const userContactProvidersKey contextKey = "user_contact_providers" // contact_providers
+
+const fileDataKey contextKey = "file_data"
 
 // GenerateAndBindJWT generates a new JWT token and adds it to the User pointer.
 // it also creates an API key linked to the user
@@ -137,7 +139,18 @@ func ValidateJWT(next http.Handler, requiresConfirmedEmail bool) http.Handler {
 				return
 			}
 
-			ctx := context.WithValue(r.Context(), userKey, u)
+			providers := u.ContactProviders
+			ctx := context.WithValue(r.Context(), userContactProvidersKey, &providers)
+
+			for i := range u.ContactProviders {
+				u.ContactProviders[i].APIKey = nil
+
+				// TODO
+				lastChars := ""
+				u.ContactProviders[i].LatestAPIKeyChars = &lastChars
+			}
+
+			ctx = context.WithValue(ctx, userKey, u)
 
 			next.ServeHTTP(w, r.WithContext(ctx))
 		} else {

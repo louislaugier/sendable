@@ -41,7 +41,6 @@ func SetProviderAPIKeyHandler(w http.ResponseWriter, r *http.Request) {
 		_, count, err := brevo.GetContactsPaginated(client, 1, 0, nil, nil)
 		if err != nil {
 			http.Error(w, "invalid Brevo API key", http.StatusUnauthorized)
-			log.Println(err)
 			return
 		}
 
@@ -51,7 +50,6 @@ func SetProviderAPIKeyHandler(w http.ResponseWriter, r *http.Request) {
 
 		count, err := sendgrid.GetContactsCount(client)
 		if err != nil {
-			log.Println(err)
 			http.Error(w, "invalid SendGrid API key or insufficient permissions/scopes", http.StatusUnauthorized)
 			return
 		}
@@ -63,13 +61,17 @@ func SetProviderAPIKeyHandler(w http.ResponseWriter, r *http.Request) {
 
 	}
 
-	user := middleware.GetUserFromRequest(r)
+	userID := middleware.GetUserFromRequest(r).ID
 
 	var existingProviderID *uuid.UUID
-	for _, p := range user.ContactProviders {
+	for _, p := range *middleware.GetContactProvidersFromContext(r) {
 		if p.Type == *provider {
-			if p.APIKey == &newAPIKey {
-				http.Error(w, "old and new api must not match", http.StatusBadRequest)
+			log.Println(p.APIKey)
+			if p.APIKey == nil {
+				return
+			}
+			if *p.APIKey == newAPIKey {
+				http.Error(w, "old and new API keys must not match", http.StatusBadRequest)
 				return
 			}
 
@@ -84,11 +86,10 @@ func SetProviderAPIKeyHandler(w http.ResponseWriter, r *http.Request) {
 	} else {
 		err = contact_provider.InsertNew(&models.ContactProvider{
 			ID:     uuid.New(),
-			UserID: user.ID,
+			UserID: userID,
 			Type:   *provider,
 			APIKey: &newAPIKey,
 		})
-
 	}
 	if err != nil {
 		http.Error(w, "internal server error", http.StatusInternalServerError)
