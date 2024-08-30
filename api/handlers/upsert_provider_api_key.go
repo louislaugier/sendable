@@ -31,7 +31,7 @@ func SetProviderAPIKeyHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	var totalCount int
+	var totalContactsCount int
 
 	switch *provider {
 	case models.BrevoContactProvider:
@@ -43,7 +43,7 @@ func SetProviderAPIKeyHandler(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 
-		totalCount = count
+		totalContactsCount = count
 	case models.SendgridContactProvider:
 		client := sendgrid.NewClient(newAPIKey)
 
@@ -53,7 +53,7 @@ func SetProviderAPIKeyHandler(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 
-		totalCount = count
+		totalContactsCount = count
 	default:
 		http.Error(w, "unsupported provider", http.StatusBadRequest)
 		return
@@ -80,10 +80,11 @@ func SetProviderAPIKeyHandler(w http.ResponseWriter, r *http.Request) {
 		err = contact_provider.UpdateAPIKey(*existingProviderID, newAPIKey)
 	} else {
 		err = contact_provider.InsertNew(&models.ContactProvider{
-			ID:     uuid.New(),
-			UserID: userID,
-			Type:   *provider,
-			APIKey: &newAPIKey,
+			ID:                  uuid.New(),
+			UserID:              userID,
+			Type:                *provider,
+			APIKey:              &newAPIKey,
+			LatestContactsCount: &totalContactsCount,
 		})
 	}
 	if err != nil {
@@ -92,6 +93,6 @@ func SetProviderAPIKeyHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	json.NewEncoder(w).Encode(map[string]interface{}{
-		"contactsCount": totalCount,
+		"contactsCount": totalContactsCount,
 	})
 }

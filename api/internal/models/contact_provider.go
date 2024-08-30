@@ -7,12 +7,6 @@ import (
 )
 
 const (
-	// OAuth based
-	SalesforceContactProvider ContactProviderType = ContactProviderType(SalesforceProvider)
-	HubspotContactProvider    ContactProviderType = ContactProviderType(HubspotProvider)
-	ZohoContactProvider       ContactProviderType = ContactProviderType(ZohoProvider)
-
-	// API key based
 	SendgridContactProvider ContactProviderType = "sendgrid"
 	BrevoContactProvider    ContactProviderType = "brevo"
 )
@@ -23,10 +17,10 @@ type (
 		ID     uuid.UUID `json:"id"`
 		UserID uuid.UUID `json:"userId"`
 
-		Type              ContactProviderType `json:"type"`
-		LatestAccessToken *string             `json:"latestAccessToken,omitempty"`
-		APIKey            *string             `json:"apiKey,omitempty"`
-		LatestAPIKeyChars *string             `json:"latestApiKeyChars,omitempty"`
+		Type                ContactProviderType `json:"type"`
+		LatestContactsCount *int                `json:"latestContactsCount,omitempty"`
+		APIKey              *string             `json:"apiKey,omitempty"`
+		LatestAPIKeyChars   *string             `json:"latestApiKeyChars,omitempty"`
 
 		CreatedAt time.Time  `json:"createdAt"`
 		UpdatedAt *time.Time `json:"updatedAt,omitempty"`

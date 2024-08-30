@@ -32,6 +32,7 @@ const (
 				'id', cp."id",
 				'type', cp."type",
 				'latestAccessToken', cp."latest_access_token",
+				'latestContactsCount', cp."latest_contacts_count",
 				'apiKey', cp."api_key",
 				'createdAt', to_char(cp."created_at", 'YYYY-MM-DD"T"HH24:MI:SS.MS"Z"'),
 				'updatedAt', to_char(cp."updated_at", 'YYYY-MM-DD"T"HH24:MI:SS.MS"Z"')

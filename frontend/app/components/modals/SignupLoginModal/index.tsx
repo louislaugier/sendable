@@ -14,7 +14,7 @@ import { isValidEmail } from "~/services/utils/email";
 import setPassword from "~/services/api/set_password";
 import { EyeFilledIcon } from "~/components/icons/EyeFilledIcon";
 import { EyeSlashFilledIcon } from "~/components/icons/EyeSlashFilledIcon";
-import authEmail from "~/services/api/auth_email";
+import authEmail from "~/services/api/auth/email";
 
 export default function SignupLoginModal(props: any) {
     const { authModal, modalType, setModalType } = useContext(AuthModalContext);

@@ -1,9 +1,9 @@
 import { loadStripe } from '@stripe/stripe-js';
 import { Elements } from '@stripe/react-stripe-js';
 import { stripePublicKey } from '~/constants/stripe';
-import generateStripeCheckout from '../../services/api/auth/generate_stripe_checkout';
 import { Button } from '@nextui-org/react';
 import { useState } from 'react';
+import generateStripeCheckout from '~/services/api/generate_stripe_checkout';
 
 const stripePromise = loadStripe(stripePublicKey);
 

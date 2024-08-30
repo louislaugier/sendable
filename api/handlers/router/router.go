@@ -110,6 +110,10 @@ func handleHTTP(mux *http.ServeMux) {
 		http.HandlerFunc(handlers.SetProviderAPIKeyHandler),
 		true,
 	), true)
+	handle(mux, "/provider_contacts", middleware.ValidateJWT(
+		http.HandlerFunc(handlers.ProviderContactsHandler),
+		true,
+	), true)
 
 	handle(mux, "/generate_jwt", middleware.ValidateAPIKey( // generate JWT as API consumer (platform users)
 		http.HandlerFunc(handlers.GenerateJWTHandler),
