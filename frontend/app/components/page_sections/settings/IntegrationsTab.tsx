@@ -1,6 +1,7 @@
 import { Button, Card, CardBody, CardHeader, Input, Link, useDisclosure } from "@nextui-org/react";
 import { useContext, useState } from "react";
 import BrevoFullLogo from "~/components/icons/logos/BrevoFullLogo";
+import SendgridFullLogo from "~/components/icons/logos/SendgridFullLogo";
 import DeleteProviderApiKeyModal from "~/components/modals/DeleteProviderApiKeyModal";
 import UserContext from "~/contexts/UserContext";
 import upsertProviderApiKey from "~/services/api/upsert_provider_api_key";
@@ -11,6 +12,11 @@ export default function IntegrationsTab() {
     const [brevoApiKeyError, setBrevoApiKeyError] = useState('')
     const [isBrevoApiKeyLoading, setBrevoApiKeyLoading] = useState(false)
     const [isEditingBrevoApiKey, setEditingBrevoApiKey] = useState(false)
+
+    const [sendgridApiKey, setSendgridApiKey] = useState('')
+    const [sendgridApiKeyError, setSendgridApiKeyError] = useState('')
+    const [isSendgridApiKeyLoading, setSendgridApiKeyLoading] = useState(false)
+    const [isEditingSendgridApiKey, setEditingSendgridApiKey] = useState(false)
 
     const { user, refreshUserData } = useContext(UserContext)
 
@@ -38,7 +44,7 @@ export default function IntegrationsTab() {
 
                             <BrevoFullLogo w='120px' />
 
-                            <div className="flex mt-6">
+                            <div className="flex mt-6 mb-12">
                                 {!!existingBrevoProvider && !isEditingBrevoApiKey ?
                                     <Input
                                         disabled
@@ -100,6 +106,74 @@ export default function IntegrationsTab() {
                                         else deleteBrevoProviderModal.onOpen()
                                     }} color="danger" variant="bordered">
                                         {isEditingBrevoApiKey ? 'Cancel' : 'Delete'}
+                                    </Button>
+                                }
+                            </div>
+
+                            <SendgridFullLogo w='160px' />
+
+                            <div className="flex mt-6">
+                                {!!existingSendgridProvider && !isEditingSendgridApiKey ?
+                                    <Input
+                                        disabled
+                                        isDisabled
+                                        label="SendGrid API key"
+                                        value={`SG.*****...${existingSendgridProvider.latestApiKeyChars}`}
+                                        variant="bordered"
+                                        className="max-w-xs"
+                                    />
+                                    :
+                                    <Input
+                                        label="SendGrid API key"
+                                        value={sendgridApiKey}
+                                        variant="bordered"
+                                        errorMessage={sendgridApiKeyError}
+                                        isInvalid={!!sendgridApiKeyError}
+                                        onValueChange={setSendgridApiKey}
+                                        placeholder={"Your SendGrid API key"}
+                                        className="max-w-xs"
+                                        description={<Link href="https://www.twilio.com/docs/sendgrid/ui/account-and-settings/api-keys#creating-an-api-key" target="_blank" className="text-xs text-grey cursor-pointer"><u>How to generate a SendGrid API key?</u></Link>}
+                                    />
+                                }
+
+                                <Button className="mt-4 ml-4" onClick={async () => {
+                                    setSendgridApiKeyLoading(true)
+
+                                    if (!isEditingSendgridApiKey && existingSendgridProvider) {
+                                        setEditingSendgridApiKey(true)
+                                        setSendgridApiKeyLoading(false)
+                                        return
+                                    }
+
+                                    try {
+                                        const res = await upsertProviderApiKey({ provider: ContactProviderType.Sendgrid, apiKey: sendgridApiKey })
+                                        if (res.error) {
+                                            setSendgridApiKeyLoading(false)
+                                            setSendgridApiKeyError(res.error)
+                                            return
+                                        }
+                                        await refreshUserData()
+                                        setSendgridApiKey('')
+
+                                        if (isEditingSendgridApiKey) setEditingSendgridApiKey(false)
+                                    } catch {
+                                        setSendgridApiKeyError("An unexpected error has occurred. Please try again.")
+                                    }
+
+                                    setSendgridApiKeyLoading(false)
+                                }} isDisabled={!sendgridApiKey && isEditingSendgridApiKey} isLoading={isSendgridApiKeyLoading} color="primary" variant="shadow">
+                                    {isSendgridApiKeyLoading ? 'Loading...' : existingSendgridProvider ?
+                                        isEditingSendgridApiKey ? 'Update' : 'Edit'
+                                        : 'Save'}
+                                </Button>
+
+                                {
+                                    existingSendgridProvider &&
+                                    <Button className="mt-4 ml-4" onClick={async () => {
+                                        if (isEditingSendgridApiKey) setEditingSendgridApiKey(false)
+                                        else deleteSendgridProviderModal.onOpen()
+                                    }} color="danger" variant="bordered">
+                                        {isEditingSendgridApiKey ? 'Cancel' : 'Delete'}
                                     </Button>
                                 }
                             </div>
