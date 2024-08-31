@@ -84,7 +84,10 @@ type (
 		CustomerID string `json:"customerId"`
 	}
 	SetProviderAPIKeyRequest struct {
-		Provider *ContactProviderType `json:"provider"`
-		APIKey   string               `json:"apiKey"`
+		Provider ContactProviderType `json:"provider"`
+		APIKey   string              `json:"apiKey"`
+	}
+	DeleteProviderAPIKeyRequest struct {
+		Provider ContactProviderType `json:"provider"`
 	}
 )

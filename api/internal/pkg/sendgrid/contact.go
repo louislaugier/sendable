@@ -16,7 +16,7 @@ import (
 )
 
 // TODO: listIDs & segmentIDs
-func GetContacts(client *Client, listIDs, segmentIDs []string) ([]models.SendgridContact, error) {
+func GetContacts(client *Client) ([]models.SendgridContact, error) {
 	// Construct the full URL
 	fullURL := "https://api.sendgrid.com/v3/marketing/contacts/exports"
 
@@ -28,8 +28,6 @@ func GetContacts(client *Client, listIDs, segmentIDs []string) ([]models.Sendgri
 			"Content-Type":  "application/json",
 		},
 		Body: []byte(`{
-			"list_ids": [],
-			"segment_ids": [],
 			"file_type": "json"
 		}`),
 	}

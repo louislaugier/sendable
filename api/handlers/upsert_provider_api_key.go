@@ -26,20 +26,20 @@ func SetProviderAPIKeyHandler(w http.ResponseWriter, r *http.Request) {
 
 	provider := req.Provider
 	newAPIKey := req.APIKey
-	if provider == nil || newAPIKey == "" {
+	if provider == "" || newAPIKey == "" {
 		http.Error(w, "invalid payload: missing 'provider' and/or 'apiKey' fields in JSON body", http.StatusBadRequest)
 		return
 	}
 
 	var totalContactsCount int
 
-	switch *provider {
+	switch provider {
 	case models.BrevoContactProvider:
 		client := brevo.NewClient(newAPIKey)
 
-		_, count, err := brevo.GetContactsPaginated(client, 1, 0, nil, nil)
+		_, count, err := brevo.GetContactsPaginated(client, 1, 0)
 		if err != nil {
-			http.Error(w, "invalid Brevo API key", http.StatusUnauthorized)
+			http.Error(w, "invalid Brevo API key or insufficient permissions/scopes", http.StatusUnauthorized)
 			return
 		}
 
@@ -64,7 +64,7 @@ func SetProviderAPIKeyHandler(w http.ResponseWriter, r *http.Request) {
 
 	var existingProviderID *uuid.UUID
 	for _, p := range middleware.GetContactProvidersFromContext(r) {
-		if p.Type == *provider {
+		if p.Type == provider {
 			if *p.APIKey == newAPIKey {
 				http.Error(w, "old and new API keys must not match", http.StatusBadRequest)
 				return
@@ -82,7 +82,7 @@ func SetProviderAPIKeyHandler(w http.ResponseWriter, r *http.Request) {
 		err = contact_provider.InsertNew(&models.ContactProvider{
 			ID:                  uuid.New(),
 			UserID:              userID,
-			Type:                *provider,
+			Type:                provider,
 			APIKey:              &newAPIKey,
 			LatestContactsCount: &totalContactsCount,
 		})

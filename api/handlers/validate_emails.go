@@ -43,6 +43,10 @@ func ValidateEmailsHandler(w http.ResponseWriter, r *http.Request) {
 		ReportToken:    &reportToken,
 		Status:         models.StatusProcessing,
 	}
+	provider := r.URL.Query().Get("provider")
+	if provider != "" {
+		validationRecord.ProviderSource = (*models.ContactProviderType)(&provider)
+	}
 
 	err := validation.InsertNew(validationRecord)
 	if err != nil {

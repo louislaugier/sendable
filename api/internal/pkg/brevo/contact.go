@@ -5,19 +5,18 @@ import (
 	"email-validator/internal/models"
 	"email-validator/internal/pkg/utils"
 	"errors"
-	"time"
 
 	"github.com/antihax/optional"
 	brevo "github.com/getbrevo/brevo-go/lib"
 )
 
-func GetContacts(client *brevo.APIClient, modifiedSince, createdSince *time.Time) ([]models.BrevoContact, error) {
+func GetContacts(client *brevo.APIClient) ([]models.BrevoContact, error) {
 	var allContacts []models.BrevoContact
 	var offset int64 = 0
 	const limit int64 = 50 // You can adjust this limit based on API constraints or preferences
 
 	for {
-		contacts, _, err := GetContactsPaginated(client, limit, offset, modifiedSince, createdSince)
+		contacts, _, err := GetContactsPaginated(client, limit, offset)
 		if err != nil {
 			return nil, err
 		}
@@ -36,17 +35,17 @@ func GetContacts(client *brevo.APIClient, modifiedSince, createdSince *time.Time
 	return allContacts, nil
 }
 
-func GetContactsPaginated(client *brevo.APIClient, limit, offset int64, modifiedSince, createdSince *time.Time) ([]models.BrevoContact, int, error) {
+func GetContactsPaginated(client *brevo.APIClient, limit, offset int64) ([]models.BrevoContact, int, error) {
 	opts := &brevo.GetContactsOpts{
 		Limit:  optional.NewInt64(limit),
 		Offset: optional.NewInt64(offset),
 	}
-	if modifiedSince != nil {
-		opts.ModifiedSince = optional.NewString(modifiedSince.String())
-	}
-	if createdSince != nil {
-		opts.CreatedSince = optional.NewString(createdSince.String())
-	}
+	// if modifiedSince != nil {
+	// 	opts.ModifiedSince = optional.NewString(modifiedSince.String())
+	// }
+	// if createdSince != nil {
+	// 	opts.CreatedSince = optional.NewString(createdSince.String())
+	// }
 
 	contacts, _, err := client.ContactsApi.GetContacts(context.Background(), opts)
 
