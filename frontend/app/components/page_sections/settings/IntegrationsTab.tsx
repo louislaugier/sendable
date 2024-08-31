@@ -1,6 +1,7 @@
-import { Button, Card, CardBody, CardHeader, Input, Link } from "@nextui-org/react";
+import { Button, Card, CardBody, CardHeader, Input, Link, useDisclosure } from "@nextui-org/react";
 import { useContext, useState } from "react";
 import BrevoFullLogo from "~/components/icons/logos/BrevoFullLogo";
+import DeleteProviderApiKeyModal from "~/components/modals/DeleteProviderApiKeyModal";
 import UserContext from "~/contexts/UserContext";
 import upsertProviderApiKey from "~/services/api/upsert_provider_api_key";
 import { ContactProvider, ContactProviderType } from "~/types/contactProvider";
@@ -13,12 +14,15 @@ export default function IntegrationsTab() {
 
     const { user, refreshUserData } = useContext(UserContext)
 
-    let brevoProvider: ContactProvider | null = null
-    let sendgridProvider: ContactProvider | null = null
+    let existingBrevoProvider: ContactProvider | null = null
+    let existingSendgridProvider: ContactProvider | null = null
     if (user?.contactProviders) for (const provider of user.contactProviders) {
-        if (provider.type === ContactProviderType.Brevo) brevoProvider = provider
-        else if (provider.type === ContactProviderType.Sendgrid) sendgridProvider = provider
+        if (provider.type === ContactProviderType.Brevo) existingBrevoProvider = provider
+        else if (provider.type === ContactProviderType.Sendgrid) existingSendgridProvider = provider
     }
+
+    const deleteBrevoProviderModal = useDisclosure()
+    const deleteSendgridProviderModal = useDisclosure()
 
     return (
         <>
@@ -35,12 +39,12 @@ export default function IntegrationsTab() {
                             <BrevoFullLogo w='120px' />
 
                             <div className="flex mt-6">
-                                {!!brevoProvider && !isEditingBrevoApiKey ?
+                                {!!existingBrevoProvider && !isEditingBrevoApiKey ?
                                     <Input
                                         disabled
                                         isDisabled
                                         label="Brevo API key"
-                                        value={`xkeysib-*****...${brevoProvider.latestApiKeyChars}`}
+                                        value={`xkeysib-*****...${existingBrevoProvider.latestApiKeyChars}`}
                                         variant="bordered"
                                         className="max-w-xs"
                                     />
@@ -61,6 +65,12 @@ export default function IntegrationsTab() {
                                 <Button className="mt-4 ml-4" onClick={async () => {
                                     setBrevoApiKeyLoading(true)
 
+                                    if (!isEditingBrevoApiKey && existingBrevoProvider) {
+                                        setEditingBrevoApiKey(true)
+                                        setBrevoApiKeyLoading(false)
+                                        return
+                                    }
+
                                     try {
                                         const res = await upsertProviderApiKey({ provider: ContactProviderType.Brevo, apiKey: brevoApiKey })
                                         if (res.error) {
@@ -69,31 +79,37 @@ export default function IntegrationsTab() {
                                             return
                                         }
                                         await refreshUserData()
+                                        setBrevoApiKey('')
+
+                                        if (isEditingBrevoApiKey) setEditingBrevoApiKey(false)
                                     } catch {
                                         setBrevoApiKeyError("An unexpected error has occurred. Please try again.")
                                     }
 
                                     setBrevoApiKeyLoading(false)
-                                }} isLoading={isBrevoApiKeyLoading} color="primary" variant="shadow">
-                                    {isBrevoApiKeyLoading ? 'Loading...' : brevoProvider ?
+                                }} isDisabled={!brevoApiKey && isEditingBrevoApiKey} isLoading={isBrevoApiKeyLoading} color="primary" variant="shadow">
+                                    {isBrevoApiKeyLoading ? 'Loading...' : existingBrevoProvider ?
                                         isEditingBrevoApiKey ? 'Update' : 'Edit'
                                         : 'Save'}
                                 </Button>
 
                                 {
-                                    brevoProvider &&
+                                    existingBrevoProvider &&
                                     <Button className="mt-4 ml-4" onClick={async () => {
+                                        if (isEditingBrevoApiKey) setEditingBrevoApiKey(false)
+                                        else deleteBrevoProviderModal.onOpen()
                                     }} color="danger" variant="bordered">
-                                        Delete
+                                        {isEditingBrevoApiKey ? 'Cancel' : 'Delete'}
                                     </Button>
                                 }
                             </div>
-
 
                         </CardBody>
                     </Card>
                 </div>
             </div>
+            <DeleteProviderApiKeyModal isOpen={deleteBrevoProviderModal.isOpen} onClose={deleteBrevoProviderModal.onClose} onOpenChange={deleteBrevoProviderModal.onOpenChange} providerType={'brevo'} providerName={'Brevo'} />
+            <DeleteProviderApiKeyModal isOpen={deleteSendgridProviderModal.isOpen} onClose={deleteSendgridProviderModal.onClose} onOpenChange={deleteSendgridProviderModal.onOpenChange} providerType={'sendgrid'} providerName={'SendGrid'} />
         </>
     )
 }

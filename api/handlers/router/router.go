@@ -110,6 +110,10 @@ func handleHTTP(mux *http.ServeMux) {
 		http.HandlerFunc(handlers.SetProviderAPIKeyHandler),
 		true,
 	), true)
+	handle(mux, "/delete_provider_api_key", middleware.ValidateJWT(
+		http.HandlerFunc(handlers.DeleteProviderAPIKeyHandler),
+		true,
+	), true)
 	handle(mux, "/provider_contacts", middleware.ValidateJWT(
 		http.HandlerFunc(handlers.ProviderContactsHandler),
 		true,
