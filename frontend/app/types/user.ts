@@ -1,5 +1,6 @@
 import { Dispatch, SetStateAction } from "react";
 import { Subscription } from "./subscription";
+import { ContactProvider } from "./contactProvider";
 
 export interface User {
     id: string,
@@ -9,6 +10,7 @@ export interface User {
     jwt: string,
     authProvider?: string,
     subscriptions: Subscription[],
+    contactProviders: ContactProvider[],
     createdAt: string,
     updatedAt: string,
     deletedAt?: string,

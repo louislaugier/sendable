@@ -4,6 +4,15 @@ import TextEmailValidator from "./TextEmailValidator";
 import FileEmailValidator from "./FileEmailValidator";
 import ReachabilityReference from "~/components/dropdowns/ReachabilityReference";
 import ApiTab from "./ApiTab";
+import HubspotAuthButton from "~/components/buttons/AuthButtons/HubspotAuthButton";
+import SalesforceAuthButton from "~/components/buttons/AuthButtons/SalesforceAuthButton";
+import ZohoAuthButton from "~/components/buttons/AuthButtons/ZohoAuthButton";
+import IntegrationCard from "~/components/cards/IntegrationCard";
+import BrevoFullLogo from "~/components/icons/logos/BrevoFullLogo";
+import HubspotFullLogo from "~/components/icons/logos/HubspotFullLogo";
+import SalesforceFullLogo from "~/components/icons/logos/SalesforceFullLogo";
+import SendgridFullLogo from "~/components/icons/logos/SendgridFullLogo";
+import ZohoFullLogo from "~/components/icons/logos/ZohoFullLogo";
 
 export default function EmailValidatorTab(props: any) {
     const { remainingAppValidations, resetHistory } = props
@@ -59,10 +68,18 @@ export default function EmailValidatorTab(props: any) {
                     >
                         <ReachabilityReference />
                         <div className="w-full flex justify-center mt-8">
-                            <Button onClick={() => {
+                            {/* <Button onClick={() => {
                             }} color="primary" variant="shadow">
                                 Connect platform
-                            </Button>
+                            </Button> */}
+
+                            <div className="flex flex-wrap justify-between">
+                                <IntegrationCard signupBtn={<SalesforceAuthButton customText="Signup with Salesforce" />} title='Salesforce' url='salesforce.com' description='Import all kinds of contacts from your Salesforce CRM.' hasLoginFeature logo={<SalesforceFullLogo w={70} />} />
+                                <IntegrationCard signupBtn={<ZohoAuthButton customText="Signup with Zoho" />} title='Zoho' url='zoho.com' description='Import leads, contacts and vendors from your Zoho CRM.' hasLoginFeature logo={<ZohoFullLogo w={"70px"} />} />
+                                <IntegrationCard signupBtn={<HubspotAuthButton customText="Signup with Hubspot" />} title='HubSpot' url='hubspot.com' description='Import all kinds of contacts from your HubSpot CRM.' hasLoginFeature logo={<HubspotFullLogo w='90px' />} />
+                                <IntegrationCard title='SendGrid' url='sendgrid.com' description='Import your contacts from the SendGrid marketing platform.' logo={<SendgridFullLogo w='100px' />} />
+                                <IntegrationCard title='Brevo' url='brevo.com' description='Import your contacts from the Brevo marketing platform.' logo={<BrevoFullLogo w='80px' />} />
+                            </div>
                         </div>
                     </Tab>
 

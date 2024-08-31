@@ -31,7 +31,6 @@ const (
 			json_agg(json_build_object(
 				'id', cp."id",
 				'type', cp."type",
-				'latestAccessToken', cp."latest_access_token",
 				'latestContactsCount', cp."latest_contacts_count",
 				'apiKey', cp."api_key",
 				'createdAt', to_char(cp."created_at", 'YYYY-MM-DD"T"HH24:MI:SS.MS"Z"'),
@@ -220,10 +219,17 @@ func getByCriteria(isMinimalResponse bool, query string, args ...interface{}) (*
 		}
 
 		// Unmarshal JSON array into slice of ContactProvider
-		var contactProviders []models.ContactProvider
-		err = json.Unmarshal(contactProvidersJSON, &contactProviders)
+		var cp []models.ContactProvider
+		err = json.Unmarshal(contactProvidersJSON, &cp)
 		if err != nil {
 			return nil, fmt.Errorf("error unmarshalling contact providers: %v", err)
+		}
+
+		contactProviders := []models.ContactProvider{}
+		for _, c := range cp {
+			if c.APIKey != nil {
+				contactProviders = append(contactProviders, c)
+			}
 		}
 
 		for i := range contactProviders {

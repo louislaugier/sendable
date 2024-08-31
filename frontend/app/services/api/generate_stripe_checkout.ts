@@ -1,4 +1,4 @@
-import apiClient from "..";
+import apiClient from ".";
 
 const generateStripeCheckout = async (data: any) => {
     try {
