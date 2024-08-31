@@ -40,7 +40,7 @@ const NewApiKeyModal = (props: any) => {
                                     color={"primary"}
                                     label="Label"
                                     variant="bordered"
-                                    placeholder="Enter a display name for your API key"
+                                    placeholder="A display name for your API key"
                                 />
                             </> : <>
                                 <p className="mb-4">API key has been generated successfully. Please copy this key and save it somewhere safe. For security reasons, we cannot show it to you again.</p>

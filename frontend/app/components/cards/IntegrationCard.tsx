@@ -1,10 +1,13 @@
 import { Card, CardHeader, Divider, CardBody, CardFooter, Button, Tooltip } from "@nextui-org/react";
-import { useContext } from "react";
+import { useContext, useState } from "react";
 import UserContext from "~/contexts/UserContext";
+import getProviderContacts from "~/services/api/provider_contacts";
 import { ContactProviderType } from "~/types/contactProvider";
 import { navigateToUrl } from "~/utils/url";
 
 export default function IntegrationCard(props: any) {
+    const [isLoading, setLoading] = useState(false)
+
     const { title, url, description, signupBtn, logo } = props
 
     const { user } = useContext(UserContext);
@@ -16,6 +19,8 @@ export default function IntegrationCard(props: any) {
         else if (provider.type === ContactProviderType.Brevo) hasBrevoProvider = true
     }
     const shouldConnectApiKey = (title === 'Brevo' && !hasBrevoProvider) || (title === 'SendGrid' && !hasSendgridProvider)
+
+    const [contacts, setContacts] = useState<Array<string | null>>([]);
 
     return (
         <Card className="w-[400px] mb-12">
@@ -41,10 +46,33 @@ export default function IntegrationCard(props: any) {
                         `
                     }
                 </style>
-                {user ? <Button onClick={() => {
-                    // TODO
-                    if (shouldConnectApiKey) navigateToUrl('/settings?tab=integrations')
+                {user ? <Button isLoading={isLoading} onClick={async () => {
+                    if (shouldConnectApiKey) {
+                        navigateToUrl('/settings?tab=integrations')
+                        return
+                    }
 
+                    setLoading(true)
+
+                    switch (title) {
+                        case 'Brevo':
+                        case 'SendGrid':
+                            try {
+                                const res = await getProviderContacts(title === 'Brevo' ? ContactProviderType.Brevo : ContactProviderType.Sendgrid)
+                                console.log(res)
+                                if (res?.length) setContacts(contacts)
+                            } catch (err) {
+                                console.error(err)
+                            }
+                        case 'Mailchimp':
+                        case 'HubSpot':
+                        case 'Zoho':
+                        //
+                        case 'Salesforce':
+                        //
+                    }
+
+                    setLoading(false)
                 }} color="primary" variant="shadow" className="ml-2">
                     {shouldConnectApiKey ? 'Connect API key' : 'Import contacts'}
                 </Button> : <Tooltip showArrow={true} content={"You must be logged in to import contacts"}>

@@ -47,6 +47,7 @@ func ProviderContactsHandler(w http.ResponseWriter, r *http.Request) {
 		if existingBrevoProvider == nil || existingBrevoProvider.APIKey == nil {
 			err := "no brevo provider attached to account"
 			handleError(w, errors.New(err), err, http.StatusBadRequest)
+			return
 		}
 
 		client := brevo.NewClient(*existingBrevoProvider.APIKey)
@@ -64,6 +65,7 @@ func ProviderContactsHandler(w http.ResponseWriter, r *http.Request) {
 		if existingSendgridProvider == nil || existingSendgridProvider.APIKey == nil {
 			err := "no brevo provider attached to account"
 			handleError(w, errors.New(err), err, http.StatusBadRequest)
+			return
 		}
 
 		client := sendgrid.NewClient(*existingSendgridProvider.APIKey)
@@ -118,14 +120,17 @@ func ProviderContactsHandler(w http.ResponseWriter, r *http.Request) {
 			c, err := zoho.GetContacts(accessToken)
 			if err != nil {
 				http.Error(w, "Internal Server Error", http.StatusInternalServerError)
+				return
 			}
 			l, err := zoho.GetLeads(accessToken)
 			if err != nil {
 				http.Error(w, "Internal Server Error", http.StatusInternalServerError)
+				return
 			}
 			v, err := zoho.GetVendors(accessToken)
 			if err != nil {
 				http.Error(w, "Internal Server Error", http.StatusInternalServerError)
+				return
 			}
 
 			for _, contact := range c {
@@ -162,6 +167,7 @@ func ProviderContactsHandler(w http.ResponseWriter, r *http.Request) {
 			c, err := mailchimp.GetContacts(accessToken, &mailChimpUser.APIEndpoint)
 			if err != nil {
 				http.Error(w, "Internal Server Error", http.StatusInternalServerError)
+				return
 			}
 
 			for _, contact := range c {
@@ -170,6 +176,7 @@ func ProviderContactsHandler(w http.ResponseWriter, r *http.Request) {
 		default:
 			err := "unknown provider"
 			handleError(w, errors.New(err), err, http.StatusBadRequest)
+			return
 		}
 
 	}

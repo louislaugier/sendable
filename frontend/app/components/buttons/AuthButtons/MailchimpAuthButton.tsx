@@ -8,10 +8,12 @@ import { Button } from '@nextui-org/button';
 import MailchimpIcon from '~/components/icons/logos/MailchimpLogo';
 import UserContext from '~/contexts/UserContext';
 import { handleAuthCode, login } from '~/services/oauth';
+import { a } from 'vite/dist/node/types.d-aGj9QkWt';
 
 const url = 'https://login.mailchimp.com/oauth2/authorize'
 
-export default function MailchimpAuthButton() {
+export default function MailchimpAuthButton(props: any) {
+  const { customText } = props;
   const [isLoading, setLoading] = useState(false);
 
   const { setUser, setTemp2faUserId } = useContext(UserContext)
@@ -29,7 +31,7 @@ export default function MailchimpAuthButton() {
   };
 
   return (
-    <Button style={{ justifyContent: 'flex-start' }} isLoading={isLoading} onClick={mailchimpLogin} variant="bordered" color="primary" startContent={<MailchimpIcon />}>
+    <Button style={{ justifyContent: 'flex-start' }} isLoading={isLoading} onClick={mailchimpLogin} variant="bordered" color="primary" startContent={!customText && <MailchimpIcon />}>
       <p style={{ marginLeft: "7px" }}>{isLoading ? 'Loading...' : 'Log in with Mailchimp'}</p>
     </Button>
   );

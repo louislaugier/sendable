@@ -24,6 +24,7 @@ export interface UserContextType {
     setUser: Dispatch<SetStateAction<User | null>>,
     temp2faUserId: string | null,
     setTemp2faUserId: Dispatch<SetStateAction<string | null>>
+    refreshUserData: () => Promise<void>
 }
 
 export interface UserValidationCounts {

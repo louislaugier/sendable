@@ -197,7 +197,7 @@ export default function FileEmailValidator(props: any) {
                         }}
                     >
                         <div className="text-center">
-                            {localDragActive || globalDragActive ? "Release here to upload" : "Click or drop a file to upload"}
+                            {localDragActive || globalDragActive ? "Release here to upload" : "Drop a file or click to upload"}
                             <input
                                 type="file"
                                 ref={fileInputRef}

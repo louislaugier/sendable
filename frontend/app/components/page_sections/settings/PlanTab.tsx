@@ -70,10 +70,10 @@ export default function PlanTab() {
                             </Button>
                         }
 
-                          {/* TODO: show only if any */}
-                          <Button className="mt-4" as={Link} href={`/referral`} onClick={goToReferral} color='primary' variant="bordered">
+                        {/* TODO: show only if any */}
+                        {/* <Button className="mt-4" as={Link} href={`/referral`} onClick={goToReferral} color='primary' variant="bordered">
                             Manage referral discounts
-                        </Button>
+                        </Button> */}
 
                         <Divider className="my-8" />
 

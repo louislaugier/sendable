@@ -1,32 +1,30 @@
 import { Reachability } from "~/types/email";
 import ReachabilityChip from "./ReachabilityChip";
-import React from "react";
 
 export function ReachableDescriptor(props: any) {
     const { nochip } = props;
-    const description = "We guarantee a hard bounce rate lower than 1% when sending an email to this address. In some cases, your emails might bounce even though the recipient address exists, for instance if your email server is flagged as a potential spam server or if your domain name has a bad or nascent reputation.";
+    const description = "We guarantee a hard bounce rate lower than 1% when sending an email to this address. In some cases, your emails might bounce even though the recipient address exists, for instance if <strong>your</strong> email server is flagged as a potential spam server or if your domain name or sender has a bad or nascent reputation.";
 
     return (
         <>
             {!nochip ? (
                 <p>
-                    <ReachabilityChip reachability={Reachability.Reachable} />: {description}
+                    <ReachabilityChip reachability={Reachability.Reachable} />: <span dangerouslySetInnerHTML={{ __html: description }} />
                 </p>
             ) : (
-                <p>{description}</p>
+                <p dangerouslySetInnerHTML={{ __html: description }} />
             )}
         </>
     );
 }
 
-
 export function RiskyDescriptor(props: any) {
     const { nochip } = props;
     const description = [
         "The email address appears to exist, but has quality issues that may result in low engagement or a bounce. We don't recommend sending to these addresses, and don't commit on an accuracy rate.",
-        "An email address' reachability is considered risky when at least one of the following is true:",
+        "An email address' reachability status is considered risky when at least one of the following is true:",
         "• it is a disposable email address (DEA),",
-        "• it is a role account (e.g. support@ or admin@ prefix),",
+        "• it is a role account (e.g. support@example.com or admin@example.com),",
         "• it is a catch-all address,",
         "• its inbox is full."
     ];
@@ -79,7 +77,7 @@ export function UnknownDescriptor(props: any) {
 
 export function InvalidDescriptor(props: any) {
     const { nochip } = props;
-    const description = "We guarantee with a confidence of 99% that this email address is not deliverable.";
+    const description = "We guarantee with a confidence of 99% that this email address is not deliverable (nonexistent or any other reason).";
 
     return (
         <>

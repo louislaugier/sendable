@@ -5,6 +5,7 @@ import { useContext, useEffect, useState } from "react";
 import EmailAddressConfirmedModal from "~/components/modals/EmailAddressConfirmedModal";
 import AccountTab from "~/components/page_sections/settings/AccountTab";
 import ApiTab from "~/components/page_sections/settings/ApiTab";
+import IntegrationsTab from "~/components/page_sections/settings/IntegrationsTab";
 import PlanTab from "~/components/page_sections/settings/PlanTab";
 import { siteName } from "~/constants/app";
 import UserContext from "~/contexts/UserContext";
@@ -89,7 +90,7 @@ export default function Settings() {
                 </div>
               }
             >
-
+              <IntegrationsTab />
             </Tab>
             <Tab
               key="api"
