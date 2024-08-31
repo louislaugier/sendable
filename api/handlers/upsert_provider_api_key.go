@@ -39,7 +39,7 @@ func SetProviderAPIKeyHandler(w http.ResponseWriter, r *http.Request) {
 
 		_, count, err := brevo.GetContactsPaginated(client, 1, 0)
 		if err != nil {
-			http.Error(w, "invalid Brevo API key or insufficient permissions/scopes", http.StatusUnauthorized)
+			http.Error(w, "Invalid API key", http.StatusUnauthorized)
 			return
 		}
 
@@ -49,7 +49,7 @@ func SetProviderAPIKeyHandler(w http.ResponseWriter, r *http.Request) {
 
 		count, err := sendgrid.GetContactsCount(client)
 		if err != nil {
-			http.Error(w, "invalid SendGrid API key or insufficient permissions/scopes", http.StatusUnauthorized)
+			http.Error(w, "Invalid API key or insufficient permissions/scopes.", http.StatusUnauthorized)
 			return
 		}
 

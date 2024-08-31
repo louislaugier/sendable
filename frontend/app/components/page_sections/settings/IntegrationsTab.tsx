@@ -3,7 +3,7 @@ import { useContext, useState } from "react";
 import BrevoFullLogo from "~/components/icons/logos/BrevoFullLogo";
 import UserContext from "~/contexts/UserContext";
 import upsertProviderApiKey from "~/services/api/upsert_provider_api_key";
-import { ContactProviderType } from "~/types/contactProvider";
+import { ContactProvider, ContactProviderType } from "~/types/contactProvider";
 
 export default function IntegrationsTab() {
     const [brevoApiKey, setBrevoApiKey] = useState('')
@@ -13,11 +13,11 @@ export default function IntegrationsTab() {
 
     const { user, refreshUserData } = useContext(UserContext)
 
-    let hasBrevoProvider = false
-    let hasSendgridProvider = false
+    let brevoProvider: ContactProvider | null = null
+    let sendgridProvider: ContactProvider | null = null
     if (user?.contactProviders) for (const provider of user.contactProviders) {
-        if (provider.type === ContactProviderType.Brevo) hasBrevoProvider = true
-        else if (provider.type === ContactProviderType.Sendgrid) hasSendgridProvider = true
+        if (provider.type === ContactProviderType.Brevo) brevoProvider = provider
+        else if (provider.type === ContactProviderType.Sendgrid) sendgridProvider = provider
     }
 
     return (
@@ -35,8 +35,15 @@ export default function IntegrationsTab() {
                             <BrevoFullLogo w='120px' />
 
                             <div className="flex mt-6">
-                                {hasBrevoProvider ?
-                                    'disabled input here'
+                                {!!brevoProvider && !isEditingBrevoApiKey ?
+                                    <Input
+                                        disabled
+                                        isDisabled
+                                        label="Brevo API key"
+                                        value={`xkeysib-*****...${brevoProvider.latestApiKeyChars}`}
+                                        variant="bordered"
+                                        className="max-w-xs"
+                                    />
                                     :
                                     <Input
                                         label="Brevo API key"
@@ -55,7 +62,12 @@ export default function IntegrationsTab() {
                                     setBrevoApiKeyLoading(true)
 
                                     try {
-                                        await upsertProviderApiKey({ provider: ContactProviderType.Brevo, apiKey: brevoApiKey })
+                                        const res = await upsertProviderApiKey({ provider: ContactProviderType.Brevo, apiKey: brevoApiKey })
+                                        if (res.error) {
+                                            setBrevoApiKeyLoading(false)
+                                            setBrevoApiKeyError(res.error)
+                                            return
+                                        }
                                         await refreshUserData()
                                     } catch {
                                         setBrevoApiKeyError("An unexpected error has occurred. Please try again.")
@@ -63,8 +75,18 @@ export default function IntegrationsTab() {
 
                                     setBrevoApiKeyLoading(false)
                                 }} isLoading={isBrevoApiKeyLoading} color="primary" variant="shadow">
-                                    {isBrevoApiKeyLoading ? 'Loading...' : hasBrevoProvider ? isEditingBrevoApiKey ? 'Save' : 'Edit' : 'Save'}
+                                    {isBrevoApiKeyLoading ? 'Loading...' : brevoProvider ?
+                                        isEditingBrevoApiKey ? 'Update' : 'Edit'
+                                        : 'Save'}
                                 </Button>
+
+                                {
+                                    brevoProvider &&
+                                    <Button className="mt-4 ml-4" onClick={async () => {
+                                    }} color="danger" variant="bordered">
+                                        Delete
+                                    </Button>
+                                }
                             </div>
 
 
