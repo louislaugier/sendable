@@ -8,7 +8,6 @@ CREATE TABLE IF NOT EXISTS public."contact_provider" (
     "id" UUID PRIMARY KEY,
     "type" contact_provider_type NOT NULL,
     "user_id" UUID REFERENCES public."user"(id),
-    "latest_contacts_count" INTEGER NOT NULL,
     "api_key" VARCHAR NOT NULL,
     "created_at" TIMESTAMP NOT NULL DEFAULT now(),
     "updated_at" TIMESTAMP,

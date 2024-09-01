@@ -12,7 +12,7 @@ const (
 		UPDATE public.contact_provider SET "api_key" = $1 WHERE id = $2;
 	`
 
-	insertQuery = "INSERT INTO public.contact_provider (id, type, user_id, latest_contacts_count, api_key) VALUES ($1, $2, $3, $4, $5);"
+	insertQuery = "INSERT INTO public.contact_provider (id, type, user_id, api_key) VALUES ($1, $2, $3, $4);"
 
 	deleteQuery = `
 		DELETE FROM public.contact_provider WHERE user_id = $1 and type = $2;
@@ -21,7 +21,7 @@ const (
 
 // InsertNew inserts a new contact_provider into the database.
 func InsertNew(contactProvider *models.ContactProvider) error {
-	_, err := config.DB.Exec(insertQuery, &contactProvider.ID, &contactProvider.Type, &contactProvider.UserID, &contactProvider.LatestContactsCount, &contactProvider.APIKey)
+	_, err := config.DB.Exec(insertQuery, &contactProvider.ID, &contactProvider.Type, &contactProvider.UserID, &contactProvider.APIKey)
 	return err
 }
 

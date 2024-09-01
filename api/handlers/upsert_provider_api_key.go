@@ -80,11 +80,10 @@ func SetProviderAPIKeyHandler(w http.ResponseWriter, r *http.Request) {
 		err = contact_provider.UpdateAPIKey(*existingProviderID, newAPIKey)
 	} else {
 		err = contact_provider.InsertNew(&models.ContactProvider{
-			ID:                  uuid.New(),
-			UserID:              userID,
-			Type:                provider,
-			APIKey:              &newAPIKey,
-			LatestContactsCount: &totalContactsCount,
+			ID:     uuid.New(),
+			UserID: userID,
+			Type:   provider,
+			APIKey: &newAPIKey,
 		})
 	}
 	if err != nil {

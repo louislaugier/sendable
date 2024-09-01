@@ -177,7 +177,7 @@ func StartServer() {
 
 	server := http.NewServeMux()
 
-	// Add CORS to all routes except generate_jwt, validate_email and validate_emails
+	// Add CORS to all routes except generate_jwt, validate_email and validate_emails (consumer API routes)
 	server.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
 		if r.URL.Path == "/generate_jwt" || r.URL.Path == "/validate_email" || r.URL.Path == "/validate_emails" {
 			mux.ServeHTTP(w, r) // Serve the request without CORS middleware
