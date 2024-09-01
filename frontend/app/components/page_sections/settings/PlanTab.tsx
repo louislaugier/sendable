@@ -5,7 +5,7 @@ import CurrentPlanChip from "~/components/chips/CurrentPlanChip";
 import SubscriptionHistoryTable from "~/components/tables/SubscriptionHistoryTable";
 import UserContext from "~/contexts/UserContext";
 import getSubscriptionHistory from "~/services/api/subscription_history";
-import { Subscription, SubscriptionType } from "~/types/subscription";
+import { Subscription, SubscriptionBillingFrequency, SubscriptionType } from "~/types/subscription";
 import { getAppValidationLimit, getApiValidationLimit, getRemainingAppValidations, getRemainingApiValidations } from "~/utils/limit";
 import { navigateToUrl } from "~/utils/url";
 
@@ -16,7 +16,10 @@ export default function PlanTab() {
     const apiValidationLimit = getApiValidationLimit(user!)
     const remainingAppValidations = getRemainingAppValidations(user!)
     const remainingApiValidations = getRemainingApiValidations(user!)
-    const isPremiumOrEnterprise = user?.currentPlan.type === SubscriptionType.Premium || user?.currentPlan.type === SubscriptionType.Enterprise
+
+    const isPremium = user?.currentPlan.type === SubscriptionType.Premium
+    const isEnterprise = user?.currentPlan.type === SubscriptionType.Enterprise
+    const isPremiumOrEnterprise = isPremium || isEnterprise
 
     const goToPricing = async (e: any) => {
         e.preventDefault()
@@ -55,6 +58,7 @@ export default function PlanTab() {
                     <CardBody className="flex flex-col items-center">
 
                         <p>Current plan: <CurrentPlanChip />{(isPremiumOrEnterprise && user?.currentPlan?.billingFrequency) && <b>{` (billed ${user?.currentPlan?.billingFrequency})`}</b>}</p>
+                        
 
                         {user?.currentPlan.type !== SubscriptionType.Enterprise && <>
                             <p className="mt-4">Remaining validations (this month): <b>{remainingAppValidations.toLocaleString()} / {appValidationLimit.toLocaleString()}</b> email addresses</p>

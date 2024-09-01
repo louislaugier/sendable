@@ -65,6 +65,8 @@ export default function TextEmailValidator(props: any) {
             }
         } catch (error: any) {
             setErrorMsg("An error occurred. Please try again.");
+            setLoading(false);
+            return
         }
 
         setRequestSent(true);
