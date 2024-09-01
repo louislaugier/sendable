@@ -28,7 +28,7 @@ const SelectContactsModal = (props: any) => {
                                 aria-label="Imported contacts"
                             >
                                 <TableHeader>
-                                    <TableColumn>EMAIL</TableColumn>
+                                    <TableColumn>Select all</TableColumn>
                                 </TableHeader>
                                 <TableBody>
                                     {contacts.map((contact: string, i: number) =>
