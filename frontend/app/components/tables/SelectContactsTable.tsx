@@ -9,9 +9,8 @@ export default function SelectContactsTable(props: any) {
 
     const items = useMemo(() => {
         const start = (page - 1) * rowsPerPage;
-        const end = start + rowsPerPage;
 
-        return contacts.slice(start, end).map((contact: any, index: number) => ({
+        return contacts.slice(start, start + rowsPerPage).map((contact: any, index: number) => ({
             key: start + index,
             email: contact
         }));

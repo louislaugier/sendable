@@ -1,3 +1,4 @@
+import { Subscription, SubscriptionBillingFrequency, SubscriptionType } from "~/types/subscription";
 import { Card, CardHeader, CardBody, Divider, Button, Link } from "@nextui-org/react";
 import { useCallback, useContext, useState } from "react";
 import { FiExternalLink } from "react-icons/fi";
@@ -5,44 +6,54 @@ import CurrentPlanChip from "~/components/chips/CurrentPlanChip";
 import SubscriptionHistoryTable from "~/components/tables/SubscriptionHistoryTable";
 import UserContext from "~/contexts/UserContext";
 import getSubscriptionHistory from "~/services/api/subscription_history";
-import { Subscription, SubscriptionBillingFrequency, SubscriptionType } from "~/types/subscription";
 import { getAppValidationLimit, getApiValidationLimit, getRemainingAppValidations, getRemainingApiValidations } from "~/utils/limit";
 import { navigateToUrl } from "~/utils/url";
+import { pricingPlans } from "~/constants/pricing";
 
 export default function PlanTab() {
-    const { user } = useContext(UserContext)
+    const { user } = useContext(UserContext);
 
-    const appValidationLimit = getAppValidationLimit(user!)
-    const apiValidationLimit = getApiValidationLimit(user!)
-    const remainingAppValidations = getRemainingAppValidations(user!)
-    const remainingApiValidations = getRemainingApiValidations(user!)
+    const appValidationLimit = getAppValidationLimit(user!);
+    const apiValidationLimit = getApiValidationLimit(user!);
+    const remainingAppValidations = getRemainingAppValidations(user!);
+    const remainingApiValidations = getRemainingApiValidations(user!);
 
-    const isPremium = user?.currentPlan.type === SubscriptionType.Premium
-    const isEnterprise = user?.currentPlan.type === SubscriptionType.Enterprise
-    const isPremiumOrEnterprise = isPremium || isEnterprise
+    const isPremium = user?.currentPlan.type === SubscriptionType.Premium;
+    const isEnterprise = user?.currentPlan.type === SubscriptionType.Enterprise;
+    const isPremiumOrEnterprise = isPremium || isEnterprise;
+
+    // Determine the price based on the current plan and billing frequency
+    let currentPlanPrice = '';
+    const currentPlan = pricingPlans.find(plan => plan.name === user?.currentPlan.type);
+
+    if (user?.currentPlan.billingFrequency === SubscriptionBillingFrequency.Monthly) {
+        currentPlanPrice = `$${currentPlan?.monthlyPrice.toLocaleString()} /mo`;
+    } else if (user?.currentPlan.billingFrequency === SubscriptionBillingFrequency.Yearly) {
+        currentPlanPrice = `$${currentPlan?.yearlyPrice.toLocaleString()} /yr`;
+    }
 
     const goToPricing = async (e: any) => {
-        e.preventDefault()
-        navigateToUrl(`/pricing`)
-    }
+        e.preventDefault();
+        navigateToUrl(`/pricing`);
+    };
 
     const goToReferral = async (e: any) => {
-        e.preventDefault()
-        navigateToUrl(`/referral`)
-    }
+        e.preventDefault();
+        navigateToUrl(`/referral`);
+    };
 
-    const [subscriptions, setSubscriptions] = useState<Array<Subscription>>([])
+    const [subscriptions, setSubscriptions] = useState<Array<Subscription>>([]);
     const [subscriptionsCount, setSubscriptionsCount] = useState<number>(0);
 
     const loadSubscriptionHistory = useCallback(async (limit: number | undefined = undefined, offset: number | undefined = undefined) => {
         try {
-            const res = await getSubscriptionHistory(limit, offset)
+            const res = await getSubscriptionHistory(limit, offset);
             if (res?.subscriptions?.length && res.count) {
                 setSubscriptions(prevSubscriptions => [...prevSubscriptions, ...res.subscriptions.filter((newItem: Subscription) => !prevSubscriptions.some(prevItem => prevItem?.id === newItem.id))]);
-                setSubscriptionsCount(res.count)
+                setSubscriptionsCount(res.count);
             }
         } catch (err) {
-            console.error(err)
+            console.error(err);
         }
     }, [subscriptionsCount, subscriptions]);
 
@@ -58,7 +69,7 @@ export default function PlanTab() {
                     <CardBody className="flex flex-col items-center">
 
                         <p>Current plan: <CurrentPlanChip />{(isPremiumOrEnterprise && user?.currentPlan?.billingFrequency) && <b>{` (billed ${user?.currentPlan?.billingFrequency})`}</b>}</p>
-                        
+                        <p className="mt-4">{currentPlanPrice}</p>
 
                         {user?.currentPlan.type !== SubscriptionType.Enterprise && <>
                             <p className="mt-4">Remaining validations (this month): <b>{remainingAppValidations.toLocaleString()} / {appValidationLimit.toLocaleString()}</b> email addresses</p>
@@ -74,11 +85,6 @@ export default function PlanTab() {
                             </Button>
                         }
 
-                        {/* TODO: show only if any */}
-                        {/* <Button className="mt-4" as={Link} href={`/referral`} onClick={goToReferral} color='primary' variant="bordered">
-                            Manage referral discounts
-                        </Button> */}
-
                         <Divider className="my-8" />
 
                         <p className="mb-4">Subscription history</p>
@@ -87,7 +93,7 @@ export default function PlanTab() {
 
                     </CardBody>
                 </Card>
-            </div >
+            </div>
         </>
-    )
+    );
 }

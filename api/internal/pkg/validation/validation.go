@@ -12,7 +12,7 @@ const (
 		INSERT INTO public.validation 
 			(id, user_id, guest_ip, guest_user_agent, single_target_email, single_target_reachability, upload_filename, report_token, origin, status, provider_source) 
 		VALUES 
-			($1, $2, $3, $4, $5, $6, $7, $8, $9, $10);
+			($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11);
 	`
 
 	getCountQuery = `

@@ -134,7 +134,7 @@ export default function TextEmailValidator(props: any) {
                     />
                 </div>
                 <div className="w-full flex justify-center">
-                    <Button onClick={submitEmails} isDisabled={!emailsStr} color="primary" variant="shadow">
+                    <Button isLoading={isLoading} onClick={submitEmails} isDisabled={!validEmails.length} color="primary" variant="shadow">
                         {isLoading ? 'Checking reachability...' : 'Check reachability'}
                     </Button>
                 </div>
