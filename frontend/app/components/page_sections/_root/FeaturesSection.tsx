@@ -46,7 +46,7 @@ const FeaturesSection: React.FC = () => {
                     <FeatureCard
                         title="Role Account Check"
                         icon={<CiUser size="20px" />}
-                        description="Detect role-based email addresses to ensure your messages are reaching real individuals and not just functional inboxes. Identifying role accounts improves your email marketing effectiveness and helps maintain a clean contact list."
+                        description="Detect role-based email addresses (e.g. support@sendable.email) to ensure your messages are reaching real individuals and not just functional inboxes. Identifying role accounts improves your email marketing effectiveness and helps maintain a clean contact list."
                     />
 
                     <FeatureCard

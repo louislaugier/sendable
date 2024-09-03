@@ -18,13 +18,13 @@ export default function TextEmailValidator(props: any) {
     const [errorMsg, setErrorMsg] = useState<string>();
 
     const [isRequestSent, setRequestSent] = useState(false);
-    const [singleTargetReachability, setSingleTargetReachability] = useState<Reachability>()
+    const [singleTargetResp, setSingleTargetResp] = useState<any>()
 
     const reset = () => {
         setEmailsStr('')
         setValidEmails([])
         setRequestSent(false)
-        if (singleTargetReachability) setSingleTargetReachability(undefined)
+        if (singleTargetResp) setSingleTargetResp(undefined)
     }
 
     const submitEmails = async () => {
@@ -59,7 +59,8 @@ export default function TextEmailValidator(props: any) {
                     return
                 }
 
-                if (res.is_reachable) setSingleTargetReachability(res.is_reachable)
+                console.log(res)
+                setSingleTargetResp(res)
 
                 await resetHistory()
             }
@@ -142,22 +143,52 @@ export default function TextEmailValidator(props: any) {
             :
             <>
                 {
-                    singleTargetReachability ? <>
-                        <p style={{ lineHeight: "30px" }} className="mt-8 mb-4">Reachability for {validEmails[0]}: <ReachabilityChip reachability={singleTargetReachability} email={validEmails[0]} /></p>
-                        <div className="mb-12">
+                    singleTargetResp ? <>
+                        <p style={{ lineHeight: "30px" }} className="mt-8 mb-4"><strong>Reachability</strong> for {validEmails[0]}: <ReachabilityChip reachability={singleTargetResp.is_reachable} email={validEmails[0]} /></p>
+                        <div className="mb-4">
                             {
-                                singleTargetReachability === Reachability.Reachable ?
+                                singleTargetResp.is_reachable === Reachability.Reachable ?
                                     <ReachableDescriptor nochip />
-                                    : singleTargetReachability === Reachability.Risky ?
+                                    : singleTargetResp.is_reachable === Reachability.Risky ?
                                         <RiskyDescriptor nochip />
-                                        : singleTargetReachability === Reachability.Unknown ?
+                                        : singleTargetResp.is_reachable === Reachability.Unknown ?
                                             <UnknownDescriptor nochip />
                                             :
-                                            <InvalidDescriptor nochip />
+                                            <InvalidDescriptor noBrackets nochip />
                             }
                         </div>
 
-                        <div className="w-full flex justify-center">
+                        {
+                            (!singleTargetResp.syntax.is_valid_syntax || singleTargetResp.smtp.is_disabled || singleTargetResp.smtp.has_full_inbox || singleTargetResp.misc.is_role_account || singleTargetResp.misc.is_disposable || singleTargetResp.smtp.is_catch_all || (!singleTargetResp.mx.accepts_mail && !!singleTargetResp.syntax.domain)) &&
+                            (() => {
+                                const issues = [];
+                                if (!singleTargetResp.syntax.is_valid_syntax) issues.push('• Address syntax is invalid');
+                                if (!singleTargetResp.mx.accepts_mail && !!singleTargetResp.syntax.domain) issues.push(
+                                    <span>
+                                        • The domain <b>{singleTargetResp.syntax.domain}</b> does not accept emails
+                                    </span>
+                                );
+                                if (singleTargetResp.smtp.is_disabled) issues.push('• Account has been disabled by email provider');
+                                if (singleTargetResp.smtp.has_full_inbox) issues.push("• The account's inbox is currently full");
+                                if (singleTargetResp.misc.is_role_account) issues.push("• The email address is a role account (e.g. support@sendable.email)");
+                                if (singleTargetResp.misc.is_disposable) issues.push("• The email address is a disposable temporary email address");
+                                if (singleTargetResp.smtp.is_catch_all) issues.push("• The email address is a catch-all address (destined to receive emails sent to non-existing addresses on a given domain name)");
+
+                                return (
+                                    <div>
+                                        <b>Issues found:</b>
+                                        <p>{issues.map((issue, index) => (
+                                            <div key={index}>
+                                                {issue}
+                                                {index === issues.length - 1 ? '.' : ';'}
+                                            </div>
+                                        ))}</p>
+                                    </div>
+                                );
+                            })()
+                        }
+
+                        <div className="w-full flex justify-center mt-12">
                             <Button onClick={reset} color="primary" variant="shadow">
                                 New validation batch
                             </Button>

@@ -76,8 +76,8 @@ export function UnknownDescriptor(props: any) {
 }
 
 export function InvalidDescriptor(props: any) {
-    const { nochip } = props;
-    const description = "We guarantee with a confidence of 99% that this email address is not deliverable (nonexistent or any other reason).";
+    const { nochip, noBrackets } = props;
+    const description = `We guarantee with a confidence of 99% that this email address is not deliverable${!noBrackets ? ' (non-existent or any other reason)' : ''}.`;
 
     return (
         <>
