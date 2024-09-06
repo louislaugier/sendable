@@ -76,7 +76,7 @@ func handleFileUpload(w http.ResponseWriter, fileData models.FileData, userID uu
 
 	go email.ValidateManyFromFileWithReport(fileData, fileExtension, userID, userEmail, validationID, reportToken, remainingEmailsCurrentMonth)
 
-	fmt.Fprint(w, http.StatusText(http.StatusOK))
+	fmt.Fprint(w, http.StatusText(http.StatusNoContent))
 }
 
 func handleJSONRequest(w http.ResponseWriter, r *http.Request, userID uuid.UUID, userEmail string, validationID, reportToken uuid.UUID, remainingEmailsCurrentMonth int) {
@@ -94,5 +94,5 @@ func handleJSONRequest(w http.ResponseWriter, r *http.Request, userID uuid.UUID,
 
 	go email.ValidateManyWithReport(req.Emails, userID, userEmail, validationID, reportToken, remainingEmailsCurrentMonth)
 
-	fmt.Fprint(w, http.StatusText(http.StatusOK))
+	fmt.Fprint(w, http.StatusText(http.StatusNoContent))
 }

@@ -59,7 +59,7 @@ func StripeWebhookHandler(w http.ResponseWriter, r *http.Request) {
 		handleUnsubscription(subscriptionID, w)
 	}
 
-	w.WriteHeader(http.StatusOK)
+	w.WriteHeader(http.StatusNoContent)
 }
 
 func handleNewSubscription(customerID, customerEmail, subscriptionID, productID, planInterval string, w http.ResponseWriter) {

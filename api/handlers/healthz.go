@@ -7,7 +7,7 @@ import (
 )
 
 func HealthzHandler(w http.ResponseWriter, _ *http.Request) {
-	fmt.Fprint(w, http.StatusText(http.StatusOK))
+	fmt.Fprint(w, http.StatusText(http.StatusNoContent))
 }
 
 func handleError(w http.ResponseWriter, errorToLog error, messageToReturn string, statusCode int) {

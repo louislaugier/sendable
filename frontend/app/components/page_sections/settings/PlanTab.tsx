@@ -69,7 +69,7 @@ export default function PlanTab() {
                     <CardBody className="flex flex-col items-center">
 
                         <p>Current plan: <CurrentPlanChip />{(isPremiumOrEnterprise && user?.currentPlan?.billingFrequency) && <b>{` (billed ${user?.currentPlan?.billingFrequency})`}</b>}</p>
-                        <p className="mt-4">{currentPlanPrice}</p>
+                        <b className="mt-4">{currentPlanPrice}</b>
 
                         {user?.currentPlan.type !== SubscriptionType.Enterprise && <>
                             <p className="mt-4">Remaining validations (this month): <b>{remainingAppValidations.toLocaleString()} / {appValidationLimit.toLocaleString()}</b> email addresses</p>

@@ -50,5 +50,5 @@ func UpdatePasswordHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	fmt.Fprint(w, http.StatusText(http.StatusOK))
+	fmt.Fprint(w, http.StatusText(http.StatusNoContent))
 }

@@ -51,5 +51,5 @@ func SetPasswordHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	fmt.Fprint(w, http.StatusText(http.StatusOK))
+	fmt.Fprint(w, http.StatusText(http.StatusNoContent))
 }
