@@ -2,9 +2,9 @@ package brevo
 
 import (
 	"context"
+	"os"
 	"sendable/internal/models"
 	"sendable/internal/pkg/html"
-	"os"
 
 	brevo "github.com/getbrevo/brevo-go/lib"
 )
