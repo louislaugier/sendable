@@ -5,6 +5,9 @@ start:
 	docker-compose up -d
 	make -C frontend postinstall
 
+swarm:
+	docker stack deploy --compose-file docker-compose.yml sendable
+
 .PHONY: re
 re:
 	docker-compose build --no-cache
