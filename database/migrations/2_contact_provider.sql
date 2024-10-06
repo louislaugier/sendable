@@ -1,6 +1,11 @@
 CREATE TYPE contact_provider_type AS ENUM (
     'sendgrid',
-    'brevo'
+    'brevo',
+
+    'salesforce',
+    'zoho',
+    'hubspot',
+    'mailchimp'
 );
 
 -- An account can have multiple providers to import contacts, different from signup provider
@@ -12,6 +17,7 @@ CREATE TABLE IF NOT EXISTS public."contact_provider" (
     "created_at" TIMESTAMP NOT NULL DEFAULT now(),
     "updated_at" TIMESTAMP,
 
+    CONSTRAINT cp_type CHECK (type IN ('sendgrid', 'brevo')),
     UNIQUE(type, user_id)
 );
 
