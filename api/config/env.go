@@ -2,7 +2,10 @@ package config
 
 import (
 	"fmt"
+	"log"
 	"os"
+
+	"github.com/joho/godotenv"
 )
 
 type AppEnv string
@@ -16,7 +19,17 @@ var Env AppEnv
 var FrontendURL string
 var BaseURL string
 
+func loadEnvFile() {
+	if err := godotenv.Load("../.env"); err != nil {
+		if err = godotenv.Load("./.env"); err != nil {
+			log.Fatal("godotenv.Load: ", err)
+		}
+	}
+}
+
 func loadEnv() {
+	loadEnvFile()
+
 	Env = AppEnv(os.Getenv("ENV"))
 	if Env == "" {
 		Env = DevEnv

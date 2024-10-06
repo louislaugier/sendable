@@ -98,7 +98,7 @@ export default function TryItOut() {
                         variant="bordered"
                         className="my-4"
                         endContent={
-                            <MailIcon nomargin className="text-2xl text-default-400 pointer-events-none flex-shrink-0" />
+                            <MailIcon className="text-2xl text-default-400 pointer-events-none flex-shrink-0" />
                         }
                         onKeyDown={handleKeyDown}
                     />

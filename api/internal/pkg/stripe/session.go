@@ -1,8 +1,8 @@
 package stripe
 
 import (
-	"sendable/config"
 	"fmt"
+	"sendable/config"
 
 	"github.com/stripe/stripe-go/v72"
 	bs "github.com/stripe/stripe-go/v72/billingportal/session"

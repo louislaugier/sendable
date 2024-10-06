@@ -1,4 +1,4 @@
-# Ignore everything in this directory except this file so that the files folder is not omitted
+# Ignore everything in this directory except these so that empty folders are not omitted
 *
 !.gitignore
 
@@ -7,3 +7,5 @@
 !oauth_contacts
 !reports
 !report_tokens
+!mock
+!Makefile

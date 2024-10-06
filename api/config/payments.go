@@ -1,8 +1,8 @@
 package config
 
 import (
-	"sendable/internal/models"
 	"os"
+	"sendable/internal/models"
 
 	"github.com/stripe/stripe-go/v72"
 )

@@ -1,13 +1,26 @@
+import {
+  Links,
+  Meta,
+  Outlet,
+  Scripts,
+  ScrollRestoration,
+} from "@remix-run/react";
+import type { LinksFunction } from "@remix-run/node";
+import stylesheet from "~/tailwind.css?url";
 import { NextUIProvider } from "@nextui-org/react";
+import { UserProvider } from "./contexts/UserContext";
 import { GoogleOAuthProvider } from "@react-oauth/google";
-import { Meta, Links, ScrollRestoration, Scripts } from "@remix-run/react";
-import Breadcrumb from "./components/Breadcrumb";
-import Footer from "./components/Footer";
-import Nav from "./components/Nav";
 import { googleOauthClientId } from "./constants/oauth/clientIds";
 import { AuthModalProvider } from "./contexts/AuthModalContext";
 import { ErrorOccurredModalProvider } from "./contexts/ErrorOccurredModalContext";
-import { UserProvider } from "./contexts/UserContext";
+import "swagger-ui-react/swagger-ui.css"
+import Breadcrumb from "./components/Breadcrumb";
+import Footer from "./components/Footer";
+import Nav from "./components/Nav";
+
+export const links: LinksFunction = () => [
+  { rel: "stylesheet", href: stylesheet },
+];
 
 export function Layout({ children }: { children: React.ReactNode }) {
   return (
@@ -17,6 +30,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <Meta />
         <Links />
+
         <noscript>
           <style>
             {`.no-js { display: block; } .js { display: none; }`}
@@ -34,12 +48,6 @@ export function Layout({ children }: { children: React.ReactNode }) {
             } catch (e) {
               document.body.innerHTML = '<p>"localStorage" is required to use this application. Please enable it in your browser settings.</p>';
             }
-            var popup = window.open('', '', 'width=1,height=1');
-            if (!popup || popup.closed || typeof popup.closed == 'undefined') {
-              document.body.innerHTML = '<p>Popups are required to use this application. Please enable them in your browser settings.</p>';
-            } else {
-              popup.close();
-            }
           })();
         `}} />
       </head>
@@ -47,15 +55,21 @@ export function Layout({ children }: { children: React.ReactNode }) {
         <ErrorOccurredModalProvider>
           <UserProvider>
             <AuthModalProvider>
+
               <NextUIProvider>
                 <main className="text-foreground bg-background">
+
                   <GoogleOAuthProvider clientId={googleOauthClientId}>
+
                     <Nav />
+
                     <div style={{ maxWidth: 1024, margin: 'auto', minHeight: 'calc(100vh - 177px)' }}>
                       <Breadcrumb />
                       {children}
                     </div>
+
                     <Footer />
+
                   </GoogleOAuthProvider>
                 </main>
               </NextUIProvider>
@@ -67,4 +81,8 @@ export function Layout({ children }: { children: React.ReactNode }) {
       </body>
     </html>
   );
+}
+
+export default function App() {
+  return <Outlet />;
 }
