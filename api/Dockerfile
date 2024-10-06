@@ -1,5 +1,5 @@
 # Start from the latest golang base image
-FROM --platform=linux/amd64 golang:1.22-alpine AS builder
+FROM --platform=linux/amd64 golang:1.23 AS builder
 
 # Set the Current Working Directory inside the container
 WORKDIR /go/src/sendable
