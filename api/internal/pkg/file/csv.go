@@ -2,8 +2,8 @@ package file
 
 import (
 	"bufio"
-	"email-validator/internal/models"
-	"email-validator/internal/pkg/format"
+	"sendable/internal/models"
+	"sendable/internal/pkg/format"
 	"encoding/csv"
 	"fmt"
 	"io"

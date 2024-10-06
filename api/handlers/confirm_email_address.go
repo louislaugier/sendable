@@ -1,14 +1,14 @@
 package handlers
 
 import (
-	"email-validator/config"
-	"email-validator/handlers/middleware"
-	"email-validator/internal/models"
-	"email-validator/internal/pkg/user"
 	"encoding/json"
 	"errors"
 	"fmt"
 	"net/http"
+	"sendable/config"
+	"sendable/handlers/middleware"
+	"sendable/internal/models"
+	"sendable/internal/pkg/user"
 )
 
 // ConfirmEmailAddressHandler is called directly from transactional emails
@@ -57,7 +57,7 @@ func ConfirmEmailAddressHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	if r.URL.Query().Get("magicLink") != "" {
-		http.Redirect(w, r, fmt.Sprintf("%s/%s?email_confirmed=true", config.FrontendURL, page), http.StatusSeeOther)
+		http.Redirect(w, r, fmt.Sprintf("%s/%s?email_confirmed=true", config.BaseURL, page), http.StatusSeeOther)
 		return
 	}
 

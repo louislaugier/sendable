@@ -10,7 +10,7 @@ import (
 	"strings"
 	"time"
 
-	"email-validator/internal/models"
+	"sendable/internal/models"
 
 	"github.com/sendgrid/rest"
 )

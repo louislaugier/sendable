@@ -1,7 +1,7 @@
 package config
 
 import (
-	"email-validator/internal/pkg/brevo"
+	"sendable/internal/pkg/brevo"
 	"os"
 )
 

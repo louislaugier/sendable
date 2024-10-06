@@ -1,10 +1,10 @@
 package handlers
 
 import (
-	"email-validator/handlers/middleware"
-	"email-validator/internal/models"
-	"email-validator/internal/pkg/oauth"
-	"email-validator/internal/pkg/user"
+	"sendable/handlers/middleware"
+	"sendable/internal/models"
+	"sendable/internal/pkg/oauth"
+	"sendable/internal/pkg/user"
 	"encoding/json"
 	"log"
 	"net/http"

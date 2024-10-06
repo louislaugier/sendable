@@ -1,34 +1,35 @@
 package config
 
 import (
-	"log"
+	"fmt"
 	"os"
-
-	"github.com/joho/godotenv"
 )
 
-type Env string
+type AppEnv string
 
 const (
-	DevEnv  Env = "DEV"
-	ProdEnv Env = "PRD"
+	DevEnv  AppEnv = "DEV"
+	ProdEnv AppEnv = "PRD"
 )
 
-var OSEnv = Env(os.Getenv("ENV"))
-
-func loadEnvFile() {
-	if err := godotenv.Load("../.env"); err != nil {
-		if err = godotenv.Load("./.env"); err != nil {
-			log.Fatal("godotenv.Load: ", err)
-		}
-	}
-}
+var Env AppEnv
+var FrontendURL string
+var BaseURL string
 
 func loadEnv() {
-	loadEnvFile()
+	Env = AppEnv(os.Getenv("ENV"))
+	if Env == "" {
+		Env = DevEnv
+	}
 
-	loadDomainURL()
-	loadFrontendURL()
+	domain := os.Getenv("DOMAIN")
+	if domain == "" {
+		FrontendURL = "http://localhost:3000"
+		BaseURL = "http://localhost"
+	} else {
+		FrontendURL = fmt.Sprintf("https://%s", domain)
+		BaseURL = fmt.Sprintf("https://api.%s", domain)
+	}
 
 	loadOauthClients()
 }

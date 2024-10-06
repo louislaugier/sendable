@@ -66,6 +66,6 @@ export default function ValidationHistoryTable(props: any) {
     </TableRow>
 
     return (
-        <DynamicTable loadedItems={validations} totalCount={totalCount} loadHistory={loadHistory} columnNames={columnNames} rowToMap={rowToMap} />
+        <DynamicTable loadedItems={validations} totalCount={totalCount} loadItems={loadHistory} columnNames={columnNames} rowToMap={rowToMap} />
     )
 }

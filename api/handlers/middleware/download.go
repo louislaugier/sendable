@@ -1,8 +1,8 @@
 package middleware
 
 import (
-	"email-validator/config"
-	"email-validator/internal/pkg/file"
+	"sendable/config"
+	"sendable/internal/pkg/file"
 	"fmt"
 	"log"
 	"net/http"

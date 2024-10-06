@@ -1,8 +1,8 @@
 package main
 
 import (
-	"email-validator/config"
-	"email-validator/handlers/router"
+	"sendable/config"
+	"sendable/handlers/router"
 )
 
 func main() {

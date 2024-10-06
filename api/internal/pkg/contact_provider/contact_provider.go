@@ -1,8 +1,8 @@
 package contact_provider
 
 import (
-	"email-validator/config"
-	"email-validator/internal/models"
+	"sendable/config"
+	"sendable/internal/models"
 
 	"github.com/google/uuid"
 )

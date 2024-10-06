@@ -1,9 +1,9 @@
 package handlers
 
 import (
-	"email-validator/handlers/middleware"
-	"email-validator/internal/models"
-	"email-validator/internal/pkg/contact_provider"
+	"sendable/handlers/middleware"
+	"sendable/internal/models"
+	"sendable/internal/pkg/contact_provider"
 	"encoding/json"
 	"fmt"
 	"net/http"

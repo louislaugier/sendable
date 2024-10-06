@@ -1,8 +1,8 @@
 package middleware
 
 import (
-	"email-validator/config"
-	"email-validator/internal/models"
+	"sendable/config"
+	"sendable/internal/models"
 	"log"
 	"net/http"
 )

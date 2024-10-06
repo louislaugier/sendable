@@ -2,7 +2,7 @@ package file
 
 import (
 	"bufio"
-	"email-validator/internal/pkg/format"
+	"sendable/internal/pkg/format"
 	"fmt"
 	"io"
 	"mime/multipart"

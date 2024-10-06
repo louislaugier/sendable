@@ -1,8 +1,8 @@
 # Start from the latest golang base image
-FROM golang:1.22-alpine AS builder
+FROM --platform=linux/amd64 golang:1.22-alpine AS builder
 
 # Set the Current Working Directory inside the container
-WORKDIR /go/src/email-validator
+WORKDIR /go/src/sendable
 
 # Copy the source from the current directory to the Working Directory inside the container
 COPY . .
@@ -14,10 +14,10 @@ RUN go mod download
 RUN CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -a -installsuffix cgo -o main ./cmd/*.go
 
 ######## Start a new stage from scratch #######
-FROM alpine:latest
+FROM --platform=linux/amd64 alpine::3.20.3
 
 # Set the Current Working Directory inside the container
-WORKDIR /go/src/email-validator
+WORKDIR /go/src/sendable
 
 # Copy the pre-built binary file from the previous stage
 COPY --from=builder /api/main .

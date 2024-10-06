@@ -2,7 +2,7 @@ package middleware
 
 import (
 	"context"
-	"email-validator/internal/models"
+	"sendable/internal/models"
 	"net/http"
 )
 

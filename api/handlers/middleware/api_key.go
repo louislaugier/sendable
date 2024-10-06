@@ -2,8 +2,8 @@ package middleware
 
 import (
 	"context"
-	"email-validator/internal/pkg/user"
-	"email-validator/internal/pkg/utils"
+	"sendable/internal/pkg/user"
+	"sendable/internal/pkg/utils"
 	"log"
 	"net/http"
 )

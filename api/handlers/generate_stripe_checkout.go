@@ -1,9 +1,9 @@
 package handlers
 
 import (
-	"email-validator/handlers/middleware"
-	"email-validator/internal/models"
-	"email-validator/internal/pkg/stripe"
+	"sendable/handlers/middleware"
+	"sendable/internal/models"
+	"sendable/internal/pkg/stripe"
 	"encoding/json"
 	"net/http"
 )

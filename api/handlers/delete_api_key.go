@@ -1,9 +1,9 @@
 package handlers
 
 import (
-	"email-validator/handlers/middleware"
-	"email-validator/internal/models"
-	"email-validator/internal/pkg/api_key"
+	"sendable/handlers/middleware"
+	"sendable/internal/models"
+	"sendable/internal/pkg/api_key"
 	"encoding/json"
 	"errors"
 	"fmt"

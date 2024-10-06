@@ -1,13 +1,13 @@
 package email
 
 import (
-	"email-validator/config"
-	"email-validator/handlers/middleware"
-	"email-validator/internal/models"
-	"email-validator/internal/pkg/file"
-	"email-validator/internal/pkg/validation"
 	"fmt"
 	"log"
+	"sendable/config"
+	"sendable/handlers/middleware"
+	"sendable/internal/models"
+	"sendable/internal/pkg/file"
+	"sendable/internal/pkg/validation"
 
 	"github.com/google/uuid"
 )
@@ -72,7 +72,7 @@ func sendReport(report []models.ReacherResponse, recipient string, ID, token uui
 	err = config.EmailClient.SendEmail(models.EmailValidationReportTemplate, "Email validation report", "Your email validation report is ready!", map[string]string{
 		"id":     ID.String(),
 		"token":  token.String(),
-		"domain": fmt.Sprintf("%s%s", config.DomainURL, config.APIVersionPrefix),
+		"domain": fmt.Sprintf("%s%s", config.BaseURL, config.APIVersionPrefix),
 	}, recipient)
 	if err != nil {
 		log.Printf("Error sending report: %v", err)

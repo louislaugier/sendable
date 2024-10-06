@@ -1,8 +1,8 @@
 package handlers
 
 import (
-	"email-validator/handlers/middleware"
-	"email-validator/internal/pkg/validation"
+	"sendable/handlers/middleware"
+	"sendable/internal/pkg/validation"
 	"encoding/json"
 	"net/http"
 	"strconv"

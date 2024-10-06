@@ -1,8 +1,8 @@
 package salesforce
 
 import (
-	"email-validator/config"
-	"email-validator/internal/models"
+	"sendable/config"
+	"sendable/internal/models"
 	"encoding/json"
 	"fmt"
 	"net/http"

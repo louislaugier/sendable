@@ -1,13 +1,13 @@
 package handlers
 
 import (
-	"email-validator/config"
-	"email-validator/handlers/middleware"
-	"email-validator/internal/models"
 	"encoding/json"
 	"errors"
 	"fmt"
 	"net/http"
+	"sendable/config"
+	"sendable/handlers/middleware"
+	"sendable/internal/models"
 	"strconv"
 )
 
@@ -33,7 +33,7 @@ func ZohoAuthSetEmailHandler(w http.ResponseWriter, r *http.Request) {
 	err := config.EmailClient.SendEmail(models.ConfirmEmailAddressTemplate, "Email address confirmation", "Verify your email address", map[string]string{
 		"email_confirmation_code": strconv.Itoa(*user.EmailConfirmationCode),
 		"is_new_account":          "false",
-		"domain":                  fmt.Sprintf("%s%s", config.DomainURL, config.APIVersionPrefix),
+		"domain":                  fmt.Sprintf("%s%s", config.BaseURL, config.APIVersionPrefix),
 	}, body.Email)
 	if err != nil {
 		handleError(w, err, "Internal Server Error", http.StatusBadRequest)

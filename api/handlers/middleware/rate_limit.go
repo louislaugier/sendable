@@ -1,9 +1,9 @@
 package middleware
 
 import (
-	"email-validator/config"
-	"email-validator/internal/models"
-	"email-validator/internal/pkg/utils"
+	"sendable/config"
+	"sendable/internal/models"
+	"sendable/internal/pkg/utils"
 	"net/http"
 	"sync"
 	"time"

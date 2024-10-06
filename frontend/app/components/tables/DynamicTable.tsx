@@ -4,7 +4,7 @@ import { useMemo, useState } from "react";
 const rowsPerPageChoices = [10, 25, 50, 100].map(value => ({ label: value.toString(), value }));
 
 export default function DynamicTable(props: any) {
-    const { loadedItems, totalCount, loadHistory, columnNames, rowToMap } = props;
+    const { loadedItems, totalCount, loadItems, columnNames, rowToMap } = props;
 
     const [page, setPage] = useState(1);
     const [rowsPerPage, setRowsPerPage] = useState(10);
@@ -30,7 +30,7 @@ export default function DynamicTable(props: any) {
                         const newPerPageCount = Number(e.target.value);
                         if (loadedItems.length < totalCount) {
                             try {
-                                await loadHistory(rowsPerPage, loadedItems.length);
+                                await loadItems(rowsPerPage, loadedItems.length);
                             } catch (err) {
                                 console.error(err);
                                 return;
@@ -62,7 +62,7 @@ export default function DynamicTable(props: any) {
 
                                 const diff = newPage * rowsPerPage - currentPageItems.length
                                 if (diff > 0 && loadedItems.length < totalCount) try {
-                                    await loadHistory(diff, currentPageItems.length);
+                                    await loadItems(diff, currentPageItems.length);
                                 } catch (err) {
                                     console.error(err)
                                     return

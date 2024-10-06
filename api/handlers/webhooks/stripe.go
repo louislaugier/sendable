@@ -1,11 +1,11 @@
 package webhooks
 
 import (
-	"email-validator/config"
-	"email-validator/internal/models"
-	stp "email-validator/internal/pkg/stripe"
-	"email-validator/internal/pkg/subscription"
-	"email-validator/internal/pkg/user"
+	"sendable/config"
+	"sendable/internal/models"
+	stp "sendable/internal/pkg/stripe"
+	"sendable/internal/pkg/subscription"
+	"sendable/internal/pkg/user"
 	"encoding/json"
 	"fmt"
 	"io"

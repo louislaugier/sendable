@@ -1,13 +1,13 @@
 package handlers
 
 import (
-	"email-validator/handlers/middleware"
-	"email-validator/internal/models"
-	"email-validator/internal/pkg/file"
-	"email-validator/internal/pkg/oauth"
-	"email-validator/internal/pkg/user"
-	"email-validator/internal/pkg/utils"
-	"email-validator/internal/pkg/zoho"
+	"sendable/handlers/middleware"
+	"sendable/internal/models"
+	"sendable/internal/pkg/file"
+	"sendable/internal/pkg/oauth"
+	"sendable/internal/pkg/user"
+	"sendable/internal/pkg/utils"
+	"sendable/internal/pkg/zoho"
 	"encoding/json"
 	"fmt"
 	"log"

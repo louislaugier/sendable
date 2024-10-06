@@ -1,7 +1,7 @@
 package config
 
 import (
-	"email-validator/internal/models"
+	"sendable/internal/models"
 	"math"
 	"time"
 )

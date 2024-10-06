@@ -2,7 +2,7 @@ package oauth
 
 import (
 	"context"
-	"email-validator/config"
+	"sendable/config"
 	"fmt"
 	"net/http"
 	"strings"

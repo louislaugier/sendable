@@ -1,7 +1,7 @@
 package hubspot
 
 import (
-	"email-validator/internal/models"
+	"sendable/internal/models"
 	"encoding/json"
 	"fmt"
 	"io"

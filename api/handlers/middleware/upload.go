@@ -2,10 +2,10 @@ package middleware
 
 import (
 	"context"
-	"email-validator/config"
-	"email-validator/internal/models"
-	"email-validator/internal/pkg/file"
-	"email-validator/internal/pkg/utils"
+	"sendable/config"
+	"sendable/internal/models"
+	"sendable/internal/pkg/file"
+	"sendable/internal/pkg/utils"
 	"fmt"
 	"log"
 	"net/http"

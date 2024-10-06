@@ -2,12 +2,12 @@ package email
 
 import (
 	"bytes"
-	"email-validator/config"
-	"email-validator/internal/models"
 	"encoding/json"
 	"fmt"
 	"log"
 	"net/http"
+	"sendable/config"
+	"sendable/internal/models"
 	"strings"
 )
 
@@ -18,7 +18,7 @@ func postToReacher(email string) (*models.ReacherResponse, error) {
 			"to_email": "%s",
 			"hello_name": "%s"
 		}
-	`, email, strings.TrimPrefix(strings.TrimPrefix(config.DomainURL, "http://"), "https://")))))
+	`, email, strings.TrimPrefix(strings.TrimPrefix(config.BaseURL, "http://"), "https://")))))
 	if err != nil {
 		return nil, err
 	}

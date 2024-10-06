@@ -1,7 +1,7 @@
 package config
 
 import (
-	"email-validator/internal/models"
+	"sendable/internal/models"
 	"os"
 
 	"github.com/stripe/stripe-go/v72"

@@ -1,7 +1,7 @@
 package html
 
 import (
-	"email-validator/internal/models"
+	"sendable/internal/models"
 	"fmt"
 	"io"
 	"log"

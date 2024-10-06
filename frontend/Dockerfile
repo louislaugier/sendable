@@ -1,5 +1,5 @@
 # Stage 1: Building the app
-FROM node:18 as builder
+FROM --platform=linux/amd64 node:18 as builder
 
 # Create app directory
 WORKDIR /usr/src/app
@@ -20,7 +20,7 @@ COPY . .
 RUN npm run build
 
 # Stage 2: Run the app
-FROM node:18
+FROM --platform=linux/amd64 node:18
 
 # Create app directory
 WORKDIR /usr/src/app

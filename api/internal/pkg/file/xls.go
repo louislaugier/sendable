@@ -1,8 +1,8 @@
 package file
 
 import (
-	"email-validator/internal/pkg/format"
-	"email-validator/internal/pkg/utils"
+	"sendable/internal/pkg/format"
+	"sendable/internal/pkg/utils"
 	"fmt"
 	"io"
 	"mime/multipart"
@@ -93,7 +93,7 @@ func getCellsFromXLSX(file multipart.File, columnsToScan []string) ([]string, er
 }
 
 func getCellsFromXLS(file multipart.File, columnsToScan []string) ([]string, error) {
-	tempFileName, err := createTempFile(file, "email-validator-*.xls")
+	tempFileName, err := createTempFile(file, "sendable-*.xls")
 	if err != nil {
 		return nil, err
 	}

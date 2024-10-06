@@ -1,7 +1,7 @@
 package stripe
 
 import (
-	"email-validator/config"
+	"sendable/config"
 	"fmt"
 
 	"github.com/stripe/stripe-go/v72"

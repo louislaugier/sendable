@@ -1,6 +1,6 @@
 FROM --platform=linux/amd64 golang:1.22-alpine
 
-WORKDIR /go/src/email-validator/api
+WORKDIR /go/src/sendable/api
 
 COPY . .
 

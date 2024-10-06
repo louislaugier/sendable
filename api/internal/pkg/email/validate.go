@@ -2,9 +2,9 @@ package email
 
 import (
 	"context"
-	"email-validator/internal/models"
-	"email-validator/internal/pkg/file"
-	"email-validator/internal/pkg/format"
+	"sendable/internal/models"
+	"sendable/internal/pkg/file"
+	"sendable/internal/pkg/format"
 	"encoding/json"
 	"errors"
 	"log"

@@ -1,13 +1,13 @@
 package router
 
 import (
-	"email-validator/config"
-	"email-validator/handlers"
-	"email-validator/handlers/middleware"
-	"email-validator/handlers/webhooks"
 	"fmt"
 	"log"
 	"net/http"
+	"sendable/config"
+	"sendable/handlers"
+	"sendable/handlers/middleware"
+	"sendable/handlers/webhooks"
 	"time"
 
 	"github.com/rs/cors"
@@ -187,7 +187,7 @@ func StartServer() {
 		}
 	})
 
-	switch config.OSEnv {
+	switch config.Env {
 	case config.DevEnv:
 		fmt.Println("HTTP server is listening on port 80...")
 		if err := http.ListenAndServe(":80", server); err != nil {

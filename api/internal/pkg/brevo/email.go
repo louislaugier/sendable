@@ -2,8 +2,8 @@ package brevo
 
 import (
 	"context"
-	"email-validator/internal/models"
-	"email-validator/internal/pkg/html"
+	"sendable/internal/models"
+	"sendable/internal/pkg/html"
 	"os"
 
 	brevo "github.com/getbrevo/brevo-go/lib"

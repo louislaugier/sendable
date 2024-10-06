@@ -2,8 +2,8 @@ package brevo
 
 import (
 	"context"
-	"email-validator/internal/models"
-	"email-validator/internal/pkg/utils"
+	"sendable/internal/models"
+	"sendable/internal/pkg/utils"
 	"errors"
 
 	"github.com/antihax/optional"

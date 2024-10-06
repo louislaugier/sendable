@@ -2,16 +2,16 @@ package middleware
 
 import (
 	"context"
-	"email-validator/config"
-	"email-validator/internal/models"
-	"email-validator/internal/pkg/stripe"
-	"email-validator/internal/pkg/user"
-	"email-validator/internal/pkg/utils"
 	"errors"
 	"fmt"
 	"log"
 	"net/http"
 	"os"
+	"sendable/config"
+	"sendable/internal/models"
+	"sendable/internal/pkg/stripe"
+	"sendable/internal/pkg/user"
+	"sendable/internal/pkg/utils"
 	"strings"
 	"time"
 
@@ -56,11 +56,11 @@ func GenerateJWT(userID uuid.UUID, userEmail string) (*string, error) {
 		UserID:    userID,
 		UserEmail: userEmail,
 		StandardClaims: jwt.StandardClaims{
-			Issuer:    config.FrontendURL,
+			Issuer:    config.BaseURL,
 			Subject:   userID.String(),
 			ExpiresAt: now.AddDate(0, 0, 30).Unix(),
 			IssuedAt:  now.Unix(),
-			Audience:  config.DomainURL,
+			Audience:  config.FrontendURL,
 			Id:        uuid.New().String(),
 		},
 	}

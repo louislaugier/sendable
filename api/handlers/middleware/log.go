@@ -7,10 +7,10 @@ import (
 	"net/http"
 	"time"
 
-	"email-validator/config"
-	"email-validator/internal/models"
-	"email-validator/internal/pkg/format"
-	"email-validator/internal/pkg/utils"
+	"sendable/config"
+	"sendable/internal/models"
+	"sendable/internal/pkg/format"
+	"sendable/internal/pkg/utils"
 )
 
 // Log is a middleware function that logs HTTP requests.

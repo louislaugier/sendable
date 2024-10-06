@@ -1,11 +1,11 @@
 package handlers
 
 import (
-	"email-validator/handlers/middleware"
-	"email-validator/internal/models"
-	"email-validator/internal/pkg/brevo"
-	"email-validator/internal/pkg/contact_provider"
-	"email-validator/internal/pkg/sendgrid"
+	"sendable/handlers/middleware"
+	"sendable/internal/models"
+	"sendable/internal/pkg/brevo"
+	"sendable/internal/pkg/contact_provider"
+	"sendable/internal/pkg/sendgrid"
 	"encoding/json"
 	"net/http"
 

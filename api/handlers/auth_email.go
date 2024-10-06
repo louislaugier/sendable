@@ -1,15 +1,15 @@
 package handlers
 
 import (
-	"email-validator/config"
-	"email-validator/handlers/middleware"
-	"email-validator/internal/models"
-	"email-validator/internal/pkg/user"
-	"email-validator/internal/pkg/utils"
 	"encoding/json"
 	"fmt"
 	"log"
 	"net/http"
+	"sendable/config"
+	"sendable/handlers/middleware"
+	"sendable/internal/models"
+	"sendable/internal/pkg/user"
+	"sendable/internal/pkg/utils"
 	"strconv"
 )
 
@@ -42,7 +42,7 @@ func LoginHandler(w http.ResponseWriter, r *http.Request) {
 		err = config.EmailClient.SendEmail(models.ConfirmEmailAddressTemplate, "Activate your account", "Verify your email address", map[string]string{
 			"email_confirmation_code": strconv.Itoa(*u.EmailConfirmationCode),
 			"is_new_account":          "true",
-			"domain":                  fmt.Sprintf("%s%s", config.DomainURL, config.APIVersionPrefix),
+			"domain":                  fmt.Sprintf("%s%s", config.BaseURL, config.APIVersionPrefix),
 		}, body.Email)
 		if err != nil {
 			handleError(w, err, "Internal Server Error", http.StatusBadRequest)

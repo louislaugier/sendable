@@ -1,8 +1,8 @@
 package handlers
 
 import (
-	"email-validator/handlers/middleware"
-	"email-validator/internal/pkg/user"
+	"sendable/handlers/middleware"
+	"sendable/internal/pkg/user"
 	"fmt"
 	"net/http"
 )

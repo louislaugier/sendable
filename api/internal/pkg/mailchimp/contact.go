@@ -1,8 +1,8 @@
 package mailchimp
 
 import (
-	"email-validator/internal/models"
-	"email-validator/internal/pkg/oauth"
+	"sendable/internal/models"
+	"sendable/internal/pkg/oauth"
 	"encoding/json"
 	"fmt"
 	"net/http"

@@ -1,7 +1,7 @@
 package zoho
 
 import (
-	"email-validator/internal/models"
+	"sendable/internal/models"
 	"encoding/json"
 	"fmt"
 	"net/http"

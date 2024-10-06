@@ -1,7 +1,7 @@
 package handlers
 
 import (
-	"email-validator/handlers/middleware"
+	"sendable/handlers/middleware"
 	"encoding/json"
 	"net/http"
 )

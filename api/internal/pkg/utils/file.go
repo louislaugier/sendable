@@ -1,7 +1,7 @@
 package utils
 
 import (
-	"email-validator/internal/models"
+	"sendable/internal/models"
 	"path/filepath"
 	"strings"
 )

@@ -2,10 +2,10 @@ package user
 
 import (
 	"database/sql"
-	"email-validator/config"
-	"email-validator/internal/models"
-	"email-validator/internal/pkg/subscription"
-	"email-validator/internal/pkg/validation"
+	"sendable/config"
+	"sendable/internal/models"
+	"sendable/internal/pkg/subscription"
+	"sendable/internal/pkg/validation"
 	"encoding/json"
 	"fmt"
 	"log"

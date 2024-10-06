@@ -1,9 +1,9 @@
 package handlers
 
 import (
-	"email-validator/internal/models"
-	"email-validator/internal/pkg/user"
-	"email-validator/internal/pkg/utils"
+	"sendable/internal/models"
+	"sendable/internal/pkg/user"
+	"sendable/internal/pkg/utils"
 	"encoding/json"
 	"errors"
 	"fmt"

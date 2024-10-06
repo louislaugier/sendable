@@ -1,10 +1,10 @@
 package handlers
 
 import (
-	"email-validator/handlers/middleware"
-	"email-validator/internal/models"
-	two_factor_auth "email-validator/internal/pkg/2fa"
-	"email-validator/internal/pkg/user"
+	"sendable/handlers/middleware"
+	"sendable/internal/models"
+	two_factor_auth "sendable/internal/pkg/2fa"
+	"sendable/internal/pkg/user"
 	"encoding/json"
 	"errors"
 	"fmt"
