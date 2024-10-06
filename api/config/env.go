@@ -15,7 +15,7 @@ const (
 	ProdEnv AppEnv = "PRD"
 )
 
-var Env AppEnv
+var Env AppEnv = DevEnv
 var FrontendURL string
 var BaseURL string
 
@@ -30,11 +30,6 @@ func loadEnvFile() {
 func loadEnv() {
 	loadEnvFile()
 
-	Env = AppEnv(os.Getenv("ENV"))
-	if Env == "" {
-		Env = DevEnv
-	}
-
 	domain := os.Getenv("DOMAIN")
 	if domain == "" {
 		FrontendURL = "http://localhost:3000"
@@ -42,6 +37,8 @@ func loadEnv() {
 	} else {
 		FrontendURL = fmt.Sprintf("https://%s", domain)
 		BaseURL = fmt.Sprintf("https://api.%s", domain)
+
+		Env = ProdEnv
 	}
 
 	loadOauthClients()
