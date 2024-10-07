@@ -54,7 +54,7 @@ export default function TryItOut() {
 
             setReachability(res.is_reachable);
         } catch (error: any) {
-            setErrorMsg("An error occurred. Please try again.");
+            setErrorMsg("An unexpected error occurred. Please try again.");
         }
 
         setLoading(false);

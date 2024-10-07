@@ -21,6 +21,7 @@ const SelectContactsModal = (props: any) => {
         if (singleTargetResp) setSingleTargetResp(undefined)
     }
 
+    const [selectedContacts, setSelectedContacts] = useState([])
 
     return (
         <Modal
@@ -98,55 +99,59 @@ const SelectContactsModal = (props: any) => {
                                     }
                                 </>
                                 :
-                                <SelectContactsTable contacts={contacts} />
+                                <SelectContactsTable setSelectedContacts={setSelectedContacts} contacts={contacts} />
                             }
                         </ModalBody>
                         <ModalFooter>
-                            {!!errorMsg && <p className="mb-2" color="danger">{errorMsg}</p>}
-                            {!isRequestSent && <Button isLoading={isLoading} color={"primary"} variant="shadow" onPress={async () => {
-                                setLoading(true);
-                                setErrorMsg('');
+                            <div>
+                                {!!errorMsg && <p className="mb-2 text-danger display-block text-sm">{errorMsg}</p>}
+                                <div className="flex gap-2">
+                                    {!isRequestSent && <Button isLoading={isLoading} color={"primary"} variant="shadow" onPress={async () => {
+                                        setLoading(true);
+                                        setErrorMsg('');
 
-                                try {
-                                    const emails = contacts
-                                    let res: any
+                                        try {
+                                            const emails = selectedContacts
+                                            let res: any
 
-                                    if (emails.length > 1) {
-                                        res = await validateEmails({ emails });
+                                            if (emails.length > 1) {
+                                                res = await validateEmails({ emails });
 
-                                        if (res.error) {
-                                            setErrorMsg(res.error);
+                                                if (res.error) {
+                                                    setErrorMsg(res.error);
+                                                    setLoading(false);
+                                                    return
+                                                }
+                                            } else {
+                                                res = await validateEmail({ email: emails[0] });
+
+                                                if (res.error) {
+                                                    setErrorMsg(res.error);
+                                                    setLoading(false);
+                                                    return
+                                                }
+
+                                                setSingleTargetResp(res)
+
+                                                if (resetHistory) await resetHistory()
+                                            }
+                                        } catch (error: any) {
+                                            setErrorMsg("An unexpected error occurred. Please try again.");
                                             setLoading(false);
                                             return
                                         }
-                                    } else {
-                                        res = await validateEmail({ email: emails[0] });
 
-                                        if (res.error) {
-                                            setErrorMsg(res.error);
-                                            setLoading(false);
-                                            return
-                                        }
+                                        setRequestSent(true);
 
-                                        setSingleTargetResp(res)
-
-                                        if (resetHistory) await resetHistory()
-                                    }
-                                } catch (error: any) {
-                                    setErrorMsg("An error occurred. Please try again.");
-                                    setLoading(false);
-                                    return
-                                }
-
-                                setRequestSent(true);
-
-                                setLoading(false);
-                            }}>
-                                {isLoading ? 'Loading...' : 'Check reachability'}
-                            </Button>}
-                            <Button color="danger" variant="bordered" onPress={onClose}>
-                                {isRequestSent ? 'Close' : 'Cancel'}
-                            </Button>
+                                        setLoading(false);
+                                    }}>
+                                        {isLoading ? 'Loading...' : 'Check reachability'}
+                                    </Button>}
+                                    <Button color="danger" variant="bordered" onPress={onClose}>
+                                        {isRequestSent ? 'Close' : 'Cancel'}
+                                    </Button>
+                                </div>
+                            </div>
                         </ModalFooter>
                     </>
                 )}

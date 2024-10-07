@@ -2,7 +2,11 @@ import { Table, Pagination, TableHeader, TableColumn, TableBody, TableRow, Table
 import { useState, useMemo } from "react";
 
 export default function SelectContactsTable(props: any) {
-    const { contacts } = props
+    const { contacts, setSelectedContacts } = props;
+
+    let contactsSet = new Set<string>([]);
+    for (const key in contacts) contactsSet.add(key);
+    const [selectedKeys, setSelectedKeys] = useState<any>(contactsSet);
 
     const [page, setPage] = useState(1);
     const rowsPerPage = 200;
@@ -16,11 +20,19 @@ export default function SelectContactsTable(props: any) {
         }));
     }, [page, contacts]);
 
+    const handleSelectionChange = (keys: any) => {
+        setSelectedKeys(keys);
+        const selectedContacts = Array.from(keys).map((key: any) => contacts[key]);
+        setSelectedContacts(selectedContacts);
+    };
+
     return (
         <>
             <Table
                 selectionMode="multiple"
                 defaultSelectedKeys={"all"}
+                selectedKeys={selectedKeys}
+                onSelectionChange={handleSelectionChange}
                 aria-label="Imported contacts"
                 bottomContent={
                     <div className="flex w-full justify-center">
@@ -48,5 +60,5 @@ export default function SelectContactsTable(props: any) {
                 </TableBody>
             </Table>
         </>
-    )
+    );
 }

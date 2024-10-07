@@ -63,7 +63,7 @@ export default function TextEmailValidator(props: any) {
                 await resetHistory()
             }
         } catch (error: any) {
-            setErrorMsg("An error occurred. Please try again.");
+            setErrorMsg("An unexpected error occurred. Please try again.");
             setLoading(false);
             return
         }

@@ -16,7 +16,7 @@ const ErrorOccurredModal = (props: any) => {
                 {(onClose) => (
                     <>
                         <ModalHeader className="flex flex-col gap-1">Unexpected error</ModalHeader>
-                        <ModalBody>An error occurred. Please try again.</ModalBody>
+                        <ModalBody>An unexpected error occurred. Please try again.</ModalBody>
                         <ModalFooter>
                             <Button color="danger" variant="bordered" onPress={onClose}>
                                 Close
