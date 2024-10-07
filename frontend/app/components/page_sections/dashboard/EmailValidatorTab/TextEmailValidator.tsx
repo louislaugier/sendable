@@ -41,7 +41,7 @@ export default function TextEmailValidator(props: any) {
             const emails = validEmails
             let res: any
 
-            if (validEmails.length > 1) {
+            if (emails.length > 1) {
                 res = await validateEmails({ emails });
 
                 if (res.error) {
@@ -49,8 +49,7 @@ export default function TextEmailValidator(props: any) {
                     setLoading(false);
                     return
                 }
-            }
-            else {
+            } else {
                 res = await validateEmail({ email: emails[0] });
 
                 if (res.error) {

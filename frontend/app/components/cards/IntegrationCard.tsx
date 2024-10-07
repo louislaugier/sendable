@@ -9,7 +9,7 @@ import SelectContactsModal from "../modals/SelectContactsModal";
 export default function IntegrationCard(props: any) {
     const [isLoading, setLoading] = useState(false)
 
-    const { title, url, description, signupBtn, logo } = props
+    const { title, url, description, signupBtn, logo, resetHistory } = props
 
     const { user } = useContext(UserContext);
 
@@ -88,7 +88,7 @@ export default function IntegrationCard(props: any) {
                 </CardFooter>
             </Card>
 
-            {!!contacts.length && <SelectContactsModal contacts={contacts} isOpen={selectContactsModal.isOpen} onOpen={selectContactsModal.onOpen} onOpenChange={selectContactsModal.onOpenChange} />}
+            {!!contacts.length && <SelectContactsModal resetHistory={resetHistory} contacts={contacts} isOpen={selectContactsModal.isOpen} onOpen={selectContactsModal.onOpen} onOpenChange={selectContactsModal.onOpenChange} />}
         </>
     );
 }
