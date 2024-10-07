@@ -1,4 +1,4 @@
-import { Button, Chip, Link, Progress, Tab, Tabs, useDisclosure } from "@nextui-org/react";
+import { Button, Link, Progress, Tab, Tabs, useDisclosure } from "@nextui-org/react";
 import type { MetaFunction } from "@remix-run/node";
 import { useSearchParams } from "@remix-run/react";
 import { useCallback, useContext, useEffect, useState } from "react";
@@ -7,14 +7,11 @@ import EmailAddressConfirmedModal from "~/components/modals/EmailAddressConfirme
 import EmailValidatorTab from "~/components/page_sections/dashboard/EmailValidatorTab";
 import ValidationHistoryTable from "~/components/tables/ValidationHistoryTable";
 import { siteName } from "~/constants/app";
-import AuthModalContext from "~/contexts/AuthModalContext";
 import UserContext from "~/contexts/UserContext";
 import getValidationHistory from "~/services/api/validation_history";
-import { AuthModalType } from "~/types/modal";
 import { SubscriptionType } from "~/types/subscription";
 import { Validation } from "~/types/validation";
 import { getApiValidationLimit, getAppValidationLimit, getRemainingApiValidations, getRemainingAppValidations } from "~/utils/limit";
-import { capitalize } from "~/utils/string";
 import { navigateToUrl } from "~/utils/url";
 
 export const meta: MetaFunction = () => {
@@ -34,12 +31,12 @@ export default function Dashboard() {
 
   const isEmailAddressConfirmedCall = !!searchParams.get("email_confirmed")
 
-  const { authModal, setModalType } = useContext(AuthModalContext);
 
   if (!user) {
     if (isEmailAddressConfirmedCall) navigateToUrl('/?email_confirmed=true')
-    else navigateToUrl('/')
+    // else navigateToUrl('/')
   }
+  console.log("ok123", user)
 
   const [selectedTab, setSelectedTab] = useState<any>(searchParams.get("tab") ?? "validation");
 
