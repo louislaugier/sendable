@@ -1,0 +1,30 @@
+entryPoints:
+  web:
+    address: ":80"
+  websecure:
+    address: ":443"
+
+http:
+  routers:
+    api-router:
+      rule: "Host(`api.sendable.email`)"
+      service: api-service
+      entryPoints:
+        - web
+
+    frontend-router:
+      rule: "Host(`sendable.email`)"
+      service: frontend-service
+      entryPoints:
+        - web
+
+  services:
+    api-service:
+      loadBalancer:
+        servers:
+          - url: "http://api"
+
+    frontend-service:
+      loadBalancer:
+        servers:
+          - url: "http://frontend:3000"
