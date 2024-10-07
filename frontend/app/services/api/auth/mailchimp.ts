@@ -2,7 +2,7 @@ import apiClient from "..";
 
 const mailchimpAuth = async (data: any) => {
     try {
-        const response = await apiClient.post('auth_mailchimp', data);
+        const response = await (await getClient()).post('auth_mailchimp', data);
         return response.data;
     } catch (error) {
         console.error('Error:', error);

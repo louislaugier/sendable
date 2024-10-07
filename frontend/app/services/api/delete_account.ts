@@ -1,8 +1,8 @@
-import apiClient from ".";
+import { getClient } from ".";
 
 const deleteAccount = async () => {
     try {
-        const response = await apiClient.get('delete_account');
+        const response = await (await getClient()).get('delete_account');
         return response.data;
     } catch (error: any) {
         console.error('Error:', error);

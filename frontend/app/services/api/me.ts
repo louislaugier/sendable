@@ -1,8 +1,8 @@
-import apiClient from ".";
+import { getClient } from ".";
 
 const getUserData = async () => {
     try {
-        const response = await apiClient.get('me');
+        const response = await (await getClient()).get('me');
         return response.data;
     } catch (error: any) {
         console.error('Error:', error);

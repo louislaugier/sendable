@@ -1,8 +1,8 @@
-import apiClient from ".";
+import { getClient } from ".";
 
 const resetPassword = async (data: any) => {
     try {
-        const response = await apiClient.post('reset_password', data);
+        const response = await (await getClient()).post('reset_password', data);
         return response.data;
     } catch (error: any) {
         if (error?.message?.includes('400') || error?.message?.includes('404') ) return { error: error?.response?.data }

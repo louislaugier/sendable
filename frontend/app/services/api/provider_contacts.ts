@@ -1,8 +1,8 @@
 import { ContactProviderType } from "~/types/contactProvider";
-import apiClient from ".";
+import { getClient } from ".";
 
 const getProviderContacts = async (provider: ContactProviderType, code?: string, codeVerifier?: string) => {
-    if (!apiClient.defaults.headers.common['Authorization']) return;
+    if (!(await getClient()).defaults.headers.common['Authorization']) return;
 
     try {
         const params: Record<string, string> = {
@@ -11,7 +11,7 @@ const getProviderContacts = async (provider: ContactProviderType, code?: string,
 
         if (codeVerifier) params.codeVerifier = codeVerifier;
 
-        const response = await apiClient.get('provider_contacts', { params });
+        const response = await (await getClient()).get('provider_contacts', { params });
 
         return response.data;
     } catch (error) {

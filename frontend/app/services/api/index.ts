@@ -1,30 +1,26 @@
-import axios from 'axios';
-import { apiBaseUrl } from '~/constants/api';
+import axios, { AxiosInstance } from "axios";
+import { getApiBaseUrl, waitForWindow } from "~/constants/api";
 
-export const apiClient = axios.create({
-  baseURL: apiBaseUrl,
-  timeout: 30000,
-  headers: {
-    'Content-Type': 'application/json',
-  },
-});
+let client: AxiosInstance | null = null;
 
-// apiClient.interceptors.request.use(
-//   (config) => {
-//     return config;
-//   },
-//   (error) => {
-//     return Promise.reject(error);
-//   }
-// );
+const initializeClient = async () => {
+  await waitForWindow; // Ensure the window is ready and URL is set
+  client = axios.create({
+    baseURL: await getApiBaseUrl(),
+    timeout: 300000,
+    headers: {
+      'Content-Type': 'application/json',
+    },
+  });
+};
 
-// apiClient.interceptors.response.use(
-//   (response) => {
-//     return response;
-//   },
-//   (error) => {
-//     return Promise.reject(error);
-//   }
-// );
+initializeClient();
 
-export default apiClient;
+export const getClient = async (): Promise<AxiosInstance> => {
+  if (!client) {
+    await initializeClient();
+  }
+  return client!;
+};
+
+export default getClient;

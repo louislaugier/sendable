@@ -1,4 +1,4 @@
-import apiClient from ".";
+import { getClient } from ".";
 
 const validateEmails = async (data: any, file?: File) => {
     try {
@@ -7,13 +7,13 @@ const validateEmails = async (data: any, file?: File) => {
             const formData = new FormData();
             formData.append('file', file);
             formData.append('columnsToScan', data.columnsToScan);
-            response = await apiClient.post('validate_emails', formData, {
+            response = await (await getClient()).post('validate_emails', formData, {
                 headers: {
                     'Content-Type': 'multipart/form-data',
                 },
             });
         } else {
-            response = await apiClient.post('validate_emails', data);
+            response = await (await getClient()).post('validate_emails', data);
         }
         return response.data;
     } catch (error: any) {

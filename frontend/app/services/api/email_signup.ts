@@ -1,8 +1,8 @@
-import apiClient from ".";
+import { getClient } from ".";
 
 const emailSignup = async (data: any) => {
     try {
-        const response = await apiClient.post('email_signup', data);
+        const response = await (await getClient()).post('email_signup', data);
         return response.data;
     } catch (error: any) {
         if (error?.message?.includes('409')) return { error: error?.response?.data }

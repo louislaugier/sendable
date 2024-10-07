@@ -1,8 +1,8 @@
-import apiClient from ".";
+import { getClient } from ".";
 
 const validateEmail = async (data: any) => {
     try {
-        const response = await apiClient.post('validate_email', data);
+        const response = await (await getClient()).post('validate_email', data);
         return response.data;
     } catch (error: any) {
         if (error?.message?.includes('429')) return { error: error?.response?.data }

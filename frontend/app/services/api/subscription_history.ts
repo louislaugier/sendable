@@ -1,10 +1,10 @@
-import apiClient from ".";
+import { getClient } from ".";
 
 const getSubscriptionHistory = async (limit: number | undefined = undefined, offset: number | undefined = undefined) => {
-    if (!apiClient.defaults.headers.common['Authorization']) return
+    if (!(await getClient()).defaults.headers.common['Authorization']) return
     
     try {
-        const response = await apiClient.get(`subscription_history?limit=${limit ?? 10}&offset=${offset || 0}`);
+        const response = await (await getClient()).get(`subscription_history?limit=${limit ?? 10}&offset=${offset || 0}`);
 
         return response.data;
     } catch (error) {

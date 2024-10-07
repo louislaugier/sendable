@@ -2,7 +2,7 @@ import apiClient from "..";
 
 const authEmail = async (data: any) => {
     try {
-        const response = await apiClient.post('auth_email', data);
+        const response = await (await getClient()).post('auth_email', data);
         return response.data;
     } catch (error: any) {
         if (error?.message?.includes('401')) return { error: error?.response?.data }

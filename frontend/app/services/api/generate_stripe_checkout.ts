@@ -1,8 +1,8 @@
-import apiClient from ".";
+import { getClient } from ".";
 
 const generateStripeCheckout = async (data: any) => {
     try {
-        const response = await apiClient.post('generate_stripe_checkout', data);
+        const response = await (await getClient()).post('generate_stripe_checkout', data);
         return response.data;
     } catch (error) {
         console.error('Error:', error);
