@@ -17,7 +17,7 @@ container_id=$(docker ps -aqf "name=$container_name")
 # Check if the container ID is not empty
 if [ -n "$container_id" ]; then
     # Copy node_modules from the container to the local directory
-    docker cp "$container_id:/frontend/node_modules" ./frontend/
+    docker cp "$container_id:/frontend/node_modules" ./node_modules/
 else
     echo "Container with name '$container_name' not found."
     exit 1
