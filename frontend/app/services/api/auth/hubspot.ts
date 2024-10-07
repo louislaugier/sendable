@@ -1,4 +1,4 @@
-import apiClient from "..";
+import { getClient } from "..";
 
 const hubspotAuth = async (data: any) => {
     try {

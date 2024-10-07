@@ -1,4 +1,4 @@
-import apiClient from "..";
+import { getClient } from "..";
 
 const twoFactorAuth = async (data: any) => {
     try {

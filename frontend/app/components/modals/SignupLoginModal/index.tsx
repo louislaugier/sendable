@@ -195,6 +195,8 @@ export default function SignupLoginModal(props: any) {
 
     const submitRef = useRef<any>()
 
+    const unexpectedErrStr = "An unexpected error has occurred. Please try again."
+
     return (
         !user &&
         <>
@@ -291,7 +293,7 @@ export default function SignupLoginModal(props: any) {
                                 </Button>}
 
                                 {/* Email login */}
-                                {(isLogin && isLoginButtonVisible && !isForgotPassVisible) && <Button ref={submitRef} isDisabled={!!loginError || !loginEmail || !loginPassword} isLoading={isLoading} onClick={emailLogin} color="primary" variant="shadow">
+                                {(isLogin && isLoginButtonVisible && !isForgotPassVisible) && <Button ref={submitRef} isDisabled={!loginEmail || !loginPassword} isLoading={isLoading} onClick={emailLogin} color="primary" variant="shadow">
                                     {isLoading ? 'Loading' : AuthModalType.Login}
                                 </Button>}
 

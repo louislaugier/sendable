@@ -1,5 +1,5 @@
 import { createContext, useState, useEffect, useMemo, useCallback } from "react";
-import apiClient, { getClient } from "~/services/api";
+import { getClient } from "~/services/api";
 import getUserData from "~/services/api/me";
 import { User, UserContextType } from "~/types/user";
 

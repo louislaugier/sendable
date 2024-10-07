@@ -1,4 +1,4 @@
-import apiClient from "..";
+import { getClient } from "..";
 
 const mailchimpAuth = async (data: any) => {
     try {
