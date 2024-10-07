@@ -1,5 +1,5 @@
 import { createContext, useState, useEffect, useMemo, useCallback } from "react";
-import apiClient from "~/services/api";
+import apiClient, { getClient } from "~/services/api";
 import getUserData from "~/services/api/me";
 import { User, UserContextType } from "~/types/user";
 
@@ -25,15 +25,17 @@ export const UserProvider: React.FC<React.PropsWithChildren<{}>> = ({ children }
 
     // Effect to update localStorage when the user state changes
     useEffect(() => {
-        if (typeof window !== 'undefined') {
-            if (user) {
-                localStorage.setItem('user', JSON.stringify(user));
-                apiClient.defaults.headers.common['Authorization'] = `Bearer ${user.jwt}`;
-            } else {
-                localStorage.removeItem('user');
-                delete apiClient.defaults.headers.common['Authorization'];
+        (async function () {
+            if (typeof window !== 'undefined') {
+                if (user) {
+                    localStorage.setItem('user', JSON.stringify(user));
+                    (await getClient()).defaults.headers.common['Authorization'] = `Bearer ${user.jwt}`;
+                } else {
+                    localStorage.removeItem('user');
+                    delete (await getClient()).defaults.headers.common['Authorization'];
+                }
             }
-        }
+        })
     }, [user]);
 
     const refreshUserData = useCallback(async () => {
