@@ -1,8 +1,8 @@
 package config
 
 import (
-	"sendable/internal/models"
 	"math"
+	"sendable/internal/models"
 	"time"
 )
 
@@ -27,7 +27,7 @@ var (
 
 	MonthlyAppValidationsLimits = map[models.SubscriptionType]int{
 		models.FreePlan:               500,
-		models.PremiumSubscription:    10000,
+		models.PremiumSubscription:    30000,
 		models.EnterpriseSubscription: Infinity,
 	}
 

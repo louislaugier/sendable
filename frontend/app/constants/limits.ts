@@ -5,7 +5,7 @@ export const limits = {
         apiConcurrency: 1
     },
     premium: {
-        app: 10000,
+        app: 30000,
         api: 3000,
         apiConcurrency: 3
     },
