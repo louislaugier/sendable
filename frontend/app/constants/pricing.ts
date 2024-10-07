@@ -31,9 +31,9 @@ export const pricingPlans = [
     {
         name: SubscriptionType.Premium,
         description: "Elevate your email validation with our premium offering, access higher quotas for our platform and API.",
-        monthlyPrice: 99,
+        monthlyPrice: 75,
         stripeMonthlyPriceId: "price_1PheiwRsG6IPgooN6JeXSJfe",
-        yearlyPrice: 999,
+        yearlyPrice: 749,
         stripeYearlyPriceId: "price_1PhemMRsG6IPgooNOE5BAJ5P",
         features: [
             {
