@@ -3,7 +3,7 @@ import { useState, useRef, useEffect } from "react";
 import { allowedFileTypes } from "~/constants/file";
 import { limits } from "~/constants/limits";
 import { getColumnNamesFromCSV, getColumnNamesFromXLS } from "~/utils/file";
-import RequestSent from "./RequestSent";
+import RequestSent from "../../RequestSent";
 import validateEmails from "~/services/api/validate_emails";
 
 export default function FileEmailValidator(props: any) {
