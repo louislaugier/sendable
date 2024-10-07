@@ -5,16 +5,14 @@ import { User, UserContextType } from "~/types/user";
 
 const UserContext = createContext<UserContextType>({
     user: null,
-    setUser: () => { },
+    setUser: () => {},
     temp2faUserId: null,
-    setTemp2faUserId: () => { },
-    refreshUserData: () => Promise.resolve() // Adding a default no-op refreshUserData function
+    setTemp2faUserId: () => {},
+    refreshUserData: () => Promise.resolve()
 });
 
 export const UserProvider: React.FC<React.PropsWithChildren<{}>> = ({ children }) => {
-    const [temp2faUserId, setTemp2faUserId] = useState<string | null>(null)
-
-    // Initialize user state from localStorage to handle refreshes more consistently
+    const [temp2faUserId, setTemp2faUserId] = useState<string | null>(null);
     const [user, setUser] = useState<User | null>(() => {
         if (typeof window !== 'undefined') {
             const userFromLocalStorage = localStorage.getItem('user');
@@ -23,25 +21,25 @@ export const UserProvider: React.FC<React.PropsWithChildren<{}>> = ({ children }
         return null;
     });
 
-    // Effect to update localStorage when the user state changes
     useEffect(() => {
-        (async function () {
+        (async function initializeUser() {
             if (typeof window !== 'undefined') {
+                const client = await getClient();
                 if (user) {
                     localStorage.setItem('user', JSON.stringify(user));
-                    (await getClient()).defaults.headers.common['Authorization'] = `Bearer ${user.jwt}`;
+                    client.defaults.headers.common['Authorization'] = `Bearer ${user.jwt}`;
                 } else {
                     localStorage.removeItem('user');
-                    delete (await getClient()).defaults.headers.common['Authorization'];
+                    delete client.defaults.headers.common['Authorization'];
                 }
             }
-        })
+        })();
     }, [user]);
 
     const refreshUserData = useCallback(async () => {
         if (user) {
             const latestUserData = await getUserData();
-            setUser((prevUser: User | null) => { return { ...latestUserData, jwt: prevUser?.jwt } })
+            setUser((prevUser: User | null) => ({ ...latestUserData, jwt: prevUser?.jwt }));
         }
     }, [user]);
 
@@ -49,9 +47,8 @@ export const UserProvider: React.FC<React.PropsWithChildren<{}>> = ({ children }
         if (user) {
             refreshUserData();
         }
-    }, []);
+    }, [user, refreshUserData]);
 
-    // Memorize the context value to prevent unnecessary re-renders
     const value = useMemo(() => ({ user, setUser, temp2faUserId, setTemp2faUserId, refreshUserData }), [user, temp2faUserId, refreshUserData]);
 
     return (

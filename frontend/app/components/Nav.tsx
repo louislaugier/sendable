@@ -1,10 +1,22 @@
-import { Navbar, NavbarBrand, NavbarContent, NavbarItem, Button, Dropdown, DropdownItem, DropdownMenu, DropdownTrigger, DropdownSection, User } from "@nextui-org/react";
+import {
+    Navbar,
+    NavbarBrand,
+    NavbarContent,
+    NavbarItem,
+    Button,
+    Dropdown,
+    DropdownItem,
+    DropdownMenu,
+    DropdownTrigger,
+    DropdownSection,
+    User
+} from "@nextui-org/react";
 import { useLocation } from "@remix-run/react";
 import { Fragment, useContext } from "react";
 import AuthModalContext from "~/contexts/AuthModalContext";
 import UserContext from "~/contexts/UserContext";
 import { AuthModalType } from "~/types/modal";
-import { isCurrentUrl, navigateToUrl } from "~/utils/url";
+import { isCurrentUrl } from "~/utils/url";
 import { Link as RemixLink } from "@remix-run/react";
 import { siteName } from "~/constants/app";
 import { ChevronDownIcon } from "~/components/icons/ChevronDownIcon";
@@ -16,7 +28,7 @@ import SignupLoginModal from "./modals/SignupLoginModal";
 import { capitalize } from "~/utils/string";
 
 export default function Nav() {
-    const { authModal, modalType, setModalType } = useContext(AuthModalContext);
+    const { authModal, setModalType } = useContext(AuthModalContext);
     const location = useLocation();
     const { user, setUser } = useContext(UserContext);
 
@@ -24,15 +36,15 @@ export default function Nav() {
         <>
             {!user && <GoogleOneTap />}
 
-            <Navbar isBordered style={{ borderColor: '#E4E4E7' }}>
+            <Navbar isBordered style={{ borderColor: "#E4E4E7" }}>
                 <NavbarBrand>
                     <RemixLink prefetch="intent" to={"/"}>
                         {siteName.toUpperCase()}
                     </RemixLink>
                 </NavbarBrand>
                 <NavbarContent className="hidden sm:flex gap-4" justify="center">
-                    {pages.map((page, index) => (
-                        page.requiresAuth && !user || page.isInvisibleInNav ? <></> :
+                    {pages.map((page, index) =>
+                        page.requiresAuth && !user || page.isInvisibleInNav ? null : (
                             <Fragment key={index}>
                                 {page.sublinks ? (
                                     <Dropdown>
@@ -40,8 +52,10 @@ export default function Nav() {
                                             <DropdownTrigger>
                                                 <Button
                                                     disableRipple
-                                                    className="p-0 bg-transparent data-[hover=true]:bg-transparent text-base" // Added text-base class
-                                                    endContent={<ChevronDownIcon fill="currentColor" size={16} />}
+                                                    className="p-0 bg-transparent data-[hover=true]:bg-transparent text-base"
+                                                    endContent={
+                                                        <ChevronDownIcon fill="currentColor" size={16} />
+                                                    }
                                                     radius="sm"
                                                     variant="light"
                                                 >
@@ -53,15 +67,15 @@ export default function Nav() {
                                             aria-label={page.label}
                                             className="w-[340px]"
                                             itemClasses={{
-                                                base: "gap-4",
+                                                base: "gap-4"
                                             }}
                                         >
                                             {page.sublinks.map((sublink, subIndex) => (
                                                 <DropdownItem
-                                                    key={subIndex}
+                                                    key={`${index}-${subIndex}`}
                                                     description={sublink.description}
                                                     href={sublink.url}
-                                                    style={{ cursor: 'pointer' }}
+                                                    style={{ cursor: "pointer" }}
                                                 >
                                                     {sublink.label}
                                                 </DropdownItem>
@@ -70,28 +84,38 @@ export default function Nav() {
                                     </Dropdown>
                                 ) : (
                                     <NavbarItem
+                                        key={index}
                                         isActive={isCurrentUrl(location, page.url)}
-                                        aria-current={isCurrentUrl(location, page.url) && "page"}
+                                        aria-current={
+                                            isCurrentUrl(location, page.url) ? "page" : undefined
+                                        }
                                     >
                                         <RemixLink prefetch="intent" to={page.url}>
-                                            <p className={isCurrentUrl(location, page.url) ? "text-primary" : undefined}>
+                                            <p
+                                                className={
+                                                    isCurrentUrl(location, page.url)
+                                                        ? "text-primary"
+                                                        : undefined
+                                                }
+                                            >
                                                 {page.label}
                                             </p>
                                         </RemixLink>
                                     </NavbarItem>
                                 )}
                             </Fragment>
-                    ))}
+                        )
+                    )}
                 </NavbarContent>
 
                 <NavbarContent justify="end">
-                    {user ? <>
+                    {user ? (
                         <Dropdown placement="bottom-start" backdrop="blur">
                             <DropdownTrigger>
                                 <User
                                     as="button"
                                     className="transition-transform"
-                                    description={capitalize(user.currentPlan.type)}
+                                    description={capitalize(user.currentPlan?.type || "")}
                                     name={user.email}
                                 />
                             </DropdownTrigger>
@@ -101,7 +125,6 @@ export default function Nav() {
                                         key="dashboard"
                                         description="Start a new validation batch"
                                         href="/dashboard"
-                                    // startContent={<AddNoteIcon className={iconClasses} />}
                                     >
                                         Validate email addresses
                                     </DropdownItem>
@@ -109,12 +132,10 @@ export default function Nav() {
                                         key="history"
                                         description="Email address validation history"
                                         href="/dashboard?tab=history"
-                                    // startContent={<AddNoteIcon className={iconClasses} />}
                                     >
                                         History
                                     </DropdownItem>
                                 </DropdownSection>
-                                {/* @ts-ignore */}
                                 <DropdownSection title="Account">
                                     <DropdownItem
                                         key="settings"
@@ -123,21 +144,24 @@ export default function Nav() {
                                     >
                                         Settings
                                     </DropdownItem>
-                                    <>
-                                        {(user.currentPlan?.type === SubscriptionType.Premium || user.currentPlan?.type === SubscriptionType.Enterprise) ? (
-                                            <DropdownItem
-                                                key="subscription"
-                                                description="Go to Stripe customer portal"
-                                                href={user?.stripeCustomerPortalUrl}
-                                                target="_blank"
-                                            >
-                                                <div className="flex">Manage subscription <FiExternalLink style={{ marginLeft: 5 }} /></div>
-                                            </DropdownItem>
-                                        ) : null}
-                                    </>
+                                    {user.currentPlan &&
+                                        (user.currentPlan.type === SubscriptionType.Premium ||
+                                            user.currentPlan.type === SubscriptionType.Enterprise) ? (
+                                        <DropdownItem
+                                            key="subscription"
+                                            description="Go to Stripe customer portal"
+                                            href={user.stripeCustomerPortalUrl}
+                                            target="_blank"
+                                        >
+                                            <div className="flex">
+                                                Manage subscription{" "}
+                                                <FiExternalLink style={{ marginLeft: 5 }} />
+                                            </div>
+                                        </DropdownItem>
+                                    ) : <></>}
                                     <DropdownItem
-                                        onClick={() => setUser(null)}
                                         key="logout"
+                                        onClick={() => setUser(null)}
                                         className="text-danger"
                                         color="danger"
                                         description="Disconnect account"
@@ -147,31 +171,42 @@ export default function Nav() {
                                 </DropdownSection>
                             </DropdownMenu>
                         </Dropdown>
-                    </> : <>
-                        <NavbarItem className="hidden lg:flex">
-                            <p style={{ cursor: 'pointer' }} onClick={() => {
-                                setModalType(AuthModalType.Login)
-                                authModal.onOpen()
-                            }}>
-                                Login
-                            </p>
-                        </NavbarItem>
-
-                        <NavbarItem>
-                            <Button onClick={() => {
-                                setModalType(AuthModalType.Signup)
-                                authModal.onOpen()
-                            }} color="primary" variant="shadow">
-                                Sign Up Free
-                            </Button>
-                        </NavbarItem>
-                    </>}
+                    ) : (
+                        <>
+                            <NavbarItem className="hidden lg:flex">
+                                <p
+                                    style={{ cursor: "pointer" }}
+                                    onClick={() => {
+                                        setModalType(AuthModalType.Login);
+                                        authModal.onOpen();
+                                    }}
+                                >
+                                    Login
+                                </p>
+                            </NavbarItem>
+                            <NavbarItem>
+                                <Button
+                                    onClick={() => {
+                                        setModalType(AuthModalType.Signup);
+                                        authModal.onOpen();
+                                    }}
+                                    color="primary"
+                                    variant="shadow"
+                                >
+                                    Sign Up Free
+                                </Button>
+                            </NavbarItem>
+                        </>
+                    )}
                 </NavbarContent>
             </Navbar>
 
-            <SignupLoginModal isOpen={authModal.isOpen} onClose={authModal.onClose} onOpen={authModal.onOpen} onOpenChange={authModal.onOpenChange} />
+            <SignupLoginModal
+                isOpen={authModal.isOpen}
+                onClose={authModal.onClose}
+                onOpen={authModal.onOpen}
+                onOpenChange={authModal.onOpenChange}
+            />
         </>
     );
 }
-
-

@@ -78,7 +78,7 @@ export default function IntegrationCard(props: any) {
 
                         setLoading(false)
                     }} color="primary" variant="shadow" className="ml-2">
-                        {shouldConnectApiKey ? 'Add API key' : 'Import contacts'}
+                        {shouldConnectApiKey ? 'Add API key' : isLoading ? 'Importing...' : 'Import contacts'}
                     </Button> : <Tooltip showArrow={true} content={"You must be logged in to import contacts"}>
                         <Button onClick={() => { }} className={`notAllowed${signupBtn ? ' ml-2' : ''}`} color="primary" variant="shadow">
                             Import contacts

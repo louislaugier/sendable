@@ -195,7 +195,6 @@ export default function SignupLoginModal(props: any) {
 
     const submitRef = useRef<any>()
 
-    const unexpectedErrStr = "An unexpected error has occurred. Please try again."
 
     return (
         !user &&
