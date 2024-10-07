@@ -34,9 +34,8 @@ export default function Dashboard() {
 
   if (!user) {
     if (isEmailAddressConfirmedCall) navigateToUrl('/?email_confirmed=true')
-    // else navigateToUrl('/')
+    else navigateToUrl('/')
   }
-  console.log("ok123", user)
 
   const [selectedTab, setSelectedTab] = useState<any>(searchParams.get("tab") ?? "validation");
 

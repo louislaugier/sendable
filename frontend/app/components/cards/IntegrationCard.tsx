@@ -63,7 +63,6 @@ export default function IntegrationCard(props: any) {
                             case 'SendGrid':
                                 try {
                                     const res = await getProviderContacts(title === 'Brevo' ? ContactProviderType.Brevo : ContactProviderType.Sendgrid)
-                                    console.log(res)
                                     if (res?.length) setContacts(res)
                                     selectContactsModal.onOpen()
                                 } catch (err) {

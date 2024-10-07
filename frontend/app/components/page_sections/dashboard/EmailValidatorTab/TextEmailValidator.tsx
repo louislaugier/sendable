@@ -59,7 +59,6 @@ export default function TextEmailValidator(props: any) {
                     return
                 }
 
-                console.log(res)
                 setSingleTargetResp(res)
 
                 await resetHistory()
