@@ -123,16 +123,18 @@ export default function Nav() {
                                     >
                                         Settings
                                     </DropdownItem>
-                                    {(user.currentPlan?.type === SubscriptionType.Premium || user.currentPlan?.type === SubscriptionType.Enterprise) &&
-                                        <DropdownItem
-                                            key="subscription"
-                                            description="Go to Stripe customer portal"
-                                            href={user?.stripeCustomerPortalUrl}
-                                            target="blank"
-                                        >
-                                            <div className="flex">Manage subscription <FiExternalLink style={{ marginLeft: 5 }} /></div>
-                                        </DropdownItem>
-                                    }
+                                    <>
+                                        {(user.currentPlan?.type === SubscriptionType.Premium || user.currentPlan?.type === SubscriptionType.Enterprise) ? (
+                                            <DropdownItem
+                                                key="subscription"
+                                                description="Go to Stripe customer portal"
+                                                href={user?.stripeCustomerPortalUrl}
+                                                target="_blank"
+                                            >
+                                                <div className="flex">Manage subscription <FiExternalLink style={{ marginLeft: 5 }} /></div>
+                                            </DropdownItem>
+                                        ) : null}
+                                    </>
                                     <DropdownItem
                                         onClick={() => setUser(null)}
                                         key="logout"

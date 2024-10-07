@@ -1,11 +1,17 @@
 import { Tabs, Tab, Button, Snippet } from "@nextui-org/react";
 import { useState } from "react";
 import { CodeBlock, dracula } from "react-code-blocks";
-import { apiBaseUrl } from "~/constants/api"
 import CheckIcon from "~/components/icons/CheckIcon";
 import CopyIcon from "~/components/icons/CopyIcon";
+import { useApiBaseUrl } from "~/hooks/useApiBaseUrl";
 
-const tsCode = `import axios, { AxiosResponse } from 'axios';
+export default function CodeSnippetsSection() {
+    const [isTsCodeCopied, setTsCodeCopied] = useState(false);
+    const [isGoCodeCopied, setGoCodeCopied] = useState(false);
+
+    const apiBaseUrl = useApiBaseUrl();
+
+    const tsCode = `import axios, { AxiosResponse } from 'axios';
 
 async function getToken(): Promise<string | null> {
     try {
@@ -24,7 +30,7 @@ async function getToken(): Promise<string | null> {
     }
 }`
 
-const goCode = `package myPackage
+    const goCode = `package myPackage
 
 import (
     "net/http"
@@ -57,10 +63,6 @@ func GetToken() (*string, error) {
 
     return &data.Token, nil
 }`
-
-export default function CodeSnippetsSection() {
-    const [isTsCodeCopied, setTsCodeCopied] = useState(false);
-    const [isGoCodeCopied, setGoCodeCopied] = useState(false);
 
     return (
         <>

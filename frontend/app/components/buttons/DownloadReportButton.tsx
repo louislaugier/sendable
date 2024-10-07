@@ -4,26 +4,16 @@ import { useErrorOccurredModal } from "~/contexts/ErrorOccurredModalContext";
 import DownloadIcon from "~/components/icons/DownloadIcon";
 import { navigateToUrl } from "~/utils/url";
 import { getApiBaseUrl } from "~/constants/api";
+import { useApiBaseUrl } from "~/hooks/useApiBaseUrl";
 
 export default function DownloadReportButton(props: any) {
     const { tooltipContent, validationId, reportToken } = props;
 
     const [isLoading, setLoading] = useState(false);
-    const [apiBaseUrl, setApiBaseUrl] = useState<string | null>(null);
+
+    const apiBaseUrl = useApiBaseUrl();
+
     const { setErrorOccurredModalVisible } = useErrorOccurredModal();
-
-    useEffect(() => {
-        const fetchApiBaseUrl = async () => {
-            try {
-                const url = await getApiBaseUrl();
-                setApiBaseUrl(url);
-            } catch (error) {
-                setErrorOccurredModalVisible(true);
-            }
-        };
-
-        fetchApiBaseUrl();
-    }, [setErrorOccurredModalVisible]);
 
     const downloadReport = async (e: React.MouseEvent<HTMLButtonElement>) => {
         e.preventDefault();
