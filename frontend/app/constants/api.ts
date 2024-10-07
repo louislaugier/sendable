@@ -6,7 +6,7 @@ let url: string | null = null;
 export const waitForWindow = new Promise<void>((resolve) => {
     const checkForWindow = setInterval(() => {
         if (typeof window !== 'undefined') {
-            url = `${!!import.meta.env['DEV'] ? 'http://localhost' : `https://api.${window.location.hostname}`}/v${latestApiMainVersion}`;
+            url = `${!!import.meta.env['DEV'] ? 'http://api' : `https://api.${window.location.hostname}`}/v${latestApiMainVersion}`;
             clearInterval(checkForWindow);
             resolve();
         }
