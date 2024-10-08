@@ -1,15 +1,16 @@
 package webhooks
 
 import (
+	"encoding/json"
+	"errors"
+	"fmt"
+	"io"
+	"net/http"
 	"sendable/config"
 	"sendable/internal/models"
 	stp "sendable/internal/pkg/stripe"
 	"sendable/internal/pkg/subscription"
 	"sendable/internal/pkg/user"
-	"encoding/json"
-	"fmt"
-	"io"
-	"net/http"
 
 	"github.com/google/uuid"
 	"github.com/stripe/stripe-go/v72"
@@ -17,7 +18,6 @@ import (
 )
 
 // TODO: test locally with CLI (cf .env duplicated STRIPE_WEBHOOK_SECRET)
-// This webhook is triggered when a payment is succesfully received for a subscription plan
 func StripeWebhookHandler(w http.ResponseWriter, r *http.Request) {
 	if r.Method != http.MethodPost {
 		http.Error(w, "method not allowed", http.StatusMethodNotAllowed)
@@ -96,12 +96,16 @@ func handleNewSubscription(customerID, customerEmail, subscriptionID, productID,
 		billingFrequency = models.MonthlyBilling
 	} else if planInterval == string(stripe.PlanIntervalYear) {
 		billingFrequency = models.YearlyBilling
+	} else {
+		http.Error(w, errors.New("unknown Stripe plan interval").Error(), http.StatusBadRequest)
 	}
 
 	if productID == string(config.StripePremiumProductID) {
 		subscriptionType = models.PremiumSubscription
 	} else if productID == string(config.StripeEnterpriseProductID) {
 		subscriptionType = models.EnterpriseSubscription
+	} else {
+		http.Error(w, errors.New("unknown Stripe product ID").Error(), http.StatusBadRequest)
 	}
 
 	ID, userID := uuid.New(), u.ID

@@ -7,7 +7,7 @@ import UserContext from "~/contexts/UserContext";
 import { capitalize } from "~/utils/string";
 
 const columnNames = [
-    "DATE",
+    "SUBSCRIPTION DATE",
     "PLAN",
     "BILLING PERIOD",
     "STATUS"

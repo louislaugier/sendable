@@ -13,10 +13,12 @@ const Checkout = ({ priceId }: any) => {
   const handleCheckout = async () => {
     setLoading(true)
 
-    const res = await generateStripeCheckout({ priceId })
-    const stripe = await stripePromise;
+    try {
+      const res = await generateStripeCheckout({ priceId })
+      const stripe = await stripePromise;
 
-    await stripe?.redirectToCheckout({ sessionId: res.id });
+      await stripe?.redirectToCheckout({ sessionId: res.id });
+    } catch { }
 
     setLoading(false)
   };

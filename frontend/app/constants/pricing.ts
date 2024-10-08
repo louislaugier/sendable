@@ -58,9 +58,9 @@ export const pricingPlans = [
     {
         name: SubscriptionType.Enterprise,
         description: "Scale your email validation seamlessly with our top-tier solution for high-volume requirements.",
-        monthlyPrice: 749,
+        monthlyPrice: 549,
         stripeMonthlyPriceId: "price_1Phet7RsG6IPgooNrQAMFfgh",
-        yearlyPrice: 7499,
+        yearlyPrice: 5499,
         stripeYearlyPriceId: "price_1PhetbRsG6IPgooNXV49khZU",
         features: [
             {
