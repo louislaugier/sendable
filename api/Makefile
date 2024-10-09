@@ -5,4 +5,4 @@ re:
 
 .PHONY: stripe-dev
 stripe-dev:
-	stripe listen --load-from-webhooks-api --forward-to localhost/v1/webhook/stripe
+	stripe listen --load-from-webhooks-api --forward-to localhost

@@ -1,11 +1,12 @@
 package handlers
 
 import (
+	"encoding/json"
+	"log"
+	"net/http"
 	"sendable/handlers/middleware"
 	"sendable/internal/models"
 	"sendable/internal/pkg/stripe"
-	"encoding/json"
-	"net/http"
 )
 
 func GenerateStripeCheckoutHandler(w http.ResponseWriter, r *http.Request) {
@@ -22,6 +23,7 @@ func GenerateStripeCheckoutHandler(w http.ResponseWriter, r *http.Request) {
 
 	user := middleware.GetUserFromRequest(r)
 
+	log.Println(body.PriceID, user.Email, user.StripeCustomerID)
 	s, err := stripe.CreateCheckoutSession(body.PriceID, user.Email, user.StripeCustomerID)
 	if err != nil {
 		handleError(w, err, "Internal Server Error", http.StatusInternalServerError)

@@ -10,7 +10,7 @@ import (
 )
 
 func CreateCheckoutSession(priceID, userEmail string, customerID *string) (*stripe.CheckoutSession, error) {
-	s, err := cs.New(&stripe.CheckoutSessionParams{
+	params := &stripe.CheckoutSessionParams{
 		PaymentMethodTypes: stripe.StringSlice([]string{"card"}),
 		LineItems: []*stripe.CheckoutSessionLineItemParams{
 			{
@@ -18,12 +18,18 @@ func CreateCheckoutSession(priceID, userEmail string, customerID *string) (*stri
 				Quantity: stripe.Int64(1),
 			},
 		},
-		Mode:          stripe.String(string(stripe.CheckoutSessionModeSubscription)),
-		SuccessURL:    stripe.String(fmt.Sprintf("%s/pricing?subscription=success", config.FrontendURL)),
-		CancelURL:     stripe.String(fmt.Sprintf("%s/pricing?subscription=cancel", config.FrontendURL)),
-		Customer:      customerID,
-		CustomerEmail: &userEmail,
-	})
+		Mode:       stripe.String(string(stripe.CheckoutSessionModeSubscription)),
+		SuccessURL: stripe.String(fmt.Sprintf("%s/pricing?subscription=success", config.FrontendURL)),
+		CancelURL:  stripe.String(fmt.Sprintf("%s/pricing?subscription=cancel", config.FrontendURL)),
+	}
+
+	if customerID != nil {
+		params.Customer = customerID
+	} else {
+		params.CustomerEmail = &userEmail
+	}
+
+	s, err := cs.New(params)
 
 	if err != nil {
 		return nil, err
