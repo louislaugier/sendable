@@ -5,9 +5,9 @@ import { User, UserContextType } from "~/types/user";
 
 const UserContext = createContext<UserContextType>({
     user: null,
-    setUser: () => {},
+    setUser: () => { },
     temp2faUserId: null,
-    setTemp2faUserId: () => {},
+    setTemp2faUserId: () => { },
     refreshUserData: () => Promise.resolve()
 });
 
@@ -39,15 +39,15 @@ export const UserProvider: React.FC<React.PropsWithChildren<{}>> = ({ children }
     const refreshUserData = useCallback(async () => {
         if (user) {
             const latestUserData = await getUserData();
-            setUser((prevUser: User | null) => ({ ...latestUserData, jwt: prevUser?.jwt }));
+            if (JSON.stringify(latestUserData) !== JSON.stringify(user)) { // compare the current user data with the fetched data
+                setUser((prevUser: User | null) => ({ ...latestUserData, jwt: prevUser?.jwt }));
+            }
         }
-    }, [user]);
+    }, [user?.jwt]); // Only depend on user.jwt
 
     useEffect(() => {
-        if (user) {
-            refreshUserData();
-        }
-    }, [user, refreshUserData]);
+        if (user) refreshUserData();
+    }, []);
 
     const value = useMemo(() => ({ user, setUser, temp2faUserId, setTemp2faUserId, refreshUserData }), [user, temp2faUserId, refreshUserData]);
 
