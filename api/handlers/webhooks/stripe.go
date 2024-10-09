@@ -52,8 +52,10 @@ func StripeWebhookHandler(w http.ResponseWriter, r *http.Request) {
 	planInterval := subscription.Items.Data[0].Plan.Interval
 
 	switch event.Type {
-	case string(models.StripeCustomerSubscriptionCreated), string(models.StripeCustomerSubscriptionUpdated):
-		handleNewOrUpdatedSubscription(customerID, customerEmail, subscriptionID, productID, string(planInterval), w)
+	// case string(models.StripeCustomerSubscriptionCreated), string(models.StripeCustomerSubscriptionUpdated):
+	// handleNewOrUpdatedSubscription(customerID, customerEmail, subscriptionID, productID, string(planInterval), w)
+	case string(models.StripeCustomerSubscriptionCreated):
+		handleNewSubscription(customerID, customerEmail, subscriptionID, productID, string(planInterval), w)
 	case string(models.StripeCustomerSubscriptionDeleted):
 		handleUnsubscription(subscriptionID, w)
 	}
@@ -61,7 +63,7 @@ func StripeWebhookHandler(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusNoContent)
 }
 
-func handleNewOrUpdatedSubscription(customerID, customerEmail, subscriptionID, productID, planInterval string, w http.ResponseWriter) {
+func handleNewSubscription(customerID, customerEmail, subscriptionID, productID, planInterval string, w http.ResponseWriter) {
 	var (
 		u   *models.User
 		err error
