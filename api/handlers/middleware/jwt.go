@@ -111,7 +111,9 @@ func ValidateJWT(next http.Handler, requiresConfirmedEmail bool) http.Handler {
 				return
 			}
 
-			if u.CurrentPlan.Type != models.FreePlan && u.DeletedAt != nil {
+			hasOngoingPlan := u.CurrentPlan.Type != models.FreePlan
+
+			if hasOngoingPlan && u.DeletedAt != nil {
 				err := user.Reactivate(userID)
 				if err != nil {
 					log.Printf("Error reactivating user: %v", err)
@@ -120,7 +122,7 @@ func ValidateJWT(next http.Handler, requiresConfirmedEmail bool) http.Handler {
 				}
 			}
 
-			if u.StripeCustomerID != nil {
+			if u.StripeCustomerID != nil && hasOngoingPlan {
 				s, err := stripe.CreateCustomerPortalSession(*u.StripeCustomerID)
 				if err != nil {
 					log.Printf("Error generating Stripe customer portal: %v", err)

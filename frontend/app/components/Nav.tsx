@@ -144,13 +144,11 @@ export default function Nav() {
                                     >
                                         Settings
                                     </DropdownItem>
-                                    {user.currentPlan &&
-                                        (user.currentPlan.type === SubscriptionType.Premium ||
-                                            user.currentPlan.type === SubscriptionType.Enterprise) ? (
+                                    {user?.currentPlan.type !== SubscriptionType.Free ?
                                         <DropdownItem
                                             key="subscription"
                                             description="Go to Stripe customer portal"
-                                            href={user.stripeCustomerPortalUrl}
+                                            href={user?.stripeCustomerPortalUrl!}
                                             target="_blank"
                                         >
                                             <div className="flex">
@@ -158,7 +156,7 @@ export default function Nav() {
                                                 <FiExternalLink style={{ marginLeft: 5 }} />
                                             </div>
                                         </DropdownItem>
-                                    ) : <></>}
+                                        : <DropdownItem style={{ display: 'none' }}></DropdownItem>}
                                     <DropdownItem
                                         key="logout"
                                         onClick={() => setUser(null)}
