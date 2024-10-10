@@ -123,6 +123,7 @@ func handleNewSubscription(customerID, customerEmail, subscriptionID, productID,
 	}
 
 	previousPlan := u.CurrentPlan
+	// plan upgrade
 	if previousPlan.Type != models.FreePlan {
 		err = subscription.CancelByID(*previousPlan.ID)
 		if err != nil {
@@ -130,7 +131,7 @@ func handleNewSubscription(customerID, customerEmail, subscriptionID, productID,
 			return
 		}
 
-		err = stp.CancelSubscription(*previousPlan.StripeSubscriptionID)
+		err = stp.CancelSubscription(*previousPlan.StripeSubscriptionID, nil)
 		if err != nil {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 			return

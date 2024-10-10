@@ -86,8 +86,13 @@ func GetLatestActive(userID uuid.UUID) (*models.Subscription, error) {
 	rows, err := config.DB.Query(`
 		SELECT "id", "billing_frequency", "type", "created_at", "stripe_subscription_id"
 		FROM public."subscription"
-		WHERE "user_id" = $1 AND "cancelled_at" IS NULL
-		ORDER BY "created_at" DESC LIMIT 1;
+		WHERE "user_id" = $1
+		  AND ("cancelled_at" IS NULL OR "cancelled_at" > NOW())
+		  AND ("start" IS NULL OR "start" < NOW())
+		ORDER BY 
+		  CASE WHEN "start" IS NOT NULL THEN "start" END ASC,
+		  "created_at" DESC
+		LIMIT 1;
 	`, userID)
 	if err != nil {
 		return nil, err

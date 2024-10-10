@@ -111,12 +111,10 @@ export default function TryItOut() {
                             <CardFooter>
                                 <div>
                                     <p style={{ lineHeight: "30px" }}>Reachability for {emailConfirmed}: <ReachabilityChip reachability={reachability} email={email} /></p>
-                                    {/* <p>{reachabilityDescription}</p> */}
                                     <Link onClick={() => {
                                         setModalType(AuthModalType.Signup);
                                         authModal.onOpen();
                                     }} className="mt-4 cursor-pointer">
-                                        {/* TODO: logged user */}
                                         <b>Learn more</b>
                                     </Link>
                                 </div>

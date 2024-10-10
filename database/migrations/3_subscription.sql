@@ -11,5 +11,10 @@ CREATE TABLE IF NOT EXISTS public."subscription" (
     "stripe_subscription_id" VARCHAR NOT NULL UNIQUE,
     "created_at" TIMESTAMP NOT NULL DEFAULT now(),
     "cancelled_at" TIMESTAMP,
-    "due_at" TIMESTAMP
+    "starting_at" TIMESTAMP
+);
+
+CREATE TABLE IF NOT EXISTS public."subscription_renewal" (
+    "subscription_id" UUID NOT NULL REFERENCES public."subscription"(id),
+    "renewed_at" TIMESTAMP NOT NULL DEFAULT now()
 );
