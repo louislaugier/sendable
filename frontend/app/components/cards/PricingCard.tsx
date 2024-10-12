@@ -1,4 +1,4 @@
-import { Card, Button, Divider, Tooltip, Chip } from "@nextui-org/react";
+import { Card, Button, Divider, Tooltip, Chip, Link } from "@nextui-org/react";
 import { useContext } from "react";
 import AuthModalContext from "~/contexts/AuthModalContext";
 import { CheckIconRound } from "~/components/icons/CheckIconRound";
@@ -48,19 +48,28 @@ export default function PricingCard(props: any) {
                             isFree && user.currentPlan.type === SubscriptionType.Free ||
                                 isPremium && user.currentPlan.type === SubscriptionType.Premium ||
                                 isEnterprise && user.currentPlan.type === SubscriptionType.Enterprise
-                                ? <>
-                                    <Chip className="mt-8 mb-14" color={isFree ? "warning" : isPremium ? "secondary" : "success"}>Current plan</Chip>
-                                </>
+                                ? <div className="flex flex-col">
+                                    <Chip className="mt-4" color={isFree ? "warning" : isPremium ? "secondary" : "success"}>Current plan</Chip>
+                                    <div>
+                                        <Button disabled={!!user.currentPlan.cancelledAt} as={Link} href={user?.stripeCustomerPortalUrl!} target="_blank" className="mt-2 mb-6 w-auto" onClick={() => {
+                                        }} color="primary" variant="shadow">
+                                            {!!user.currentPlan.cancelledAt ? 'Cancelation scheduled' : 'Cancel'}
+                                        </Button>
+                                    </div>
+                                </div>
                                 :
                                 plan.name !== SubscriptionType.Free && user.currentPlan.type !== SubscriptionType.Enterprise && !(user.currentPlan.type === SubscriptionType.Premium && isPremium) ?
                                     <>
                                         <UpgradeAccountButton priceId={isYearly ? plan?.stripeYearlyPriceId : plan?.stripeMonthlyPriceId} />
                                     </>
                                     :
-                                    <Button className="mt-7 mb-12" onClick={() => {
-                                    }} color="primary" variant="shadow">
-                                        Downgrade
-                                    </Button>
+                                    plan.name !== SubscriptionType.Free ?
+                                        <Button disabled={!!user.currentPlan.startingAt} className="mt-7 mb-12" onClick={() => {
+                                        }} color="primary" variant="shadow">
+                                            {!!user.currentPlan.startingAt ? 'Starting next billing period' : 'Downgrade'}
+                                        </Button>
+                                        :
+                                        <div style={{ margin: '125px 0' }} />
                             :
                             <Button className="mt-7 mb-12" onClick={() => {
                                 setModalType(AuthModalType.Signup);
