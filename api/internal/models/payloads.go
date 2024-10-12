@@ -90,4 +90,7 @@ type (
 	DeleteProviderAPIKeyRequest struct {
 		Provider ContactProviderType `json:"provider"`
 	}
+	DowngradePlanHandler struct {
+		BillingFrequency SubscriptionBillingFrequency `json:"billingFrequency"`
+	}
 )

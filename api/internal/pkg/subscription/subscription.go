@@ -8,7 +8,7 @@ import (
 )
 
 const (
-	insertQuery = "INSERT INTO public.subscription (id, user_id, billing_frequency, type, stripe_subscription_id) VALUES ($1, $2, $3, $4, $5);"
+	insertQuery = "INSERT INTO public.subscription (id, user_id, billing_frequency, type, stripe_subscription_id, starting_at) VALUES ($1, $2, $3, $4, $5, $6);"
 
 	getCountQuery = `
 		SELECT COUNT(*)
@@ -41,7 +41,7 @@ const (
 )
 
 func InsertNew(subscription *models.Subscription) error {
-	_, err := config.DB.Exec(insertQuery, &subscription.ID, &subscription.UserID, &subscription.BillingFrequency, &subscription.Type, &subscription.StripeSubscriptionID)
+	_, err := config.DB.Exec(insertQuery, &subscription.ID, &subscription.UserID, &subscription.BillingFrequency, &subscription.Type, &subscription.StripeSubscriptionID, &subscription.StartingAt)
 	return err
 }
 

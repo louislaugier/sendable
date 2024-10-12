@@ -11,6 +11,6 @@ const (
 )
 
 func InsertNewRenewal(subscriptionID uuid.UUID) error {
-	_, err := config.DB.Exec(insertQuery, &subscriptionID)
+	_, err := config.DB.Exec(insertRenewalQuery, &subscriptionID)
 	return err
 }

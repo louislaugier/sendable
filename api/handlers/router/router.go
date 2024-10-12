@@ -101,6 +101,10 @@ func handleHTTP(mux *http.ServeMux) {
 		http.HandlerFunc(handlers.GenerateStripeCheckoutHandler),
 		true,
 	), true)
+	handle(mux, "/downgrade_plan", middleware.ValidateJWT(
+		http.HandlerFunc(handlers.DowngradePlanHandler),
+		true,
+	), true)
 	handle(mux, "/webhook/stripe", // TODO: attach webhook signature middleware
 		http.HandlerFunc(webhooks.StripeWebhookHandler),
 		true,

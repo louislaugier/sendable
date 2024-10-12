@@ -4,6 +4,7 @@ all: start
 start:
 	docker-compose up -d
 	make -C frontend postinstall
+	make -C api stripe-dev
 
 swarm:
 	docker stack deploy --compose-file docker-compose.yml sendable

@@ -10,7 +10,12 @@ import (
 var (
 	StripeWebhookSecret string
 
-	StripePremiumProductID    models.StripeProductID
+	StripePremiumProductID models.StripeProductID
+
+	// Used to downgrade from enterprise to premium
+	StripePremiumMonthlyPriceID models.StripePriceID
+	StripePremiumYearlyPriceID  models.StripePriceID
+
 	StripeEnterpriseProductID models.StripeProductID
 )
 
@@ -21,4 +26,7 @@ func initStripeClient() {
 
 	StripePremiumProductID = models.StripeProductID(os.Getenv("STRIPE_PREMIUM_PRODUCT_ID"))
 	StripeEnterpriseProductID = models.StripeProductID(os.Getenv("STRIPE_ENTERPRISE_PRODUCT_ID"))
+
+	StripePremiumMonthlyPriceID = models.StripePriceID(os.Getenv("STRIPE_PREMIUM_MONTHLY_PRICE_ID"))
+	StripePremiumYearlyPriceID = models.StripePriceID(os.Getenv("STRIPE_PREMIUM_YEARLY_PRICE_ID"))
 }

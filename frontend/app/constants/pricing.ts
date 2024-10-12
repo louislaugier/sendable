@@ -32,9 +32,9 @@ export const pricingPlans = [
         name: SubscriptionType.Premium,
         description: "Elevate your email validation with our premium offering, access higher quotas for our platform and API.",
         monthlyPrice: 75,
-        stripeMonthlyPriceId: "price_1PheiwRsG6IPgooN6JeXSJfe",
+        stripeMonthlyPriceId: "price_1Q9Bo1RsG6IPgooNaHe2taAS",
         yearlyPrice: 749,
-        stripeYearlyPriceId: "price_1PhemMRsG6IPgooNOE5BAJ5P",
+        stripeYearlyPriceId: "price_1Q9BoMRsG6IPgooNfSHozGe5",
         features: [
             {
                 content: `${limits.premium.app.toLocaleString()} monthly validations`,

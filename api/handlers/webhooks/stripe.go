@@ -52,8 +52,6 @@ func StripeWebhookHandler(w http.ResponseWriter, r *http.Request) {
 	planInterval := subscription.Items.Data[0].Plan.Interval
 
 	switch event.Type {
-	// case string(models.StripeCustomerSubscriptionCreated), string(models.StripeCustomerSubscriptionUpdated):
-	// handleNewOrUpdatedSubscription(customerID, customerEmail, subscriptionID, productID, string(planInterval), w)
 	case string(models.StripeCustomerSubscriptionCreated):
 		handleNewSubscription(customerID, customerEmail, subscriptionID, productID, string(planInterval), w)
 	case string(models.StripeCustomerSubscriptionDeleted):
@@ -125,15 +123,15 @@ func handleNewSubscription(customerID, customerEmail, subscriptionID, productID,
 	}
 
 	previousPlan := u.CurrentPlan
-	// plan upgrade
 	if previousPlan.Type != models.FreePlan {
-		err = subscription.CancelByID(*previousPlan.ID)
+		// plan upgrade (cancel old)
+		err = stp.CancelSubscription(*previousPlan.StripeSubscriptionID)
 		if err != nil {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 			return
 		}
 
-		err = stp.CancelSubscription(*previousPlan.StripeSubscriptionID, nil)
+		err = subscription.CancelByID(*previousPlan.ID)
 		if err != nil {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 			return

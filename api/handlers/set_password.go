@@ -1,15 +1,16 @@
 package handlers
 
 import (
-	"sendable/internal/models"
-	"sendable/internal/pkg/user"
-	"sendable/internal/pkg/utils"
 	"encoding/json"
 	"errors"
 	"fmt"
 	"net/http"
+	"sendable/internal/models"
+	"sendable/internal/pkg/user"
+	"sendable/internal/pkg/utils"
 )
 
+// TODO: rename to reset_password_update everywhere
 func SetPasswordHandler(w http.ResponseWriter, r *http.Request) {
 	if r.Method != http.MethodPost {
 		http.Error(w, "method not allowed", http.StatusMethodNotAllowed)
