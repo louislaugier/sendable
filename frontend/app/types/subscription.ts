@@ -4,6 +4,8 @@ export interface Subscription {
     billingFrequency: SubscriptionBillingFrequency
     createdAt: string,
     cancelledAt: string
+    startingAt: string
+    latestRenewedAt: string
 }
 
 export enum SubscriptionType {

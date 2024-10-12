@@ -7,10 +7,12 @@ import UserContext from "~/contexts/UserContext";
 import { capitalize } from "~/utils/string";
 
 const columnNames = [
-    "SUBSCRIPTION DATE",
+    "PAYMENT DATE",
+    "STARTING DATE",
     "PLAN",
     "BILLING PERIOD",
-    "STATUS"
+    "STATUS",
+    "LATEST RENEWAL DATE"
 ]
 
 export default function SubscriptionHistoryTable(props: any) {
@@ -25,23 +27,28 @@ export default function SubscriptionHistoryTable(props: any) {
         }
     }, [subscriptions, user, isHistoryFetched]);
 
-    const rowToMap = (subscription: Subscription, i: number) => <TableRow key={i}>
-        <TableCell>{moment(subscription.createdAt).format("YYYY-MM-DD HH:mm:ss").toString()}</TableCell>
-        <TableCell>{capitalize(subscription.type)}</TableCell>
-        <TableCell>{capitalize(subscription.billingFrequency)}</TableCell>
-        <TableCell>
-            {!subscription.cancelledAt ?
-                <Chip
-                    variant="dot"
-                    color="success"
-                >
-                    Active
-                </Chip>
-                :
-                <Chip color="warning" variant="dot">Cancelled on {moment(subscription.cancelledAt).format("YYYY-MM-DD HH:mm:ss").toString()}</Chip>
-            }
-        </TableCell>
-    </TableRow>
+    const rowToMap = (subscription: Subscription, i: number) => {
+        const formattedCreatedAt = moment(subscription.createdAt).format("YYYY-MM-DD HH:mm:ss").toString()
+        return <TableRow key={i}>
+            <TableCell>{formattedCreatedAt}</TableCell>
+            <TableCell>{!!subscription.startingAt ? moment(subscription.startingAt).format("YYYY-MM-DD HH:mm:ss").toString() : formattedCreatedAt}</TableCell>
+            <TableCell>{capitalize(subscription.type)}</TableCell>
+            <TableCell>{capitalize(subscription.billingFrequency)}</TableCell>
+            <TableCell>
+                {!subscription.cancelledAt ?
+                    <Chip
+                        variant="dot"
+                        color="success"
+                    >
+                        Active
+                    </Chip>
+                    :
+                    <Chip color="warning" variant="dot">Cancelled on {moment(subscription.cancelledAt).format("YYYY-MM-DD HH:mm:ss").toString()}</Chip>
+                }
+            </TableCell>
+            <TableCell>{!!subscription.latestRenewedAt ? moment(subscription.latestRenewedAt).format("YYYY-MM-DD HH:mm:ss").toString() : ""}</TableCell>
+        </TableRow>
+    }
 
     return (
         <DynamicTable loadedItems={subscriptions} totalCount={totalCount} loadHistory={loadHistory} columnNames={columnNames} rowToMap={rowToMap} />
