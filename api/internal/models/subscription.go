@@ -35,6 +35,8 @@ type Subscription struct {
 	CreatedAt   *time.Time `json:"createdAt,omitempty"`
 	CancelledAt *time.Time `json:"cancelledAt,omitempty"`
 	StartingAt  *time.Time `json:"startingAt,omitempty"`
+
+	LatestRenewedAt *time.Time `json:"latestRenewedAt,omitempty"`
 }
 
 func EmptyFreePlan() *Subscription {
