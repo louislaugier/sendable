@@ -7,7 +7,7 @@ import { FiHelpCircle } from "react-icons/fi";
 import UserContext from "~/contexts/UserContext";
 import { capitalize } from "~/utils/string";
 import { SubscriptionType } from "~/types/subscription";
-import UpgradeAccountButton from "../buttons/UpgradeButton";
+import UpgradeOrDowngradeButton from "../buttons/UpgradeOrDowngradeButton";
 import { limits } from "~/constants/limits";
 
 export default function PricingCard(props: any) {
@@ -51,7 +51,7 @@ export default function PricingCard(props: any) {
                                 ? <div className="flex flex-col">
                                     <Chip className="mt-4" color={isFree ? "warning" : isPremium ? "secondary" : "success"}>Current plan</Chip>
                                     <div>
-                                        <Button disabled={!!user.currentPlan.cancelledAt} as={Link} href={user?.stripeCustomerPortalUrl!} target="_blank" className="mt-2 mb-6 w-auto" onClick={() => {
+                                        <Button isDisabled={!!user.currentPlan.cancelledAt} as={Link} href={user?.stripeCustomerPortalUrl!} target="_blank" className="mt-2 mb-6 w-auto" onClick={() => {
                                         }} color="primary" variant="shadow">
                                             {!!user.currentPlan.cancelledAt ? 'Cancelation scheduled' : 'Cancel'}
                                         </Button>
@@ -60,14 +60,11 @@ export default function PricingCard(props: any) {
                                 :
                                 plan.name !== SubscriptionType.Free && user.currentPlan.type !== SubscriptionType.Enterprise && !(user.currentPlan.type === SubscriptionType.Premium && isPremium) ?
                                     <>
-                                        <UpgradeAccountButton priceId={isYearly ? plan?.stripeYearlyPriceId : plan?.stripeMonthlyPriceId} />
+                                        <UpgradeOrDowngradeButton priceId={isYearly ? plan?.stripeYearlyPriceId : plan?.stripeMonthlyPriceId} />
                                     </>
                                     :
                                     plan.name !== SubscriptionType.Free ?
-                                        <Button disabled={!!user.currentPlan.startingAt} className="mt-7 mb-12" onClick={() => {
-                                        }} color="primary" variant="shadow">
-                                            {!!user.currentPlan.startingAt ? 'Starting next billing period' : 'Downgrade'}
-                                        </Button>
+                                        <UpgradeOrDowngradeButton isDisabled={!!user.currentPlan.startingAt} priceId={isYearly ? plan?.stripeYearlyPriceId : plan?.stripeMonthlyPriceId} value={!!user.currentPlan.startingAt ? 'Starting next billing period' : 'Downgrade'} />
                                         :
                                         <div style={{ margin: '125px 0' }} />
                             :

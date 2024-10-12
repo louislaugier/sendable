@@ -7,7 +7,8 @@ import generateStripeCheckout from '~/services/api/generate_stripe_checkout';
 
 const stripePromise = loadStripe(stripePublicKey);
 
-const Checkout = ({ priceId }: any) => {
+const Checkout = (props: any) => {
+  const { priceId, disabled, value } = props
   const [isLoading, setLoading] = useState(false)
 
   const handleCheckout = async () => {
@@ -24,19 +25,19 @@ const Checkout = ({ priceId }: any) => {
   };
 
   return (
-    <Button isLoading={isLoading} className="mt-7 mb-12" onClick={handleCheckout} color="primary" variant="shadow">
-      Upgrade
+    <Button isDisabled={disabled} isLoading={isLoading} className="mt-7 mb-12" onClick={handleCheckout} color="primary" variant="shadow">
+      {value || 'Upgrade'}
     </Button>
   );
 };
 
-const UpgradeAccountButton = (props: any) => {
-  const { priceId } = props
+const Cta = (props: any) => {
+  const { priceId, value, disabled } = props
   return (
     <Elements stripe={stripePromise}>
-      <Checkout priceId={priceId} />
+      <Checkout priceId={priceId} value={value} disabled={disabled} />
     </Elements>
   )
 };
 
-export default UpgradeAccountButton;
+export default Cta;

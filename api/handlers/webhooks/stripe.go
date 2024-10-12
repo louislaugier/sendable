@@ -58,6 +58,8 @@ func StripeWebhookHandler(w http.ResponseWriter, r *http.Request) {
 		handleUnsubscription(subscriptionID, w)
 	case string(models.StripePaymentIntentSucceeded):
 		handleNewPayment(subscriptionID, w)
+	case string(models.StripeInvoicePaymentFailed):
+		handlePaymentFailure(subscriptionID, w)
 	}
 
 	w.WriteHeader(http.StatusNoContent)
@@ -162,5 +164,30 @@ func handleNewPayment(subscriptionID string, w http.ResponseWriter) {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 			return
 		}
+	}
+}
+
+func handlePaymentFailure(subscriptionID string, w http.ResponseWriter) {
+	s, err := subscription.GetByStripeSubscriptionID(subscriptionID)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	if s != nil {
+		// failed renewal
+		err = stp.CancelSubscription(subscriptionID)
+		if err != nil {
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+			return
+		}
+
+		err = subscription.CancelByID(*s.ID)
+		if err != nil {
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+			return
+		}
+
+		// TODO: failed payment email
 	}
 }
