@@ -91,14 +91,25 @@ func GetCount(userID uuid.UUID) (*int, error) {
 
 func GetLatestActive(userID uuid.UUID) (*models.Subscription, error) {
 	rows, err := config.DB.Query(`
-		SELECT "id", "billing_frequency", "type", "created_at", "cancelled_at", "starting_at", "stripe_subscription_id"
-		FROM public."subscription"
-		WHERE "user_id" = $1
-		  AND ("cancelled_at" IS NULL OR "cancelled_at" > NOW())
-		  AND ("start" IS NULL OR "start" < NOW())
+		SELECT s."id", s."billing_frequency", s."type", s."created_at", s."cancelled_at", s."starting_at", s."stripe_subscription_id", sr."renewed_at"
+		FROM public."subscription" s
+		LEFT JOIN public."subscription_renewal" sr ON s."id" = sr."subscription_id"
+		WHERE s."user_id" = $1
+		AND (s."cancelled_at" IS NULL OR s."cancelled_at" > NOW())
+		AND (
+			(s."starting_at" IS NOT NULL AND s."starting_at" + 
+			CASE s."billing_frequency"
+			WHEN 'monthly' THEN INTERVAL '1 month'
+			WHEN 'yearly' THEN INTERVAL '1 year'
+			END > NOW())
+			OR (s."starting_at" IS NULL AND s."created_at" + 
+			CASE s."billing_frequency"
+			WHEN 'monthly' THEN INTERVAL '1 month'
+			WHEN 'yearly' THEN INTERVAL '1 year'
+			END > NOW())
+		)
 		ORDER BY 
-		  CASE WHEN "start" IS NOT NULL THEN "start" END ASC,
-		  "created_at" DESC
+		COALESCE(sr."renewed_at", s."created_at") DESC
 		LIMIT 1;
 	`, userID)
 	if err != nil {
@@ -110,7 +121,7 @@ func GetLatestActive(userID uuid.UUID) (*models.Subscription, error) {
 	for rows.Next() {
 		s := models.Subscription{}
 
-		err = rows.Scan(&s.ID, &s.BillingFrequency, &s.Type, &s.CreatedAt, &s.CancelledAt, &s.StartingAt, &s.StripeSubscriptionID)
+		err = rows.Scan(&s.ID, &s.BillingFrequency, &s.Type, &s.CreatedAt, &s.CancelledAt, &s.StartingAt, &s.StripeSubscriptionID, &s.LatestRenewedAt)
 		if err != nil {
 			return nil, err
 		}
