@@ -4,7 +4,7 @@ type StripeEventType string
 type StripeProductID string
 
 const (
-	//TODO onPayment
+	StripePaymentIntentSucceeded      StripeEventType = "payment_intent.succeeded"
 	StripeCustomerSubscriptionCreated StripeEventType = "customer.subscription.created"
 	StripeCustomerSubscriptionDeleted StripeEventType = "customer.subscription.deleted"
 )

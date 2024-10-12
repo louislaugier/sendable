@@ -25,6 +25,13 @@ const (
 		OFFSET $3;
 	`
 
+	getByStripeSusbcriptionIDQuery = `
+		SELECT id, user_id, billing_frequency, type, stripe_subscription_id, created_at, cancelled_at, starting_at
+		FROM public.subscription
+		WHERE stripe_subscription_id = $1
+		LIMIT 1;
+	`
+
 	cancelByIDQuery = `
 		UPDATE public.subscription SET "cancelled_at" = now() WHERE id = $1;
 	`
@@ -122,4 +129,25 @@ func CancelByID(ID uuid.UUID) error {
 func CancelByStripeSubscriptionID(stripeSubscriptionID string) error {
 	_, err := config.DB.Exec(CancelByStripeSubscriptionIDQuery, stripeSubscriptionID)
 	return err
+}
+
+func GetByStripeSubscriptionID(subscriptionID string) (*models.Subscription, error) {
+	rows, err := config.DB.Query(getByStripeSusbcriptionIDQuery, subscriptionID)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	var subscription *models.Subscription
+	for rows.Next() {
+		err := rows.Scan(&subscription.ID, &subscription.UserID, &subscription.BillingFrequency, &subscription.Type, &subscription.StripeSubscriptionID, &subscription.CreatedAt, &subscription.CancelledAt, &subscription.StartingAt)
+		if err != nil {
+			return nil, err
+		}
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+
+	return subscription, nil
 }

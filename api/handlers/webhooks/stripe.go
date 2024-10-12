@@ -58,6 +58,8 @@ func StripeWebhookHandler(w http.ResponseWriter, r *http.Request) {
 		handleNewSubscription(customerID, customerEmail, subscriptionID, productID, string(planInterval), w)
 	case string(models.StripeCustomerSubscriptionDeleted):
 		handleUnsubscription(subscriptionID, w)
+	case string(models.StripePaymentIntentSucceeded):
+		handleNewPayment(subscriptionID, w)
 	}
 
 	w.WriteHeader(http.StatusNoContent)
@@ -139,10 +141,28 @@ func handleNewSubscription(customerID, customerEmail, subscriptionID, productID,
 	}
 }
 
+// cancel plan (not downgrade)
 func handleUnsubscription(subscriptionID string, w http.ResponseWriter) {
 	err := subscription.CancelByStripeSubscriptionID(subscriptionID)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
+	}
+}
+
+func handleNewPayment(subscriptionID string, w http.ResponseWriter) {
+	s, err := subscription.GetByStripeSubscriptionID(subscriptionID)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	// plan renewal
+	if s != nil {
+		err := subscription.InsertNewRenewal(*s.ID)
+		if err != nil {
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+			return
+		}
 	}
 }
