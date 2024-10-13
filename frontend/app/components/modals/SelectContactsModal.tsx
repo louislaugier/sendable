@@ -1,5 +1,5 @@
 import { Modal, ModalContent, ModalHeader, ModalBody, ModalFooter, Button } from "@nextui-org/react";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import SelectContactsTable from "../tables/SelectContactsTable";
 import validateEmail from "~/services/api/validate_email";
 import validateEmails from "~/services/api/validate_emails";
@@ -13,6 +13,10 @@ const SelectContactsModal = (props: any) => {
     const [singleTargetResp, setSingleTargetResp] = useState<any>();
     const [selectedContacts, setSelectedContacts] = useState([]);
     const [isLoading, setIsLoading] = useState(false);
+
+    useEffect(() => {
+        console.log("State updated:", { isRequestSent, singleTargetResp, selectedContacts });
+    }, [isRequestSent, singleTargetResp, selectedContacts]);
 
     const reset = () => {
         setRequestSent(false);
@@ -34,7 +38,7 @@ const SelectContactsModal = (props: any) => {
     };
 
     const handleCheckReachability = async () => {
-        setIsLoading(true); // Set loading state to true
+        setIsLoading(true);
         setLoading(true);
         setErrorMsg('');
 
@@ -42,36 +46,33 @@ const SelectContactsModal = (props: any) => {
             const emails = selectedContacts;
             let res: any;
 
+            console.log("Validating emails:", emails);
+
             if (emails.length > 1) {
                 res = await validateEmails({ emails });
-
-                if (res.error) {
-                    setErrorMsg(res.error);
-                    setLoading(false);
-                    return;
-                }
             } else {
                 res = await validateEmail({ email: emails[0] });
-
-                if (res.error) {
-                    setErrorMsg(res.error);
-                    setLoading(false);
-                    return;
-                }
-
-                setSingleTargetResp(res);
-
-                if (resetHistory) await resetHistory();
             }
-        } catch (error: any) {
-            setErrorMsg("An unexpected error occurred. Please try again.");
-            setLoading(false);
-            return;
-        }
 
-        setRequestSent(true);
-        setLoading(false);
-        setIsLoading(false); // Set loading state to false
+            console.log("Validation response:", res);
+
+            if (res.error) {
+                setErrorMsg(res.error);
+                return;
+            }
+
+            setSingleTargetResp(res);
+            setRequestSent(true);
+
+            if (resetHistory) await resetHistory();
+
+        } catch (error: any) {
+            console.error("Error during validation:", error);
+            setErrorMsg("An unexpected error occurred. Please try again.");
+        } finally {
+            setLoading(false);
+            setIsLoading(false);
+        }
     };
 
     return (
@@ -92,13 +93,24 @@ const SelectContactsModal = (props: any) => {
                         <ModalHeader className="flex flex-col gap-1">Select contacts to validate</ModalHeader>
                         <ModalBody>
                             {isRequestSent ? (
-                                singleTargetResp ? (
-                                    <SingleEmailReachability email={contacts[0]} response={singleTargetResp} reset={reset} />
+                                selectedContacts.length === 1 ? (
+                                    <SingleEmailReachability 
+                                        email={selectedContacts[0]} 
+                                        response={singleTargetResp} 
+                                        reset={reset} 
+                                    />
                                 ) : (
                                     <RequestSent reset={reset} />
                                 )
                             ) : (
                                 <SelectContactsTable setSelectedContacts={setSelectedContacts} contacts={contacts} />
+                            )}
+                            {singleTargetResp && (
+                                <SingleEmailReachability 
+                                    email={selectedContacts[0]} 
+                                    singleTargetResp={singleTargetResp} 
+                                    reset={reset} 
+                                />
                             )}
                         </ModalBody>
                         <ModalFooter>
