@@ -68,12 +68,18 @@ export default function IntegrationCard(props: any) {
                                 } catch (err) {
                                     console.error(err)
                                 }
+
                             case 'Mailchimp':
                             case 'HubSpot':
                             case 'Zoho':
-                            //
+                                try {
+                                    // TODO
+                                } catch (err) {
+                                    console.error(err)
+                                }
+
                             case 'Salesforce':
-                            //
+                                    // TODO
                         }
 
                         setLoading(false)

@@ -9,6 +9,7 @@ const getProviderContacts = async (provider: ContactProviderType, code?: string,
             provider: provider,
         };
 
+        if (code) params.code = code;
         if (codeVerifier) params.codeVerifier = codeVerifier;
 
         const response = await (await getClient()).get('provider_contacts', { params });
