@@ -49,7 +49,7 @@ export default function SelectContactsTable(props: any) {
                 }
             >
                 <TableHeader>
-                    <TableColumn>ALL ({contacts.length})</TableColumn>
+                    <TableColumn>Selected: {selectedKeys.size}</TableColumn>
                 </TableHeader>
                 <TableBody items={items}>
                     {(item: any) => (

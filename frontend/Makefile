@@ -16,6 +16,6 @@ postinstall:
 
 .PHONY: re
 re:
+	docker-compose rm -sfv frontend
 	docker-compose build frontend --no-cache
 	docker-compose up -d frontend --force-recreate
-	make postinstall

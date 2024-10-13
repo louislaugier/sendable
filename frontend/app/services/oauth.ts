@@ -45,7 +45,7 @@ export const handleAuthCode = (event: MessageEvent<AuthCodeEvent>, setUser: Reac
     setLoading(false);
 };
 
-export const login = async (setLoading: React.Dispatch<React.SetStateAction<boolean>>, uniqueStateValue: string, stateKey: string, authCodeKey: string, clientId: string, redirectUri: string, authUrl: string, codeChallenge?: string, scope?: string) => {
+export const login = async (setLoading: (isLoading: boolean) => void, uniqueStateValue: string, stateKey: string, authCodeKey: string, clientId: string, redirectUri: string, authUrl: string, codeChallenge?: string, scope?: string) => {
     setLoading(true);
 
     const loginUrl = new URL(authUrl);
@@ -80,6 +80,7 @@ export const login = async (setLoading: React.Dispatch<React.SetStateAction<bool
                 const state = popupUrl.searchParams.get('state');
                 window.postMessage({ type: authCodeKey, code, state }, window.location.origin);
                 popup!.close();
+                setLoading(false);  // Reset loading state when auth is complete
             }
         } catch (error) {
             // Ignore CORS errors if the popup is not redirected yet

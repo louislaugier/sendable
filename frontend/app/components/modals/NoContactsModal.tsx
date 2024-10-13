@@ -1,6 +1,12 @@
 import { Modal, ModalContent, ModalHeader, ModalBody, ModalFooter, Button } from "@nextui-org/react";
 
-const NoContactsModal = ({ isOpen, onOpenChange }: { isOpen: boolean; onOpenChange: () => void }) => {
+interface NoContactsModalProps {
+    isOpen: boolean;
+    onOpenChange: () => void;
+    onTryAgain: () => void;
+}
+
+const NoContactsModal = ({ isOpen, onOpenChange, onTryAgain }: NoContactsModalProps) => {
     return (
         <Modal
             backdrop="blur"
@@ -17,6 +23,12 @@ const NoContactsModal = ({ isOpen, onOpenChange }: { isOpen: boolean; onOpenChan
                         <ModalFooter>
                             <Button color="primary" variant="light" onPress={onClose}>
                                 Close
+                            </Button>
+                            <Button color="primary" onPress={() => {
+                                onClose();
+                                onTryAgain();
+                            }}>
+                                Try Again
                             </Button>
                         </ModalFooter>
                     </>

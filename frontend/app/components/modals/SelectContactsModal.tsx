@@ -7,23 +7,78 @@ import SingleEmailReachability from "../page_sections/SingleTargetReachability";
 import RequestSent from "../page_sections/RequestSent";
 
 const SelectContactsModal = (props: any) => {
-    const { isOpen, onClose, onOpenChange, contacts, resetHistory } = props;
-    const [isLoading, setLoading] = useState(false);
+    const { isOpen, onClose, onOpenChange, contacts, resetHistory, setLoading, providerTitle } = props;
     const [isRequestSent, setRequestSent] = useState(false);
     const [errorMsg, setErrorMsg] = useState<string>();
     const [singleTargetResp, setSingleTargetResp] = useState<any>();
     const [selectedContacts, setSelectedContacts] = useState([]);
+    const [isLoading, setIsLoading] = useState(false);
 
     const reset = () => {
         setRequestSent(false);
-        if (singleTargetResp) setSingleTargetResp(undefined);
+        setSingleTargetResp(undefined);
+    };
+
+    const handleClose = () => {
+        reset();
+        setSelectedContacts([]);
+        setErrorMsg(undefined);
+        setIsLoading(false);
+        
+        // Reset loading state for all providers
+        ['Brevo', 'SendGrid', 'HubSpot', 'Mailchimp', 'Zoho', 'Salesforce'].forEach(provider => {
+            setLoading(provider, false);
+        });
+        
+        onClose();
+    };
+
+    const handleCheckReachability = async () => {
+        setIsLoading(true); // Set loading state to true
+        setLoading(true);
+        setErrorMsg('');
+
+        try {
+            const emails = selectedContacts;
+            let res: any;
+
+            if (emails.length > 1) {
+                res = await validateEmails({ emails });
+
+                if (res.error) {
+                    setErrorMsg(res.error);
+                    setLoading(false);
+                    return;
+                }
+            } else {
+                res = await validateEmail({ email: emails[0] });
+
+                if (res.error) {
+                    setErrorMsg(res.error);
+                    setLoading(false);
+                    return;
+                }
+
+                setSingleTargetResp(res);
+
+                if (resetHistory) await resetHistory();
+            }
+        } catch (error: any) {
+            setErrorMsg("An unexpected error occurred. Please try again.");
+            setLoading(false);
+            return;
+        }
+
+        setRequestSent(true);
+        setLoading(false);
+        setIsLoading(false); // Set loading state to false
     };
 
     return (
         <Modal
             isDismissable={false}
             backdrop="blur"
-            onClose={onClose}
+            onClose={handleClose}
             hideCloseButton
             style={{ maxWidth: "500px" }}
             isOpen={isOpen}
@@ -55,49 +110,12 @@ const SelectContactsModal = (props: any) => {
                                             isLoading={isLoading}
                                             color={"primary"}
                                             variant="shadow"
-                                            onPress={async () => {
-                                                setLoading(true);
-                                                setErrorMsg('');
-
-                                                try {
-                                                    const emails = selectedContacts;
-                                                    let res: any;
-
-                                                    if (emails.length > 1) {
-                                                        res = await validateEmails({ emails });
-
-                                                        if (res.error) {
-                                                            setErrorMsg(res.error);
-                                                            setLoading(false);
-                                                            return;
-                                                        }
-                                                    } else {
-                                                        res = await validateEmail({ email: emails[0] });
-
-                                                        if (res.error) {
-                                                            setErrorMsg(res.error);
-                                                            setLoading(false);
-                                                            return;
-                                                        }
-
-                                                        setSingleTargetResp(res);
-
-                                                        if (resetHistory) await resetHistory();
-                                                    }
-                                                } catch (error: any) {
-                                                    setErrorMsg("An unexpected error occurred. Please try again.");
-                                                    setLoading(false);
-                                                    return;
-                                                }
-
-                                                setRequestSent(true);
-                                                setLoading(false);
-                                            }}
+                                            onPress={handleCheckReachability}
                                         >
                                             {isLoading ? 'Loading...' : 'Check reachability'}
                                         </Button>
                                     )}
-                                    <Button color="danger" variant="bordered" onPress={onClose}>
+                                    <Button color="danger" variant="bordered" onPress={handleClose}>
                                         {isRequestSent ? 'Close' : 'Cancel'}
                                     </Button>
                                 </div>

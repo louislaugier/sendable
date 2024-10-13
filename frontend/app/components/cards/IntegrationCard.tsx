@@ -1,5 +1,5 @@
 import { Card, CardHeader, Divider, CardBody, CardFooter, Button, Tooltip, useDisclosure } from "@nextui-org/react";
-import { useContext, useState, useEffect } from "react";
+import { useContext, useState, useEffect, useCallback } from "react";
 import UserContext from "~/contexts/UserContext";
 import getProviderContacts from "~/services/api/provider_contacts";
 import { ContactProviderType } from "~/types/contactProvider";
@@ -61,6 +61,29 @@ export default function IntegrationCard(props: any) {
         }
     };
 
+    const setLoading = useCallback((provider: string, isLoading: boolean) => {
+        setLoadingStates(prev => ({ ...prev, [provider]: isLoading }));
+    }, []);
+
+    const [isLoading, setIsLoading] = useState(false);
+
+    const importContacts = useCallback(async (provider: string, code?: string, codeVerifier?: string) => {
+        try {
+            const providerType = getProviderType(provider);
+            const res = await getProviderContacts(providerType, code, codeVerifier);
+            
+            if (res?.length) {
+                setContacts(res);
+                selectContactsModal.onOpen();
+            } else {
+                noContactsModal.onOpen();
+            }
+        } catch (err) {
+            console.error(err);
+            setIsLoading(false); // Reset loading state on error
+        }
+    }, [selectContactsModal, noContactsModal, setIsLoading]);
+
     useEffect(() => {
         const handle = (event: MessageEvent<AuthCodeEvent>) => {
             if (event.origin !== window.location.origin) {
@@ -71,16 +94,16 @@ export default function IntegrationCard(props: any) {
                 const { code, state } = event.data;
                 const stateKey = event.data.type === hubspotAuthCodeKey ? hubspotStateKey :
                     event.data.type === mailchimpAuthCodeKey ? mailchimpStateKey :
-                    event.data.type === zohoAuthCodeKey ? zohoStateKey :
-                    salesforceStateKey;
+                        event.data.type === zohoAuthCodeKey ? zohoStateKey :
+                            salesforceStateKey;
                 const storedState = sessionStorage.getItem(stateKey);
 
                 if (code && state && storedState === state) {
                     sessionStorage.removeItem(stateKey);
                     const provider = event.data.type === hubspotAuthCodeKey ? 'HubSpot' :
                         event.data.type === mailchimpAuthCodeKey ? 'Mailchimp' :
-                        event.data.type === zohoAuthCodeKey ? 'Zoho' :
-                        'Salesforce';
+                            event.data.type === zohoAuthCodeKey ? 'Zoho' :
+                                'Salesforce';
                     importContacts(provider, code, event.data.type === salesforceAuthCodeKey ? salesforcePKCE?.codeVerifier : undefined);
                 }
             }
@@ -88,29 +111,16 @@ export default function IntegrationCard(props: any) {
 
         window.addEventListener('message', handle);
         return () => window.removeEventListener('message', handle);
-    }, [salesforcePKCE]);
+    }, [importContacts, salesforcePKCE]);
 
-    const setLoading = (provider: string, isLoading: boolean) => {
-        setLoadingStates(prev => ({ ...prev, [provider]: isLoading }));
-    };
-
-    const importContacts = async (provider: string, code?: string, codeVerifier?: string) => {
-        setLoading(provider, true);
-        try {
-            const providerType = getProviderType(provider);
-            const res = await getProviderContacts(providerType, code, codeVerifier);
-            if (res?.length) {
-                setContacts(res);
-                selectContactsModal.onOpen();
-            } else {
-                noContactsModal.onOpen();
-            }
-        } catch (err) {
-            console.error(err);
-        } finally {
-            setLoading(provider, false);
-        }
-    };
+    useEffect(() => {
+        // Reset loading state when component unmounts or tab changes
+        return () => {
+            Object.keys(loadingStates).forEach(provider => {
+                setLoading(provider, false);
+            });
+        };
+    }, []);
 
     const handleImportClick = async () => {
         if (shouldConnectApiKey) {
@@ -118,26 +128,32 @@ export default function IntegrationCard(props: any) {
             return;
         }
 
+        setIsLoading(true);
+
         switch (title) {
             case 'Brevo':
             case 'SendGrid':
-                importContacts(title);
+                await importContacts(title);
                 break;
             case 'HubSpot':
-                await login(() => setLoading('HubSpot', true), hubspotUniqueStateValue, hubspotStateKey, hubspotAuthCodeKey, hubspotOauthClientId, hubspotOauthRedirectUri, 'https://app-eu1.hubspot.com/oauth/authorize', undefined, 'crm.objects.contacts.read');
+                await login(setIsLoading, hubspotUniqueStateValue, hubspotStateKey, hubspotAuthCodeKey, hubspotOauthClientId, hubspotOauthRedirectUri, 'https://app-eu1.hubspot.com/oauth/authorize', undefined, 'crm.objects.contacts.read');
                 break;
             case 'Mailchimp':
-                await login(() => setLoading('Mailchimp', true), mailchimpUniqueStateValue, mailchimpStateKey, mailchimpAuthCodeKey, mailchimpOauthClientId, mailchimpOauthRedirectUri, 'https://login.mailchimp.com/oauth2/authorize');
+                await login(setIsLoading, mailchimpUniqueStateValue, mailchimpStateKey, mailchimpAuthCodeKey, mailchimpOauthClientId, mailchimpOauthRedirectUri, 'https://login.mailchimp.com/oauth2/authorize');
                 break;
             case 'Zoho':
-                await login(() => setLoading('Zoho', true), zohoUniqueStateValue, zohoStateKey, zohoAuthCodeKey, zohoOauthClientId, zohoOauthRedirectUri, 'https://accounts.zoho.com/oauth/v2/auth', undefined, 'ZohoCRM.modules.contacts.READ,ZohoCRM.modules.leads.READ,ZohoCRM.modules.vendors.READ');
+                await login(setIsLoading, zohoUniqueStateValue, zohoStateKey, zohoAuthCodeKey, zohoOauthClientId, zohoOauthRedirectUri, 'https://accounts.zoho.com/oauth/v2/auth', undefined, 'ZohoCRM.modules.contacts.READ,ZohoCRM.modules.leads.READ,ZohoCRM.modules.vendors.READ');
                 break;
             case 'Salesforce':
                 const pkce = await fetchSalesforcePKCE();
                 setSalesforcePKCE(pkce);
-                await login(() => setLoading('Salesforce', true), salesforceUniqueStateValue, salesforceStateKey, salesforceAuthCodeKey, salesforceOauthClientId, salesforceOauthRedirectUri, 'https://login.salesforce.com/services/oauth2/authorize', pkce.codeChallenge);
+                await login(setIsLoading, salesforceUniqueStateValue, salesforceStateKey, salesforceAuthCodeKey, salesforceOauthClientId, salesforceOauthRedirectUri, 'https://login.salesforce.com/services/oauth2/authorize', pkce.codeChallenge);
                 break;
         }
+    };
+
+    const handleTryAgain = () => {
+        handleImportClick();
     };
 
     return (
@@ -167,13 +183,13 @@ export default function IntegrationCard(props: any) {
                     </style>
                     {user ? (
                         <Button
-                            isLoading={loadingStates[title]}
+                            isLoading={isLoading}
                             onClick={handleImportClick}
                             color="primary"
                             variant="shadow"
                             className="ml-2"
                         >
-                            {shouldConnectApiKey ? 'Add API key' : loadingStates[title] ? 'Importing...' : 'Import contacts'}
+                            {shouldConnectApiKey ? 'Add API key' : isLoading ? 'Importing...' : 'Import contacts'}
                         </Button>
                     ) : (
                         <Tooltip showArrow={true} content={"You must be logged in to import contacts"}>
@@ -191,18 +207,25 @@ export default function IntegrationCard(props: any) {
                     contacts={contacts}
                     isOpen={selectContactsModal.isOpen}
                     onOpen={selectContactsModal.onOpen}
+                    onClose={() => {
+                        selectContactsModal.onClose();
+                        setContacts([]);
+                        setIsLoading(false); // Reset loading state when modal is closed
+                    }}
                     onOpenChange={() => {
                         selectContactsModal.onOpenChange();
-                        if (!selectContactsModal.isOpen) {
-                            setContacts([]);
-                        }
+                        setContacts([]);
+                        setIsLoading(false); // Reset loading state when modal is closed
                     }}
+                    setLoading={setIsLoading}
+                    providerTitle={title}
                 />
             )}
 
             <NoContactsModal
                 isOpen={noContactsModal.isOpen}
                 onOpenChange={noContactsModal.onOpenChange}
+                onTryAgain={handleImportClick}
             />
         </>
     );
