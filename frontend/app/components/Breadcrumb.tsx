@@ -10,14 +10,14 @@ export default function Breadcrumb() {
         const paths = pathname.split('/').filter(Boolean);
         const breadcrumbs = [];
 
-        const findPage: any = (url: string, pages: Array<any>) => {
+        const findPage = (url: string, pages: Array<any>): { url: string; label: string; sublinks?: Array<any> } | null => {
             for (const page of pages) {
-                if (page.url === url) {
+                if (page.url.split('?')[0] === url) {
                     return page;
                 }
                 if (page.sublinks) {
                     const sublink = findPage(url, page.sublinks);
-                    if (sublink  && sublink.url !== '/blog') {
+                    if (sublink && sublink.url !== '/blog') {
                         return sublink;
                     }
                 }
@@ -25,34 +25,46 @@ export default function Breadcrumb() {
             return null;
         };
 
-        for (let i = 0; i < paths.length; i++) {
-            const currentPath = `/${paths.slice(0, i + 1).join('/')}`;
-            const page = findPage(currentPath, pages);
-
-            if (page) {
+        // Special case for dashboard
+        if (pathname.startsWith('/dashboard')) {
+            const dashboardPage = pages.find(page => page.url?.startsWith('/dashboard'));
+            if (dashboardPage && dashboardPage.url) {
                 breadcrumbs.push(
-                    <BreadcrumbItem key={i} href={page.url}>
-                        {page.label}
+                    <BreadcrumbItem key="dashboard" href={dashboardPage.url}>
+                        {dashboardPage.label}
                     </BreadcrumbItem>
                 );
+            }
+        } else {
+            for (let i = 0; i < paths.length; i++) {
+                const currentPath = `/${paths.slice(0, i + 1).join('/')}`;
+                const page = findPage(currentPath, pages);
 
-                // Handle sublinks within "Resources" or other sections (if applicable)
-                if (page.sublinks && i !== paths.length - 1) {
-                    const sublinkPath = `/${paths.slice(0, i + 2).join('/')}`;
-                    const sublink = findPage(sublinkPath, page.sublinks);
+                if (page) {
+                    breadcrumbs.push(
+                        <BreadcrumbItem key={i} href={page.url}>
+                            {page.label}
+                        </BreadcrumbItem>
+                    );
 
-                    if (sublink) {
-                        breadcrumbs.push(
-                            <BreadcrumbItem key={`${i}_sublink`} href={sublink.url}>
-                                {sublink.label}
-                            </BreadcrumbItem>
-                        );
-                        i++; // Skip the next iteration since we already handled the sublink
+                    // Handle sublinks within "Resources" or other sections (if applicable)
+                    if (page.sublinks && i !== paths.length - 1) {
+                        const sublinkPath = `/${paths.slice(0, i + 2).join('/')}`;
+                        const sublink = findPage(sublinkPath, page.sublinks);
+
+                        if (sublink) {
+                            breadcrumbs.push(
+                                <BreadcrumbItem key={`${i}_sublink`} href={sublink.url}>
+                                    {sublink.label}
+                                </BreadcrumbItem>
+                            );
+                            i++; // Skip the next iteration since we already handled the sublink
+                        }
                     }
-                }
 
-                // Exit the loop after finding a matching menu item to prevent adding unnecessary breadcrumbs
-                break;
+                    // Exit the loop after finding a matching menu item to prevent adding unnecessary breadcrumbs
+                    break;
+                }
             }
         }
 
