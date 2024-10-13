@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, ReactNode } from "react";
 import HubspotAuthButton from "../buttons/AuthButtons/HubspotAuthButton";
 import MailchimpAuthButton from "../buttons/AuthButtons/MailchimpAuthButton";
 import SalesforceAuthButton from "../buttons/AuthButtons/SalesforceAuthButton";
@@ -11,22 +11,79 @@ import SalesforceFullLogo from "../icons/logos/SalesforceFullLogo";
 import SendgridFullLogo from "../icons/logos/SendgridFullLogo";
 import ZohoFullLogo from "../icons/logos/ZohoFullLogo";
 
-export default function IntegrationCardsGrid(props: any) {
-    const { resetHistory } = props
+interface IntegrationCardProps {
+    resetHistory: () => void;
+    title: string;
+    url: string;
+    description: string;
+    logo: React.ReactNode;
+    hasLoginFeature?: boolean;
+    signupBtn?: boolean;
+}
 
-    // prevent concurrent validation from different providers by using a common state
-    const [isValidationProcessed, setValidationProcessed] = useState(false)
+export default function IntegrationCardsGrid({ resetHistory }: { resetHistory: () => void }) {
+    const [isValidationProcessed, setValidationProcessed] = useState(false);
 
-    return (
-        !isValidationProcessed ?
-            <>
-                <IntegrationCard resetHistory={resetHistory} setValidationProcessed={setValidationProcessed} signupBtn={<SalesforceAuthButton customText="Signup with Salesforce" />} title='Salesforce' url='salesforce.com' description='Import all kinds of contacts from your Salesforce CRM.' hasLoginFeature logo={<SalesforceFullLogo w={80} />} />
-                <IntegrationCard resetHistory={resetHistory} setValidationProcessed={setValidationProcessed} signupBtn={<ZohoAuthButton customText="Signup with Zoho" />} title='Zoho' url='zoho.com' description='Import leads, contacts and vendors from your Zoho CRM.' hasLoginFeature logo={<ZohoFullLogo w={"80px"} />} />
-                <IntegrationCard resetHistory={resetHistory} setValidationProcessed={setValidationProcessed} signupBtn={<HubspotAuthButton customText="Signup with Hubspot" />} title='HubSpot' url='hubspot.com' description='Import all kinds of contacts from your HubSpot CRM.' hasLoginFeature logo={<HubspotFullLogo w='90px' />} />
-                <IntegrationCard resetHistory={resetHistory} setValidationProcessed={setValidationProcessed} signupBtn={<MailchimpAuthButton customText="Signup with MailChimp" />} title='Mailchimp' url='mailchimp.com' description="Import your audiences' contacts from Mailchimp." hasLoginFeature logo={<MailchimpFullLogo w='90px' />} />
-                <IntegrationCard resetHistory={resetHistory} setValidationProcessed={setValidationProcessed} title='SendGrid' url='sendgrid.com' description='Import your contacts from the SendGrid marketing platform.' logo={<SendgridFullLogo w='110px' />} />
-                <IntegrationCard resetHistory={resetHistory} setValidationProcessed={setValidationProcessed} title='Brevo' url='brevo.com' description='Import your contacts from the Brevo marketing platform.' logo={<BrevoFullLogo w='80px' />} />
-            </> :
-            <></>
-    )
+    const renderIntegrationCard = (props: IntegrationCardProps) => (
+        <IntegrationCard {...props} />
+    );
+
+    return !isValidationProcessed ? (
+        <>
+            {renderIntegrationCard({
+                resetHistory,
+                title: 'Salesforce',
+                url: 'salesforce.com',
+                description: 'Import all kinds of contacts from your Salesforce CRM.',
+                hasLoginFeature: true,
+                logo: <SalesforceFullLogo w={80} />,
+                signupBtn: true,
+            })}
+            {renderIntegrationCard({
+                resetHistory,
+                title: 'Zoho',
+                url: 'zoho.com',
+                description: 'Import leads, contacts and vendors from your Zoho CRM.',
+                hasLoginFeature: true,
+                logo: <ZohoFullLogo w="80px" />,
+                signupBtn: true,
+            })}
+            {renderIntegrationCard({
+                resetHistory,
+                title: 'HubSpot',
+                url: 'hubspot.com',
+                description: 'Import all kinds of contacts from your HubSpot CRM.',
+                hasLoginFeature: true,
+                logo: <HubspotFullLogo w='90px' />,
+                signupBtn: true,
+            })}
+            {renderIntegrationCard({
+                resetHistory,
+                title: 'Mailchimp',
+                url: 'mailchimp.com',
+                description: "Import your audiences' contacts from Mailchimp.",
+                hasLoginFeature: true,
+                logo: <MailchimpFullLogo w='90px' />,
+                signupBtn: true,
+            })}
+            {renderIntegrationCard({
+                resetHistory,
+                title: 'SendGrid',
+                url: 'sendgrid.com',
+                description: 'Import your contacts from the SendGrid marketing platform.',
+                logo: <SendgridFullLogo w='110px' />,
+                signupBtn: true,
+            })}
+            {renderIntegrationCard({
+                resetHistory,
+                title: 'Brevo',
+                url: 'brevo.com',
+                description: 'Import your contacts from the Brevo marketing platform.',
+                logo: <BrevoFullLogo w='80px' />,
+                signupBtn: true,
+            })}
+        </>
+    ) : (
+        <></>
+    );
 }
