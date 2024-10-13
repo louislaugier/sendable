@@ -32,23 +32,32 @@ export default function Index() {
     const state = searchParams.get('state');
     const error = searchParams.get('error');
 
+    console.log("OAuth callback received. Code:", code, "State:", state, "Error:", error);
+
     if (code && state) {
-      console.log("Received OAuth callback. Sending message to opener.");
-      console.log("Code:", code);
-      console.log("State:", state);
+      console.log("Received OAuth callback. Code:", code, "State:", state);
       if (window.opener) {
-        window.opener.postMessage({ code, state }, window.location.origin);
-        console.log("Message posted to opener");
-        window.close();
+        try {
+          console.log("Attempting to post message to opener");
+          window.opener.postMessage({ type: 'oauth_callback', code, state }, window.location.origin);
+          console.log("Message posted to opener");
+          window.close();
+        } catch (error) {
+          console.error("Error posting message to opener:", error);
+        }
       } else {
         console.error("No opener window found. Unable to send OAuth data.");
       }
     } else if (error) {
       console.log("Received OAuth error:", error);
       if (window.opener) {
-        window.opener.postMessage({ type: 'error', error }, window.location.origin);
-        console.log("Error message posted to opener");
-        window.close();
+        try {
+          window.opener.postMessage({ type: 'error', error }, window.location.origin);
+          console.log("Error message posted to opener");
+          window.close();
+        } catch (error) {
+          console.error("Error posting error message to opener:", error);
+        }
       } else {
         console.error("No opener window found. Unable to send OAuth error.");
       }

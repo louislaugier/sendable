@@ -1,13 +1,14 @@
 import { AuthCodeEvent } from "~/types/oauth";
 import { User } from "~/types/user";
 import { navigateToUrl } from "~/utils/url";
-import { fetchSalesforcePKCE } from "./utils/salesforce/pkce";
 import { Dispatch, SetStateAction } from "react";
-import { useEffect } from 'react';
-import { useSearchParams } from '@remix-run/react';
 
 export const handleAuthCode = (event: MessageEvent<AuthCodeEvent>, setUser: React.Dispatch<React.SetStateAction<User | null>>, setTemp2faUserId: Dispatch<SetStateAction<string | null>>, auth: (data: any) => Promise<any>, setLoading: React.Dispatch<React.SetStateAction<boolean>>, authCodeKey: string, stateKey: string, salesforceCodeVerifierKey?: string) => {
     setLoading(true);
+
+    console.log("Received message event:", event);
+    console.log("Event origin:", event.origin);
+    console.log("Window location origin:", window.location.origin);
 
     if (event.origin !== window.location.origin) {
         return;
@@ -18,7 +19,6 @@ export const handleAuthCode = (event: MessageEvent<AuthCodeEvent>, setUser: Reac
         const storedState = sessionStorage.getItem(stateKey);
 
         if (code && state && storedState === state) {
-
             sessionStorage.removeItem(stateKey);
 
             let codeVerifier = undefined
@@ -39,12 +39,17 @@ export const handleAuthCode = (event: MessageEvent<AuthCodeEvent>, setUser: Reac
                     }
                 })
                 .catch(error => {
-                    console.error('Oauth login error:', error);
+                    console.error('OAuth login error:', error);
                 })
+                .finally(() => {
+                    setLoading(false);
+                });
+        } else {
+            setLoading(false);
         }
+    } else {
+        setLoading(false);
     }
-
-    setLoading(false);
 };
 
 export const login = (
@@ -62,6 +67,7 @@ export const login = (
         console.log(`Login function called for ${provider}`);
         const state = uniqueStateValue;
         sessionStorage.setItem(stateKey, state);
+        sessionStorage.setItem('current_oauth_state_key', stateKey);  // Store the current state key
 
         const params = new URLSearchParams({
             response_type: 'code',
@@ -121,22 +127,3 @@ export const login = (
     });
 };
 
-export default function Index() {
-  const [searchParams] = useSearchParams();
-
-  useEffect(() => {
-    const code = searchParams.get('code');
-    const state = searchParams.get('state');
-    const error = searchParams.get('error');
-
-    if (code && state) {
-      window.opener.postMessage({ type: state, code, state }, window.location.origin);
-      window.close();
-    } else if (error) {
-      window.opener.postMessage({ type: 'error', error }, window.location.origin);
-      window.close();
-    }
-  }, [searchParams]);
-
-  // Rest of your homepage component...
-}
