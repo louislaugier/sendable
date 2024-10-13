@@ -1,4 +1,4 @@
-import { TableRow, TableCell, Chip } from "@nextui-org/react";
+import { TableRow, TableCell, Chip, Tooltip } from "@nextui-org/react";
 import moment from "moment";
 import ReachabilityChip from "~/components/dropdowns/ReachabilityReference/ReachabilityChip";
 import { Validation, ValidationOrigin, ValidationStatus } from "~/types/validation";
@@ -36,7 +36,19 @@ export default function ValidationHistoryTable(props: any) {
             <p>{validation.providerSource ? capitalize(validation.providerSource) : validation.uploadFilename ? validation.uploadFilename : 'Text (manual)'}</p>
         </TableCell>
 
-        <TableCell>{validation.singleTargetEmail ? validation.singleTargetEmail : validation.bulkAddressCount ? `${validation.bulkAddressCount} addresses` : 'Processing...'}</TableCell>
+        <TableCell>
+            <Tooltip content={validation.singleTargetEmail || `${validation.bulkAddressCount} addresses`}>
+                <p>
+                    {validation.singleTargetEmail 
+                        ? (validation.singleTargetEmail.length > 13 
+                            ? `${validation.singleTargetEmail.substring(0, 10)}...` 
+                            : validation.singleTargetEmail) 
+                        : validation.bulkAddressCount 
+                            ? `${validation.bulkAddressCount} addresses` 
+                            : 'Processing...'}
+                </p>
+            </Tooltip>
+        </TableCell>
 
         <TableCell>{validation.origin === ValidationOrigin.Platform ? 'Platform' : 'API'}</TableCell>
 
