@@ -13,6 +13,8 @@ import ZohoFullLogo from "../icons/logos/ZohoFullLogo";
 
 export default function IntegrationCardsGrid(props: any) {
     const { resetHistory } = props
+
+    // prevent concurrent validation from different providers by using a common state
     const [isValidationProcessed, setValidationProcessed] = useState(false)
 
     return (
@@ -25,8 +27,6 @@ export default function IntegrationCardsGrid(props: any) {
                 <IntegrationCard resetHistory={resetHistory} setValidationProcessed={setValidationProcessed} title='SendGrid' url='sendgrid.com' description='Import your contacts from the SendGrid marketing platform.' logo={<SendgridFullLogo w='110px' />} />
                 <IntegrationCard resetHistory={resetHistory} setValidationProcessed={setValidationProcessed} title='Brevo' url='brevo.com' description='Import your contacts from the Brevo marketing platform.' logo={<BrevoFullLogo w='80px' />} />
             </> :
-            <>
-                {/* New validation batch etc etc */}
-            </>
+            <></>
     )
 }

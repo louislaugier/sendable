@@ -7,12 +7,17 @@ import SingleEmailReachability from "../page_sections/SingleTargetReachability";
 import RequestSent from "../page_sections/RequestSent";
 
 const SelectContactsModal = (props: any) => {
-    const { isOpen, onClose, onOpenChange, contacts, resetHistory, setLoading, providerTitle } = props;
+    const { isOpen, onClose, onOpenChange, contacts, resetHistory, setLoading, providerTitle, selectedContacts, setSelectedContacts } = props;
     const [isRequestSent, setRequestSent] = useState(false);
     const [errorMsg, setErrorMsg] = useState<string>();
     const [singleTargetResp, setSingleTargetResp] = useState<any>();
-    const [selectedContacts, setSelectedContacts] = useState([]);
     const [isLoading, setIsLoading] = useState(false);
+
+    useEffect(() => {
+        if (contacts.length > 0 && selectedContacts.length === 0) {
+            setSelectedContacts(contacts.slice(0, 2));
+        }
+    }, [contacts, selectedContacts, setSelectedContacts]);
 
     useEffect(() => {
         console.log("State updated:", { isRequestSent, singleTargetResp, selectedContacts });
@@ -44,31 +49,33 @@ const SelectContactsModal = (props: any) => {
 
         try {
             const emails = selectedContacts;
-            let res: any;
+            if (emails.length === 0) {
+                throw new Error("No emails selected");
+            }
 
             console.log("Validating emails:", emails);
 
-            if (emails.length > 1) {
-                res = await validateEmails({ emails });
-            } else {
+            let res: any;
+            if (emails.length === 1) {
                 res = await validateEmail({ email: emails[0] });
+                console.log("Single email validation response:", res);
+                if (res.error) {
+                    setErrorMsg(res.error);
+                    return;
+                }
+                setSingleTargetResp([res]);
+            } else {
+                await validateEmails({ emails });
+                console.log("Multiple emails validation initiated");
             }
 
-            console.log("Validation response:", res);
-
-            if (res.error) {
-                setErrorMsg(res.error);
-                return;
-            }
-
-            setSingleTargetResp(res);
             setRequestSent(true);
 
             if (resetHistory) await resetHistory();
 
         } catch (error: any) {
             console.error("Error during validation:", error);
-            setErrorMsg("An unexpected error occurred. Please try again.");
+            setErrorMsg(error.message || "An unexpected error occurred. Please try again.");
         } finally {
             setLoading(false);
             setIsLoading(false);
@@ -96,20 +103,17 @@ const SelectContactsModal = (props: any) => {
                                 selectedContacts.length === 1 ? (
                                     <SingleEmailReachability 
                                         email={selectedContacts[0]} 
-                                        response={singleTargetResp} 
+                                        singleTargetResp={singleTargetResp?.[0]} 
                                         reset={reset} 
                                     />
                                 ) : (
                                     <RequestSent reset={reset} />
                                 )
                             ) : (
-                                <SelectContactsTable setSelectedContacts={setSelectedContacts} contacts={contacts} />
-                            )}
-                            {singleTargetResp && (
-                                <SingleEmailReachability 
-                                    email={selectedContacts[0]} 
-                                    singleTargetResp={singleTargetResp} 
-                                    reset={reset} 
+                                <SelectContactsTable 
+                                    setSelectedContacts={setSelectedContacts} 
+                                    contacts={contacts}
+                                    selectedContacts={selectedContacts}
                                 />
                             )}
                         </ModalBody>
@@ -123,6 +127,7 @@ const SelectContactsModal = (props: any) => {
                                             color={"primary"}
                                             variant="shadow"
                                             onPress={handleCheckReachability}
+                                            isDisabled={selectedContacts.length === 0}
                                         >
                                             {isLoading ? 'Loading...' : 'Check reachability'}
                                         </Button>

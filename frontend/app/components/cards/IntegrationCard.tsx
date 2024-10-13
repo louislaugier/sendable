@@ -156,6 +156,8 @@ export default function IntegrationCard(props: any) {
         handleImportClick();
     };
 
+    const [selectedContacts, setSelectedContacts] = useState<string[]>([]);
+
     return (
         <>
             <Card className="w-[400px] mb-12">
@@ -210,15 +212,19 @@ export default function IntegrationCard(props: any) {
                     onClose={() => {
                         selectContactsModal.onClose();
                         setContacts([]);
-                        setIsLoading(false); // Reset loading state when modal is closed
+                        setSelectedContacts([]);
+                        setIsLoading(false);
                     }}
                     onOpenChange={() => {
                         selectContactsModal.onOpenChange();
                         setContacts([]);
-                        setIsLoading(false); // Reset loading state when modal is closed
+                        setSelectedContacts([]);
+                        setIsLoading(false);
                     }}
                     setLoading={setIsLoading}
                     providerTitle={title}
+                    selectedContacts={selectedContacts}
+                    setSelectedContacts={setSelectedContacts}
                 />
             )}
 

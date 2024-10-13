@@ -6,20 +6,22 @@ import { ReachableDescriptor, RiskyDescriptor, UnknownDescriptor, InvalidDescrip
 const SingleTargetReachability = (props: any) => {
     const { email, singleTargetResp, reset } = props
 
-    if (!singleTargetResp) return null;
+    if (!singleTargetResp) {
+        return <p>No response data available.</p>;
+    }
 
     const issues = [];
-    if (!singleTargetResp.syntax.is_valid_syntax) issues.push('• Address syntax is invalid');
-    if (!singleTargetResp.mx.accepts_mail && !!singleTargetResp.syntax.domain) issues.push(
+    if (!singleTargetResp?.syntax?.is_valid_syntax) issues.push('• Address syntax is invalid');
+    if (!singleTargetResp?.mx?.accepts_mail && !!singleTargetResp?.syntax?.domain) issues.push(
         <span>
             • The domain <b>{singleTargetResp.syntax.domain}</b> does not accept emails
         </span>
     );
-    if (singleTargetResp.smtp.is_disabled) issues.push('• Account has been disabled by email provider');
-    if (singleTargetResp.smtp.has_full_inbox) issues.push("• The account's inbox is currently full");
-    if (singleTargetResp.misc.is_role_account) issues.push("• The email address is a role account (e.g. support@sendable.email)");
-    if (singleTargetResp.misc.is_disposable) issues.push("• The email address is a disposable temporary email address");
-    if (singleTargetResp.smtp.is_catch_all) issues.push("• The email address is a catch-all address (destined to receive emails sent to non-existing addresses on a given domain name)");
+    if (singleTargetResp?.smtp?.is_disabled) issues.push('• Account has been disabled by email provider');
+    if (singleTargetResp?.smtp?.has_full_inbox) issues.push("• The account's inbox is currently full");
+    if (singleTargetResp?.misc?.is_role_account) issues.push("• The email address is a role account (e.g. support@sendable.email)");
+    if (singleTargetResp?.misc?.is_disposable) issues.push("• The email address is a disposable temporary email address");
+    if (singleTargetResp?.smtp?.is_catch_all) issues.push("• The email address is a catch-all address (destined to receive emails sent to non-existing addresses on a given domain name)");
 
     return (
         <>
