@@ -20,11 +20,16 @@ export default function HubspotAuthButton(props: any) {
     const { setUser, setTemp2faUserId } = useContext(UserContext)
     useEffect(() => {
         const handle = (event: MessageEvent<AuthCodeEvent>) => {
+            console.log("HubspotAuthButton received message event:", event);
             handleAuthCode(event, setUser, setTemp2faUserId, hubspotAuth, setLoading, hubspotAuthCodeKey, hubspotStateKey);
         };
 
+        console.log("Adding message event listener for HubspotAuthButton");
         window.addEventListener('message', handle);
-        return () => window.removeEventListener('message', handle);
+        return () => {
+            console.log("Removing message event listener for HubspotAuthButton");
+            window.removeEventListener('message', handle);
+        };
     }, []);
 
     const hubspotLogin = async () => {

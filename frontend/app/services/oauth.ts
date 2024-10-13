@@ -4,22 +4,29 @@ import { navigateToUrl } from "~/utils/url";
 import { Dispatch, SetStateAction } from "react";
 
 export const handleAuthCode = (event: MessageEvent<AuthCodeEvent>, setUser: React.Dispatch<React.SetStateAction<User | null>>, setTemp2faUserId: Dispatch<SetStateAction<string | null>>, auth: (data: any) => Promise<any>, setLoading: React.Dispatch<React.SetStateAction<boolean>>, authCodeKey: string, stateKey: string, salesforceCodeVerifierKey?: string) => {
+    console.log("handleAuthCode called with event:", JSON.stringify(event.data));
+    console.log("authCodeKey:", authCodeKey);
+    console.log("stateKey:", stateKey);
+
     setLoading(true);
 
-    console.log("Received message event:", event);
-    console.log("Event origin:", event.origin);
-    console.log("Window location origin:", window.location.origin);
-
     if (event.origin !== window.location.origin) {
+        console.log("Origin mismatch. Exiting handleAuthCode");
         return;
     }
 
-    if (event.data.type === authCodeKey) {
+    console.log("Event data type:", event.data.type);
+    if (event.data.type === stateKey) {  // Changed from authCodeKey to stateKey
         const { code, state } = event.data;
         const storedState = sessionStorage.getItem(stateKey);
+        console.log("Received code:", code);
+        console.log("Received state:", state);
+        console.log("Stored state:", storedState);
 
         if (code && state && storedState === state) {
+            console.log("Code and state validated. Proceeding with auth.");
             sessionStorage.removeItem(stateKey);
+            sessionStorage.removeItem('current_oauth_state_key');
 
             let codeVerifier = undefined
             if (salesforceCodeVerifierKey) {
@@ -27,8 +34,10 @@ export const handleAuthCode = (event: MessageEvent<AuthCodeEvent>, setUser: Reac
                 sessionStorage.removeItem(salesforceCodeVerifierKey);
             }
 
+            console.log("Calling auth function with:", { code, codeVerifier });
             auth({ code, codeVerifier })
                 .then((res: any) => {
+                    console.log("Auth function response:", res);
                     if (res) {
                         if (res.email) {
                             setUser(res)
@@ -45,9 +54,11 @@ export const handleAuthCode = (event: MessageEvent<AuthCodeEvent>, setUser: Reac
                     setLoading(false);
                 });
         } else {
+            console.log("Code or state validation failed");
             setLoading(false);
         }
     } else {
+        console.log("Event type does not match stateKey. No action taken.");
         setLoading(false);
     }
 };
@@ -56,7 +67,7 @@ export const login = (
     setLoading: (isLoading: boolean) => void,
     uniqueStateValue: string,
     stateKey: string,
-    provider: string,
+    authCodeKey: string,
     clientId: string,
     redirectUri: string,
     authUrl: string,
@@ -64,7 +75,7 @@ export const login = (
     scope?: string
 ) => {
     return new Promise<{ code: string, state: string } | null>((resolve, reject) => {
-        console.log(`Login function called for ${provider}`);
+        console.log(`Login function called for ${authCodeKey}`);
         const state = uniqueStateValue;
         sessionStorage.setItem(stateKey, state);
         sessionStorage.setItem('current_oauth_state_key', stateKey);  // Store the current state key
@@ -107,7 +118,7 @@ export const login = (
                 console.log("Message origin:", event.origin);
                 console.log("Window origin:", window.location.origin);
                 if (event.origin === window.location.origin && event.data.state === state) {
-                    console.log(`Received valid message for ${provider}`);
+                    console.log(`Received valid message for ${authCodeKey}`);
                     window.removeEventListener('message', handleMessage);
                     clearInterval(checkPopup);
                     popupWindow.close();
@@ -126,4 +137,3 @@ export const login = (
         }
     });
 };
-

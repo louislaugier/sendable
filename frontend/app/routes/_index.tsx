@@ -39,8 +39,10 @@ export default function Index() {
       if (window.opener) {
         try {
           console.log("Attempting to post message to opener");
-          window.opener.postMessage({ type: 'oauth_callback', code, state }, window.location.origin);
-          console.log("Message posted to opener");
+          // Get the current OAuth provider from sessionStorage
+          const currentOAuthStateKey = sessionStorage.getItem('current_oauth_state_key');
+          window.opener.postMessage({ type: currentOAuthStateKey, code, state }, window.location.origin);
+          console.log("Message posted to opener with type:", currentOAuthStateKey);
           window.close();
         } catch (error) {
           console.error("Error posting message to opener:", error);
