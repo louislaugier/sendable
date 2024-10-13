@@ -3,6 +3,8 @@ import { User } from "~/types/user";
 import { navigateToUrl } from "~/utils/url";
 import { fetchSalesforcePKCE } from "./utils/salesforce/pkce";
 import { Dispatch, SetStateAction } from "react";
+import { useEffect } from 'react';
+import { useSearchParams } from '@remix-run/react';
 
 export const handleAuthCode = (event: MessageEvent<AuthCodeEvent>, setUser: React.Dispatch<React.SetStateAction<User | null>>, setTemp2faUserId: Dispatch<SetStateAction<string | null>>, auth: (data: any) => Promise<any>, setLoading: React.Dispatch<React.SetStateAction<boolean>>, authCodeKey: string, stateKey: string, salesforceCodeVerifierKey?: string) => {
     setLoading(true);
@@ -45,49 +47,96 @@ export const handleAuthCode = (event: MessageEvent<AuthCodeEvent>, setUser: Reac
     setLoading(false);
 };
 
-export const login = async (setLoading: (isLoading: boolean) => void, uniqueStateValue: string, stateKey: string, authCodeKey: string, clientId: string, redirectUri: string, authUrl: string, codeChallenge?: string, scope?: string) => {
-    setLoading(true);
+export const login = (
+    setLoading: (isLoading: boolean) => void,
+    uniqueStateValue: string,
+    stateKey: string,
+    provider: string,
+    clientId: string,
+    redirectUri: string,
+    authUrl: string,
+    codeChallenge?: string,
+    scope?: string
+) => {
+    return new Promise<{ code: string, state: string } | null>((resolve, reject) => {
+        console.log(`Login function called for ${provider}`);
+        const state = uniqueStateValue;
+        sessionStorage.setItem(stateKey, state);
 
-    const loginUrl = new URL(authUrl);
+        const params = new URLSearchParams({
+            response_type: 'code',
+            client_id: clientId,
+            redirect_uri: redirectUri,
+            state: state
+        });
 
-    sessionStorage.setItem(stateKey, uniqueStateValue);
+        if (scope) {
+            params.append('scope', scope);
+        }
 
-    loginUrl.searchParams.append('client_id', clientId);
-    loginUrl.searchParams.append('redirect_uri', redirectUri);
-    loginUrl.searchParams.append('response_type', 'code');
-    loginUrl.searchParams.append('state', uniqueStateValue);
+        if (codeChallenge) {
+            params.append('code_challenge', codeChallenge);
+            params.append('code_challenge_method', 'S256');
+        }
 
-    if (codeChallenge) {
-        loginUrl.searchParams.append('code_challenge', codeChallenge);
-        loginUrl.searchParams.append('code_challenge_method', 'S256');
-    }
+        const url = `${authUrl}?${params.toString()}`;
+        console.log(`OAuth URL: ${url}`);
 
-    if (scope) loginUrl.searchParams.append('scope', scope);
+        const popupWindow = window.open(url, 'Login', 'width=800,height=600');
 
-    const popup = window.open(loginUrl.href, '_blank', 'width=500,height=600');
+        if (popupWindow) {
+            console.log("Popup window opened successfully");
+            const checkPopup = setInterval(() => {
+                if (popupWindow.closed) {
+                    console.log("Popup window closed");
+                    clearInterval(checkPopup);
+                    setLoading(false);
+                    resolve(null);
+                }
+            }, 500);
 
-    // Poll the popup for the redirect with the auth code
-    const pollPopup = () => {
-        if (popup!.closed) {
+            const handleMessage = (event: MessageEvent) => {
+                console.log("Received message:", event.data);
+                console.log("Expected state:", state);
+                console.log("Message origin:", event.origin);
+                console.log("Window origin:", window.location.origin);
+                if (event.origin === window.location.origin && event.data.state === state) {
+                    console.log(`Received valid message for ${provider}`);
+                    window.removeEventListener('message', handleMessage);
+                    clearInterval(checkPopup);
+                    popupWindow.close();
+                    setLoading(false);
+                    resolve(event.data);
+                } else {
+                    console.log("Message did not match expected criteria");
+                }
+            };
+
+            window.addEventListener('message', handleMessage);
+        } else {
+            console.error("Failed to open popup window");
             setLoading(false);
-            return;
+            reject(new Error("Failed to open popup window"));
         }
-
-        try {
-            const popupUrl = new URL(popup!.location.href);
-            if (popupUrl.origin === window.location.origin && popupUrl.searchParams.get('code')) {
-                const code = popupUrl.searchParams.get('code');
-                const state = popupUrl.searchParams.get('state');
-                window.postMessage({ type: authCodeKey, code, state }, window.location.origin);
-                popup!.close();
-                setLoading(false);  // Reset loading state when auth is complete
-            }
-        } catch (error) {
-            // Ignore CORS errors if the popup is not redirected yet
-        }
-
-        setTimeout(pollPopup, 500);
-    };
-
-    setTimeout(pollPopup, 500);
+    });
 };
+
+export default function Index() {
+  const [searchParams] = useSearchParams();
+
+  useEffect(() => {
+    const code = searchParams.get('code');
+    const state = searchParams.get('state');
+    const error = searchParams.get('error');
+
+    if (code && state) {
+      window.opener.postMessage({ type: state, code, state }, window.location.origin);
+      window.close();
+    } else if (error) {
+      window.opener.postMessage({ type: 'error', error }, window.location.origin);
+      window.close();
+    }
+  }, [searchParams]);
+
+  // Rest of your homepage component...
+}

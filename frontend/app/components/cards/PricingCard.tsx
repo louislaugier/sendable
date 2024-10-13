@@ -53,7 +53,7 @@ export default function PricingCard(props: any) {
                                     <div>
                                         <Button isDisabled={!!user.currentPlan.cancelledAt} as={Link} href={user?.stripeCustomerPortalUrl!} target="_blank" className="mt-2 mb-6 w-auto" onClick={() => {
                                         }} color="primary" variant="shadow">
-                                            {!!user.currentPlan.cancelledAt ? 'Cancelation scheduled' : 'Cancel'}
+                                            {!!user.currentPlan.cancelledAt ? 'Cancelation scheduled' : 'Manage'}
                                         </Button>
                                     </div>
                                 </div>

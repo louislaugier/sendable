@@ -27,6 +27,34 @@ export default function Index() {
     if (isEmailAddressConfirmedCall && !emailAddressConfirmedModal.isOpen && !isEmailAddressConfirmedModalAck) emailAddressConfirmedModal.onOpen()
   }, [searchParams, emailAddressConfirmedModal, isEmailAddressConfirmedModalAck])
 
+  useEffect(() => {
+    const code = searchParams.get('code');
+    const state = searchParams.get('state');
+    const error = searchParams.get('error');
+
+    if (code && state) {
+      console.log("Received OAuth callback. Sending message to opener.");
+      console.log("Code:", code);
+      console.log("State:", state);
+      if (window.opener) {
+        window.opener.postMessage({ code, state }, window.location.origin);
+        console.log("Message posted to opener");
+        window.close();
+      } else {
+        console.error("No opener window found. Unable to send OAuth data.");
+      }
+    } else if (error) {
+      console.log("Received OAuth error:", error);
+      if (window.opener) {
+        window.opener.postMessage({ type: 'error', error }, window.location.origin);
+        console.log("Error message posted to opener");
+        window.close();
+      } else {
+        console.error("No opener window found. Unable to send OAuth error.");
+      }
+    }
+  }, [searchParams]);
+
   return (
     <>
       <HeroSection />

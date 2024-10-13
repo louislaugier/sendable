@@ -1,47 +1,72 @@
 import { Modal, ModalContent, ModalHeader, ModalBody, ModalFooter, Button } from "@nextui-org/react";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback, Dispatch, SetStateAction } from "react";
 import SelectContactsTable from "../tables/SelectContactsTable";
 import validateEmail from "~/services/api/validate_email";
 import validateEmails from "~/services/api/validate_emails";
 import SingleEmailReachability from "../page_sections/SingleTargetReachability";
 import RequestSent from "../page_sections/RequestSent";
 
-const SelectContactsModal = (props: any) => {
-    const { isOpen, onClose, onOpenChange, contacts, resetHistory, setLoading, providerTitle, selectedContacts, setSelectedContacts } = props;
+interface SelectContactsModalProps {
+  isOpen: boolean;
+  onClose: () => void;
+  onOpenChange: (open: boolean) => void;
+  contacts: string[];
+  resetHistory: () => void;
+  providerTitle: string;
+  selectedContacts: string[];
+  setSelectedContacts: Dispatch<SetStateAction<string[]>>;
+}
+
+interface SingleTargetResponse {
+  // Define the structure of your single target response here
+  // For example:
+  email: string;
+  isValid: boolean;
+  // ... other properties
+}
+
+const SelectContactsModal = (props: SelectContactsModalProps) => {
+    const { isOpen, onClose, onOpenChange, contacts = [], resetHistory, providerTitle, selectedContacts = [], setSelectedContacts } = props;
+
+    console.log("SelectContactsModal rendered with props:", { isOpen, contacts, providerTitle });
+
     const [isRequestSent, setRequestSent] = useState(false);
     const [errorMsg, setErrorMsg] = useState<string>();
-    const [singleTargetResp, setSingleTargetResp] = useState<any>();
+    const [singleTargetResp, setSingleTargetResp] = useState<SingleTargetResponse[]>();
     const [isLoading, setIsLoading] = useState(false);
     const [currentProvider, setCurrentProvider] = useState<string | null>(null);
 
+    const reset = useCallback(() => {
+        setRequestSent(false);
+        setSelectedContacts([]);
+        setSingleTargetResp(undefined);
+    }, [setSelectedContacts]);
+
     useEffect(() => {
+        console.log("SelectContactsModal isOpen changed:", isOpen);
         if (isOpen && providerTitle) {
             setCurrentProvider(providerTitle);
         }
-    }, [isOpen, providerTitle]);
 
-    const reset = () => {
-        setRequestSent(false);
-        setSingleTargetResp(undefined);
-    };
+        return () => {
+            reset();
+            setErrorMsg(undefined);
+            setIsLoading(false);
+            setCurrentProvider(null);
+        };
+    }, [isOpen, providerTitle, reset]);
 
-    const handleClose = () => {
+    const handleClose = useCallback(() => {
         reset();
-        setSelectedContacts([]);
-        setErrorMsg(undefined);
-        setIsLoading(false);
-        setCurrentProvider(null);
         onClose();
-    };
+    }, [reset, onClose]);
 
-    const handleCheckReachability = async () => {
+    const handleCheckReachability = useCallback(async () => {
         setIsLoading(true);
-        setLoading(true);
         setErrorMsg('');
 
         try {
-            const emails = selectedContacts;
-            if (emails.length === 0) {
+            if (!selectedContacts?.length) {
                 throw new Error("No emails selected");
             }
 
@@ -50,16 +75,19 @@ const SelectContactsModal = (props: any) => {
                 throw new Error("No provider selected");
             }
 
-            let res: any;
-            if (emails.length === 1) {
-                res = await validateEmail({ email: emails[0] }, provider);
+            console.log("Calling API with:", { selectedContacts, provider });
+
+            if (selectedContacts.length === 1) {
+                const res = await validateEmail({ email: selectedContacts[0] }, provider);
+                console.log("Single email validation response:", res);
                 if (res.error) {
                     setErrorMsg(res.error);
                     return;
                 }
                 setSingleTargetResp([res]);
             } else {
-                await validateEmails({ emails }, undefined, provider);
+                const res = await validateEmails({ emails: selectedContacts }, undefined, provider);
+                console.log("Multiple emails validation response:", res);
             }
 
             setRequestSent(true);
@@ -70,10 +98,9 @@ const SelectContactsModal = (props: any) => {
             console.error("Error during validation:", error);
             setErrorMsg(error.message || "An unexpected error occurred. Please try again.");
         } finally {
-            setLoading(false);
             setIsLoading(false);
         }
-    };
+    }, [selectedContacts, currentProvider, resetHistory]);
 
     return (
         <Modal
@@ -93,7 +120,7 @@ const SelectContactsModal = (props: any) => {
                         <ModalHeader className="flex flex-col gap-1">Select contacts to validate</ModalHeader>
                         <ModalBody>
                             {isRequestSent ? (
-                                selectedContacts.length === 1 ? (
+                                selectedContacts?.length === 1 ? (
                                     <SingleEmailReachability 
                                         email={selectedContacts[0]} 
                                         singleTargetResp={singleTargetResp?.[0]} 
@@ -117,10 +144,10 @@ const SelectContactsModal = (props: any) => {
                                     {!isRequestSent && (
                                         <Button
                                             isLoading={isLoading}
-                                            color={"primary"}
+                                            color="primary"
                                             variant="shadow"
                                             onPress={handleCheckReachability}
-                                            isDisabled={selectedContacts.length === 0}
+                                            isDisabled={!selectedContacts?.length}
                                         >
                                             {isLoading ? 'Loading...' : 'Check reachability'}
                                         </Button>
