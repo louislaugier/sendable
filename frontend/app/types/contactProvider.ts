@@ -3,7 +3,7 @@ export enum ContactProviderType {
     Hubspot = "hubspot",
     Zoho = "zoho",
     Sendgrid = "sendgrid",
-    Mailchimp = 'mailchimp',
+    Mailchimp = "mailchimp",
     Brevo = "brevo"
 }
 

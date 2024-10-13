@@ -45,19 +45,10 @@ export const handleAuthCode = (event: MessageEvent<AuthCodeEvent>, setUser: Reac
     setLoading(false);
 };
 
-export const login = async (setLoading: React.Dispatch<React.SetStateAction<boolean>>, uniqueStateValue: string, stateKey: string, authCodeKey: string, clientId: string, redirectUri: string, authUrl: string, salesforceCodeVerifierKey?: string, scope?: string) => {
+export const login = async (setLoading: React.Dispatch<React.SetStateAction<boolean>>, uniqueStateValue: string, stateKey: string, authCodeKey: string, clientId: string, redirectUri: string, authUrl: string, codeChallenge?: string, scope?: string) => {
     setLoading(true);
 
     const loginUrl = new URL(authUrl);
-
-    let pkceParams;
-    if (salesforceCodeVerifierKey) {
-        pkceParams = await fetchSalesforcePKCE();
-        sessionStorage.setItem(salesforceCodeVerifierKey, pkceParams.code_verifier);
-
-        loginUrl.searchParams.append('code_challenge', pkceParams.code_challenge);
-        loginUrl.searchParams.append('code_challenge_method', 'S256');
-    }
 
     sessionStorage.setItem(stateKey, uniqueStateValue);
 
@@ -65,6 +56,11 @@ export const login = async (setLoading: React.Dispatch<React.SetStateAction<bool
     loginUrl.searchParams.append('redirect_uri', redirectUri);
     loginUrl.searchParams.append('response_type', 'code');
     loginUrl.searchParams.append('state', uniqueStateValue);
+
+    if (codeChallenge) {
+        loginUrl.searchParams.append('code_challenge', codeChallenge);
+        loginUrl.searchParams.append('code_challenge_method', 'S256');
+    }
 
     if (scope) loginUrl.searchParams.append('scope', scope);
 
@@ -94,4 +90,3 @@ export const login = async (setLoading: React.Dispatch<React.SetStateAction<bool
 
     setTimeout(pollPopup, 500);
 };
-

@@ -6,7 +6,7 @@ const getProviderContacts = async (provider: ContactProviderType, code?: string,
 
     try {
         const params: Record<string, string> = {
-            provider: provider,
+            provider: provider.toString(),
         };
 
         if (code) params.code = code;
