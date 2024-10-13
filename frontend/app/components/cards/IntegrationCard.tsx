@@ -1,5 +1,5 @@
 import { Card, CardHeader, Divider, CardBody, CardFooter, Button, Tooltip, useDisclosure } from "@nextui-org/react";
-import { useContext, useState, useEffect, useCallback } from "react";
+import { useContext, useState, useEffect, useCallback, ReactElement } from "react";
 import UserContext from "~/contexts/UserContext";
 import getProviderContacts from "~/services/api/provider_contacts";
 import { ContactProviderType } from "~/types/contactProvider";
@@ -14,13 +14,15 @@ import { fetchSalesforcePKCE } from "~/services/utils/salesforce/pkce";
 import NoContactsModal from "../modals/NoContactsModal";
 
 interface IntegrationCardProps {
-  title: string;
-  url: string;
-  description: string;
-  signupBtn?: boolean;
-  logo: React.ReactNode;
-  resetHistory: () => void;
-}
+    resetHistory: () => void;
+    signupBtn?: ReactElement;
+    title: string;
+    url: string;
+    description: string;
+    hasLoginFeature?: boolean;
+    logo: ReactElement;
+    isGuest: boolean;
+  }
 
 export default function IntegrationCard(props: IntegrationCardProps) {
     const [loadingStates, setLoadingStates] = useState<Record<string, boolean>>({
@@ -32,7 +34,7 @@ export default function IntegrationCard(props: IntegrationCardProps) {
         Salesforce: false,
     });
 
-    const { title, url, description, signupBtn, logo, resetHistory } = props;
+    const { title, url, description, signupBtn, logo, resetHistory, isGuest } = props;
 
     const { user } = useContext(UserContext);
 
@@ -254,6 +256,8 @@ export default function IntegrationCard(props: IntegrationCardProps) {
         setSelectedContacts(contacts);
     }, []);
 
+    const showSignupButton = isGuest && title !== 'SendGrid' && title !== 'Brevo';
+
     return (
         <>
             <Card className="w-[400px] mb-12">
@@ -269,36 +273,28 @@ export default function IntegrationCard(props: IntegrationCardProps) {
                     <p>{description}</p>
                 </CardBody>
                 <Divider />
-                <CardFooter className="justify-end">
-                    <style>
-                        {
-                            `
-                            .notAllowed {
-                                cursor: not-allowed !important;
-                            }
-                        `
-                        }
-                    </style>
-                    {user ? (
-                        <Button
-                            isLoading={loadingStates[title]}
-                            onClick={() => {
-                                console.log("Button clicked");
-                                console.log("Current loading state:", loadingStates[title]);
-                                handleImportClick();
-                            }}
-                            color="primary"
-                            variant="shadow"
-                            className="ml-2"
-                        >
-                            {shouldConnectApiKey ? 'Add API key' : loadingStates[title] ? 'Importing...' : 'Import contacts'}
-                        </Button>
-                    ) : (
-                        <Tooltip showArrow={true} content={"You must be logged in to import contacts"}>
-                            <Button onClick={() => { }} className={`notAllowed${signupBtn ? ' ml-2' : ''}`} color="primary" variant="shadow">
+                <CardFooter className="justify-end gap-2">
+                    {showSignupButton && signupBtn}
+                    {isGuest ? (
+                        <Tooltip showArrow={true} content="You must be logged in to import contacts">
+                            <Button
+                                onClick={() => {}}
+                                className="notAllowed"
+                                color="primary"
+                                variant="shadow"
+                            >
                                 Import contacts
                             </Button>
                         </Tooltip>
+                    ) : (
+                        <Button
+                            isLoading={loadingStates[title]}
+                            onClick={handleImportClick}
+                            color="primary"
+                            variant="shadow"
+                        >
+                            {shouldConnectApiKey ? 'Add API key' : loadingStates[title] ? 'Importing...' : 'Import contacts'}
+                        </Button>
                     )}
                 </CardFooter>
             </Card>
