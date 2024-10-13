@@ -37,17 +37,19 @@ export default function ValidationHistoryTable(props: any) {
         </TableCell>
 
         <TableCell>
-            <Tooltip content={validation.singleTargetEmail || `${validation.bulkAddressCount} addresses`}>
-                <p>
-                    {validation.singleTargetEmail 
-                        ? (validation.singleTargetEmail.length > 13 
-                            ? `${validation.singleTargetEmail.substring(0, 10)}...` 
-                            : validation.singleTargetEmail) 
-                        : validation.bulkAddressCount 
-                            ? `${validation.bulkAddressCount} addresses` 
-                            : 'Processing...'}
-                </p>
-            </Tooltip>
+            {validation.singleTargetEmail ? (
+                validation.singleTargetEmail.length > 13 ? (
+                    <Tooltip content={validation.singleTargetEmail}>
+                        <p>{`${validation.singleTargetEmail.substring(0, 10)}...`}</p>
+                    </Tooltip>
+                ) : (
+                    <p>{validation.singleTargetEmail}</p>
+                )
+            ) : validation.bulkAddressCount ? (
+                <p>{`${validation.bulkAddressCount} addresses`}</p>
+            ) : (
+                <p>Processing...</p>
+            )}
         </TableCell>
 
         <TableCell>{validation.origin === ValidationOrigin.Platform ? 'Platform' : 'API'}</TableCell>
