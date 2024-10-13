@@ -1,11 +1,11 @@
 package middleware
 
 import (
-	"sendable/config"
-	"sendable/internal/pkg/file"
 	"fmt"
 	"log"
 	"net/http"
+	"sendable/config"
+	"sendable/internal/pkg/file"
 	"strings"
 
 	"github.com/google/uuid"
@@ -13,7 +13,7 @@ import (
 
 func ValidateReportToken(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		IDStr := strings.TrimSuffix(strings.TrimPrefix(r.URL.Path, fmt.Sprintf("%s/reports/", config.APIVersionPrefix)), ".csv.zip")
+		IDStr := strings.TrimSuffix(strings.TrimPrefix(r.URL.Path, fmt.Sprintf("%s/validation_reports/", config.APIVersionPrefix)), ".csv.zip")
 
 		ID, err := uuid.Parse(IDStr)
 		if err != nil {
