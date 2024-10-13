@@ -28,7 +28,7 @@ export default function ApiReference() {
         <>
             <style>
                 {`
-                    #docs-toggle button>div {
+                    #docs-toggle>div>h2>button>div {
                         flex: unset;
                         width: 235px;
                     }
