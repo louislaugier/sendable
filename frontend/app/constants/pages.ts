@@ -1,5 +1,5 @@
 export const pages = [
-    { url: '/dashboard', label: 'Dashboard', requiresAuth: true },
+    { url: '/dashboard?tab=validation', label: 'Dashboard', requiresAuth: true },
     { url: "/integrations", label: "Integrations" },
     { url: "/pricing", label: "Pricing" },
     { url: "/api", label: "API" },

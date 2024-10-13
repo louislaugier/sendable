@@ -12,14 +12,14 @@ import (
 	"github.com/google/uuid"
 )
 
-func ValidateManyWithReport(emails []string, userID uuid.UUID, reportRecipientEmail string, validationID, reportToken uuid.UUID, remainingEmailsCurrentMonth int) {
+func ValidateManyWithReport(emails []string, userID uuid.UUID, reportRecipientEmail string, validationID, reportToken uuid.UUID, remainingEmailsCurrentMonth, bulkAddressCount int) {
 	report, err := ValidateMany(emails)
 
 	if len(report) > remainingEmailsCurrentMonth {
 		report = report[:remainingEmailsCurrentMonth]
 	}
 
-	handleValidationReport(report, err, userID, reportRecipientEmail, validationID, reportToken)
+	handleValidationReport(report, err, userID, reportRecipientEmail, validationID, reportToken, bulkAddressCount)
 }
 
 func ValidateManyFromFileWithReport(fileData models.FileData, extension models.FileExtension, userID uuid.UUID, reportRecipientEmail string, validationID, reportToken uuid.UUID, remainingEmailsCurrentMonth int) {
@@ -29,10 +29,11 @@ func ValidateManyFromFileWithReport(fileData models.FileData, extension models.F
 		report = report[:remainingEmailsCurrentMonth]
 	}
 
-	handleValidationReport(report, err, userID, reportRecipientEmail, validationID, reportToken)
+	// Add bulkAddressCount parameter (use len(report) as an estimate)
+	handleValidationReport(report, err, userID, reportRecipientEmail, validationID, reportToken, len(report))
 }
 
-func handleValidationReport(report []models.ReacherResponse, err error, userID uuid.UUID, recipientEmail string, validationID, token uuid.UUID) {
+func handleValidationReport(report []models.ReacherResponse, err error, userID uuid.UUID, recipientEmail string, validationID, token uuid.UUID, bulkAddressCount int) {
 	if err != nil {
 		log.Printf("Error during validation: %v", err)
 		sendReportError(recipientEmail)
@@ -40,7 +41,7 @@ func handleValidationReport(report []models.ReacherResponse, err error, userID u
 		sendReport(report, recipientEmail, validationID, token)
 	}
 
-	if updateErr := updateValidationStatus(err, validationID, len(report)); updateErr != nil {
+	if updateErr := updateValidationStatus(err, validationID, bulkAddressCount); updateErr != nil {
 		log.Printf("Error updating validation status: %v", updateErr)
 	} else {
 		// Release the lock only after successfully updating the status

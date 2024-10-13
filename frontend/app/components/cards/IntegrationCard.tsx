@@ -42,6 +42,8 @@ export default function IntegrationCard(props: any) {
 
     const [salesforcePKCE, setSalesforcePKCE] = useState<{ codeVerifier: string, codeChallenge: string } | null>(null);
 
+    const [currentProvider, setCurrentProvider] = useState<string | null>(null);
+
     const getProviderType = (title: string): ContactProviderType => {
         switch (title) {
             case 'HubSpot':
@@ -69,6 +71,7 @@ export default function IntegrationCard(props: any) {
 
     const importContacts = useCallback(async (provider: string, code?: string, codeVerifier?: string) => {
         try {
+            setCurrentProvider(provider);
             const providerType = getProviderType(provider);
             const res = await getProviderContacts(providerType, code, codeVerifier);
             
@@ -80,7 +83,7 @@ export default function IntegrationCard(props: any) {
             }
         } catch (err) {
             console.error(err);
-            setIsLoading(false); // Reset loading state on error
+            setIsLoading(false);
         }
     }, [selectContactsModal, noContactsModal, setIsLoading]);
 
@@ -152,10 +155,6 @@ export default function IntegrationCard(props: any) {
         }
     };
 
-    const handleTryAgain = () => {
-        handleImportClick();
-    };
-
     const [selectedContacts, setSelectedContacts] = useState<string[]>([]);
 
     return (
@@ -205,24 +204,16 @@ export default function IntegrationCard(props: any) {
 
             {!!contacts.length && (
                 <SelectContactsModal
-                    resetHistory={resetHistory}
-                    contacts={contacts}
                     isOpen={selectContactsModal.isOpen}
-                    onOpen={selectContactsModal.onOpen}
                     onClose={() => {
                         selectContactsModal.onClose();
-                        setContacts([]);
-                        setSelectedContacts([]);
-                        setIsLoading(false);
+                        setCurrentProvider(null);
                     }}
-                    onOpenChange={() => {
-                        selectContactsModal.onOpenChange();
-                        setContacts([]);
-                        setSelectedContacts([]);
-                        setIsLoading(false);
-                    }}
-                    setLoading={setIsLoading}
-                    providerTitle={title}
+                    onOpenChange={selectContactsModal.onOpenChange}
+                    contacts={contacts}
+                    resetHistory={resetHistory}
+                    setLoading={setLoading}
+                    providerTitle={currentProvider || title}
                     selectedContacts={selectedContacts}
                     setSelectedContacts={setSelectedContacts}
                 />

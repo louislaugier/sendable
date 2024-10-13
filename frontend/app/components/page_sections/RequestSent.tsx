@@ -21,7 +21,7 @@ export default function RequestSent(props: any) {
                 >
                     Import successful
                 </Chip>
-                <p className="mb-12">Your validation report will be sent to <b>{user?.email}</b> once every email address has been checked. {user?.currentPlan.type !== SubscriptionType.Enterprise && <> A maximum of <b>{remainingAppValidations}</b> email address{remainingAppValidations > 1 && 'es'} will be validated (your remaining quota), the next ones will be dropped.</>}</p>
+                <p className="mb-12">Your validation report will be sent to <b>{user?.email}</b> once every email address has been checked. Your can track this batch's progress in your validation history. {user?.currentPlan.type !== SubscriptionType.Enterprise && <> A maximum of <b>{remainingAppValidations}</b> email address{remainingAppValidations > 1 && 'es'} will be validated (your remaining quota), the next ones will be dropped.</>}</p>
 
                 <div className="w-full flex justify-center">
                     <Button onClick={reset} color="primary" variant="shadow">

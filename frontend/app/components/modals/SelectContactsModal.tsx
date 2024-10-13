@@ -12,16 +12,13 @@ const SelectContactsModal = (props: any) => {
     const [errorMsg, setErrorMsg] = useState<string>();
     const [singleTargetResp, setSingleTargetResp] = useState<any>();
     const [isLoading, setIsLoading] = useState(false);
+    const [currentProvider, setCurrentProvider] = useState<string | null>(null);
 
     useEffect(() => {
-        if (contacts.length > 0 && selectedContacts.length === 0) {
-            setSelectedContacts(contacts.slice(0, 2));
+        if (isOpen && providerTitle) {
+            setCurrentProvider(providerTitle);
         }
-    }, [contacts, selectedContacts, setSelectedContacts]);
-
-    useEffect(() => {
-        console.log("State updated:", { isRequestSent, singleTargetResp, selectedContacts });
-    }, [isRequestSent, singleTargetResp, selectedContacts]);
+    }, [isOpen, providerTitle]);
 
     const reset = () => {
         setRequestSent(false);
@@ -33,12 +30,7 @@ const SelectContactsModal = (props: any) => {
         setSelectedContacts([]);
         setErrorMsg(undefined);
         setIsLoading(false);
-        
-        // Reset loading state for all providers
-        ['Brevo', 'SendGrid', 'HubSpot', 'Mailchimp', 'Zoho', 'Salesforce'].forEach(provider => {
-            setLoading(provider, false);
-        });
-        
+        setCurrentProvider(null);
         onClose();
     };
 
@@ -53,20 +45,21 @@ const SelectContactsModal = (props: any) => {
                 throw new Error("No emails selected");
             }
 
-            console.log("Validating emails:", emails);
+            const provider = currentProvider?.toLowerCase();
+            if (!provider) {
+                throw new Error("No provider selected");
+            }
 
             let res: any;
             if (emails.length === 1) {
-                res = await validateEmail({ email: emails[0] });
-                console.log("Single email validation response:", res);
+                res = await validateEmail({ email: emails[0] }, provider);
                 if (res.error) {
                     setErrorMsg(res.error);
                     return;
                 }
                 setSingleTargetResp([res]);
             } else {
-                await validateEmails({ emails });
-                console.log("Multiple emails validation initiated");
+                await validateEmails({ emails }, undefined, provider);
             }
 
             setRequestSent(true);

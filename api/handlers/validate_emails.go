@@ -85,6 +85,8 @@ func handleJSONRequest(w http.ResponseWriter, r *http.Request, userID uuid.UUID,
 		return // Error already handled in ValidateValidationRequest
 	}
 
+	bulkAddressCount := len(req.Emails)
+
 	go func() {
 		if err := file.SaveStringsToNewCSV(req.Emails, fmt.Sprintf("./files/json_bulk_validation_logs/%s.csv", validationID), utils.GetIPsFromRequest(r), time.Now()); err != nil {
 			log.Printf("Failed to save request data: %v", err)
@@ -92,7 +94,7 @@ func handleJSONRequest(w http.ResponseWriter, r *http.Request, userID uuid.UUID,
 		}
 	}()
 
-	go email.ValidateManyWithReport(req.Emails, userID, userEmail, validationID, reportToken, remainingEmailsCurrentMonth)
+	go email.ValidateManyWithReport(req.Emails, userID, userEmail, validationID, reportToken, remainingEmailsCurrentMonth, bulkAddressCount)
 
 	fmt.Fprint(w, http.StatusText(http.StatusNoContent))
 }

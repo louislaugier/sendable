@@ -1,14 +1,14 @@
 package handlers
 
 import (
+	"encoding/json"
+	"errors"
+	"net/http"
 	"sendable/handlers/middleware"
 	"sendable/internal/models"
 	"sendable/internal/pkg/email"
 	"sendable/internal/pkg/utils"
 	"sendable/internal/pkg/validation"
-	"encoding/json"
-	"errors"
-	"net/http"
 
 	"github.com/google/uuid"
 )
@@ -48,12 +48,21 @@ func ValidateEmailHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	// Extract provider from query parameters
+	provider := r.URL.Query().Get("provider")
+	var providerType *models.ContactProviderType
+	if provider != "" {
+		pt := models.ContactProviderType(provider)
+		providerType = &pt
+	}
+
 	v := &models.Validation{
 		ID:                       uuid.New(),
 		SingleTargetEmail:        req.Email,
 		Origin:                   middleware.GetValidationOriginType(middleware.GetOriginFromRequest(r)),
 		Status:                   models.StatusCompleted,
 		SingleTargetReachability: &resp.Reachability,
+		ProviderSource:           providerType, // Add provider to the validation record
 	}
 
 	IPaddresses, userAgent := utils.GetIPsFromRequest(r), r.UserAgent()

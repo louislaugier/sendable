@@ -124,7 +124,7 @@ export default function Nav() {
                                     <DropdownItem
                                         key="dashboard"
                                         description="Start a new validation batch"
-                                        href="/dashboard"
+                                        href="/dashboard?tab=validation"
                                     >
                                         Validate email addresses
                                     </DropdownItem>

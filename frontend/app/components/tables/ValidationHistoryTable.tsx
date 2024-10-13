@@ -56,7 +56,7 @@ export default function ValidationHistoryTable(props: any) {
             }
         </TableCell>
 
-        <TableCell className="flex justify-center items-center" style={{ height: '56px' }}>
+        <TableCell className="flex justify-center items-center">
             {validation.reportToken ? <DownloadReportButton validationId={validation.id} reportToken={validation.reportToken} tooltipContent="Download report" /> : validation.singleTargetReachability && validation.singleTargetEmail ?
                 <>
                     <ReachabilityChip reachability={validation.singleTargetReachability} email={validation.singleTargetEmail} />
