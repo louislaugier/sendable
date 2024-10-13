@@ -1,7 +1,7 @@
 import { Button, Link, Progress, Tab, Tabs, useDisclosure } from "@nextui-org/react";
 import type { MetaFunction } from "@remix-run/node";
 import { useSearchParams } from "@remix-run/react";
-import { useCallback, useContext, useEffect, useState } from "react";
+import { Key, useCallback, useContext, useEffect, useState } from "react";
 import CurrentPlanChip from "~/components/chips/CurrentPlanChip";
 import EmailAddressConfirmedModal from "~/components/modals/EmailAddressConfirmedModal";
 import EmailValidatorTab from "~/components/page_sections/dashboard/EmailValidatorTab";
@@ -38,6 +38,20 @@ export default function Dashboard() {
   }
 
   const [selectedTab, setSelectedTab] = useState<any>(searchParams.get("tab") ?? "validation");
+
+  useEffect(() => {
+    const currentTab = searchParams.get("tab") ?? "validation";
+    if (selectedTab !== currentTab) {
+      setSelectedTab(currentTab);
+    }
+  }, [searchParams]);
+
+  const handleTabChange = (key: Key) => {
+    setSelectedTab(key.toString());
+    const newSearchParams = new URLSearchParams();
+    newSearchParams.set("tab", key.toString());
+    setSearchParams(newSearchParams);
+  };
 
   const emailAddressConfirmedModal = useDisclosure()
 
@@ -113,7 +127,7 @@ export default function Dashboard() {
             color="primary"
             variant="bordered"
             selectedKey={selectedTab}
-            onSelectionChange={setSelectedTab}
+            onSelectionChange={handleTabChange}
           >
             <Tab
               key="validation"
