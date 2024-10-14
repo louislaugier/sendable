@@ -115,7 +115,7 @@ export default function TryItOut() {
                                         setModalType(AuthModalType.Signup);
                                         authModal.onOpen();
                                     }} className="mt-4 cursor-pointer">
-                                        <b>Learn more</b>
+                                        <u><p className="text-sm">Learn more</p></u>
                                     </Link>
                                 </div>
                             </CardFooter>
