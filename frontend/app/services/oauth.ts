@@ -96,27 +96,31 @@ export const login = (
         const url = `${authUrl}?${params.toString()}`;
         console.log(`OAuth URL: ${url}`);
 
-        const popupWindow = window.open(url, 'Login', 'width=800,height=600');
+        const popupWindow = window.open(url, 'OAuth Popup', 'width=600,height=600');
+        console.log("Popup window opened successfully");
 
         if (popupWindow) {
-            console.log("Popup window opened successfully");
-            const checkPopup = setInterval(() => {
+            const checkClosed = setInterval(() => {
                 if (popupWindow.closed) {
-                    console.log("Popup window closed");
-                    clearInterval(checkPopup);
+                    clearInterval(checkClosed);
+                    setLoading(false);
+                    console.log("Popup window was closed manually");
                     resolve(null);
                 }
             }, 500);
 
             const handleMessage = (event: MessageEvent) => {
+                if (event.origin !== window.location.origin) return;
+
                 console.log("Received message:", event.data);
                 console.log("Expected state:", state);
                 console.log("Message origin:", event.origin);
                 console.log("Window origin:", window.location.origin);
-                if (event.origin === window.location.origin && event.data.state === state) {
+
+                if (event.data.state === state) {
                     console.log(`Received valid message for ${authCodeKey}`);
                     window.removeEventListener('message', handleMessage);
-                    clearInterval(checkPopup);
+                    clearInterval(checkClosed);
                     popupWindow.close();
                     resolve(event.data);
                 } else {
@@ -127,6 +131,7 @@ export const login = (
             window.addEventListener('message', handleMessage);
         } else {
             console.error("Failed to open popup window");
+            setLoading(false);
             reject(new Error("Failed to open popup window"));
         }
     });

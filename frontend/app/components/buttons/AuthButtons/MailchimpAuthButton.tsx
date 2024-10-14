@@ -8,7 +8,6 @@ import { Button } from '@nextui-org/button';
 import MailchimpIcon from '~/components/icons/logos/MailchimpLogo';
 import UserContext from '~/contexts/UserContext';
 import { handleAuthCode, login } from '~/services/oauth';
-import { a } from 'vite/dist/node/types.d-aGj9QkWt';
 
 const url = 'https://login.mailchimp.com/oauth2/authorize'
 
@@ -17,17 +16,30 @@ export default function MailchimpAuthButton(props: any) {
   const [isLoading, setLoading] = useState(false);
 
   const { setUser, setTemp2faUserId } = useContext(UserContext)
+  
   useEffect(() => {
-    const handle = (event: MessageEvent<AuthCodeEvent>) => {
-      handleAuthCode(event, setUser, setTemp2faUserId, mailchimpAuth, setLoading, mailchimpAuthCodeKey, mailchimpStateKey);
+    const handleAuthCallback = async (event: MessageEvent<AuthCodeEvent>) => {
+      console.log("MailchimpAuthButton received message event:", event);
+      await handleAuthCode(event, setUser, setTemp2faUserId, mailchimpAuth, setLoading, mailchimpAuthCodeKey, mailchimpStateKey);
     };
 
-    window.addEventListener('message', handle);
-    return () => window.removeEventListener('message', handle);
-  }, []);
+    window.addEventListener('message', handleAuthCallback);
+    return () => {
+      window.removeEventListener('message', handleAuthCallback);
+    };
+  }, [setUser, setTemp2faUserId]);
 
   const mailchimpLogin = async () => {
-    await login(setLoading, mailchimpUniqueStateValue, mailchimpStateKey, mailchimpAuthCodeKey, mailchimpOauthClientId, mailchimpOauthRedirectUri, url);
+    setLoading(true);
+    try {
+      const success = await login(setLoading, mailchimpUniqueStateValue, mailchimpStateKey, mailchimpAuthCodeKey, mailchimpOauthClientId, mailchimpOauthRedirectUri, url);
+      if (!success) {
+        setLoading(false);
+      }
+    } catch (error) {
+      console.error("Mailchimp login error:", error);
+      setLoading(false);
+    }
   };
 
   return (

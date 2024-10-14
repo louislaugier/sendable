@@ -16,17 +16,30 @@ export default function LinkedinAuthButton() {
     const [isLoading, setLoading] = useState(false);
 
     const { setUser, setTemp2faUserId } = useContext(UserContext)
+    
     useEffect(() => {
-        const handle = (event: MessageEvent<AuthCodeEvent>) => {
-            handleAuthCode(event, setUser, setTemp2faUserId, linkedinAuth, setLoading, linkedinAuthCodeKey, linkedinStateKey);
+        const handleAuthCallback = async (event: MessageEvent<AuthCodeEvent>) => {
+            console.log("LinkedinAuthButton received message event:", event);
+            await handleAuthCode(event, setUser, setTemp2faUserId, linkedinAuth, setLoading, linkedinAuthCodeKey, linkedinStateKey);
         };
 
-        window.addEventListener('message', handle);
-        return () => window.removeEventListener('message', handle);
-    }, []);
+        window.addEventListener('message', handleAuthCallback);
+        return () => {
+            window.removeEventListener('message', handleAuthCallback);
+        };
+    }, [setUser, setTemp2faUserId]);
 
     const linkedinLogin = async () => {
-        await login(setLoading, linkedinUniqueStateValue, linkedinStateKey, linkedinAuthCodeKey, linkedinOauthClientId, linkedinOauthRedirectUri, url, undefined, scope);
+        setLoading(true);
+        try {
+            const success = await login(setLoading, linkedinUniqueStateValue, linkedinStateKey, linkedinAuthCodeKey, linkedinOauthClientId, linkedinOauthRedirectUri, url, undefined, scope);
+            if (!success) {
+                setLoading(false);
+            }
+        } catch (error) {
+            console.error("LinkedIn login error:", error);
+            setLoading(false);
+        }
     };
 
     return (

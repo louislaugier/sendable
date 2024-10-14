@@ -18,8 +18,6 @@ import (
 )
 
 func HubspotAuthHandler(w http.ResponseWriter, r *http.Request) {
-	time.Sleep(2 * time.Second) // Sleep for 2 seconds
-
 	if r.Method != http.MethodPost {
 		http.Error(w, "method not allowed", http.StatusMethodNotAllowed)
 		return

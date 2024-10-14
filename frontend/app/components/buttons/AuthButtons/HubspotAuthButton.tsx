@@ -1,4 +1,4 @@
-import { useContext, useEffect, useState, useCallback } from "react";
+import { useContext, useEffect, useState } from "react";
 import { AuthCodeEvent } from "~/types/oauth";
 import { hubspotOauthClientId } from "~/constants/oauth/clientIds";
 import { hubspotAuthCodeKey, hubspotStateKey, hubspotUniqueStateValue } from "~/constants/oauth/stateKeys";
@@ -34,7 +34,10 @@ export default function HubspotAuthButton(props: any) {
     const hubspotLogin = async () => {
         setLoading(true);
         try {
-            await login(setLoading, hubspotUniqueStateValue, hubspotStateKey, hubspotAuthCodeKey, hubspotOauthClientId, hubspotOauthRedirectUri, url, undefined, scope);
+            const success = await login(setLoading, hubspotUniqueStateValue, hubspotStateKey, hubspotAuthCodeKey, hubspotOauthClientId, hubspotOauthRedirectUri, url, undefined, scope);
+            if (!success) {
+                setLoading(false);
+            }
         } catch (error) {
             console.error("HubSpot login error:", error);
             setLoading(false);

@@ -1,4 +1,3 @@
-
 import { useContext, useEffect, useState } from 'react';
 import { AuthCodeEvent } from '~/types/oauth';
 import { salesforceOauthClientId } from '~/constants/oauth/clientIds';
@@ -18,15 +17,30 @@ export default function SalesforceAuthButton(props: any) {
   const [isLoading, setLoading] = useState(false);
 
   const { setUser, setTemp2faUserId } = useContext(UserContext)
+  
   useEffect(() => {
-    const handle = (event: MessageEvent<AuthCodeEvent>) => handleAuthCode(event, setUser, setTemp2faUserId, salesforceAuth, setLoading, salesforceAuthCodeKey, salesforceStateKey, salesforceCodeVerifierKey);
+    const handleAuthCallback = async (event: MessageEvent<AuthCodeEvent>) => {
+      console.log("SalesforceAuthButton received message event:", event);
+      await handleAuthCode(event, setUser, setTemp2faUserId, salesforceAuth, setLoading, salesforceAuthCodeKey, salesforceStateKey, salesforceCodeVerifierKey);
+    };
 
-    window.addEventListener('message', handle);
-    return () => window.removeEventListener('message', handle);
-  }, []);
+    window.addEventListener('message', handleAuthCallback);
+    return () => {
+      window.removeEventListener('message', handleAuthCallback);
+    };
+  }, [setUser, setTemp2faUserId]);
 
   const salesforceLogin = async () => {
-    await login(setLoading, salesforceUniqueStateValue, salesforceStateKey, salesforceAuthCodeKey, salesforceOauthClientId, salesforceOauthRedirectUri, url, salesforceCodeVerifierKey);
+    setLoading(true);
+    try {
+      const success = await login(setLoading, salesforceUniqueStateValue, salesforceStateKey, salesforceAuthCodeKey, salesforceOauthClientId, salesforceOauthRedirectUri, url, salesforceCodeVerifierKey);
+      if (!success) {
+        setLoading(false);
+      }
+    } catch (error) {
+      console.error("Salesforce login error:", error);
+      setLoading(false);
+    }
   };
 
   return (
