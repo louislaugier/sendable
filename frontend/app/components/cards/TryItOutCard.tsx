@@ -9,6 +9,7 @@ import { AuthModalType } from "~/types/modal";
 import { navigateToUrl } from "~/utils/url";
 import ReachabilityChip from "~/components/dropdowns/ReachabilityReference/ReachabilityChip";
 import validateEmail from "~/services/api/validate_email";
+import { siteName } from "~/constants/app";
 
 export default function TryItOut() {
     const { user } = useContext(UserContext);
@@ -81,7 +82,7 @@ export default function TryItOut() {
             >
                 <div className="bg-white p-8">
                     <div className="flex justify-between">
-                        <h2 className="text-2xl font-bold mb-4">Test email address reachability</h2>
+                        <h2 className="text-2xl font-bold mb-4">Test email address reachability*</h2>
                         {!!user && <Button onClick={() => navigateToUrl('/dashboard')} color="primary" variant="bordered" className="mb-4">
                             Go to dashboard
                         </Button>}
@@ -105,6 +106,7 @@ export default function TryItOut() {
                     <Button isLoading={isLoading} onClick={submitEmail} color="primary" variant="shadow" className="w-full">
                         {isLoading ? 'Checking reachability...' : 'Check reachability'}
                     </Button>
+                    <p className="text-xs mt-2">*Target will not be contacted.</p>
                     {reachability &&
                         <>
                             <Divider className="mt-8 mb-4" />

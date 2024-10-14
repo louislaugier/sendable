@@ -47,14 +47,14 @@ export default function Api() {
               newApiKeyModal.onOpen()
             }
           }} color="primary" variant="shadow" className="mt-4 mb-16">
-            {user ? 'Generate new API key' : 'Get an API key'}
+            {user ? 'Generate new API key' : 'Get your free API key'}
           </Button>
           {!!user && <Button onClick={() => navigateToUrl('/settings?tab=api')} color="primary" variant="bordered" className="my-4" >
             Manage API keys
           </Button>}
         </div>
 
-        <h3 className="text-lg mb-4">Monthly email address validation limits</h3>
+        <h3 className="text-lg mb-4">Monthly email address validation limits:</h3>
         <ApiLimitsTable />
       </div>
 

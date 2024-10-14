@@ -45,7 +45,7 @@ export default function ZohoAuthButton(props: any) {
   };
 
   return (
-    <Tooltip content={`Zoho SSO is temporarily disabled for authentication on ${siteName}. You may still import contacts from a Zoho CRM once logged in.`}>
+    <Tooltip content={`Zoho SSO is temporarily disabled for authentication on ${siteName}. You may still import contacts from your Zoho CRM once logged in with another provider or your email.`}>
       <div>
         <Button className='w-full' isDisabled style={{ justifyContent: 'flex-start' }} isLoading={isLoading} onClick={zohoLogin} variant="bordered" color="primary" startContent={!customText && <ZohoIcon />}>
           {isLoading ? 'Loading...' : customText ?? 'Log in with Zoho'}
