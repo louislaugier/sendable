@@ -3,12 +3,10 @@ import { User } from "~/types/user";
 import { navigateToUrl } from "~/utils/url";
 import { Dispatch, SetStateAction } from "react";
 
-export const handleAuthCode = (event: MessageEvent<AuthCodeEvent>, setUser: React.Dispatch<React.SetStateAction<User | null>>, setTemp2faUserId: Dispatch<SetStateAction<string | null>>, auth: (data: any) => Promise<any>, setLoading: React.Dispatch<React.SetStateAction<boolean>>, authCodeKey: string, stateKey: string, salesforceCodeVerifierKey?: string) => {
+export const handleAuthCode = async (event: MessageEvent<AuthCodeEvent>, setUser: React.Dispatch<React.SetStateAction<User | null>>, setTemp2faUserId: Dispatch<SetStateAction<string | null>>, auth: (data: any) => Promise<any>, setLoading: React.Dispatch<React.SetStateAction<boolean>>, authCodeKey: string, stateKey: string, salesforceCodeVerifierKey?: string) => {
     console.log("handleAuthCode called with event:", JSON.stringify(event.data));
     console.log("authCodeKey:", authCodeKey);
     console.log("stateKey:", stateKey);
-
-    setLoading(true);
 
     if (event.origin !== window.location.origin) {
         console.log("Origin mismatch. Exiting handleAuthCode");
@@ -16,7 +14,7 @@ export const handleAuthCode = (event: MessageEvent<AuthCodeEvent>, setUser: Reac
     }
 
     console.log("Event data type:", event.data.type);
-    if (event.data.type === stateKey) {  // Changed from authCodeKey to stateKey
+    if (event.data.type === stateKey) {
         const { code, state } = event.data;
         const storedState = sessionStorage.getItem(stateKey);
         console.log("Received code:", code);
@@ -25,41 +23,40 @@ export const handleAuthCode = (event: MessageEvent<AuthCodeEvent>, setUser: Reac
 
         if (code && state && storedState === state) {
             console.log("Code and state validated. Proceeding with auth.");
-            sessionStorage.removeItem(stateKey);
-            sessionStorage.removeItem('current_oauth_state_key');
-
             let codeVerifier = undefined
             if (salesforceCodeVerifierKey) {
                 codeVerifier = sessionStorage.getItem(salesforceCodeVerifierKey!) || undefined;
-                sessionStorage.removeItem(salesforceCodeVerifierKey);
             }
 
             console.log("Calling auth function with:", { code, codeVerifier });
-            auth({ code, codeVerifier })
-                .then((res: any) => {
-                    console.log("Auth function response:", res);
-                    if (res) {
-                        if (res.email) {
-                            setUser(res)
-                            navigateToUrl('/dashboard')
-                        } else if (res.is2faEnabled) {
-                            setTemp2faUserId(res.id)
-                        }
+            try {
+                setLoading(true);
+                const res = await auth({ code, codeVerifier });
+                console.log("Auth function response:", res);
+                if (res) {
+                    if (res.email) {
+                        setUser(res)
+                        navigateToUrl('/dashboard')
+                    } else if (res.is2faEnabled) {
+                        setTemp2faUserId(res.id)
                     }
-                })
-                .catch(error => {
-                    console.error('OAuth login error:', error);
-                })
-                .finally(() => {
-                    setLoading(false);
-                });
+                }
+            } catch (error) {
+                console.error('OAuth login error:', error);
+            } finally {
+                setLoading(false);
+                sessionStorage.removeItem(stateKey);
+                sessionStorage.removeItem('current_oauth_state_key');
+                if (salesforceCodeVerifierKey) {
+                    sessionStorage.removeItem(salesforceCodeVerifierKey);
+                }
+            }
         } else {
             console.log("Code or state validation failed");
             setLoading(false);
         }
     } else {
         console.log("Event type does not match stateKey. No action taken.");
-        setLoading(false);
     }
 };
 
@@ -107,7 +104,6 @@ export const login = (
                 if (popupWindow.closed) {
                     console.log("Popup window closed");
                     clearInterval(checkPopup);
-                    setLoading(false);
                     resolve(null);
                 }
             }, 500);
@@ -122,7 +118,6 @@ export const login = (
                     window.removeEventListener('message', handleMessage);
                     clearInterval(checkPopup);
                     popupWindow.close();
-                    setLoading(false);
                     resolve(event.data);
                 } else {
                     console.log("Message did not match expected criteria");
@@ -132,7 +127,6 @@ export const login = (
             window.addEventListener('message', handleMessage);
         } else {
             console.error("Failed to open popup window");
-            setLoading(false);
             reject(new Error("Failed to open popup window"));
         }
     });

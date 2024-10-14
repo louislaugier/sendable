@@ -1,4 +1,4 @@
-import { useContext, useEffect, useState } from "react";
+import { useContext, useEffect, useState, useCallback } from "react";
 import { AuthCodeEvent } from "~/types/oauth";
 import { hubspotOauthClientId } from "~/constants/oauth/clientIds";
 import { hubspotAuthCodeKey, hubspotStateKey, hubspotUniqueStateValue } from "~/constants/oauth/stateKeys";
@@ -18,22 +18,27 @@ export default function HubspotAuthButton(props: any) {
     const [isLoading, setLoading] = useState(false);
 
     const { setUser, setTemp2faUserId } = useContext(UserContext)
+
     useEffect(() => {
-        const handle = (event: MessageEvent<AuthCodeEvent>) => {
+        const handleAuthCallback = async (event: MessageEvent<AuthCodeEvent>) => {
             console.log("HubspotAuthButton received message event:", event);
-            handleAuthCode(event, setUser, setTemp2faUserId, hubspotAuth, setLoading, hubspotAuthCodeKey, hubspotStateKey);
+            await handleAuthCode(event, setUser, setTemp2faUserId, hubspotAuth, setLoading, hubspotAuthCodeKey, hubspotStateKey);
         };
 
-        console.log("Adding message event listener for HubspotAuthButton");
-        window.addEventListener('message', handle);
+        window.addEventListener('message', handleAuthCallback);
         return () => {
-            console.log("Removing message event listener for HubspotAuthButton");
-            window.removeEventListener('message', handle);
+            window.removeEventListener('message', handleAuthCallback);
         };
-    }, []);
+    }, [setUser, setTemp2faUserId]);
 
     const hubspotLogin = async () => {
-        await login(setLoading, hubspotUniqueStateValue, hubspotStateKey, hubspotAuthCodeKey, hubspotOauthClientId, hubspotOauthRedirectUri, url, undefined, scope);
+        setLoading(true);
+        try {
+            await login(setLoading, hubspotUniqueStateValue, hubspotStateKey, hubspotAuthCodeKey, hubspotOauthClientId, hubspotOauthRedirectUri, url, undefined, scope);
+        } catch (error) {
+            console.error("HubSpot login error:", error);
+            setLoading(false);
+        }
     };
 
     return (

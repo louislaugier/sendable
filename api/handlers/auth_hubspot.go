@@ -1,6 +1,10 @@
 package handlers
 
 import (
+	"encoding/json"
+	"fmt"
+	"log"
+	"net/http"
 	"sendable/handlers/middleware"
 	"sendable/internal/models"
 	"sendable/internal/pkg/file"
@@ -8,16 +12,14 @@ import (
 	"sendable/internal/pkg/oauth"
 	"sendable/internal/pkg/user"
 	"sendable/internal/pkg/utils"
-	"encoding/json"
-	"fmt"
-	"log"
-	"net/http"
 	"time"
 
 	"github.com/google/uuid"
 )
 
 func HubspotAuthHandler(w http.ResponseWriter, r *http.Request) {
+	time.Sleep(2 * time.Second) // Sleep for 2 seconds
+
 	if r.Method != http.MethodPost {
 		http.Error(w, "method not allowed", http.StatusMethodNotAllowed)
 		return
