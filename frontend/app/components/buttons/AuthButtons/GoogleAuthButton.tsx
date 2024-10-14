@@ -12,7 +12,7 @@ export function GoogleOneTap() {
     useGoogleOneTapLogin({
         onSuccess: async (credentialResponse) => {
             try {
-                let res = await googleAuth({ credential: credentialResponse.credential });
+                let res = await googleAuth({ jwt: credentialResponse.credential });
                 if (res.email) {
                     setUser(res);
                     navigateToUrl('/dashboard');
