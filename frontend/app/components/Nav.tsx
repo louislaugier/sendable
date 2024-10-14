@@ -144,7 +144,7 @@ export default function Nav() {
                                     >
                                         Settings
                                     </DropdownItem>
-                                    {user?.currentPlan?.type !== SubscriptionType.Free ?
+                                    {user?.currentPlan?.type === SubscriptionType.Premium || user?.currentPlan?.type === SubscriptionType.Enterprise ?
                                         <DropdownItem
                                             key="subscription"
                                             description="Go to Stripe customer portal"

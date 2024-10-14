@@ -41,13 +41,14 @@ export default function GoogleAuthButton() {
         try {
             let res = await googleAuth({ accessToken: tokenResponse.access_token });
 
-            if (res.email) {
-                setUser(res)
-                navigateToUrl('/dashboard')
+            if (res.email && res.currentPlan && res.jwt) {
+                setUser(res);
+                localStorage.setItem('user', JSON.stringify(res));
+                navigateToUrl('/dashboard');
             } else if (res.is2faEnabled) {
-                setTemp2faUserId(res.id)
+                setTemp2faUserId(res.id);
             } else {
-                throw new Error('Unexpected response from server');
+                throw new Error('Incomplete user data received');
             }
         } catch (error) {
             console.error('Google Auth Error:', error);

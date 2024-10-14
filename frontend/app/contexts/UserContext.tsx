@@ -16,7 +16,12 @@ export const UserProvider: React.FC<React.PropsWithChildren<{}>> = ({ children }
     const [user, setUser] = useState<User | null>(() => {
         if (typeof window !== 'undefined') {
             const userFromLocalStorage = localStorage.getItem('user');
-            return userFromLocalStorage ? JSON.parse(userFromLocalStorage) : null;
+            if (userFromLocalStorage) {
+                const parsedUser = JSON.parse(userFromLocalStorage);
+                if (parsedUser.currentPlan && parsedUser.jwt) {
+                    return parsedUser;
+                }
+            }
         }
         return null;
     });
@@ -25,7 +30,7 @@ export const UserProvider: React.FC<React.PropsWithChildren<{}>> = ({ children }
         (async function initializeUser() {
             if (typeof window !== 'undefined') {
                 const client = await getClient();
-                if (user) {
+                if (user && user.currentPlan && user.jwt) {
                     localStorage.setItem('user', JSON.stringify(user));
                     client.defaults.headers.common['Authorization'] = `Bearer ${user.jwt}`;
                 } else {

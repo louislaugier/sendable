@@ -3,10 +3,19 @@ import { getClient } from "..";
 const googleAuth = async (data: any) => {
     try {
         const response = await (await getClient()).post('auth_google', data);
-        return response.data;
+        let userData = response.data;
+        
+        if (!userData.currentPlan) {
+            userData.currentPlan = {
+                type: 'Free',
+                // Add other necessary properties for the free plan
+            };
+        }
+        
+        return userData;
     } catch (error) {
         console.error('Google Auth Error:', error);
-        throw error; // Re-throw the error so it can be caught in the component
+        throw error;
     }
 };
 
