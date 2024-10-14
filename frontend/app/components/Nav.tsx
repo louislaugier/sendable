@@ -115,7 +115,7 @@ export default function Nav() {
                                 <User
                                     as="button"
                                     className="transition-transform"
-                                    description={capitalize(user.currentPlan?.type || "")}
+                                    description={capitalize(user?.currentPlan?.type || "")}
                                     name={user.email}
                                 />
                             </DropdownTrigger>
@@ -144,7 +144,7 @@ export default function Nav() {
                                     >
                                         Settings
                                     </DropdownItem>
-                                    {user?.currentPlan.type !== SubscriptionType.Free ?
+                                    {user?.currentPlan?.type !== SubscriptionType.Free ?
                                         <DropdownItem
                                             key="subscription"
                                             description="Go to Stripe customer portal"

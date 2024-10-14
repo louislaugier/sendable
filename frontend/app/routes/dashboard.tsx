@@ -98,7 +98,7 @@ export default function Dashboard() {
   const remainingAppValidations = getRemainingAppValidations(user!)
   const remainingApiValidations = getRemainingApiValidations(user!)
 
-  const isPremiumOrEnterprise = user?.currentPlan.type === SubscriptionType.Premium || user?.currentPlan.type === SubscriptionType.Enterprise
+  const isPremiumOrEnterprise = user?.currentPlan?.type === SubscriptionType.Premium || user?.currentPlan?.type === SubscriptionType.Enterprise
 
   return (
     <>
@@ -108,7 +108,7 @@ export default function Dashboard() {
           {!!user && <>
             <h3 className="text-lg mt-4 mb-2">Current plan: <CurrentPlanChip />{(isPremiumOrEnterprise && user?.currentPlan?.billingFrequency) && <b>{` (billed ${user?.currentPlan?.billingFrequency})`}</b>}</h3>
 
-            {user.currentPlan.type !== SubscriptionType.Enterprise && <>
+            {user?.currentPlan?.type !== SubscriptionType.Enterprise && <>
               <p>Remaining validations (this month): <b>{remainingAppValidations.toLocaleString()} / {appValidationLimit.toLocaleString()}</b> email addresses</p>
               <Progress aria-label="Remaining validations (this month)" value={100 - (remainingAppValidations / appValidationLimit * 100)} className="max-w-md mb-2 mt-1" />
 

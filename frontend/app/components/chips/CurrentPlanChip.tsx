@@ -10,9 +10,9 @@ export default function CurrentPlanChip() {
     return (
         <>
             {
-                user?.currentPlan.type === SubscriptionType.Free ? <Chip color="warning">{capitalize(SubscriptionType.Free)}</Chip> :
-                    user?.currentPlan.type === SubscriptionType.Premium ? <Chip color="secondary">{capitalize(SubscriptionType.Premium)}</Chip> :
-                        user?.currentPlan.type === SubscriptionType.Enterprise ? <Chip color="success">{capitalize(SubscriptionType.Enterprise)}</Chip> :
+                user?.currentPlan?.type === SubscriptionType.Free ? <Chip color="warning">{capitalize(SubscriptionType.Free)}</Chip> :
+                    user?.currentPlan?.type === SubscriptionType.Premium ? <Chip color="secondary">{capitalize(SubscriptionType.Premium)}</Chip> :
+                        user?.currentPlan?.type === SubscriptionType.Enterprise ? <Chip color="success">{capitalize(SubscriptionType.Enterprise)}</Chip> :
                             <></>
             }
         </>

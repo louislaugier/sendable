@@ -19,7 +19,6 @@ export default function LinkedinAuthButton() {
     
     useEffect(() => {
         const handleAuthCallback = async (event: MessageEvent<AuthCodeEvent>) => {
-            console.log("LinkedinAuthButton received message event:", event);
             await handleAuthCode(event, setUser, setTemp2faUserId, linkedinAuth, setLoading, linkedinAuthCodeKey, linkedinStateKey);
         };
 

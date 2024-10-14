@@ -22,7 +22,6 @@ export default function ZohoAuthButton(props: any) {
   
   useEffect(() => {
     const handleAuthCallback = async (event: MessageEvent<AuthCodeEvent>) => {
-      console.log("ZohoAuthButton received message event:", event);
       await handleAuthCode(event, setUser, setTemp2faUserId, zohoAuth, setLoading, zohoAuthCodeKey, zohoStateKey);
     };
 

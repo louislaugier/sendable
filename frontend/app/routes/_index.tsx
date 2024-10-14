@@ -32,17 +32,13 @@ export default function Index() {
     const state = searchParams.get('state');
     const error = searchParams.get('error');
 
-    console.log("OAuth callback received. Code:", code, "State:", state, "Error:", error);
 
     if (code && state) {
-      console.log("Received OAuth callback. Code:", code, "State:", state);
       if (window.opener) {
         try {
-          console.log("Attempting to post message to opener");
           // Get the current OAuth provider from sessionStorage
           const currentOAuthStateKey = sessionStorage.getItem('current_oauth_state_key');
           window.opener.postMessage({ type: currentOAuthStateKey, code, state }, window.location.origin);
-          console.log("Message posted to opener with type:", currentOAuthStateKey);
           window.close();
         } catch (error) {
           console.error("Error posting message to opener:", error);
@@ -51,11 +47,9 @@ export default function Index() {
         console.error("No opener window found. Unable to send OAuth data.");
       }
     } else if (error) {
-      console.log("Received OAuth error:", error);
       if (window.opener) {
         try {
           window.opener.postMessage({ type: 'error', error }, window.location.origin);
-          console.log("Error message posted to opener");
           window.close();
         } catch (error) {
           console.error("Error posting error message to opener:", error);

@@ -77,30 +77,24 @@ export default function IntegrationCard(props: IntegrationCardProps) {
     };
 
     const setLoading = useCallback((provider: string, isLoading: boolean) => {
-        console.log(`Setting loading state for ${provider} to ${isLoading}`);
         setLoadingStates(prev => {
             const newState = { ...prev, [provider]: isLoading };
-            console.log("New loading states:", newState);
             return newState;
         });
     }, []);
 
     const importContacts = useCallback(async (provider: string, code?: string, codeVerifier?: string): Promise<boolean> => {
-        console.log(`Importing contacts for ${provider}`);
         try {
             setCurrentProvider(provider);
             const providerType = getProviderType(provider);
             const res = await getProviderContacts(providerType, code, codeVerifier);
             
-            console.log(`Received response for ${provider}:`, res);
 
             if (res?.length) {
                 setContacts(res);
-                console.log(`Opening select contacts modal for ${provider}`);
                 selectContactsModal.onOpen();
                 return true;
             } else {
-                console.log(`No contacts found for ${provider}, opening no contacts modal`);
                 noContactsModal.onOpen();
                 return false;
             }
@@ -109,7 +103,6 @@ export default function IntegrationCard(props: IntegrationCardProps) {
             // Handle the error (e.g., show an error message to the user)
             return false;
         } finally {
-            console.log(`Setting loading state to false for ${provider}`);
             setLoading(provider, false);
         }
     }, [selectContactsModal, noContactsModal, setLoading]);
@@ -120,7 +113,6 @@ export default function IntegrationCard(props: IntegrationCardProps) {
                 return;
             }
 
-            console.log("Received message event:", event.data);
 
             if (event.data.type === hubspotStateKey || event.data.type === mailchimpStateKey || event.data.type === zohoStateKey || event.data.type === salesforceStateKey) {
                 const { code, state } = event.data;
@@ -133,7 +125,6 @@ export default function IntegrationCard(props: IntegrationCardProps) {
                         event.data.type === mailchimpStateKey ? 'Mailchimp' :
                             event.data.type === zohoStateKey ? 'Zoho' :
                                 'Salesforce';
-                    console.log(`Received OAuth callback for ${provider}. Importing contacts...`);
                     importContacts(provider, code, event.data.type === salesforceStateKey ? salesforcePKCE?.codeVerifier : undefined);
                 } else {
                     console.error('OAuth state mismatch or missing code');
@@ -148,14 +139,12 @@ export default function IntegrationCard(props: IntegrationCardProps) {
     const { isOpen: isLoading, onOpen: startLoading, onClose: stopLoading } = useDisclosure();
 
     const handleImportClick = useCallback(async () => {
-        console.log("handleImportClick called");
         if (shouldConnectApiKey) {
             navigateToUrl('/settings?tab=integrations');
             return;
         }
 
         setLoading(title, true);
-        console.log(`Starting import for ${title}`);
 
         try {
             let result;
@@ -165,7 +154,6 @@ export default function IntegrationCard(props: IntegrationCardProps) {
                     await importContacts(title);
                     break;
                 case 'HubSpot':
-                    console.log("Initiating HubSpot OAuth flow");
                     result = await login(
                         (isLoading: boolean) => setLoading('HubSpot', isLoading),
                         hubspotUniqueStateValue,
@@ -178,11 +166,9 @@ export default function IntegrationCard(props: IntegrationCardProps) {
                         'crm.objects.contacts.read'
                     );
                     if (result && result.code) {
-                        console.log("Received HubSpot OAuth code. Importing contacts...");
                         setLoading('HubSpot', true); // Ensure loading is set before importing
                         await importContacts('HubSpot', result.code);
                     } else {
-                        console.log("HubSpot OAuth flow was cancelled or failed.");
                         setLoading('HubSpot', false);
                     }
                     break;
@@ -197,10 +183,8 @@ export default function IntegrationCard(props: IntegrationCardProps) {
                         'https://login.mailchimp.com/oauth2/authorize'
                     );
                     if (result && result.code) {
-                        console.log("Received Mailchimp OAuth code. Importing contacts...");
                         await importContacts('Mailchimp', result.code);
                     } else {
-                        console.log("Mailchimp OAuth flow was cancelled or failed.");
                     }
                     break;
                 case 'Zoho':
@@ -216,10 +200,8 @@ export default function IntegrationCard(props: IntegrationCardProps) {
                         'ZohoCRM.modules.contacts.READ,ZohoCRM.modules.leads.READ,ZohoCRM.modules.vendors.READ'
                     );
                     if (result && result.code) {
-                        console.log("Received Zoho OAuth code. Importing contacts...");
                         await importContacts('Zoho', result.code);
                     } else {
-                        console.log("Zoho OAuth flow was cancelled or failed.");
                     }
                     break;
                 case 'Salesforce':
@@ -236,10 +218,8 @@ export default function IntegrationCard(props: IntegrationCardProps) {
                         pkce.codeChallenge
                     );
                     if (result && result.code) {
-                        console.log("Received Salesforce OAuth code. Importing contacts...");
                         await importContacts('Salesforce', result.code);
                     } else {
-                        console.log("Salesforce OAuth flow was cancelled or failed.");
                     }
                     break;
             }
@@ -247,7 +227,6 @@ export default function IntegrationCard(props: IntegrationCardProps) {
             console.error("Error during import:", error);
             setLoading(title, false);
         } finally {
-            console.log(`Import process completed for ${title}`);
             stopLoading();
         }
     }, [title, shouldConnectApiKey, importContacts, setLoading, startLoading, stopLoading, salesforcePKCE]);

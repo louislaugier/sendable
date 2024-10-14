@@ -6,9 +6,33 @@ import googleAuth from "~/services/api/auth/google";
 import UserContext from "~/contexts/UserContext";
 import { navigateToUrl } from "~/utils/url";
 
+export function GoogleOneTap() {
+    const { setUser, setTemp2faUserId } = useContext(UserContext);
+
+    useGoogleOneTapLogin({
+        onSuccess: async (credentialResponse) => {
+            try {
+                let res = await googleAuth({ credential: credentialResponse.credential });
+                if (res.email) {
+                    setUser(res);
+                    navigateToUrl('/dashboard');
+                } else if (res.is2faEnabled) {
+                    setTemp2faUserId(res.id);
+                }
+            } catch (error) {
+                console.error("Google One Tap login error:", error);
+            }
+        },
+        onError: () => {
+            console.error("Google One Tap login failed");
+        },
+    });
+
+    return null; // This component doesn't render anything
+}
+
 export default function GoogleAuthButton() {
     const [isLoading, setLoading] = useState(false);
-
     const { setUser, setTemp2faUserId } = useContext(UserContext)
 
     const onSuccess = async (tokenResponse: any) => {
@@ -20,21 +44,34 @@ export default function GoogleAuthButton() {
             if (res.email) {
                 setUser(res)
                 navigateToUrl('/dashboard')
-            } else if (res.is2faEnabled) setTemp2faUserId(res.id)
-        } catch { }
-
-        setLoading(false)
+            } else if (res.is2faEnabled) {
+                setTemp2faUserId(res.id)
+            } else {
+                throw new Error('Unexpected response from server');
+            }
+        } catch (error) {
+            console.error('Google Auth Error:', error);
+            // Handle the error, maybe show an error message to the user
+        } finally {
+            setLoading(false);
+        }
     }
 
     const onError = () => {
-        setLoading(false)
+        console.error("Google login failed");
+        setLoading(false);
     }
 
-    const googleLogin: any = useGoogleLogin({
+    const googleLogin = useGoogleLogin({
         onSuccess,
         onError,
+        onNonOAuthError: onError,
     });
 
+    const handleGoogleLogin = () => {
+        setLoading(true);
+        googleLogin();
+    };
 
     return (
         <>
@@ -42,10 +79,7 @@ export default function GoogleAuthButton() {
             <Button
                 style={{ justifyContent: 'flex-start' }}
                 isLoading={isLoading}
-                onClick={() => {
-                    // setLoading(true);
-                    googleLogin();
-                }}
+                onClick={handleGoogleLogin}
                 variant="bordered"
                 color="primary"
                 startContent={<GoogleIcon />}
@@ -54,18 +88,4 @@ export default function GoogleAuthButton() {
             </Button>
         </>
     )
-}
-
-export function GoogleOneTap() {
-    useGoogleOneTapLogin({
-        onSuccess: async (JWTResponse) => {
-            try {
-                await googleAuth({ jwt: JWTResponse.credential });
-            } catch { }
-        },
-        onError: () => {
-        },
-    });
-
-    return <></>
 }

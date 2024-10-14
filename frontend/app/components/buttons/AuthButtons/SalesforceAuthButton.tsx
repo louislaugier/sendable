@@ -20,7 +20,6 @@ export default function SalesforceAuthButton(props: any) {
   
   useEffect(() => {
     const handleAuthCallback = async (event: MessageEvent<AuthCodeEvent>) => {
-      console.log("SalesforceAuthButton received message event:", event);
       await handleAuthCode(event, setUser, setTemp2faUserId, salesforceAuth, setLoading, salesforceAuthCodeKey, salesforceStateKey, salesforceCodeVerifierKey);
     };
 

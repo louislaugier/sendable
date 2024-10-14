@@ -44,8 +44,8 @@ type (
 		TwoFactorAuthSecret *string `json:"-"`
 		Is2FAEnabled        bool    `json:"is2faEnabled,omitempty"`
 
-		ValidationCounts *UserValidationCounts `json:"validationCounts,omitempty"`
-		CurrentPlan      *Subscription         `json:"currentPlan,omitempty"`
+		ValidationCounts UserValidationCounts `json:"validationCounts"`
+		CurrentPlan      Subscription         `json:"currentPlan"`
 
 		StripeCustomerID        *string `json:"-"`
 		StripeCustomerPortalURL *string `json:"stripeCustomerPortalUrl,omitempty"`

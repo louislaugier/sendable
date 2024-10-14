@@ -28,8 +28,6 @@ interface SingleTargetResponse {
 const SelectContactsModal = (props: SelectContactsModalProps) => {
     const { isOpen, onClose, onOpenChange, contacts = [], resetHistory, providerTitle, selectedContacts = [], setSelectedContacts } = props;
 
-    console.log("SelectContactsModal rendered with props:", { isOpen, contacts, providerTitle });
-
     const [isRequestSent, setRequestSent] = useState(false);
     const [errorMsg, setErrorMsg] = useState<string>();
     const [singleTargetResp, setSingleTargetResp] = useState<SingleTargetResponse[]>();
@@ -43,7 +41,6 @@ const SelectContactsModal = (props: SelectContactsModalProps) => {
     }, [setSelectedContacts]);
 
     useEffect(() => {
-        console.log("SelectContactsModal isOpen changed:", isOpen);
         if (isOpen && providerTitle) {
             setCurrentProvider(providerTitle);
         }
@@ -75,11 +72,9 @@ const SelectContactsModal = (props: SelectContactsModalProps) => {
                 throw new Error("No provider selected");
             }
 
-            console.log("Calling API with:", { selectedContacts, provider });
 
             if (selectedContacts.length === 1) {
                 const res = await validateEmail({ email: selectedContacts[0] }, provider);
-                console.log("Single email validation response:", res);
                 if (res.error) {
                     setErrorMsg(res.error);
                     return;
@@ -87,7 +82,6 @@ const SelectContactsModal = (props: SelectContactsModalProps) => {
                 setSingleTargetResp([res]);
             } else {
                 const res = await validateEmails({ emails: selectedContacts }, undefined, provider);
-                console.log("Multiple emails validation response:", res);
             }
 
             setRequestSent(true);

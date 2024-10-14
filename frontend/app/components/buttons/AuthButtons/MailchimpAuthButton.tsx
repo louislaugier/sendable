@@ -19,7 +19,6 @@ export default function MailchimpAuthButton(props: any) {
   
   useEffect(() => {
     const handleAuthCallback = async (event: MessageEvent<AuthCodeEvent>) => {
-      console.log("MailchimpAuthButton received message event:", event);
       await handleAuthCode(event, setUser, setTemp2faUserId, mailchimpAuth, setLoading, mailchimpAuthCodeKey, mailchimpStateKey);
     };
 

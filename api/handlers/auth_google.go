@@ -2,13 +2,13 @@ package handlers
 
 import (
 	"context"
+	"encoding/json"
+	"net/http"
 	"sendable/handlers/middleware"
 	"sendable/internal/models"
 	"sendable/internal/pkg/oauth"
 	"sendable/internal/pkg/user"
 	"sendable/internal/pkg/utils"
-	"encoding/json"
-	"net/http"
 
 	"github.com/google/uuid"
 )
@@ -110,5 +110,8 @@ func createConfirmedAccount(w http.ResponseWriter, r *http.Request, email string
 		return
 	}
 
-	json.NewEncoder(w).Encode(u)
+	if err := json.NewEncoder(w).Encode(u); err != nil {
+		handleError(w, err, "Error encoding user data", http.StatusInternalServerError)
+		return
+	}
 }

@@ -45,26 +45,26 @@ export default function PricingCard(props: any) {
 
                     <div className="mt-2">
                         {user ?
-                            isFree && user.currentPlan.type === SubscriptionType.Free ||
-                                isPremium && user.currentPlan.type === SubscriptionType.Premium ||
-                                isEnterprise && user.currentPlan.type === SubscriptionType.Enterprise
+                            isFree && user?.currentPlan?.type === SubscriptionType.Free ||
+                                isPremium && user?.currentPlan?.type === SubscriptionType.Premium ||
+                                isEnterprise && user?.currentPlan?.type === SubscriptionType.Enterprise
                                 ? <div className="flex flex-col">
                                     <Chip className="mt-4" color={isFree ? "warning" : isPremium ? "secondary" : "success"}>Current plan</Chip>
                                     <div>
-                                        <Button isDisabled={!!user.currentPlan.cancelledAt} as={Link} href={user?.stripeCustomerPortalUrl!} target="_blank" className="mt-2 mb-6 w-auto" onClick={() => {
+                                        <Button isDisabled={!!user?.currentPlan.cancelledAt} as={Link} href={user?.stripeCustomerPortalUrl!} target="_blank" className="mt-2 mb-6 w-auto" onClick={() => {
                                         }} color="primary" variant="shadow">
-                                            {!!user.currentPlan.cancelledAt ? 'Cancelation scheduled' : 'Manage'}
+                                            {!!user?.currentPlan.cancelledAt ? 'Cancelation scheduled' : 'Manage'}
                                         </Button>
                                     </div>
                                 </div>
                                 :
-                                plan.name !== SubscriptionType.Free && user.currentPlan.type !== SubscriptionType.Enterprise && !(user.currentPlan.type === SubscriptionType.Premium && isPremium) ?
+                                plan.name !== SubscriptionType.Free && user?.currentPlan?.type !== SubscriptionType.Enterprise && !(user?.currentPlan?.type === SubscriptionType.Premium && isPremium) ?
                                     <>
                                         <UpgradeOrDowngradeButton priceId={isYearly ? plan?.stripeYearlyPriceId : plan?.stripeMonthlyPriceId} />
                                     </>
                                     :
                                     plan.name !== SubscriptionType.Free ?
-                                        <UpgradeOrDowngradeButton isDisabled={!!user.currentPlan.startingAt} priceId={isYearly ? plan?.stripeYearlyPriceId : plan?.stripeMonthlyPriceId} value={!!user.currentPlan.startingAt ? 'Starting next billing period' : 'Downgrade'} />
+                                        <UpgradeOrDowngradeButton isDisabled={!!user?.currentPlan.startingAt} priceId={isYearly ? plan?.stripeYearlyPriceId : plan?.stripeMonthlyPriceId} value={!!user?.currentPlan.startingAt ? 'Starting next billing period' : 'Downgrade'} />
                                         :
                                         <div style={{ margin: '125px 0' }} />
                             :

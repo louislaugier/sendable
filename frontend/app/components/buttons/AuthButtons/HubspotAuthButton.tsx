@@ -21,7 +21,6 @@ export default function HubspotAuthButton(props: any) {
 
     useEffect(() => {
         const handleAuthCallback = async (event: MessageEvent<AuthCodeEvent>) => {
-            console.log("HubspotAuthButton received message event:", event);
             await handleAuthCode(event, setUser, setTemp2faUserId, hubspotAuth, setLoading, hubspotAuthCodeKey, hubspotStateKey);
         };
 

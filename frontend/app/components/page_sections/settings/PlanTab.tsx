@@ -18,13 +18,13 @@ export default function PlanTab() {
     const remainingAppValidations = getRemainingAppValidations(user!);
     const remainingApiValidations = getRemainingApiValidations(user!);
 
-    const isPremium = user?.currentPlan.type === SubscriptionType.Premium;
-    const isEnterprise = user?.currentPlan.type === SubscriptionType.Enterprise;
+    const isPremium = user?.currentPlan?.type === SubscriptionType.Premium;
+    const isEnterprise = user?.currentPlan?.type === SubscriptionType.Enterprise;
     const isPremiumOrEnterprise = isPremium || isEnterprise;
 
     // Determine the price based on the current plan and billing frequency
     let currentPlanPrice = '';
-    const currentPlan = pricingPlans.find(plan => plan.name === user?.currentPlan.type);
+    const currentPlan = pricingPlans.find(plan => plan.name === user?.currentPlan?.type);
 
     if (user?.currentPlan.billingFrequency === SubscriptionBillingFrequency.Monthly) {
         currentPlanPrice = `$${currentPlan?.monthlyPrice.toLocaleString()} /mo`;
@@ -71,7 +71,7 @@ export default function PlanTab() {
                         <p>Current plan: <CurrentPlanChip />{(isPremiumOrEnterprise && user?.currentPlan?.billingFrequency) && <b>{` (billed ${user?.currentPlan?.billingFrequency})`}</b>}</p>
                         <b className="mt-4">{currentPlanPrice}</b>
 
-                        {user?.currentPlan.type !== SubscriptionType.Enterprise && <>
+                        {user?.currentPlan?.type !== SubscriptionType.Enterprise && <>
                             <p className="mt-4">Remaining validations (this month): <b>{remainingAppValidations.toLocaleString()} / {appValidationLimit.toLocaleString()}</b> email addresses</p>
                             <p>Remaining API validations (this month): <b>{remainingApiValidations.toLocaleString()} / {apiValidationLimit.toLocaleString()}</b> email addresses</p>
                             <Button className="mt-4" as={Link} href={`/pricing`} onClick={goToPricing} color='primary' variant="shadow">
