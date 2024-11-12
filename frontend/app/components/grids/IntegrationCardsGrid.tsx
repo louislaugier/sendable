@@ -74,7 +74,7 @@ export default function IntegrationCardsGrid({ resetHistory }: { resetHistory: (
                 title="SendGrid"
                 url="sendgrid.com"
                 description="Import contacts from SendGrid."
-                logo={<SendgridFullLogo w={80} />}
+                logo={<SendgridFullLogo w={120} />}
                 isGuest={isGuest}
             />
             <IntegrationCard
@@ -85,6 +85,7 @@ export default function IntegrationCardsGrid({ resetHistory }: { resetHistory: (
                 logo={<BrevoFullLogo w="80px" />}
                 isGuest={isGuest}
             />
+            
         </>
     )
 }

@@ -17,9 +17,9 @@ type (
 		ID     uuid.UUID `json:"id"`
 		UserID uuid.UUID `json:"userId"`
 
-		Type              ContactProviderType `json:"type"`
-		APIKey            *string             `json:"apiKey,omitempty"`
-		LatestAPIKeyChars *string             `json:"latestApiKeyChars,omitempty"`
+		Type            ContactProviderType `json:"type"`
+		APIKey          *string             `json:"apiKey,omitempty"`
+		LastAPIKeyChars *string             `json:"lastApiKeyChars,omitempty"`
 
 		CreatedAt time.Time  `json:"createdAt"`
 		UpdatedAt *time.Time `json:"updatedAt,omitempty"`

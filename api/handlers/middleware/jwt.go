@@ -149,7 +149,7 @@ func ValidateJWT(next http.Handler, requiresConfirmedEmail bool) http.Handler {
 
 				u.ContactProviders[i].APIKey = nil
 
-				u.ContactProviders[i].LatestAPIKeyChars = &lastChars
+				u.ContactProviders[i].LastAPIKeyChars = &lastChars
 			}
 
 			ctx = context.WithValue(ctx, userKey, u)

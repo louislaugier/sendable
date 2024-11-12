@@ -100,7 +100,7 @@ func createConfirmedUserFromHubspotAuth(userInfo *models.HubspotUser, r *http.Re
 		LastIPAddresses:  utils.GetIPsFromRequest(r),
 		LastUserAgent:    r.UserAgent(),
 		AuthProvider:     &hubspotProvider,
-		CurrentPlan:      models.EmptyFreePlan(),
+		CurrentPlan:      *models.EmptyFreePlan(),
 	}
 
 	if err := user.InsertNew(u, nil); err != nil {

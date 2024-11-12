@@ -22,7 +22,7 @@ servers:
 
 paths:
   /generate_jwt:
-    post:
+    get:
       summary: Generate a JWT bearer token from your API key
       tags:
         - default

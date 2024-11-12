@@ -50,7 +50,7 @@ export default function IntegrationsTab() {
                                         disabled
                                         isDisabled
                                         label="Brevo API key"
-                                        value={`xkeysib-*****...${existingBrevoProvider.latestApiKeyChars}`}
+                                        value={`xkeysib-*****...${existingBrevoProvider.lastApiKeyChars}`}
                                         variant="bordered"
                                         className="max-w-xs"
                                     />
@@ -118,7 +118,7 @@ export default function IntegrationsTab() {
                                         disabled
                                         isDisabled
                                         label="SendGrid API key"
-                                        value={`SG.*****...${existingSendgridProvider.latestApiKeyChars}`}
+                                        value={`SG.*****...${existingSendgridProvider.lastApiKeyChars}`}
                                         variant="bordered"
                                         className="max-w-xs"
                                     />

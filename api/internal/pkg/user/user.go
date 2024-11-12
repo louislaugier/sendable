@@ -2,13 +2,13 @@ package user
 
 import (
 	"database/sql"
+	"encoding/json"
+	"fmt"
+	"log"
 	"sendable/config"
 	"sendable/internal/models"
 	"sendable/internal/pkg/subscription"
 	"sendable/internal/pkg/validation"
-	"encoding/json"
-	"fmt"
-	"log"
 	"time"
 
 	"github.com/google/uuid"
@@ -258,16 +258,16 @@ func getByCriteria(isMinimalResponse bool, query string, args ...interface{}) (*
 			if err != nil {
 				log.Printf("Error getting user's current plan: %v", err)
 			} else if currentPlan != nil {
-				u.CurrentPlan = currentPlan
+				u.CurrentPlan = *currentPlan
 			} else {
-				u.CurrentPlan = models.EmptyFreePlan()
+				u.CurrentPlan = *models.EmptyFreePlan()
 			}
 
 			validationCounts, err := validation.GetCurrentMonthLimitCounts(u.ID)
 			if err != nil {
 				log.Printf("Error getting user's email validations counts for this month: %v", err)
 			} else if validationCounts != nil {
-				u.ValidationCounts = validationCounts
+				u.ValidationCounts = *validationCounts
 			}
 		}
 

@@ -9,5 +9,5 @@ export enum ContactProviderType {
 
 export interface ContactProvider {
     type: ContactProviderType
-    latestApiKeyChars: string
+    lastApiKeyChars: string
 }
