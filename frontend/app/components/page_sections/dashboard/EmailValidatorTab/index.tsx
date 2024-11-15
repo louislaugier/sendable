@@ -65,9 +65,7 @@ export default function EmailValidatorTab(props: any) {
                                 Connect platform
                             </Button> */}
 
-                            <div className="flex flex-wrap justify-between">
-                                <IntegrationCardsGrid resetHistory={resetHistory} />
-                            </div>
+                            <IntegrationCardsGrid resetHistory={resetHistory} />
                         </div>
                     </Tab>
 

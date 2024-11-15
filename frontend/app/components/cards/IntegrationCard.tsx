@@ -12,8 +12,10 @@ import { hubspotStateKey, mailchimpStateKey, zohoStateKey, salesforceStateKey, h
 import { AuthCodeEvent } from "~/types/oauth";
 import { fetchSalesforcePKCE } from "~/services/utils/salesforce/pkce";
 import NoContactsModal from "../modals/NoContactsModal";
+import AuthModalContext from "~/contexts/AuthModalContext";
 
 interface IntegrationCardProps {
+    comingSoon?: boolean;
     resetHistory: () => void;
     signupBtn?: ReactElement;
     title: string;
@@ -22,7 +24,7 @@ interface IntegrationCardProps {
     hasLoginFeature?: boolean;
     logo: ReactElement;
     isGuest: boolean;
-  }
+}
 
 export default function IntegrationCard(props: IntegrationCardProps) {
     const [loadingStates, setLoadingStates] = useState<Record<string, boolean>>({
@@ -88,7 +90,7 @@ export default function IntegrationCard(props: IntegrationCardProps) {
             setCurrentProvider(provider);
             const providerType = getProviderType(provider);
             const res = await getProviderContacts(providerType, code, codeVerifier);
-            
+
 
             if (res?.length) {
                 setContacts(res);
@@ -237,9 +239,11 @@ export default function IntegrationCard(props: IntegrationCardProps) {
 
     const showSignupButton = isGuest && title !== 'SendGrid' && title !== 'Brevo';
 
+    const { authModal } = useContext(AuthModalContext);
+
     return (
         <>
-            <Card className="w-[400px] mb-12">
+            <Card style={{ opacity: props.comingSoon ? 0.5 : 1, pointerEvents: props.comingSoon ? "none" : undefined }} className="w-[400px] mb-12">
                 <CardHeader className="flex gap-3">
                     {logo}
                     <div className="flex flex-col">
@@ -257,7 +261,11 @@ export default function IntegrationCard(props: IntegrationCardProps) {
                     {isGuest ? (
                         <Tooltip showArrow={true} content="You must be logged in to import contacts">
                             <Button
-                                onClick={() => {}}
+                                // style={{ cursor: 'not-allowed' }}
+                                onClick={() => {
+                                    // open auth modal
+                                    authModal.onOpen();
+                                }}
                                 className="notAllowed"
                                 color="primary"
                                 variant="shadow"

@@ -17,9 +17,7 @@ export default function Integrations() {
         <h1 className="text-2xl">Integrations</h1>
       </div>
 
-      <div className="flex flex-wrap justify-between">
-        <IntegrationCardsGrid />
-      </div>
+      <IntegrationCardsGrid resetHistory={() => { }} />
     </div>
   );
 }
