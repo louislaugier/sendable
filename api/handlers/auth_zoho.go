@@ -1,6 +1,11 @@
 package handlers
 
 import (
+	"encoding/json"
+	"errors"
+	"fmt"
+	"log"
+	"net/http"
 	"sendable/handlers/middleware"
 	"sendable/internal/models"
 	"sendable/internal/pkg/file"
@@ -8,14 +13,12 @@ import (
 	"sendable/internal/pkg/user"
 	"sendable/internal/pkg/utils"
 	"sendable/internal/pkg/zoho"
-	"encoding/json"
-	"fmt"
-	"log"
-	"net/http"
 	"strings"
 	"time"
 
 	"github.com/google/uuid"
+	"golang.org/x/text/cases"
+	"golang.org/x/text/language"
 )
 
 func ZohoAuthHandler(w http.ResponseWriter, r *http.Request) {
@@ -60,8 +63,23 @@ func ZohoAuthHandler(w http.ResponseWriter, r *http.Request) {
 func handleZohoUser(emails string, r *http.Request, accessToken string) (*models.User, error) {
 	u, err := user.GetByTempZohoOauthData(emails, utils.GetIPsFromRequest(r), r.UserAgent())
 	if err != nil {
+		if err.Error() == models.ErrEmailAlreadyTaken {
+			existingUser, err := user.GetByEmail(emails)
+			if err != nil {
+				return nil, err
+			}
+			if existingUser == nil {
+				return nil, errors.New("internal server error")
+			}
+			message := "user already exists with email and password auth"
+			if existingUser.AuthProvider != nil {
+				message = fmt.Sprintf("user already exists with provider %s", cases.Title(language.Und).String(string(*existingUser.AuthProvider)))
+			}
+			return nil, errors.New(message)
+		}
 		return nil, err
 	}
+
 	if u == nil {
 		emailConfirmationCode, err := utils.GenerateRandomSixDigitCode()
 		if err != nil {

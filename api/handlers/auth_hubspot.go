@@ -2,6 +2,7 @@ package handlers
 
 import (
 	"encoding/json"
+	"errors"
 	"fmt"
 	"log"
 	"net/http"
@@ -15,6 +16,8 @@ import (
 	"time"
 
 	"github.com/google/uuid"
+	"golang.org/x/text/cases"
+	"golang.org/x/text/language"
 )
 
 func HubspotAuthHandler(w http.ResponseWriter, r *http.Request) {
@@ -35,26 +38,43 @@ func HubspotAuthHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	user, err := processHubspotUser(userInfo, accessToken, r)
+	loggedUser, err := processHubspotUser(userInfo, accessToken, r)
 	if err != nil {
+		if err.Error() == models.ErrEmailAlreadyTaken {
+			existingUser, err := user.GetByEmail(userInfo.Email)
+			if err != nil {
+				handleError(w, err, "Error processing user", http.StatusInternalServerError)
+				return
+			}
+			if existingUser == nil {
+				handleError(w, errors.New("internal server error"), "Internal Server Error", http.StatusInternalServerError)
+				return
+			}
+			message := "user already exists with email and password auth"
+			if existingUser.AuthProvider != nil {
+				message = fmt.Sprintf("user already exists with provider %s", cases.Title(language.Und).String(string(*existingUser.AuthProvider)))
+			}
+			handleError(w, errors.New(message), message, http.StatusBadRequest)
+			return
+		}
 		handleError(w, err, "Error processing user", http.StatusInternalServerError)
 		return
 	}
 
-	if user.Is2FAEnabled {
+	if loggedUser.Is2FAEnabled {
 		json.NewEncoder(w).Encode(models.PreAuthUser{
-			ID: user.ID,
+			ID: loggedUser.ID,
 		})
 
 		return
 	}
 
-	if err := middleware.GenerateAndBindJWT(user); err != nil {
+	if err := middleware.GenerateAndBindJWT(loggedUser); err != nil {
 		handleError(w, err, "Error generating & binding JWT", http.StatusInternalServerError)
 		return
 	}
 
-	json.NewEncoder(w).Encode(user)
+	json.NewEncoder(w).Encode(loggedUser)
 }
 
 func decodeHubspotAuthRequestBody(r *http.Request) (models.AuthHubspotRequest, error) {
@@ -72,6 +92,20 @@ func decodeHubspotAuthRequestBody(r *http.Request) (models.AuthHubspotRequest, e
 func processHubspotUser(userInfo *models.HubspotUser, accessToken string, r *http.Request) (*models.User, error) {
 	u, err := user.GetByEmailAndProvider(userInfo.Email, models.HubspotProvider)
 	if err != nil {
+		if err.Error() == models.ErrEmailAlreadyTaken {
+			existingUser, err := user.GetByEmail(userInfo.Email)
+			if err != nil {
+				return nil, err
+			}
+			if existingUser == nil {
+				return nil, errors.New("internal server error")
+			}
+			message := "user already exists with email and password auth"
+			if existingUser.AuthProvider != nil {
+				message = fmt.Sprintf("user already exists with provider %s", cases.Title(language.Und).String(string(*existingUser.AuthProvider)))
+			}
+			return nil, errors.New(message)
+		}
 		return nil, err
 	}
 
@@ -105,7 +139,7 @@ func createConfirmedUserFromHubspotAuth(userInfo *models.HubspotUser, r *http.Re
 
 	if err := user.InsertNew(u, nil); err != nil {
 		log.Printf("Error inserting new user with email %s: %v", userInfo.Email, err)
-		return nil, fmt.Errorf("internal Server Error")
+		return nil, err
 	}
 
 	return u, nil

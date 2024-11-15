@@ -1,13 +1,18 @@
 package handlers
 
 import (
+	"encoding/json"
+	"errors"
+	"fmt"
+	"log"
+	"net/http"
 	"sendable/handlers/middleware"
 	"sendable/internal/models"
 	"sendable/internal/pkg/oauth"
 	"sendable/internal/pkg/user"
-	"encoding/json"
-	"log"
-	"net/http"
+
+	"golang.org/x/text/cases"
+	"golang.org/x/text/language"
 )
 
 func LinkedinAuthHandler(w http.ResponseWriter, r *http.Request) {
@@ -48,6 +53,23 @@ func processLinkedinAuthenticatedUser(w http.ResponseWriter, r *http.Request, em
 
 	u, err := user.GetByEmailAndProvider(email, lp)
 	if err != nil {
+		if err.Error() == models.ErrEmailAlreadyTaken {
+			existingUser, err := user.GetByEmail(email)
+			if err != nil {
+				handleError(w, err, "Error processing user", http.StatusInternalServerError)
+				return
+			}
+			if existingUser == nil {
+				handleError(w, errors.New("user not found"), "Internal Server Error", http.StatusInternalServerError)
+				return
+			}
+			message := "user already exists with email and password auth"
+			if existingUser.AuthProvider != nil {
+				message = fmt.Sprintf("user already exists with provider %s", cases.Title(language.Und).String(string(*existingUser.AuthProvider)))
+			}
+			handleError(w, errors.New(message), message, http.StatusBadRequest)
+			return
+		}
 		handleError(w, err, "Error processing user", http.StatusInternalServerError)
 		return
 	}

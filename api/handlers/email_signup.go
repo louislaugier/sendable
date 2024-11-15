@@ -2,6 +2,7 @@ package handlers
 
 import (
 	"encoding/json"
+	"errors"
 	"fmt"
 	"log"
 	"net/http"
@@ -12,6 +13,8 @@ import (
 	"strconv"
 
 	"github.com/google/uuid"
+	"golang.org/x/text/cases"
+	"golang.org/x/text/language"
 )
 
 func SignupHandler(w http.ResponseWriter, r *http.Request) {
@@ -52,6 +55,17 @@ func SignupHandler(w http.ResponseWriter, r *http.Request) {
 	}
 	if err := user.InsertNew(u, &pwd); err != nil {
 		if err.Error() == models.ErrEmailAlreadyTaken {
+			existingUser, err := user.GetByEmail(body.Email)
+			if err != nil {
+				http.Error(w, "Internal Server Error", http.StatusInternalServerError)
+				return
+			}
+
+			if existingUser.AuthProvider != nil {
+				handleError(w, errors.New("user already exists"), fmt.Sprintf("user already exists with provider %s", cases.Title(language.Und).String(string(*existingUser.AuthProvider))), http.StatusConflict)
+				return
+			}
+
 			http.Error(w, "Email address already in use.", http.StatusConflict)
 			return
 		}

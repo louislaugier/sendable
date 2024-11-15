@@ -1,6 +1,11 @@
 package handlers
 
 import (
+	"encoding/json"
+	"errors"
+	"fmt"
+	"log"
+	"net/http"
 	"sendable/handlers/middleware"
 	"sendable/internal/models"
 	"sendable/internal/pkg/file"
@@ -8,13 +13,11 @@ import (
 	"sendable/internal/pkg/salesforce"
 	"sendable/internal/pkg/user"
 	"sendable/internal/pkg/utils"
-	"encoding/json"
-	"fmt"
-	"log"
-	"net/http"
 	"time"
 
 	"github.com/google/uuid"
+	"golang.org/x/text/cases"
+	"golang.org/x/text/language"
 )
 
 // SalesforceAuthHandler handles authentication with Salesforce.
@@ -75,6 +78,20 @@ func decodeSalesforceAuthRequestBody(r *http.Request) (*models.AuthSalesforceReq
 func processSalesforceUser(userInfo *models.SalesforceUser, accessToken string, r *http.Request) (*models.User, error) {
 	u, err := user.GetByEmailAndProvider(userInfo.Email, models.SalesforceProvider)
 	if err != nil {
+		if err.Error() == models.ErrEmailAlreadyTaken {
+			existingUser, err := user.GetByEmail(userInfo.Email)
+			if err != nil {
+				return nil, err
+			}
+			if existingUser == nil {
+				return nil, errors.New("internal server error")
+			}
+			message := "user already exists with email and password auth"
+			if existingUser.AuthProvider != nil {
+				message = fmt.Sprintf("user already exists with provider %s", cases.Title(language.Und).String(string(*existingUser.AuthProvider)))
+			}
+			return nil, errors.New(message)
+		}
 		return nil, err
 	}
 

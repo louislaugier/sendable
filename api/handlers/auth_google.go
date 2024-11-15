@@ -3,6 +3,8 @@ package handlers
 import (
 	"context"
 	"encoding/json"
+	"errors"
+	"fmt"
 	"net/http"
 	"sendable/handlers/middleware"
 	"sendable/internal/models"
@@ -11,6 +13,8 @@ import (
 	"sendable/internal/pkg/utils"
 
 	"github.com/google/uuid"
+	"golang.org/x/text/cases"
+	"golang.org/x/text/language"
 )
 
 // can be used with a JWT or an access token (one-tap or standard auth)
@@ -70,6 +74,23 @@ func processGoogleAuthenticatedUser(w http.ResponseWriter, r *http.Request, emai
 
 	u, err := user.GetByEmailAndProvider(email, gp)
 	if err != nil {
+		if err.Error() == models.ErrEmailAlreadyTaken {
+			existingUser, err := user.GetByEmail(email)
+			if err != nil {
+				handleError(w, err, "Error processing user", http.StatusInternalServerError)
+				return
+			}
+			if existingUser == nil {
+				handleError(w, errors.New("user not found"), "Internal Server Error", http.StatusInternalServerError)
+				return
+			}
+			message := "user already exists with email and password auth"
+			if existingUser.AuthProvider != nil {
+				message = fmt.Sprintf("user already exists with provider %s", cases.Title(language.Und).String(string(*existingUser.AuthProvider)))
+			}
+			handleError(w, errors.New(message), message, http.StatusBadRequest)
+			return
+		}
 		handleError(w, err, "Error processing user", http.StatusInternalServerError)
 		return
 	}
