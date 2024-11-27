@@ -1,4 +1,4 @@
-import { useState, useContext, ReactElement } from "react";
+import { useContext } from "react";
 import HubspotAuthButton from "../buttons/AuthButtons/HubspotAuthButton";
 import MailchimpAuthButton from "../buttons/AuthButtons/MailchimpAuthButton";
 import SalesforceAuthButton from "../buttons/AuthButtons/SalesforceAuthButton";
@@ -11,19 +11,17 @@ import SalesforceFullLogo from "../icons/logos/SalesforceFullLogo";
 import SendgridFullLogo from "../icons/logos/SendgridFullLogo";
 import ZohoFullLogo from "../icons/logos/ZohoFullLogo";
 import UserContext from "~/contexts/UserContext";
-import MicrosoftDynamics365Logo from "../icons/logos/MicrosoftDynamics365Logo";
 import MicrosoftAuthButton from "../buttons/AuthButtons/MicrosoftAuthButton";
-
-interface IntegrationCardProps {
-    resetHistory: () => void;
-    signupBtn?: ReactElement;
-    title: string;
-    url: string;
-    description: string;
-    hasLoginFeature?: boolean;
-    logo: ReactElement;
-    isGuest: boolean;
-}
+import ActivecampaignFullLogo from "../icons/logos/ActivecampaignFullLogo";
+import Microsoftdynamics365FullLogo from "../icons/logos/Microsoftdynamics365FullLogo";
+import PipedriveFullLogo from "../icons/logos/PipedriveFullLogo";
+import AirtableFullLogo from "../icons/logos/AirtableFullLogo";
+import TypeformFullLogo from "../icons/logos/TypeformFullLogo";
+import ConstantcontactFullLogo from "../icons/logos/ConstantcontactFullLogo";
+import SurveymonkeyFullLogo from "../icons/logos/SurveymonkeyFullLogo";
+import WebflowFullLogo from "../icons/logos/WebflowFullLogo";
+import MailgunFullLogo from "../icons/logos/MailgunFullLogo";
+import ClickfunnelsFullLogo from "../icons/logos/ClickfunnelsFullLogo";
 
 export default function IntegrationCardsGrid({ resetHistory }: { resetHistory: () => void }) {
     const { user } = useContext(UserContext);
@@ -95,16 +93,104 @@ export default function IntegrationCardsGrid({ resetHistory }: { resetHistory: (
                 Coming soon
             </h3>
 
-            <IntegrationCard
-                comingSoon={true}
-                resetHistory={resetHistory}
-                signupBtn={<MicrosoftAuthButton customText="Signup with Microsoft" />}
-                title="Microsoft Dynamics 365"
-                url="microsoft.com/en-us/dynamics-365"
-                description="Import your all your business contacts and leads from Microsoft Dynamics 365."
-                logo={<MicrosoftDynamics365Logo w="80px" />}
-                isGuest={isGuest}
-            />
+            <div className="flex flex-wrap justify-between gap-4">
+                <IntegrationCard
+                    comingSoon={true}
+                    resetHistory={resetHistory}
+                    signupBtn={<MicrosoftAuthButton customText="Signup with Microsoft" />}
+                    title="Microsoft Dynamics 365"
+                    url="microsoft.com/en-us/dynamics-365"
+                    description="Import your all your business contacts and leads from Microsoft Dynamics 365."
+                    logo={<Microsoftdynamics365FullLogo />}
+                    isGuest={isGuest}
+                />
+                <IntegrationCard
+                    comingSoon={true}
+                    resetHistory={resetHistory}
+                    title="ActiveCampaign"
+                    url="activecampaign.com"
+                    description="Import your all your business contacts and leads from ActiveCampaign."
+                    logo={<ActivecampaignFullLogo />}
+                    isGuest={isGuest}
+                />
+                <IntegrationCard
+                    comingSoon={true}
+                    resetHistory={resetHistory}
+                    signupBtn={<MicrosoftAuthButton customText="Signup with PipeDrive" />}
+                    title="PipeDrive"
+                    url="pipedrive.com"
+                    description="Import your all your business contacts and leads from PipeDrive."
+                    logo={<PipedriveFullLogo />}
+                    isGuest={isGuest}
+                />
+                <IntegrationCard
+                    comingSoon={true}
+                    resetHistory={resetHistory}
+                    signupBtn={<MicrosoftAuthButton customText="Signup with AirTable" />}
+                    title="AirTable"
+                    url="airtable.com"
+                    description="Import your all your business contacts and leads from AirTable."
+                    logo={<AirtableFullLogo />}
+                    isGuest={isGuest}
+                />
+                <IntegrationCard
+                    comingSoon={true}
+                    resetHistory={resetHistory}
+                    title="ClickFunnels"
+                    url="clickfunnels.com"
+                    description="Import your all your business contacts and leads from ClickFunnels."
+                    logo={<ClickfunnelsFullLogo />}
+                    isGuest={isGuest}
+                />
+                <IntegrationCard
+                    comingSoon={true}
+                    resetHistory={resetHistory}
+                    signupBtn={<MicrosoftAuthButton customText="Signup with Constant Contact" />}
+                    title="Constant Contact"
+                    url="constantcontact.com"
+                    description="Import your all your business contacts and leads from Constant Contact."
+                    logo={<ConstantcontactFullLogo />}
+                    isGuest={isGuest}
+                />
+                <IntegrationCard
+                    comingSoon={true}
+                    resetHistory={resetHistory}
+                    title="Typeform"
+                    url="typeform.com"
+                    description="Import your all your business contacts and leads from Typeform."
+                    logo={<TypeformFullLogo />}
+                    isGuest={isGuest}
+                />
+                <IntegrationCard
+                    comingSoon={true}
+                    resetHistory={resetHistory}
+                    signupBtn={<MicrosoftAuthButton customText="Signup with SurveyMonkey" />}
+                    title="SurveyMonkey"
+                    url="surveymonkey.com"
+                    description="Import your all your business contacts and leads from SurveyMonkey."
+                    logo={<SurveymonkeyFullLogo />}
+                    isGuest={isGuest}
+                />
+                <IntegrationCard
+                    comingSoon={true}
+                    resetHistory={resetHistory}
+                    signupBtn={<MicrosoftAuthButton customText="Signup with Webflow" />}
+                    title="Webflow"
+                    url="webflow.com"
+                    description="Import your all your business contacts and leads from Webflow."
+                    logo={<WebflowFullLogo />}
+                    isGuest={isGuest}
+                />
+                <IntegrationCard
+                    comingSoon={true}
+                    resetHistory={resetHistory}
+                    title="Mailgun"
+                    url="mailgun.com"
+                    description="Import your all your business contacts and leads from Mailgun."
+                    logo={<MailgunFullLogo />}
+                    isGuest={isGuest}
+                />
+            </div>
         </>
     )
 }

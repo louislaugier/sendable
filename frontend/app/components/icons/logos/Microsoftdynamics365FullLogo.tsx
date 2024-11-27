@@ -1,5 +1,5 @@
 export default (props: any) => (
-    <svg version="1.0" xmlns="http://www.w3.org/2000/svg"
+    <svg style={{marginLeft: '-20px'}} version="1.0" xmlns="http://www.w3.org/2000/svg"
         width="124pt" height="55pt" viewBox="0 0 669.000000 297.000000"
         preserveAspectRatio="xMidYMid meet">
 
