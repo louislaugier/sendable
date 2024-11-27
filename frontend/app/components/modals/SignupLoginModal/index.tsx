@@ -82,7 +82,7 @@ export default function SignupLoginModal(props: any) {
 
         try {
             if (isSignupEmailSent) {
-                const res = await confirmEmail({ email: signupEmail, isNewAccount: true, emailConfirmationCode: parseInt(signupConfirmationCode) })
+                const res = await confirmEmail({ email: signupEmail, isNewAccount: true, code: signupConfirmationCode })
                 if (res.error) setConfirmationCodeError(res.error)
                 else {
                     setUser(res)

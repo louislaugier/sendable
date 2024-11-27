@@ -78,9 +78,11 @@ func SignupHandler(w http.ResponseWriter, r *http.Request) {
 		"email_confirmation_code": strconv.Itoa(*confirmationCode),
 		"is_new_account":          "true",
 		"domain":                  fmt.Sprintf("%s%s", config.BaseURL, config.APIVersionPrefix),
+		"email":                   body.Email,
 	}, body.Email)
 	if err != nil {
-		handleError(w, err, "Internal Server Error", http.StatusBadRequest)
+		log.Println(err)
+		handleError(w, err, "Internal Server Error", http.StatusInternalServerError)
 		return
 	}
 

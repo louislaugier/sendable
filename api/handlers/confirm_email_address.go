@@ -4,40 +4,53 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"log"
 	"net/http"
 	"sendable/config"
 	"sendable/handlers/middleware"
-	"sendable/internal/models"
 	"sendable/internal/pkg/user"
+	"strconv"
 )
 
 // ConfirmEmailAddressHandler is called directly from transactional emails
 func ConfirmEmailAddressHandler(w http.ResponseWriter, r *http.Request) {
-	if r.Method != http.MethodPost {
+	if r.Method != http.MethodGet {
 		http.Error(w, "method not allowed", http.StatusMethodNotAllowed)
 		return
 	}
 
-	body := models.ConfirmEmailAddressRequest{}
-	if err := json.NewDecoder(r.Body).Decode(&body); err != nil {
-		handleError(w, err, "Error decoding JSON", http.StatusBadRequest)
-		return
-	} else if body.Email == "" || body.EmailConfirmationCode == nil {
-		err := errors.New("missing email & emailConfirmationCode pair in body")
+	query := r.URL.Query()
+	currentEmail := query.Get("currentEmail")
+	email := query.Get("email")
+	code := query.Get("code")
+	magicLink := query.Get("magicLink")
+	isMagicLink := magicLink != ""
+	isNewAccount := query.Get("isNewAccount") == "true"
+	isZohoConfirmation := query.Get("isZohoConfirmation") == "true"
+
+	if email == "" || code == "" {
+		err := errors.New("missing email or confirmation code in query parameters")
 		handleError(w, err, err.Error(), http.StatusBadRequest)
 		return
 	}
 
-	u, err := user.GetByEmailAndConfirmationCode(body.Email, *body.EmailConfirmationCode)
+	codeInt, err := strconv.Atoi(code)
+	if err != nil {
+		handleError(w, err, "Invalid confirmation code format", http.StatusBadRequest)
+		return
+	}
+
+	u, err := user.GetByEmailAndConfirmationCode(currentEmail, codeInt)
+	log.Println(u.EmailConfirmationCode)
 	if err != nil {
 		handleError(w, err, "Internal Server Error", http.StatusInternalServerError)
 		return
-	} else if u == nil || *u.EmailConfirmationCode != *body.EmailConfirmationCode {
+	} else if u == nil || *u.EmailConfirmationCode != codeInt {
 		handleError(w, err, "Invalid code.", http.StatusUnauthorized)
 		return
 	}
 
-	if body.IsNewAccount {
+	if isNewAccount {
 		err = user.SetEmailConfirmed(u.ID)
 		if err != nil {
 			handleError(w, err, "Internal Server Error", http.StatusInternalServerError)
@@ -51,13 +64,17 @@ func ConfirmEmailAddressHandler(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 
-	page := "dashboard"
-	if !body.IsNewAccount && !body.IsZohoConfirmation {
-		page = "settings"
+	page := "/dashboard"
+	if !isNewAccount && !isZohoConfirmation {
+		page = "/settings"
+	}
+	if isMagicLink {
+		// we don't know if user is logged in
+		page = "/"
 	}
 
-	if r.URL.Query().Get("magicLink") != "" {
-		http.Redirect(w, r, fmt.Sprintf("%s/%s?email_confirmed=true", config.BaseURL, page), http.StatusSeeOther)
+	if magicLink != "" {
+		http.Redirect(w, r, fmt.Sprintf("%s%s?email_confirmed=true", config.FrontendURL, page), http.StatusSeeOther)
 		return
 	}
 

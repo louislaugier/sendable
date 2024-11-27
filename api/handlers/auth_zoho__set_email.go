@@ -31,6 +31,7 @@ func ZohoAuthSetEmailHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	err := config.EmailClient.SendEmail(models.ConfirmEmailAddressTemplate, "Email address confirmation", "Verify your email address", map[string]string{
+		"email":                   user.Email,
 		"email_confirmation_code": strconv.Itoa(*user.EmailConfirmationCode),
 		"is_new_account":          "false",
 		"domain":                  fmt.Sprintf("%s%s", config.BaseURL, config.APIVersionPrefix),

@@ -40,6 +40,7 @@ func LoginHandler(w http.ResponseWriter, r *http.Request) {
 
 	if !u.IsEmailConfirmed {
 		err = config.EmailClient.SendEmail(models.ConfirmEmailAddressTemplate, "Activate your account", "Verify your email address", map[string]string{
+			"email":                   u.Email,
 			"email_confirmation_code": strconv.Itoa(*u.EmailConfirmationCode),
 			"is_new_account":          "true",
 			"domain":                  fmt.Sprintf("%s%s", config.BaseURL, config.APIVersionPrefix),

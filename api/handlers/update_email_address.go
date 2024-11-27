@@ -58,6 +58,8 @@ func UpdateEmailAddressHandler(w http.ResponseWriter, r *http.Request) {
 		"email_confirmation_code": strconv.Itoa(*emailConfirmationCode),
 		"is_new_account":          "false",
 		"domain":                  fmt.Sprintf("%s%s", config.BaseURL, config.APIVersionPrefix),
+		"email":                   body.Email,
+		"current_email":           u.Email,
 	}, body.Email)
 	if err != nil {
 		handleError(w, err, "Internal Server Error", http.StatusBadRequest)

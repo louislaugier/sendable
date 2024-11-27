@@ -38,12 +38,6 @@ type (
 		Emails []string `json:"emails,omitempty"`
 	}
 
-	ConfirmEmailAddressRequest struct {
-		IsNewAccount          bool   `json:"isNewAccount"`
-		IsZohoConfirmation    bool   `json:"isZohoConfirmation"`
-		Email                 string `json:"email"`
-		EmailConfirmationCode *int   `json:"emailConfirmationCode"`
-	}
 	UpdateEmailAddressRequest struct {
 		Email string `json:"email"`
 	}
