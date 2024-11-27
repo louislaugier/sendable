@@ -1,4 +1,4 @@
-import { Ref, useContext, useRef, useState } from "react";
+import { Ref, useContext, useRef, useState, useEffect } from "react";
 import { Modal, ModalContent, ModalHeader, ModalBody, ModalFooter, Button, Input, Link } from "@nextui-org/react";
 import UserContext from "~/contexts/UserContext";
 import AuthButtons from "~/components/buttons/AuthButtons";
@@ -15,6 +15,7 @@ import setPassword from "~/services/api/set_password";
 import { EyeFilledIcon } from "~/components/icons/EyeFilledIcon";
 import { EyeSlashFilledIcon } from "~/components/icons/EyeSlashFilledIcon";
 import authEmail from "~/services/api/auth/email";
+import { useSearchParams } from "@remix-run/react";
 
 export default function SignupLoginModal(props: any) {
     const { authModal, modalType, setModalType } = useContext(AuthModalContext);
@@ -194,7 +195,19 @@ export default function SignupLoginModal(props: any) {
     const [newPasswordConfirmationError, setNewPasswordConfirmationError] = useState('')
 
     const submitRef = useRef<any>()
+    const [searchParams] = useSearchParams();
 
+    useEffect(() => {
+        const resetPasswordEmail = searchParams.get('reset_password_email');
+        const resetPasswordCode = searchParams.get('reset_password_code');
+
+        if (resetPasswordEmail && resetPasswordCode) {
+            setLoginEmail(resetPasswordEmail);
+            setResetPasswordConfirmationCode(resetPasswordCode);
+            setResetPasswordEmailSent(true);
+            setForgotPassVisible(true);
+        }
+    }, []);
 
     return (
         !user &&
