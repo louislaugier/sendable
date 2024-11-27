@@ -33,10 +33,11 @@ export default function Settings() {
 
   const isEmailAddressConfirmedCall = !!searchParams.get("email_confirmed")
 
-  if (!user) {
-    if (isEmailAddressConfirmedCall) navigateToUrl('/?email_confirmed=true')
-    else navigateToUrl('/')
-  }
+  useEffect(() => {
+    if (!user) {
+      navigateToUrl(isEmailAddressConfirmedCall ? '/?email_confirmed=true' : '/')
+    }
+  }, [user, isEmailAddressConfirmedCall])
 
   const emailAddressConfirmedModal = useDisclosure()
   const [isEmailAddressConfirmedModalAck, setEmailAddressConfirmedModalAck] = useState(false)

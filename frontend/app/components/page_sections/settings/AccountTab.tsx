@@ -12,6 +12,7 @@ import updateEmailAddress from "~/services/api/update_email_address";
 import updatePassword from "~/services/api/update_password";
 import { generate2faSecret, getQrCodeUrl } from "~/services/utils/2fa";
 import { capitalize } from "~/utils/string";
+import { isValidEmail } from "~/services/utils/email";
 
 export default function AccountTab() {
     const { user, setUser } = useContext(UserContext)
@@ -39,7 +40,7 @@ export default function AccountTab() {
     const [isUpdatePasswordButtonLoading, setUdatePasswordButtonLoading] = useState(false)
     const [is2faButtonLoading, set2faButtonLoading] = useState(false)
 
-    const [email, setEmail] = useState(user?.email ?? "")
+    const [email, setEmail] = useState("")
     const [emailErrorMsg, setEmailErrorMsg] = useState("")
 
     const [currentPassword, setCurrentPassword] = useState("")
@@ -91,6 +92,8 @@ export default function AccountTab() {
         setNewPasswordSet(false)
     }
 
+    const updateEmailButtonRef = useRef<HTMLButtonElement>(null);
+
     return (
         <>
             <div className="flex flew-wrap pt-4">
@@ -106,10 +109,16 @@ export default function AccountTab() {
                             isDisabled={!!user?.authProvider}
                             type="email"
                             label="Email"
-                            value={email}
+                            value={email || user?.email}
                             variant="bordered"
                             errorMessage={emailErrorMsg}
                             isInvalid={!!emailErrorMsg}
+                            onKeyDown={(event: React.KeyboardEvent<HTMLInputElement>) => {
+                                if (event.key === 'Enter') {
+                                    event.preventDefault();
+                                    updateEmailButtonRef.current?.click();
+                                }
+                            }}
                             onValueChange={(val) => {
                                 if (isUpdateEmailAddressEmailSent) resetEmailData()
 
@@ -117,21 +126,41 @@ export default function AccountTab() {
                             }}
                             placeholder={"Your email address"}
                             className="max-w-xs"
-                            // color={isUpdateEmailAddressEmailSent ? 'success' : undefined}
                             description={isUpdateEmailAddressEmailSent && <p className="text-success">Please check your inbox to verify this new email address.</p>}
                         />
-                        <Button className="mt-4" onClick={async () => {
-                            setUdateEmailButtonLoading(true)
+                        <Button
+                            ref={updateEmailButtonRef}
+                            className="mt-4"
+                            onClick={async () => {
+                                setUdateEmailButtonLoading(true)
+                                setEmailErrorMsg('')
 
-                            try {
-                                await updateEmailAddress({ email })
-                                setUpdateEmailAddressEmailSent(true)
-                            } catch {
-                                setEmailErrorMsg("An unexpected error has occurred. Please try again.")
-                            }
+                                if (!email) {
+                                    setEmailErrorMsg("Please enter an email address.")
+                                    setUdateEmailButtonLoading(false)
+                                    return
+                                }
 
-                            setUdateEmailButtonLoading(false)
-                        }} isLoading={isUpdateEmailButtonLoading} isDisabled={!!user?.authProvider || emailUpdateCountdown! > 0 || !email || email === user?.email} color="primary" variant="shadow">
+                                if (!isValidEmail(email)) {
+                                    setEmailErrorMsg("Please enter a valid email address.")
+                                    setUdateEmailButtonLoading(false)
+                                    return
+                                }
+
+                                try {
+                                    await updateEmailAddress({ email })
+                                    setUpdateEmailAddressEmailSent(true)
+                                } catch {
+                                    setEmailErrorMsg("An unexpected error has occurred. Please try again.")
+                                }
+
+                                setUdateEmailButtonLoading(false)
+                            }}
+                            isLoading={isUpdateEmailButtonLoading}
+                            isDisabled={!!user?.authProvider || emailUpdateCountdown! > 0 || !email || email === user?.email}
+                            color="primary"
+                            variant="shadow"
+                        >
                             {isUpdateEmailButtonLoading ? 'Loading...' : emailUpdateCountdown! > 0 ? `Update (${emailUpdateCountdown})` : 'Update'}
                         </Button>
 

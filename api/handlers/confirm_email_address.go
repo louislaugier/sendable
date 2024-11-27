@@ -4,7 +4,6 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	"log"
 	"net/http"
 	"sendable/config"
 	"sendable/handlers/middleware"
@@ -24,12 +23,17 @@ func ConfirmEmailAddressHandler(w http.ResponseWriter, r *http.Request) {
 	email := query.Get("email")
 	code := query.Get("code")
 	magicLink := query.Get("magicLink")
-	isMagicLink := magicLink != ""
 	isNewAccount := query.Get("isNewAccount") == "true"
 	isZohoConfirmation := query.Get("isZohoConfirmation") == "true"
 
 	if email == "" || code == "" {
 		err := errors.New("missing email or confirmation code in query parameters")
+		handleError(w, err, err.Error(), http.StatusBadRequest)
+		return
+	}
+
+	if currentEmail != "" && currentEmail == email {
+		err := errors.New("new email address must be different from current email")
 		handleError(w, err, err.Error(), http.StatusBadRequest)
 		return
 	}
@@ -41,7 +45,6 @@ func ConfirmEmailAddressHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	u, err := user.GetByEmailAndConfirmationCode(currentEmail, codeInt)
-	log.Println(u.EmailConfirmationCode)
 	if err != nil {
 		handleError(w, err, "Internal Server Error", http.StatusInternalServerError)
 		return
@@ -57,7 +60,7 @@ func ConfirmEmailAddressHandler(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 	} else {
-		err = user.UpdateEmailAddress(u.ID, u.Email)
+		err = user.UpdateEmailAddress(u.ID, email)
 		if err != nil {
 			handleError(w, err, "Internal Server Error", http.StatusInternalServerError)
 			return
@@ -67,10 +70,6 @@ func ConfirmEmailAddressHandler(w http.ResponseWriter, r *http.Request) {
 	page := "/dashboard"
 	if !isNewAccount && !isZohoConfirmation {
 		page = "/settings"
-	}
-	if isMagicLink {
-		// we don't know if user is logged in
-		page = "/"
 	}
 
 	if magicLink != "" {

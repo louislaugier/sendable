@@ -8,6 +8,7 @@ import (
 	"sendable/config"
 	"sendable/handlers/middleware"
 	"sendable/internal/models"
+	"sendable/internal/pkg/format"
 	"sendable/internal/pkg/user"
 	"sendable/internal/pkg/utils"
 	"strconv"
@@ -25,6 +26,12 @@ func UpdateEmailAddressHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	} else if body.Email == "" {
 		err := errors.New("missing email in body")
+		handleError(w, err, err.Error(), http.StatusBadRequest)
+		return
+	}
+
+	if !format.IsEmailValid(body.Email) {
+		err := errors.New("invalid email format")
 		handleError(w, err, err.Error(), http.StatusBadRequest)
 		return
 	}

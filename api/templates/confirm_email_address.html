@@ -103,7 +103,7 @@
         {{end}}
 
         <p style="text-align: center; margin: 24px 0;">
-            <a href="{{.domain}}/confirm_email_address?email={{.email}}&currentEmail={{.current_email}}&code={{.email_confirmation_code}}&isNewAccount={{.is_new_account}}&magicLink=true" class="btn" style="display: inline-block; padding: 8px 22px; background-color: black; color: white; text-decoration: none; border-radius: 12px; font-weight: 500; text-align: center; box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -4px rgba(0, 0, 0, 0.1), 0 0 0 1px rgba(0, 0, 0, 0.1), 0 2px 4px -2px rgba(0, 0, 0, 0.1);">
+            <a href="{{.domain}}/confirm_email_address?email={{urlquery .email}}&currentEmail={{urlquery .current_email}}&code={{.email_confirmation_code}}&isNewAccount={{.is_new_account}}&magicLink=true" class="btn" style="display: inline-block; padding: 8px 22px; background-color: black; color: white; text-decoration: none; border-radius: 12px; font-weight: 500; text-align: center; box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -4px rgba(0, 0, 0, 0.1), 0 0 0 1px rgba(0, 0, 0, 0.1), 0 2px 4px -2px rgba(0, 0, 0, 0.1);">
                 {{if eq .is_new_account "true"}}
                 Activate Account
                 {{else}}

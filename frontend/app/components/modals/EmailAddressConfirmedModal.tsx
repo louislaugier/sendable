@@ -1,12 +1,14 @@
 import { Modal, ModalContent, ModalHeader, ModalBody, ModalFooter, Button, Link } from "@nextui-org/react";
 import { useContext } from "react";
 import AuthModalContext from "~/contexts/AuthModalContext";
+import UserContext from "~/contexts/UserContext";
 import { AuthModalType } from "~/types/modal";
 
 const EmailAddressConfirmedModal = (props: any) => {
-    const { isOpen, onClose, onOpenChange, guest } = props
+    const { isOpen, onClose, onOpenChange } = props
     const { authModal, setModalType } = useContext(AuthModalContext);
 
+    const { user } = useContext(UserContext)
     return (
         <Modal
             backdrop="blur"
@@ -22,7 +24,7 @@ const EmailAddressConfirmedModal = (props: any) => {
                         <ModalHeader className="flex flex-col gap-1">Account activated</ModalHeader>
                         <ModalBody>
                             <p>Your email address has been confirmed.</p>
-                            <p>{!!guest && <>You may now <Link style={{ textDecoration: 'underline' }} onClick={(e: any) => {
+                            <p>{!user && <>You may now <Link style={{ textDecoration: 'underline' }} onClick={(e: any) => {
                                 e.preventDefault()
 
                                 onClose()
