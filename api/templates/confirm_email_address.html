@@ -1,17 +1,121 @@
 <!-- agnostic for signup email confirmation & email update from settings -->
-<!-- TODO: agnostic for Zoho set email feature (redirect to /dashboard) -->
+<!-- TODO: agnostic also for Zoho set email feature (redirect to /dashboard) -->
 
-<!-- always send &magicLink=true in CTA URLs this template -->
-<!-- for signup, cta link should send post with isNewAccount=true to confirm_email_address (API endpoint then redirects client to dashboard) -->
-<!-- for email update, cta link should send post to confirm_email_address (API endpoint then redirects client to settings) -->
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+    <title>Confirm your email address</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 0;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
+
+        .container {
+            max-width: 600px;
+            margin: 20px auto;
+            padding: 24px;
+            background-color: #ffffff;
+            border-radius: 14px;
+            box-shadow: 0 4px 14px 0 rgba(0, 0, 0, 0.1);
+        }
+
+        h1 {
+            color: #11181c;
+            font-size: 24px;
+            font-weight: 600;
+            margin-bottom: 16px;
+        }
+
+        p {
+            color: #687076;
+            line-height: 1.6;
+            margin: 16px 0;
+        }
+
+        .btn {
+            display: inline-block;
+            padding: 8px 22px;
+            background-color: black;
+            color: white;
+            text-decoration: none;
+            border-radius: 12px;
+            font-weight: 500;
+            text-align: center;
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -4px rgba(0, 0, 0, 0.1), 0 0 0 1px rgba(0, 0, 0, 0.1), 0 2px 4px -2px rgba(0, 0, 0, 0.1);
+            transition: transform 0.2s ease;
+        }
+
+        .code {
+            font-family: monospace;
+            font-size: 24px;
+            font-weight: bold;
+            letter-spacing: 4px;
+            color: #11181c;
+        }
+
+        .link {
+            color: #006FEE;
+            text-decoration: underline;
+            word-break: break-all;
+        }
+    </style>
 </head>
-<body>
-    
+
+<body
+    style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif; background-color: #f4f4f4; margin: 0; padding: 0;">
+    <div class="container"
+        style="max-width: 600px; margin: 20px auto; padding: 24px; background-color: #ffffff; border-radius: 14px;">
+        <h1 style="color: #11181c; font-size: 24px; font-weight: 600; margin-bottom: 16px;">
+            {{if eq .is_new_account "true"}}
+            Welcome to Sendable!
+            {{else}}
+            Confirm your new email address
+            {{end}}
+        </h1>
+
+        <p style="color: #687076; line-height: 1.6; margin: 16px 0;">
+            {{if eq .is_new_account "true"}}
+            Thanks for signing up! Please confirm your email address to get started.
+            {{else}}
+            Please confirm this email address to update your account settings.
+            {{end}}
+        </p>
+
+        <p class="code" style="text-align: center; margin: 24px 0;">
+            {{.email_confirmation_code}}
+        </p>
+
+        <p style="color: #687076; line-height: 1.6; margin: 16px 0;">
+            You can also click the button below to verify your email address:
+        </p>
+
+        <p style="text-align: center; margin: 24px 0;">
+            <a href="{{.domain}}/confirm_email_address?magicLink=true&isNewAccount={{.is_new_account}}&email={{.email}}&emailConfirmationCode={{.email_confirmation_code}}"
+                class="btn">
+                {{if eq .is_new_account "true"}}
+                Activate Account
+                {{else}}
+                Confirm Email
+                {{end}}
+            </a>
+        </p>
+
+        <p style="color: #687076; line-height: 1.6; margin: 16px 0;">
+            {{if eq .is_new_account "true"}}
+            If you did not create an account with us, you can safely ignore this email.
+            {{else}}
+            If you did not request this email change, please contact support immediately.
+            {{end}}
+        </p>
+    </div>
 </body>
+
 </html>

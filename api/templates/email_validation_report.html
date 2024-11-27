@@ -6,53 +6,71 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Email validation report</title>
     <style>
+        /* Fallback styles for email clients that support <style> tags */
         body {
-            font-family: Arial, sans-serif;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
             background-color: #f4f4f4;
             margin: 0;
             padding: 0;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
         }
 
         .container {
             max-width: 600px;
             margin: 20px auto;
-            padding: 20px;
+            padding: 24px;
             background-color: #ffffff;
-            border-radius: 5px;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            border-radius: 14px;
+            box-shadow: 0 4px 14px 0 rgba(0, 0, 0, 0.1);
         }
 
         h1 {
-            color: #333333;
+            color: #11181c;
+            font-size: 24px;
+            font-weight: 600;
+            margin-bottom: 16px;
         }
 
         p {
-            color: #666666;
+            color: #687076;
+            line-height: 1.6;
+            margin: 16px 0;
         }
 
         .btn {
             display: inline-block;
-            padding: 10px 20px;
-            background-color: #007bff;
-            color: #ffffff;
+            padding: 8px 22px;
+            background-color: black;
+            color: white;
             text-decoration: none;
-            border-radius: 5px;
+            border-radius: 12px;
+            font-weight: 500;
+            text-align: center;
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -4px rgba(0, 0, 0, 0.1), 0 0 0 1px rgba(0, 0, 0, 0.1), 0 2px 4px -2px rgba(0, 0, 0, 0.1);
+            transition: transform 0.2s ease;
         }
 
-        .btn:hover {
-            background-color: #0056b3;
+        .link {
+            color: #006FEE;
+            text-decoration: underline;
+            word-break: break-all;
         }
     </style>
 </head>
 
-<body>
-    <div class="container">
-        <h1>Email validation report</h1>
-        <p>Your email validation report is ready to be downloaded by clicking on the button below or by copying this
-            link: {{.domain}}/reports/{{.id}}.csv.zip?token={{.token}}</p>
-        <p><a href="{{.domain}}/validation_reports/{{.id}}.csv.zip?token={{.token}}" class="btn">Download</a></p>
+<body style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif; background-color: #f4f4f4; margin: 0; padding: 0;">
+    <div class="container" style="max-width: 600px; margin: 20px auto; padding: 24px; background-color: #ffffff; border-radius: 14px;">
+        <h1 style="color: #11181c; font-size: 24px; font-weight: 600; margin-bottom: 16px;">Email validation report</h1>
+        
+        <p style="color: #687076; line-height: 1.6; margin: 16px 0;">
+            Your email validation report is ready to be downloaded. You can either click the button below or use this link:
+            <a href="{{.domain}}/reports/{{.id}}.csv.zip?token={{.token}}" class="link" style="color: #006FEE; text-decoration: underline; word-break: break-all;">{{.domain}}/reports/{{.id}}.csv.zip?token={{.token}}</a>
+        </p>
 
-        <!-- TODO: explanation of deliverability column in CSV -->
+        <p style="text-align: center; margin: 24px 0;">
+            <a href="{{.domain}}/validation_reports/{{.id}}.csv.zip?token={{.token}}" class="btn" style="display: inline-block; padding: 8px 22px; background-color: black; color: white; text-decoration: none; border-radius: 12px; font-weight: 500; text-align: center; box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -4px rgba(0, 0, 0, 0.1), 0 0 0 1px rgba(0, 0, 0, 0.1), 0 2px 4px -2px rgba(0, 0, 0, 0.1);">Download Report</a>
+        </p>
     </div>
 </body>
 
