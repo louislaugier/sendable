@@ -64,6 +64,53 @@ export default function SignupLoginModal(props: any) {
 
     const [isForgotPassVisible, setForgotPassVisible] = useState(false)
 
+    const [resetPasswordCountdown, setResetPasswordCountdown] = useState<number | null>(null);
+    const resetPasswordCountdownInterval = useRef<NodeJS.Timeout | null>(null);
+
+    useEffect(() => {
+        const checkExistingCountdown = () => {
+            const storedEndTime = localStorage.getItem('resetPasswordCountdownEnd');
+            if (storedEndTime) {
+                const endTime = parseInt(storedEndTime);
+                const now = Date.now();
+                if (now < endTime) {
+                    const remainingSeconds = Math.ceil((endTime - now) / 1000);
+                    setResetPasswordCountdown(remainingSeconds);
+                    startCountdown(remainingSeconds);
+                } else {
+                    localStorage.removeItem('resetPasswordCountdownEnd');
+                }
+            }
+        };
+
+        const startCountdown = (initialSeconds: number) => {
+            setResetPasswordCountdown(initialSeconds);
+            resetPasswordCountdownInterval.current = setInterval(() => {
+                setResetPasswordCountdown((prevCountdown) => {
+                    if (prevCountdown! <= 1) {
+                        clearInterval(resetPasswordCountdownInterval.current!);
+                        localStorage.removeItem('resetPasswordCountdownEnd');
+                        return null;
+                    } else return prevCountdown! - 1;
+                });
+            }, 1000);
+        };
+
+        checkExistingCountdown();
+
+        if (isResetPasswordEmailSent && resetPasswordCountdown === null) {
+            const endTime = Date.now() + (60 * 1000); // 60 seconds from now
+            localStorage.setItem('resetPasswordCountdownEnd', endTime.toString());
+            startCountdown(60);
+        }
+
+        return () => {
+            if (resetPasswordCountdownInterval.current) {
+                clearInterval(resetPasswordCountdownInterval.current);
+            }
+        };
+    }, [isResetPasswordEmailSent]);
+
     const emailSignupOrConfirmEmail = async () => {
         setLoading(true)
 
@@ -310,8 +357,8 @@ export default function SignupLoginModal(props: any) {
                                 </Button>}
 
                                 {/* Forgot password */}
-                                {(isLogin && isForgotPassVisible && !isResetPasswordEmailSent) && <Button ref={submitRef} isDisabled={!loginEmail} isLoading={isLoading} onClick={forgotPassword} color="primary" variant="shadow">
-                                    {isLoading ? 'Loading' : 'Submit'}
+                                {(isLogin && isForgotPassVisible && !isResetPasswordEmailSent) && <Button ref={submitRef} isDisabled={resetPasswordCountdown! > 0} isLoading={isLoading} onClick={forgotPassword} color="primary" variant="shadow">
+                                    {isLoading ? 'Loading' : resetPasswordCountdown! > 0 ? `Reset password (${resetPasswordCountdown})` : 'Reset password'}
                                 </Button>}
 
                                 {/* Set new password with confirmation code */}

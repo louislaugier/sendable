@@ -20,20 +20,50 @@ export default function AccountTab() {
     const [isUpdateEmailAddressEmailSent, setUpdateEmailAddressEmailSent] = useState(false)
     const [emailUpdateCountdown, setEmailUpdateCountdown] = useState<number | null>(null);
     const emailUpdateCountdownInterval = useRef<NodeJS.Timeout | null>(null);
+
     useEffect(() => {
-        const startCountdown = () => {
-            setEmailUpdateCountdown(60);
+        const checkExistingCountdown = () => {
+            const storedEndTime = localStorage.getItem('emailUpdateCountdownEnd');
+            if (storedEndTime) {
+                const endTime = parseInt(storedEndTime);
+                const now = Date.now();
+                if (now < endTime) {
+                    const remainingSeconds = Math.ceil((endTime - now) / 1000);
+                    setEmailUpdateCountdown(remainingSeconds);
+                    setUpdateEmailAddressEmailSent(true);
+                    startCountdown(remainingSeconds);
+                } else {
+                    localStorage.removeItem('emailUpdateCountdownEnd');
+                }
+            }
+        };
+
+        const startCountdown = (initialSeconds: number) => {
+            setEmailUpdateCountdown(initialSeconds);
             emailUpdateCountdownInterval.current = setInterval(() => {
                 setEmailUpdateCountdown((prevCountdown) => {
                     if (prevCountdown! <= 1) {
                         clearInterval(emailUpdateCountdownInterval.current!);
+                        localStorage.removeItem('emailUpdateCountdownEnd');
                         return null;
                     } else return prevCountdown! - 1;
                 });
             }, 1000);
         };
-        if (isUpdateEmailAddressEmailSent) startCountdown();
-        return () => clearInterval(emailUpdateCountdownInterval.current!);
+
+        checkExistingCountdown();
+
+        if (isUpdateEmailAddressEmailSent && emailUpdateCountdown === null) {
+            const endTime = Date.now() + (60 * 1000); // 60 seconds from now
+            localStorage.setItem('emailUpdateCountdownEnd', endTime.toString());
+            startCountdown(60);
+        }
+
+        return () => {
+            if (emailUpdateCountdownInterval.current) {
+                clearInterval(emailUpdateCountdownInterval.current);
+            }
+        };
     }, [isUpdateEmailAddressEmailSent]);
 
     const [isUpdateEmailButtonLoading, setUdateEmailButtonLoading] = useState(false)

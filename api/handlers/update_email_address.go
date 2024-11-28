@@ -60,7 +60,6 @@ func UpdateEmailAddressHandler(w http.ResponseWriter, r *http.Request) {
 		handleError(w, err, "Internal Server Error", http.StatusBadRequest)
 		return
 	}
-
 	err = config.EmailClient.SendEmail(models.ConfirmEmailAddressTemplate, "New email address confirmation", "Verify your new email address", map[string]string{
 		"email_confirmation_code": strconv.Itoa(*emailConfirmationCode),
 		"is_new_account":          "false",

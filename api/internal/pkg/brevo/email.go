@@ -2,7 +2,6 @@ package brevo
 
 import (
 	"context"
-	"log"
 	"os"
 	"sendable/internal/models"
 	"sendable/internal/pkg/html"
@@ -23,7 +22,7 @@ func (c *EmailClient) SendEmail(template models.Template, subject, previewConten
 		return err
 	}
 
-	_, resp, err := c.TransactionalEmailsApi.SendTransacEmail(context.Background(), brevo.SendSmtpEmail{
+	_, _, err = c.TransactionalEmailsApi.SendTransacEmail(context.Background(), brevo.SendSmtpEmail{
 		Sender: &brevo.SendSmtpEmailSender{
 			Name:  os.Getenv("BREVO_SENDER_NAME"),
 			Email: os.Getenv("BREVO_SENDER_EMAIL"),
@@ -33,7 +32,6 @@ func (c *EmailClient) SendEmail(template models.Template, subject, previewConten
 		TextContent: previewContent,
 		Subject:     subject,
 	})
-	log.Println(resp)
 
 	return err
 }
