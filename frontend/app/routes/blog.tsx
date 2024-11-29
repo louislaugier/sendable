@@ -13,12 +13,12 @@ export const meta: MetaFunction = () => {
 
 export const blogPages = [
   {
-    uri: "/why_use_an_email_validator",
+    uri: "/why_email_validation_is_critical_for_business_success",
     title: "Why Email Validation is Critical for Business Success",
     imageUrl: "/laptop.jpeg",
     subtitle: "Email Marketing / Deliverability",
     date: "Mon Apr 22",
-    readTime: "4 mins",
+    readTime: "6 mins",
   },
   {
     uri: "/how_to_boost_your_email_sender_reputation",
@@ -26,9 +26,49 @@ export const blogPages = [
     imageUrl: "/lights.jpeg",
     subtitle: "Email Deliverability / Best Practices",
     date: "Mon Apr 15",
-    readTime: "3 mins",
+    readTime: "4 mins",
   },
-]
+  {
+    uri: "/how_to_improve_email_deliverability_with_list_segmentation",
+    title: "How to Improve Email Deliverability with List Segmentation",
+    imageUrl: "/laptop.jpeg",
+    subtitle: "Email Marketing / Strategy",
+    date: "Mon May 1",
+    readTime: "5 mins",
+  },
+  {
+    uri: "/the_true_cost_of_bad_email_data",
+    title: "The True Cost of Bad Email Data: A Business Impact Analysis",
+    imageUrl: "/laptop.jpeg",
+    subtitle: "Business / Analysis",
+    date: "Mon May 8",
+    readTime: "5 mins",
+  },
+  {
+    uri: "/email_authentication_spf_dkim_dmarc_explained",
+    title: "Email Authentication Deep Dive: SPF, DKIM, and DMARC Explained",
+    imageUrl: "/laptop.jpeg",
+    subtitle: "Technical / Security",
+    date: "Mon May 15",
+    readTime: "6 mins",
+  },
+  {
+    uri: "/email_validation_api_integration_guide",
+    title: "Email Validation API Integration Guide: Best Practices and Examples",
+    imageUrl: "/laptop.jpeg",
+    subtitle: "Technical / Integration",
+    date: "Mon May 22",
+    readTime: "6 mins",
+  },
+  {
+    uri: "/ultimate_guide_to_email_list_hygiene",
+    title: "The Ultimate Guide to Email List Hygiene",
+    imageUrl: "/laptop.jpeg",
+    subtitle: "Email Marketing / Best Practices",
+    date: "Mon May 29",
+    readTime: "7 mins",
+  },
+];
 
 export default function Blog() {
   const location = useLocation();
