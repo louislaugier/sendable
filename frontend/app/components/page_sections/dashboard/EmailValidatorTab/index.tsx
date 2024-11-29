@@ -59,7 +59,7 @@ export default function EmailValidatorTab(props: any) {
                         className="w-full"
                     >
                         <ReachabilityReference />
-                        <div className="w-full flex justify-center mt-8">
+                        <div className="w-full  justify-center mt-8">
                             {/* <Button onClick={() => {
                             }} color="primary" variant="shadow">
                                 Connect platform

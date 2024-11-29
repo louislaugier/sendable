@@ -10,9 +10,6 @@ export default function ApiTab() {
     return (
         <>
             <div className="flex flex-col w-full">
-                <ReachabilityReference />
-                <ApiReference />
-
                 <div>
                     <Button onClick={newApiKeyModal.onOpen} color="primary" variant="shadow" className="mb-4" style={{ display: 'block' }}>
                         Generate new API key
@@ -21,6 +18,9 @@ export default function ApiTab() {
                         Manage API keys
                     </Button>
                 </div>
+
+                <ReachabilityReference />
+                <ApiReference />
             </div>
 
             <NewApiKeyModal isOpen={newApiKeyModal.isOpen} onClose={newApiKeyModal.onClose} onOpenChange={newApiKeyModal.onOpenChange} />

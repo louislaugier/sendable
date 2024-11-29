@@ -4,7 +4,7 @@ import { ReachableDescriptor, RiskyDescriptor, UnknownDescriptor, InvalidDescrip
 export default function ReachabilityReference() {
     return (
         <>
-            <style>
+            {/* <style>
                 {
                     `
                         #validation-docs-toggle button>div {
@@ -13,8 +13,8 @@ export default function ReachabilityReference() {
                         }
                     `
                 }
-            </style>
-            <Accordion id='validation-docs-toggle'>
+            </style> */}
+            <Accordion className="mb-4" variant="bordered">
                 <AccordionItem as={'h3'} key="1" aria-label="Toggle reachability reference" subtitle="Click to expand" title="Reachability reference">
                     <Card>
                         <CardBody>

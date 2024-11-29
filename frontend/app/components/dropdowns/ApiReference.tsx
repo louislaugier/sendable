@@ -26,7 +26,7 @@ export default function ApiReference() {
 
     return (
         <>
-            <style>
+            {/* <style>
                 {`
                     #docs-toggle>div>h2>button>div {
                         flex: unset;
@@ -39,9 +39,9 @@ export default function ApiReference() {
                         padding: 15px 0;
                     }
                 `}
-            </style>
+            </style> */}
 
-            <Accordion id='docs-toggle' className="mb-4">
+            <Accordion id='docs-toggle' className="mb-4" variant="bordered">
                 <AccordionItem key="1" aria-label="Toggle API documentation" subtitle="Click to expand documentation" title="API reference">
                     <Card className="mb-16">
                         <CardBody>
