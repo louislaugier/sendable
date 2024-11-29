@@ -14,17 +14,17 @@ export const meta: MetaFunction = () => {
 export const blogPages = [
   {
     uri: "/why_use_an_email_validator",
-    title: "Why use an email validator?",
+    title: "Why Email Validation is Critical for Business Success",
     imageUrl: "/laptop.jpeg",
-    subtitle: "Lead generation / marketing",
+    subtitle: "Email Marketing / Deliverability",
     date: "Mon Apr 22",
     readTime: "4 mins",
   },
   {
-    uri: "/how_to_boost_your_email_servers_reputation",
-    title: "How to boost your email server's reputation",
+    uri: "/how_to_boost_your_email_sender_reputation",
+    title: "How to Boost Your Email Sender Reputation",
     imageUrl: "/lights.jpeg",
-    subtitle: "DNS / Networking",
+    subtitle: "Email Deliverability / Best Practices",
     date: "Mon Apr 15",
     readTime: "3 mins",
   },
