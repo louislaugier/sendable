@@ -7,7 +7,7 @@ export const pages = [
         label: "Resources",
         sublinks: [
             { url: "/blog", label: "Blog", description: "Learn more about email validation and sender reputation" },
-            { url: "/faq", label: "FAQ", description: "Frequently asked questions", disabled: true }
+            { url: "/faq", label: "FAQ", description: "Frequently asked questions"}
         ]
     },
     { url: "/settings", label: "Settings", requiresAuth: true, isInvisibleInNav: true },

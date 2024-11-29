@@ -10,6 +10,21 @@ export function navigateToUrl(url: string, isTargetBlank: boolean = false) {
 
 // Function to determine if a given URL is the current URL
 export function isCurrentUrl(currentLocation: Location<any>, url: string, exact = false) {
+    // Handle URLs with query parameters (like dashboard?tab=validation)
+    if (url.includes('?')) {
+        const [pathname, queryString] = url.split('?');
+        const [currentPathname, currentQueryString] = currentLocation.pathname.split('?');
+        
+        // For dashboard, we only care about the base path matching
+        if (pathname === '/dashboard') {
+            return currentPathname === pathname;
+        }
+        
+        // For other URLs with query params, check both path and query
+        return currentPathname === pathname && currentLocation.search.includes(queryString);
+    }
+    
+    // For regular URLs without query params
     if (exact) return currentLocation.pathname === url;
-    else return currentLocation.pathname.endsWith(url);
+    return currentLocation.pathname.endsWith(url);
 }

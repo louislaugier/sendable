@@ -3,27 +3,54 @@ import { useLocation } from "@remix-run/react";
 import { pages } from "~/constants/pages";
 import { blogPages } from "~/routes/blog";
 
+// Define a type for pages with a parent
+type PageWithParent = {
+    url: string;
+    label: string;
+    requiresAuth?: boolean;
+    isInvisibleInNav?: boolean;
+    parent?: {
+        url: string;
+        label: string;
+    };
+    sublinks?: PageWithParent[];
+};
+
 export default function Breadcrumb() {
     const { pathname } = useLocation();
+
+    const findPage = (pathname: string | null | undefined): PageWithParent | null => {
+        if (!pathname || typeof pathname !== 'string') return null;
+        
+        const pathParts = pathname.split('/').filter(Boolean);
+        let currentPath = '';
+        
+        // First check for direct matches
+        for (let i = pathParts.length; i > 0; i--) {
+            currentPath = '/' + pathParts.slice(0, i).join('/');
+            const page = pages?.find(p => p?.url === currentPath);
+            if (page) return page as PageWithParent;
+        }
+        
+        // Then check sublinks if no direct match is found
+        for (const page of pages as PageWithParent[]) {
+            if (page.sublinks) {
+                const sublink = page.sublinks.find(sub => sub.url === pathname);
+                if (sublink) {
+                    return {
+                        ...sublink,
+                        parent: { url: page.url, label: page.label }
+                    };
+                }
+            }
+        }
+        
+        return null;
+    };
 
     const getBreadcrumbItems = () => {
         const paths = pathname.split('/').filter(Boolean);
         const breadcrumbs = [];
-
-        const findPage = (pathname: string | null | undefined) => {
-            if (!pathname || typeof pathname !== 'string') return null;
-            
-            const pathParts = pathname.split('/').filter(Boolean);
-            let currentPath = '';
-            
-            for (let i = pathParts.length; i > 0; i--) {
-                currentPath = '/' + pathParts.slice(0, i).join('/');
-                const page = pages?.find(p => p?.url === currentPath);
-                if (page) return page;
-            }
-            
-            return null;
-        };
 
         // Special case for dashboard
         if (pathname.startsWith('/dashboard')) {
@@ -35,66 +62,54 @@ export default function Breadcrumb() {
                     </BreadcrumbItem>
                 );
             }
-        } else {
-            for (let i = 0; i < paths.length; i++) {
-                const currentPath = `/${paths.slice(0, i + 1).join('/')}`;
-                const page = findPage(currentPath);
-
-                if (page) {
-                    breadcrumbs.push(
-                        <BreadcrumbItem key={i} href={page.url}>
-                            {page.label}
-                        </BreadcrumbItem>
-                    );
-
-                    // Handle sublinks within "Resources" or other sections (if applicable)
-                    if (page.sublinks && i !== paths.length - 1) {
-                        const sublinkPath = `/${paths.slice(0, i + 2).join('/')}`;
-                        const sublink = findPage(sublinkPath);
-
-                        if (sublink) {
-                            breadcrumbs.push(
-                                <BreadcrumbItem key={`${i}_sublink`} href={sublink.url}>
-                                    {sublink.label}
-                                </BreadcrumbItem>
-                            );
-                            i++; // Skip the next iteration since we already handled the sublink
-                        }
-                    }
-
-                    // Exit the loop after finding a matching menu item to prevent adding unnecessary breadcrumbs
-                    break;
-                }
-            }
+            return breadcrumbs;
         }
 
-        // Handle the blog root URL and articles specifically
-        if (pathname === '/blog') {
-            breadcrumbs.push(
-                <BreadcrumbItem key="blog" href="/blog">
-                    Blog
-                </BreadcrumbItem>
-            );
-        } else if (pathname.startsWith('/blog/')) {
+        // Handle blog pages
+        if (pathname.startsWith('/blog')) {
+            // Add Blog link
             breadcrumbs.push(
                 <BreadcrumbItem key="blog" href="/blog">
                     Blog
                 </BreadcrumbItem>
             );
 
-            const articlePath = pathname.slice(6); // Remove the "/blog/" prefix
-            const blogPage = blogPages.find((page) => page.uri === `/${articlePath}`);
+            // If we're on a blog post page, add the post title
+            if (pathname !== '/blog') {
+                const blogPage = blogPages.find(page => pathname.endsWith(page.uri));
+                if (blogPage) {
+                    breadcrumbs.push(
+                        <BreadcrumbItem key="blogpost">
+                            {blogPage.title}
+                        </BreadcrumbItem>
+                    );
+                }
+            }
+            return breadcrumbs;
+        }
 
-            if (blogPage) {
+        // Handle sublinks (like FAQ)
+        const page = findPage(pathname);
+        if (page?.parent) {
+            // Add current page without showing parent
+            breadcrumbs.push(
+                <BreadcrumbItem key="current" href={page.url}>
+                    {page.label}
+                </BreadcrumbItem>
+            );
+            return breadcrumbs;
+        }
+
+        // Handle regular pages
+        let currentPath = '';
+        for (let i = 0; i < paths.length; i++) {
+            currentPath += '/' + paths[i];
+            const page = findPage(currentPath);
+            
+            if (page) {
                 breadcrumbs.push(
-                    <BreadcrumbItem key="article" href={`/blog/${articlePath}`}>
-                        {blogPage.title}
-                    </BreadcrumbItem>
-                );
-            } else {
-                breadcrumbs.push(
-                    <BreadcrumbItem key="article" href={`/blog/${articlePath}`}>
-                        {articlePath}
+                    <BreadcrumbItem key={i} href={page.url}>
+                        {page.label}
                     </BreadcrumbItem>
                 );
             }

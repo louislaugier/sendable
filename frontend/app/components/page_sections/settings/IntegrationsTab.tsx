@@ -42,7 +42,7 @@ export default function IntegrationsTab() {
                         </CardHeader>
                         <CardBody className="flex flex-col  pt-8">
 
-                            <BrevoFullLogo w='120px' />
+                            <BrevoFullLogo w='105px' />
 
                             <div className="flex mt-6 mb-12">
                                 {!!existingBrevoProvider && !isEditingBrevoApiKey ?

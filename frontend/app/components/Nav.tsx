@@ -52,7 +52,11 @@ export default function Nav() {
                                             <DropdownTrigger>
                                                 <Button
                                                     disableRipple
-                                                    className="p-0 bg-transparent data-[hover=true]:bg-transparent text-base"
+                                                    className={`p-0 bg-transparent data-[hover=true]:bg-transparent text-base ${
+                                                        page.sublinks.some(sublink => {
+                                                            return isCurrentUrl(location, sublink.url);
+                                                        }) ? "text-primary font-bold" : ""
+                                                    }`}
                                                     endContent={
                                                         <ChevronDownIcon fill="currentColor" size={16} />
                                                     }
