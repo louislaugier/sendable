@@ -109,11 +109,11 @@ export default function Dashboard() {
             <h3 className="text-lg mt-4 mb-2">Current plan: <CurrentPlanChip />{(isPremiumOrEnterprise && user?.currentPlan?.billingFrequency) && <b>{` (billed ${user?.currentPlan?.billingFrequency})`}</b>}</h3>
 
             {user?.currentPlan?.type !== SubscriptionType.Enterprise && <>
-              <p>Remaining validations (this month): <b>{remainingAppValidations.toLocaleString()} / {appValidationLimit.toLocaleString()}</b> email addresses</p>
-              <Progress aria-label="Remaining validations (this month)" value={100 - (remainingAppValidations / appValidationLimit * 100)} className="max-w-md mb-2 mt-1" />
+              <p className="mt-4">Validations used (this month): <b>{user?.validationCounts?.appValidationsCount.toLocaleString()} / {appValidationLimit.toLocaleString()}</b> email addresses</p>
+              <Progress aria-label="Validations used (this month)" value={(user?.validationCounts?.appValidationsCount / appValidationLimit * 100)} className="max-w-md mb-2 mt-1" />
 
-              <p>Remaining API validations (this month): <b>{remainingApiValidations.toLocaleString()} / {apiValidationLimit.toLocaleString()}</b> email addresses</p>
-              <Progress aria-label="Remaining API validations (this month)" value={100 - (remainingApiValidations / apiValidationLimit * 100)} className="max-w-md mb-4 mt-1" />
+              <p>API validations used (this month): <b>{user?.validationCounts?.apiValidationsCount.toLocaleString()} / {apiValidationLimit.toLocaleString()}</b> email addresses</p>
+              <Progress aria-label="API validations used (this month)" value={(user?.validationCounts?.apiValidationsCount / apiValidationLimit * 100)} className="max-w-md mb-4 mt-1" />
 
               <Button as={Link} href={`/pricing`} onClick={goToPricing} color='primary' variant="shadow">
                 Upgrade
