@@ -93,13 +93,13 @@ paths:
             schema:
               type: object
               properties:
-                Emails:
+                emails:
                   type: array
                   items:
                     type: string
                   description: Array of email addresses to validate
             example:
-              Emails:
+              emails:
                 - "user1@example.com"
                 - "user2@example.com"
           multipart/form-data:

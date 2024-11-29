@@ -16,8 +16,8 @@ export default function ReachabilityReference() {
             </style> */}
             <Accordion className="mb-4" variant="bordered">
                 <AccordionItem as={'h3'} key="1" aria-label="Toggle reachability reference" subtitle="Click to expand" title="Reachability reference">
-                    <Card>
-                        <CardBody>
+                    <Card className="mb-2">
+                        <CardBody className="py-0">
                             <div className="flex flex-col my-4 gap-3 text-sm">
                                 <ReachableDescriptor />
                                 <RiskyDescriptor />

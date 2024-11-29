@@ -26,8 +26,8 @@ export default function ApiReference() {
 
     return (
         <>
-            {/* <style>
-                {`
+            <style>
+                {/* {`
                     #docs-toggle>div>h2>button>div {
                         flex: unset;
                         width: 235px;
@@ -38,12 +38,18 @@ export default function ApiReference() {
                     .swagger-ui .scheme-container {
                         padding: 15px 0;
                     }
-                `}
-            </style> */}
+                `} */}
+                {
+                    `
+                        .swagger-ui>div:nth-child(2) {
+                        }
+                    `
+                }
+            </style>
 
             <Accordion id='docs-toggle' className="mb-4" variant="bordered">
                 <AccordionItem key="1" aria-label="Toggle API documentation" subtitle="Click to expand documentation" title="API reference">
-                    <Card className="mb-16">
+                    <Card className="mb-2">
                         <CardBody>
                             {apiSpec && <SwaggerUI spec={apiSpec} />}
                         </CardBody>
