@@ -42,6 +42,7 @@ export default function ApiReference() {
                 {
                     `
                         .swagger-ui>div:nth-child(2) {
+                            margin-top: -33px;
                         }
                     `
                 }
