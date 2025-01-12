@@ -1,5 +1,5 @@
 # Use buildx with platform specification
-FROM --platform=$TARGETPLATFORM postgres:15
+FROM --platform=linux/amd64 postgres:15
 
 # Set build arguments for platform compatibility
 ARG TARGETPLATFORM
