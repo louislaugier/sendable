@@ -1,4 +1,0 @@
-FROM postgres:15
-
-# Migrations will be applied in alphabetical order
-COPY ./migrations/. /docker-entrypoint-initdb.d/

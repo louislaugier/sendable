@@ -20,8 +20,11 @@ services:
   db:
     build:
       context: ./database
-      dockerfile: Dockerfile.dev
+      dockerfile: Dockerfile
+    env_file:
+      - ./database/.env
     environment:
+      POSTGRES_USER: postgres
       POSTGRES_PASSWORD: pass
       POSTGRES_DB: db
     ports:
