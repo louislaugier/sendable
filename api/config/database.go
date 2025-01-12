@@ -15,8 +15,8 @@ func initDatabaseConnection() {
 	URL := fmt.Sprintf("postgres://%s:%s@%s:%s/%s?sslmode=disable",
 		os.Getenv("POSTGRES_USER"),
 		os.Getenv("POSTGRES_PASSWORD"),
-		"db",
-		"5432",
+		"db",   // docker service name
+		"5432", // default
 		os.Getenv("POSTGRES_DB"),
 	)
 
