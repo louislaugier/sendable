@@ -33,7 +33,7 @@ RUN chmod +x /scripts/entrypoint-wrapper.sh
 # Setup cron job with logging and environment sourcing
 RUN echo "SHELL=/bin/bash\n\
 PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/lib/postgresql/15/bin\n\
-0 0 * * * root . /root/project_env.sh && /scripts/backup.sh >> /var/log/cron.log 2>&1\n\
+0 * * * * root . /root/project_env.sh && /scripts/backup.sh >> /var/log/cron.log 2>&1\n\
 " > /etc/cron.d/backup-cron \
     && chmod 0644 /etc/cron.d/backup-cron
 

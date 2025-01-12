@@ -39,9 +39,5 @@ for i in {1..60}; do
     sleep 1
 done
 
-# Run initial backup test
-echo "[$(date)] Running initial backup test" >> /var/log/cron.log 2>&1
-. /root/project_env.sh && /scripts/backup.sh
-
 # Keep the container running
 wait 
