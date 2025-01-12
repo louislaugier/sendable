@@ -2,6 +2,8 @@ package config
 
 import (
 	"database/sql"
+	"fmt"
+	"os"
 
 	_ "github.com/lib/pq"
 )
@@ -9,12 +11,14 @@ import (
 var DB *sql.DB
 
 func initDatabaseConnection() {
-	// URL := os.Getenv("DATABASE_URL")
-	// if URL == "" {
-	// URL = "postgres://postgres:pass@db:5432/db?sslmode=disable"
-	// }
 
-	URL := "postgres://postgres:pass@db:5432/db?sslmode=disable"
+	URL := fmt.Sprintf("postgres://%s:%s@%s:%s/%s?sslmode=disable",
+		os.Getenv("POSTGRES_USER"),
+		os.Getenv("POSTGRES_PASSWORD"),
+		"db",
+		"5432",
+		os.Getenv("POSTGRES_DB"),
+	)
 
 	d, err := sql.Open("postgres", URL)
 	if err != nil {

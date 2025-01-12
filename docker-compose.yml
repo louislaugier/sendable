@@ -6,7 +6,6 @@ services:
     volumes:
       - ./api/:/go/src/sendable/api
     ports:
-      # - 443:443
       - 80:80
     networks:
       - vpc_local
@@ -23,10 +22,6 @@ services:
       dockerfile: Dockerfile
     env_file:
       - ./database/.env
-    environment:
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: pass
-      POSTGRES_DB: db
     ports:
       - 5432:5432
     networks:

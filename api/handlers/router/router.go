@@ -191,19 +191,9 @@ func StartServer() {
 		}
 	})
 
-	switch config.Env {
-	case config.DevEnv:
-		fmt.Println("HTTP server is listening on port 80...")
-		if err := http.ListenAndServe(":80", server); err != nil {
-			log.Fatal("ListenAndServe: ", err)
-		}
-	case config.ProdEnv:
-		fmt.Println("HTTPS server is listening on port 443...")
-		if err := http.ListenAndServeTLS(":443", "../cert.pem", "../key.pem", server); err != nil {
-			if err = http.ListenAndServeTLS(":443", "cert.pem", "key.pem", server); err != nil {
-				log.Fatal("ListenAndServeTLS: ", err)
-			}
-		}
+	fmt.Println("HTTP server is listening on port 80...")
+	if err := http.ListenAndServe(":80", server); err != nil {
+		log.Fatal("ListenAndServe: ", err)
 	}
 }
 

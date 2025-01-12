@@ -8,14 +8,6 @@ import (
 	"github.com/joho/godotenv"
 )
 
-type AppEnv string
-
-const (
-	DevEnv  AppEnv = "DEV"
-	ProdEnv AppEnv = "PRD"
-)
-
-var Env AppEnv = DevEnv
 var FrontendURL string
 var BaseURL string
 
@@ -37,8 +29,6 @@ func loadEnv() {
 	} else {
 		FrontendURL = fmt.Sprintf("https://%s", domain)
 		BaseURL = fmt.Sprintf("https://api.%s", domain)
-
-		Env = ProdEnv
 	}
 
 	loadOauthClients()
