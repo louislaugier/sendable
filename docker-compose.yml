@@ -1,3 +1,4 @@
+# todo: swarm production without frontend
 services:
   api:
     build:
