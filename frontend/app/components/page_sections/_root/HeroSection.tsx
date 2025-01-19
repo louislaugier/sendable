@@ -7,6 +7,7 @@ import TryItOut from "../../cards/TryItOutCard";
 import UserContext from "~/contexts/UserContext";
 import { navigateToUrl } from "~/utils/url";
 import { limits } from "~/constants/limits";
+import { SubscriptionType } from "~/types/subscription";
 
 export default function HeroSection() {
     const { authModal, setModalType } = useContext(AuthModalContext);
@@ -31,7 +32,11 @@ export default function HeroSection() {
                     }} color="primary" variant="shadow" className="mb-4">
                         {user ? 'Go to dashboard' : 'Try It Free'}
                     </Button>
-                    <p className="text-sm">Get {limits.free.app} free monthly email verifications</p>
+                    {!user || user?.currentPlan?.type === SubscriptionType.Free ?
+                        <p className="text-sm">Get {limits.free.app} free monthly email verifications</p>
+                        :
+                        <></>
+                    }
                 </div>
                 <div className="md:w-1/2 md:pl-8">
                     <TryItOut />

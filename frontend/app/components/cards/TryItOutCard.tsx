@@ -106,7 +106,7 @@ export default function TryItOut() {
                     <Button isLoading={isLoading} onClick={submitEmail} color="primary" variant="shadow" className="w-full">
                         {isLoading ? 'Checking reachability...' : 'Check reachability'}
                     </Button>
-                    <p className="text-xs mt-2">*Target will not be contacted.</p>
+                    <p className="text-xs mt-2">*Target will not receive any email.</p>
                     {reachability &&
                         <>
                             <Divider className="mt-8 mb-4" />

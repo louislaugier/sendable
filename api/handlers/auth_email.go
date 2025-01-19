@@ -34,7 +34,7 @@ func LoginHandler(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "Internal Server Error", http.StatusInternalServerError)
 		return
 	} else if u == nil {
-		http.Error(w, "Invalid email address of password.", http.StatusUnauthorized)
+		http.Error(w, "Invalid email address or password.", http.StatusUnauthorized)
 		return
 	}
 
