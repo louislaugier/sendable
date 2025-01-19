@@ -53,7 +53,7 @@ export default function PricingCard(props: any) {
                                     <div>
                                         <Button isDisabled={!!user?.currentPlan.cancelledAt} as={Link} href={user?.stripeCustomerPortalUrl!} target="_blank" className="mt-2 mb-6 w-auto" onClick={() => {
                                         }} color="primary" variant="shadow">
-                                            {!!user?.currentPlan.cancelledAt ? 'Cancelation scheduled' : 'Manage'}
+                                            {!!user?.currentPlan.cancelledAt ? 'Cancellation scheduled' : 'Manage'}
                                         </Button>
                                     </div>
                                 </div>
@@ -64,7 +64,7 @@ export default function PricingCard(props: any) {
                                     </>
                                     :
                                     plan.name !== SubscriptionType.Free ?
-                                        <UpgradeOrDowngradeButton isDisabled={!!user?.currentPlan.startingAt} priceId={isYearly ? plan?.stripeYearlyPriceId : plan?.stripeMonthlyPriceId} value={!!user?.currentPlan.startingAt ? 'Starting next billing period' : 'Downgrade'} />
+                                        <UpgradeOrDowngradeButton isDisabled={!!user?.upcomingPlan?.startingAt} priceId={isYearly ? plan?.stripeYearlyPriceId : plan?.stripeMonthlyPriceId} value={!!user?.upcomingPlan?.startingAt ? 'Starting next billing period' : `Downgrade to ${capitalize(user?.upcomingPlan?.type)}`} />
                                         :
                                         <div style={{ margin: '125px 0' }} />
                             :

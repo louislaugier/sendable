@@ -17,7 +17,7 @@ export const pricingPlans = [
                 content: "Bulk email validation",
             },
             {
-                content: "Connect CRM platforms",
+                content: "Import from files & CRMs",
             },
             {
                 content: `${limits.free.api.toLocaleString()} free API single validations`,
@@ -31,9 +31,9 @@ export const pricingPlans = [
     {
         name: SubscriptionType.Premium,
         description: "Elevate your email validation with our premium offering, access higher quotas for our platform and API.",
-        monthlyPrice: 75,
+        monthlyPrice: 29,
         stripeMonthlyPriceId: "price_1Q9Bo1RsG6IPgooNaHe2taAS",
-        yearlyPrice: 749,
+        yearlyPrice: 299,
         stripeYearlyPriceId: "price_1Q9BoMRsG6IPgooNfSHozGe5",
         features: [
             {
@@ -44,7 +44,7 @@ export const pricingPlans = [
                 content: "Bulk email validation",
             },
             {
-                content: "Connect CRM platforms",
+                content: "Import from files & CRMs",
             },
             {
                 content: `${limits.premium.api.toLocaleString()} API single validations`,
@@ -58,9 +58,9 @@ export const pricingPlans = [
     {
         name: SubscriptionType.Enterprise,
         description: "Scale your email validation seamlessly with our top-tier solution for high-volume requirements.",
-        monthlyPrice: 549,
+        monthlyPrice: 299,
         stripeMonthlyPriceId: "price_1Phet7RsG6IPgooNrQAMFfgh",
-        yearlyPrice: 5499,
+        yearlyPrice: 2999,
         stripeYearlyPriceId: "price_1PhetbRsG6IPgooNXV49khZU",
         features: [
             {
@@ -70,10 +70,7 @@ export const pricingPlans = [
                 content: "Bulk email validation",
             },
             {
-                content: "Connect CRM platforms",
-            },
-            {
-                content: "Unlimited API single validations",
+                content: "Import from files & CRMs",
             },
             {
                 content: "Unlimited API bulk validations",

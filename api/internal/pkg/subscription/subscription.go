@@ -16,6 +16,40 @@ const (
 		WHERE user_id = $1;
 	`
 
+	getLatestActiveQuery = `
+		SELECT s."id", s."billing_frequency", s."type", s."created_at", s."cancelled_at", s."starting_at", s."stripe_subscription_id", sr."renewed_at"
+		FROM public."subscription" s
+		LEFT JOIN public."subscription_renewal" sr ON s."id" = sr."subscription_id"
+		WHERE s."user_id" = $1
+		AND (s."cancelled_at" IS NULL OR s."cancelled_at" > NOW())
+		AND (
+			(s."starting_at" IS NOT NULL AND s."starting_at" + 
+			CASE s."billing_frequency"
+			WHEN 'monthly' THEN INTERVAL '1 month'
+			WHEN 'yearly' THEN INTERVAL '1 year'
+			END > NOW())
+			OR (s."starting_at" IS NULL AND s."created_at" + 
+			CASE s."billing_frequency"
+			WHEN 'monthly' THEN INTERVAL '1 month'
+			WHEN 'yearly' THEN INTERVAL '1 year'
+			END > NOW())
+		)
+		ORDER BY 
+		COALESCE(sr."renewed_at", s."created_at") DESC
+		LIMIT 1;
+	`
+
+	// Error getting user's upcoming plan: pq: missing FROM-clause entry for table "sr"
+	getUpcomingQuery = `
+		SELECT s."id", s."billing_frequency", s."type", s."created_at", s."cancelled_at", s."starting_at", s."stripe_subscription_id"
+		FROM public."subscription" s
+		WHERE s."user_id" = $1
+		AND s."starting_at" > NOW()
+		AND s."cancelled_at" IS NULL
+		ORDER BY s."created_at" DESC
+		LIMIT 1;
+	`
+
 	getManyQuery = `
 		SELECT s.id, s.user_id, s.billing_frequency, s.type, s.stripe_subscription_id, s.created_at, s.cancelled_at, sr.renewed_at
 		FROM public.subscription s
@@ -40,7 +74,7 @@ const (
 	cancelByIDQuery = `
 		UPDATE public.subscription SET "cancelled_at" = now() WHERE id = $1;
 	`
-	CancelByStripeSubscriptionIDQuery = `
+	cancelByStripeSubscriptionIDQuery = `
 		UPDATE public.subscription SET "cancelled_at" = now() WHERE stripe_subscription_id = $1;
 	`
 )
@@ -97,28 +131,7 @@ func GetCount(userID uuid.UUID) (*int, error) {
 }
 
 func GetLatestActive(userID uuid.UUID) (*models.Subscription, error) {
-	rows, err := config.DB.Query(`
-		SELECT s."id", s."billing_frequency", s."type", s."created_at", s."cancelled_at", s."starting_at", s."stripe_subscription_id", sr."renewed_at"
-		FROM public."subscription" s
-		LEFT JOIN public."subscription_renewal" sr ON s."id" = sr."subscription_id"
-		WHERE s."user_id" = $1
-		AND (s."cancelled_at" IS NULL OR s."cancelled_at" > NOW())
-		AND (
-			(s."starting_at" IS NOT NULL AND s."starting_at" + 
-			CASE s."billing_frequency"
-			WHEN 'monthly' THEN INTERVAL '1 month'
-			WHEN 'yearly' THEN INTERVAL '1 year'
-			END > NOW())
-			OR (s."starting_at" IS NULL AND s."created_at" + 
-			CASE s."billing_frequency"
-			WHEN 'monthly' THEN INTERVAL '1 month'
-			WHEN 'yearly' THEN INTERVAL '1 year'
-			END > NOW())
-		)
-		ORDER BY 
-		COALESCE(sr."renewed_at", s."created_at") DESC
-		LIMIT 1;
-	`, userID)
+	rows, err := config.DB.Query(getLatestActiveQuery, userID)
 	if err != nil {
 		return nil, err
 	}
@@ -139,13 +152,45 @@ func GetLatestActive(userID uuid.UUID) (*models.Subscription, error) {
 	return subscription, nil
 }
 
+func GetUpcoming(userID uuid.UUID) (*models.Subscription, error) {
+	rows, err := config.DB.Query(getUpcomingQuery, userID)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	var subscription *models.Subscription
+	for rows.Next() {
+		s := models.Subscription{}
+		err := rows.Scan(
+			&s.ID,
+			&s.BillingFrequency,
+			&s.Type,
+			&s.CreatedAt,
+			&s.CancelledAt,
+			&s.StartingAt,
+			&s.StripeSubscriptionID,
+		)
+		if err != nil {
+			return nil, err
+		}
+		subscription = &s
+	}
+
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+
+	return subscription, nil
+}
+
 func CancelByID(ID uuid.UUID) error {
 	_, err := config.DB.Exec(cancelByIDQuery, ID)
 	return err
 }
 
 func CancelByStripeSubscriptionID(stripeSubscriptionID string) error {
-	_, err := config.DB.Exec(CancelByStripeSubscriptionIDQuery, stripeSubscriptionID)
+	_, err := config.DB.Exec(cancelByStripeSubscriptionIDQuery, stripeSubscriptionID)
 	return err
 }
 

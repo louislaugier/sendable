@@ -43,7 +43,7 @@ export default function SubscriptionHistoryTable(props: any) {
                         Active
                     </Chip>
                     :
-                    <Chip color="warning" variant="dot">Cancelled on {moment(subscription.cancelledAt).format("YYYY-MM-DD HH:mm:ss").toString()}</Chip>
+                    <Chip color="warning" variant="dot">Cancellation scheduled for {moment(subscription.cancelledAt).format("YYYY-MM-DD HH:mm:ss").toString()}</Chip>
                 }
             </TableCell>
             <TableCell>{!!subscription.latestRenewedAt ? moment(subscription.latestRenewedAt).format("YYYY-MM-DD HH:mm:ss").toString() : ""}</TableCell>

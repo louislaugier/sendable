@@ -263,6 +263,13 @@ func getByCriteria(isMinimalResponse bool, query string, args ...interface{}) (*
 				u.CurrentPlan = *models.EmptyFreePlan()
 			}
 
+			upcomingPlan, err := subscription.GetUpcoming(u.ID)
+			if err != nil {
+				log.Printf("Error getting user's upcoming plan: %v", err)
+			} else if upcomingPlan != nil {
+				u.UpcomingPlan = upcomingPlan
+			}
+
 			validationCounts, err := validation.GetCurrentMonthLimitCounts(u.ID)
 			if err != nil {
 				log.Printf("Error getting user's email validations counts for this month: %v", err)

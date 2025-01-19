@@ -15,6 +15,7 @@ export interface User {
     updatedAt: string,
     deletedAt?: string,
     currentPlan: Subscription,
+    upcomingPlan: Subscription,
     validationCounts: UserValidationCounts,
     stripeCustomerPortalUrl?: string
 }

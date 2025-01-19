@@ -46,6 +46,7 @@ type (
 
 		ValidationCounts UserValidationCounts `json:"validationCounts"`
 		CurrentPlan      Subscription         `json:"currentPlan"`
+		UpcomingPlan     *Subscription        `json:"upcomingPlan,omitempty"`
 
 		StripeCustomerID        *string `json:"-"`
 		StripeCustomerPortalURL *string `json:"stripeCustomerPortalUrl,omitempty"`
