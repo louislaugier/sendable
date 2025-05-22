@@ -1,11 +1,15 @@
 import { Link } from "@nextui-org/react";
 import type { MetaFunction } from "@remix-run/node";
 import { siteName } from "~/constants/app";
+import { blogPages } from "./blog";
+
+const BLOG_URI = "/how_to_improve_email_deliverability_with_list_segmentation";
+const blogData = blogPages.find(page => page.uri === BLOG_URI)!;
 
 export const meta: MetaFunction = () => {
   return [
-    { title: `How to Improve Email Deliverability with List Segmentation - ${siteName}` },
-    { name: "description", content: "Learn how to boost your email deliverability and engagement rates through effective list segmentation strategies." },
+    { title: `Sendable - ${blogData.title}` },
+    { name: "description", content: blogData.subtitle },
   ];
 };
 
@@ -20,9 +24,9 @@ export default function HowToImproveEmailDeliverabilityWithListSegmentation() {
         />
 
         <section className="mb-8">
-          <h1 className="text-3xl font-bold mb-4">How to Improve Email Deliverability with List Segmentation</h1>
+          <h1 className="text-3xl font-bold mb-4">{blogData.title}</h1>
           <p className="text-gray-600 mb-4">
-            Published on May 1, 2024 • 5 min read
+            Published on {blogData.date} • {blogData.readTime}
           </p>
           
           <div className="prose max-w-none">
@@ -34,9 +38,7 @@ export default function HowToImproveEmailDeliverabilityWithListSegmentation() {
 
             <h2 className="text-2xl font-semibold mb-4">Why Segmentation Matters for Deliverability</h2>
             <p className="mb-6">
-              When you send more relevant emails to targeted segments of your list, recipients are more likely to engage 
-              with your content. This increased engagement sends positive signals to ISPs, improving your sender reputation 
-              and overall deliverability rates.
+              By sending highly relevant content to specific groups of subscribers who are most likely to engage, segmentation dramatically increases open and click-through rates. This strong engagement sends positive signals to Internet Service Providers (ISPs), which in turn significantly improves your sender reputation and overall email deliverability, ensuring your messages land in the inbox. For more on sender reputation, see our guide: <Link href="/blog/how_to_boost_your_email_sender_reputation" className="text-primary">How to Boost Your Email Sender Reputation</Link>.
             </p>
 
             <h2 className="text-2xl font-semibold mb-4">Key Segmentation Strategies</h2>
@@ -86,10 +88,10 @@ export default function HowToImproveEmailDeliverabilityWithListSegmentation() {
             <div className="mb-6">
               <h3 className="text-xl font-medium mb-3">Data Collection</h3>
               <ul className="list-disc pl-6 mb-4">
-                <li className="mb-2">Use signup forms to collect relevant data</li>
-                <li className="mb-2">Progressive profiling through engagement</li>
-                <li className="mb-2">Regular data cleaning and validation</li>
-                <li className="mb-2">Preference centers for self-segmentation</li>
+                <li className="mb-2">Use signup forms to collect relevant data for segmentation.</li>
+                <li className="mb-2">Employ progressive profiling to gather more detailed subscriber information over time.</li>
+                <li className="mb-2">Regularly clean your list and validate email addresses to ensure accurate segmentation data. <Link href="/blog/ultimate_guide_to_email_list_hygiene" className="text-primary">Learn more about list hygiene and validation</Link>.</li>
+                <li className="mb-2">Offer preference centers allowing subscribers to segment themselves based on interests.</li>
               </ul>
             </div>
 
@@ -100,6 +102,15 @@ export default function HowToImproveEmailDeliverabilityWithListSegmentation() {
                 <li className="mb-2">Monitoring segment performance</li>
                 <li className="mb-2">Regular segment refinement</li>
                 <li className="mb-2">Engagement tracking by segment</li>
+                <li className="mb-2">Analyzing your bounce rates and other key metrics.</li>
+                <li className="mb-2">Implementing a robust email validation strategy as part of your data collection and hygiene process.</li>
+                <li className="mb-2">
+                  Consider using our email validation service 
+                  <Link href="/dashboard" className="text-primary">
+                    to ensure your segmented lists contain only valid addresses
+                  </Link>
+                  .
+                </li>
               </ul>
             </div>
 

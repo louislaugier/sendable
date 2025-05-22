@@ -1,3 +1,4 @@
+import { Link } from "@nextui-org/react";
 import type { MetaFunction } from "@remix-run/node";
 import { siteName } from "~/constants/app";
 import { blogPages } from "./blog";
@@ -7,10 +8,10 @@ const blogData = blogPages.find(page => page.uri === BLOG_URI)!;
 
 export const meta: MetaFunction = () => {
   return [
-    { title: `${siteName} - ${blogData?.title}` },
+    { title: `Sendable - ${blogData.title}` },
     { 
       name: "description", 
-      content: "Learn proven strategies to improve your email sender reputation and increase your email deliverability rates." 
+      content: blogData.subtitle 
     },
   ];
 };
@@ -19,7 +20,7 @@ export default function HowToBoostYourEmailSenderReputation() {
   return (
     <div className="py-8 px-6">
       <div className="flex flex-col items-center mb-16">
-        <h1 className="text-2xl mb-4">{blogData?.title}</h1>
+        <h1 className="text-3xl font-bold mb-4">{blogData?.title}</h1>
         <div className="text-gray-500 text-sm">
           <span>{blogData?.date}</span>
           <span className="mx-2">•</span>
@@ -50,24 +51,13 @@ export default function HowToBoostYourEmailSenderReputation() {
           
           <h3 className="text-lg font-medium mb-3">1. Email List Quality</h3>
           <p className="mb-4">
-            The quality of your email list is paramount. Poor list quality can lead to:
+            Maintaining a clean and engaged email list is fundamental to a good sender reputation. Poor list quality leads to high bounce rates and low engagement, signaling to ISPs that your emails may not be wanted. <Link href="/blog/ultimate_guide_to_email_list_hygiene" className="text-primary">Learn more about email list hygiene</Link>.
           </p>
-          <ul className="list-disc pl-6 mb-4">
-            <li className="mb-2">High bounce rates from invalid addresses</li>
-            <li className="mb-2">Spam trap hits</li>
-            <li className="mb-2">Low engagement rates</li>
-            <li className="mb-2">Potential blacklisting</li>
-          </ul>
 
           <h3 className="text-lg font-medium mb-3">2. Authentication Protocols</h3>
           <p className="mb-4">
-            Proper email authentication helps ISPs verify your identity and builds trust. Essential protocols include:
+            Implementing email authentication protocols like SPF, DKIM, and DMARC is crucial for verifying your identity as a sender and preventing spoofing. This builds trust with ISPs and positively impacts your reputation. <Link href="/blog/email_authentication_spf_dkim_dmarc_explained" className="text-primary">Deep dive into SPF, DKIM, and DMARC</Link>.
           </p>
-          <ul className="list-disc pl-6 mb-4">
-            <li className="mb-2">SPF (Sender Policy Framework) records</li>
-            <li className="mb-2">DKIM (DomainKeys Identified Mail) signing</li>
-            <li className="mb-2">DMARC (Domain-based Message Authentication) policies</li>
-          </ul>
 
           <h3 className="text-lg font-medium mb-3">3. Engagement Metrics</h3>
           <p className="mb-4">

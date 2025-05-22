@@ -6,7 +6,7 @@ import { isCurrentUrl } from "~/utils/url";
 
 export const meta: MetaFunction = () => {
   return [
-    { title: `${siteName} - Blog` },
+    { title: `Sendable - Blog` },
     { name: "description", content: "Welcome to Remix! - Blog" },
   ];
 };
@@ -18,7 +18,7 @@ export const blogPages = [
     imageUrl: "/laptop.jpeg",
     subtitle: "Email Marketing / Deliverability",
     date: "Mon Apr 22",
-    readTime: "6 mins",
+    readTime: "11 mins",
   },
   {
     uri: "/how_to_boost_your_email_sender_reputation",
@@ -34,7 +34,7 @@ export const blogPages = [
     imageUrl: "/laptop.jpeg",
     subtitle: "Email Marketing / Strategy",
     date: "Mon May 1",
-    readTime: "5 mins",
+    readTime: "4 mins",
   },
   {
     uri: "/the_true_cost_of_bad_email_data",
@@ -42,7 +42,7 @@ export const blogPages = [
     imageUrl: "/laptop.jpeg",
     subtitle: "Business / Analysis",
     date: "Mon May 8",
-    readTime: "5 mins",
+    readTime: "4 mins",
   },
   {
     uri: "/email_authentication_spf_dkim_dmarc_explained",
@@ -50,7 +50,7 @@ export const blogPages = [
     imageUrl: "/laptop.jpeg",
     subtitle: "Technical / Security",
     date: "Mon May 15",
-    readTime: "6 mins",
+    readTime: "4 mins",
   },
   {
     uri: "/email_validation_api_integration_guide",
@@ -58,7 +58,7 @@ export const blogPages = [
     imageUrl: "/laptop.jpeg",
     subtitle: "Technical / Integration",
     date: "Mon May 22",
-    readTime: "6 mins",
+    readTime: "5 mins",
   },
   {
     uri: "/ultimate_guide_to_email_list_hygiene",
@@ -66,7 +66,7 @@ export const blogPages = [
     imageUrl: "/laptop.jpeg",
     subtitle: "Email Marketing / Best Practices",
     date: "Mon May 29",
-    readTime: "7 mins",
+    readTime: "4 mins",
   },
 ];
 

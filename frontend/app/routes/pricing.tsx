@@ -1,4 +1,4 @@
-import { Tab, Tabs } from "@nextui-org/react";
+import { Chip, Tab, Tabs } from "@nextui-org/react";
 import { MetaFunction } from "@remix-run/node";
 import { useState } from "react";
 import CardsSection from "~/components/page_sections/pricing/CardsSection";
@@ -39,8 +39,8 @@ export default function Pricing() {
               </Tabs>
             </Tab>
 
-            <Tab className="flex gap-8" key="pay-as-you-go" title="Pay-as-you-go">
-              <p>Coming soon</p>
+            <Tab className="flex gap-8 justify-center" key="pay-as-you-go" title="Pay-as-you-go">
+              <Chip color="primary">Coming soon</Chip>
             </Tab>
           </Tabs>
 

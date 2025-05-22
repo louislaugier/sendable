@@ -1,11 +1,15 @@
 import { Link } from "@nextui-org/react";
 import type { MetaFunction } from "@remix-run/node";
 import { siteName } from "~/constants/app";
+import { blogPages } from "./blog";
+
+const BLOG_URI = "/ultimate_guide_to_email_list_hygiene";
+const blogData = blogPages.find(page => page.uri === BLOG_URI)!;
 
 export const meta: MetaFunction = () => {
   return [
-    { title: `The Ultimate Guide to Email List Hygiene - ${siteName}` },
-    { name: "description", content: "Learn how to maintain a clean and effective email list with our comprehensive guide to email list hygiene best practices." },
+    { title: `Sendable - ${blogData.title}` },
+    { name: "description", content: blogData.subtitle },
   ];
 };
 
@@ -20,9 +24,9 @@ export default function UltimateGuideToEmailListHygiene() {
         />
 
         <section className="mb-8">
-          <h1 className="text-3xl font-bold mb-4">The Ultimate Guide to Email List Hygiene</h1>
+          <h1 className="text-3xl font-bold mb-4">{blogData.title}</h1>
           <p className="text-gray-600 mb-4">
-            Published on May 29, 2024 • 9 min read
+            Published on {blogData.date} • {blogData.readTime}
           </p>
           
           <div className="prose max-w-none">
@@ -36,11 +40,11 @@ export default function UltimateGuideToEmailListHygiene() {
             <div className="mb-6">
               <h3 className="text-xl font-medium mb-3">Key Benefits</h3>
               <ul className="list-disc pl-6 mb-4">
-                <li className="mb-2">Higher deliverability rates</li>
-                <li className="mb-2">Improved sender reputation</li>
-                <li className="mb-2">Better engagement metrics</li>
-                <li className="mb-2">Reduced marketing costs</li>
-                <li className="mb-2">More accurate campaign analytics</li>
+                <li className="mb-2"><strong>Boosts Deliverability:</strong> Removing invalid and disengaged contacts significantly reduces bounces and improves your chances of reaching the inbox.</li>
+                <li className="mb-2"><strong>Enhances Sender Reputation:</strong> Consistent sending to a clean, engaged list signals positive behavior to ISPs.</li>
+                <li className="mb-2"><strong>Increases Engagement:</strong> Targeting active and interested subscribers leads to higher open and click-through rates.</li>
+                <li className="mb-2"><strong>Reduces Costs:</strong> Avoid paying your ESP for sending emails to addresses that will never engage.</li>
+                <li className="mb-2"><strong>Provides Accurate Analytics:</strong> Clean data gives you a clearer picture of your campaign performance, enabling better strategy.</li>
               </ul>
             </div>
 

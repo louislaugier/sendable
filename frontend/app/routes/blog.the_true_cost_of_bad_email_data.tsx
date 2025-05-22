@@ -1,11 +1,15 @@
 import { Link } from "@nextui-org/react";
 import type { MetaFunction } from "@remix-run/node";
 import { siteName } from "~/constants/app";
+import { blogPages } from "./blog";
+
+const BLOG_URI = "/the_true_cost_of_bad_email_data";
+const blogData = blogPages.find(page => page.uri === BLOG_URI)!;
 
 export const meta: MetaFunction = () => {
   return [
-    { title: `The True Cost of Bad Email Data: A Business Impact Analysis - ${siteName}` },
-    { name: "description", content: "Discover the real financial and operational impact of poor email data quality on your business, and learn how to mitigate these costs." },
+    { title: `Sendable - ${blogData.title}` },
+    { name: "description", content: blogData.subtitle },
   ];
 };
 
@@ -20,9 +24,9 @@ export default function TheTrueCostOfBadEmailData() {
         />
 
         <section className="mb-8">
-          <h1 className="text-3xl font-bold mb-4">The True Cost of Bad Email Data: A Business Impact Analysis</h1>
+          <h1 className="text-3xl font-bold mb-4">{blogData.title}</h1>
           <p className="text-gray-600 mb-4">
-            Published on May 8, 2024 • 6 min read
+            Published on {blogData.date} • {blogData.readTime}
           </p>
           
           <div className="prose max-w-none">
@@ -61,15 +65,15 @@ export default function TheTrueCostOfBadEmailData() {
             <h2 className="text-2xl font-semibold mb-4">Indirect Business Costs</h2>
             
             <div className="mb-6">
-              <h3 className="text-xl font-medium mb-3">1. Sender Reputation Damage</h3>
+              <h3 className="text-xl font-medium mb-3">1. Sender Reputation Damage & Lost Revenue</h3>
               <ul className="list-disc pl-6 mb-4">
-                <li className="mb-2">Reduced inbox placement rates (20-40% decrease)</li>
-                <li className="mb-2">Lost revenue from undelivered promotional emails</li>
-                <li className="mb-2">Increased risk of blacklisting</li>
-                <li className="mb-2">Recovery time: 1-3 months of reduced deliverability</li>
+                <li className="mb-2">Lost revenue from emails not reaching the inbox due to poor sender reputation.</li>
+                <li className="mb-2">Increased recovery time and costs if blacklisted.</li>
+                <li className="mb-2">Reduced effectiveness of email campaigns impacting overall ROI.</li>
+                <li className="mb-2">Difficulty in reaching prospects and customers, hindering business growth.</li>
               </ul>
               <p className="mb-4">
-                Poor sender reputation can take months to recover and result in significant lost revenue opportunities.
+                Poor sender reputation can lead to significant lost revenue opportunities and require substantial effort and cost to repair.
               </p>
             </div>
 

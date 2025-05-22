@@ -41,7 +41,7 @@ export default function PricingCard(props: any) {
                         {isYearly && <p className="text-accents8 inline-block ml-1">(~${Math.round(plan.yearlyPrice / 12).toLocaleString()} /mo)</p>}
                     </div>
 
-                    {isPremium && <p className="absolute text-sm mt-1">About <b>${Math.round((isYearly ? Math.round(plan.yearlyPrice / 12) : plan.monthlyPrice) / (limits.premium.app + limits.premium.api) * 10000) / 10000}</b> per checked email address.</p>}
+                    {isPremium && <p className="absolute text-sm mb-2">About <b>${Math.round((isYearly ? Math.round(plan.yearlyPrice / 12) : plan.monthlyPrice) / (limits.premium.app + limits.premium.api) * 10000) / 10000}</b> per checked email address.</p>}
 
                     <div className="mt-2">
                         {user ?

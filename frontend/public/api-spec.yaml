@@ -37,7 +37,7 @@ paths:
               schema:
                 type: object
                 properties:
-                  token:
+                  jwt:
                     type: string
                     description: Generated JWT token
         '401':
@@ -50,7 +50,14 @@ paths:
         - email
       security:
         - BearerAuth: []
-      description: Validate a single email address and return its validation status.
+      parameters:
+        - in: query
+          name: provider
+          schema:
+            type: string
+          required: false
+          description: Optional source of the contact (e.g., 'mailchimp', 'hubspot')
+      description: Validate a single email address and return its validation status and detailed results.
       requestBody:
         required: true
         content:
@@ -65,31 +72,37 @@ paths:
               email: "user@example.com"
       responses:
         '200':
-          description: Successful response
+          description: Successful response with validation details
           content:
             application/json:
               schema:
-                type: object
-                properties:
-                  is_valid:
-                    type: boolean
-                  reason:
-                    type: string
+                $ref: '#/components/schemas/ReacherResponse' # Reference the detailed schema
+        '400':
+          description: Bad Request. Invalid email format or input.
+        '401':
+          description: Unauthorized. Authentication failed.
 
   /validate_emails:
     post:
-      summary: Validate email lists from a file or a raw request
+      summary: Validate an email list from a file or a raw request
       tags:
         - email
       security:
         - BearerAuth: []
+      parameters:
+        - in: query
+          name: provider
+          schema:
+            type: string
+          required: false
+          description: Optional source of the contact for the bulk validation batch (e.g., 'mailchimp', 'hubspot')
       description: >
         Validate multiple email addresses in bulk. A detailed CSV report containing 
         the validation results for each email will be sent to your registered email address.
         You can either send a JSON array of emails or upload a file.
       requestBody:
         content:
-          application/json (switch me):
+          application/json:
             schema:
               type: object
               properties:
@@ -115,7 +128,7 @@ paths:
                   description: Comma-separated list of column names to scan for emails (optional)
       responses:
         '204':
-          description: No Content. Validation process started successfully.
+          description: No Content. Validation process started successfully. Results will be emailed.
         '400':
           description: Bad Request. Invalid input or no emails to validate.
         '401':
@@ -133,6 +146,75 @@ components:
       type: apiKey
       in: header
       name: X-API-Key
+  schemas:
+    ReacherResponse:
+      type: object
+      properties:
+        input:
+          type: string
+          description: The email address that was validated.
+        is_reachable:
+          type: string
+          description: The overall reachability status (safe, risky, unknown, invalid).
+        misc:
+          type: object
+          properties:
+            is_disposable:
+              type: boolean
+              description: Indicates if the email is from a disposable email service.
+            is_role_account:
+              type: boolean
+              description: Indicates if the email is a role account (e.g., info@, admin@).
+            gravatar_url:
+              type: string
+              description: The Gravatar URL associated with the email, if any.
+            haveibeenpwned:
+              type: boolean
+              description: Indicates if the email has been found in known data breaches.
+        mx:
+          type: object
+          properties:
+            accepts_mail:
+              type: boolean
+              description: Indicates if the domain has valid MX records and accepts mail.
+            records:
+              type: array
+              items:
+                type: string
+              description: List of MX records for the domain.
+        smtp:
+          type: object
+          properties:
+            can_connect_smtp:
+              type: boolean
+              description: Indicates if the SMTP server for the domain can be connected to.
+            has_full_inbox:
+              type: boolean
+              description: Indicates if the recipient's inbox is full.
+            is_catch_all:
+              type: boolean
+              description: Indicates if the domain is a catch-all address.
+            is_deliverable:
+              type: boolean
+              description: Indicates if an email sent to this address is likely deliverable.
+            is_disabled:
+              type: boolean
+              description: Indicates if the email account is disabled.
+        syntax:
+          type: object
+          properties:
+            domain:
+              type: string
+              description: The domain part of the email address.
+            is_valid_syntax:
+              type: boolean
+              description: Indicates if the email address has valid syntax according to RFC 5322.
+            username:
+              type: string
+              description: The username part of the email address.
+            suggestion:
+              type: string
+              description: A suggested correction if the syntax is invalid.
 
 security:
   - BearerAuth: []  # Apply bearer token auth globally

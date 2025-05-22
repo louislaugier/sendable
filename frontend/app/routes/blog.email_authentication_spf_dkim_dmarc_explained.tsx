@@ -1,11 +1,15 @@
 import { Link } from "@nextui-org/react";
 import type { MetaFunction } from "@remix-run/node";
 import { siteName } from "~/constants/app";
+import { blogPages } from "./blog";
+
+const BLOG_URI = "/email_authentication_spf_dkim_dmarc_explained";
+const blogData = blogPages.find(page => page.uri === BLOG_URI)!;
 
 export const meta: MetaFunction = () => {
   return [
-    { title: `Email Authentication Deep Dive: SPF, DKIM, and DMARC Explained - ${siteName}` },
-    { name: "description", content: "A comprehensive guide to email authentication protocols: Learn how SPF, DKIM, and DMARC work together to protect your email deliverability." },
+    { title: `Sendable - ${blogData.title}` },
+    { name: "description", content: blogData.subtitle },
   ];
 };
 
@@ -20,16 +24,14 @@ export default function EmailAuthenticationDeepDive() {
         />
 
         <section className="mb-8">
-          <h1 className="text-3xl font-bold mb-4">Email Authentication Deep Dive: SPF, DKIM, and DMARC Explained</h1>
+          <h1 className="text-3xl font-bold mb-4">{blogData.title}</h1>
           <p className="text-gray-600 mb-4">
-            Published on May 15, 2024 • 8 min read
+            Published on {blogData.date} • {blogData.readTime}
           </p>
           
           <div className="prose max-w-none">
             <p className="mb-6">
-              Email authentication protocols are crucial for protecting your domain reputation and ensuring email deliverability. 
-              In this comprehensive guide, we'll break down how SPF, DKIM, and DMARC work together to create a robust email 
-              authentication system.
+              Email authentication protocols are crucial for email security and verifying your identity as a sender. This comprehensive guide will break down how SPF, DKIM, and DMARC work together to create a robust email authentication system. For more information on how authentication impacts email deliverability and sender reputation, see our related articles: <Link href="/blog/how_to_boost_your_email_sender_reputation" className="text-primary">How to Boost Your Email Sender Reputation</Link> and <Link href="/blog/why_email_validation_is_critical_for_business_success" className="text-primary">Why Email Validation is Critical for Business Success</Link>.
             </p>
 
             <h2 className="text-2xl font-semibold mb-4">SPF (Sender Policy Framework)</h2>
