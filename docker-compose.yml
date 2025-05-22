@@ -24,7 +24,7 @@ services:
       - ./database/.env
     volumes:
       - ./api/files:/api_files/files:ro
-    ports:
+    # ports:
       # - 5432:5432s # should not be accessible outside docker in production
     networks:
       - vpc_local

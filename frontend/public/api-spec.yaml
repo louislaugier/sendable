@@ -50,13 +50,6 @@ paths:
         - email
       security:
         - BearerAuth: []
-      parameters:
-        - in: query
-          name: provider
-          schema:
-            type: string
-          required: false
-          description: Optional source of the contact (e.g., 'mailchimp', 'hubspot')
       description: Validate a single email address and return its validation status and detailed results.
       requestBody:
         required: true
@@ -89,13 +82,6 @@ paths:
         - email
       security:
         - BearerAuth: []
-      parameters:
-        - in: query
-          name: provider
-          schema:
-            type: string
-          required: false
-          description: Optional source of the contact for the bulk validation batch (e.g., 'mailchimp', 'hubspot')
       description: >
         Validate multiple email addresses in bulk. A detailed CSV report containing 
         the validation results for each email will be sent to your registered email address.

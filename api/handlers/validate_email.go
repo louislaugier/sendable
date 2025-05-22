@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"errors"
 	"net/http"
+	"sendable/config"
 	"sendable/handlers/middleware"
 	"sendable/internal/models"
 	"sendable/internal/pkg/email"
@@ -48,10 +49,12 @@ func ValidateEmailHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	requestOrigin := middleware.GetOriginFromRequest(r)
+
 	// Extract provider from query parameters
 	provider := r.URL.Query().Get("provider")
 	var providerType *models.ContactProviderType
-	if provider != "" {
+	if provider != "" && requestOrigin == config.FrontendURL {
 		pt := models.ContactProviderType(provider)
 		providerType = &pt
 	}
@@ -59,7 +62,7 @@ func ValidateEmailHandler(w http.ResponseWriter, r *http.Request) {
 	v := &models.Validation{
 		ID:                       uuid.New(),
 		SingleTargetEmail:        req.Email,
-		Origin:                   middleware.GetValidationOriginType(middleware.GetOriginFromRequest(r)),
+		Origin:                   middleware.GetValidationOriginType(requestOrigin),
 		Status:                   models.StatusCompleted,
 		SingleTargetReachability: &resp.Reachability,
 		ProviderSource:           providerType, // Add provider to the validation record
