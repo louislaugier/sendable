@@ -1,4 +1,4 @@
-# todo: swarm production without frontend
+# todo: swarm production without frontend (isolate db & object storage from api container)
 services:
   api:
     build:
@@ -25,7 +25,7 @@ services:
     volumes:
       - ./api/files:/api_files/files:ro
     ports:
-      - 5432:5432 # should not be accessible outside docker in production
+      # - 5432:5432s # should not be accessible outside docker in production
     networks:
       - vpc_local
     deploy:
@@ -51,6 +51,7 @@ services:
   frontend: # development only, outside the cluster in prod
     build:
       context: ./frontend
+      dockerfile: Dockerfile.dev
     volumes:
       - ./frontend/app/:/frontend/app
       - ./frontend/public/:/frontend/public

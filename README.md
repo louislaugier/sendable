@@ -1,1 +1,1 @@
-# TODO: setup auto-backups for files & DB
+# TODO: setup auto-backups for files
