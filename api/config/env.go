@@ -23,6 +23,7 @@ func loadEnv() {
 	loadEnvFile()
 
 	domain := os.Getenv("DOMAIN")
+	log.Println("ok456", domain, os.Getenv("JWT_SECRET_KEY"))
 	if domain == "" {
 		FrontendURL = "http://localhost:3000"
 		BaseURL = "http://localhost"
