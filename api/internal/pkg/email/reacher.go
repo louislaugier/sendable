@@ -12,14 +12,15 @@ import (
 )
 
 func postToReacher(email string) (*models.ReacherResponse, error) {
-	log.Println("ok123", strings.TrimPrefix(strings.TrimPrefix(config.BaseURL, "http://"), "https://"))
-	log.Printf("Validating %s", email)
+	HELLO_NAME := strings.TrimPrefix(strings.TrimPrefix(config.BaseURL, "http://"), "https://")
+	log.Printf("Validating %s with HELLO_NAME %s", email, HELLO_NAME)
+
 	req, err := http.Post("http://reacher:8080/v0/check_email", "application/json", bytes.NewBuffer([]byte(fmt.Sprintf(`
 		{
 			"to_email": "%s",
 			"hello_name": "%s"
 		}
-	`, email, strings.TrimPrefix(strings.TrimPrefix(config.BaseURL, "http://"), "https://")))))
+	`, email, HELLO_NAME))))
 	if err != nil {
 		return nil, err
 	}
