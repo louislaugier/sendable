@@ -17,8 +17,8 @@ services:
         delay: 10s
       restart_policy:
         condition: on-failure
-    # environment:
-      # - DOMAIN=sendable.email
+    environment:
+      - DOMAIN={DOMAIN}
   db:
     build:
       context: ./database
