@@ -9,7 +9,7 @@ import (
 func main() {
 	config.Load()
 
-	scheduler.StartScheduler()
+	scheduler.Start()
 
 	router.StartServer()
 }

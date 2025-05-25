@@ -10,16 +10,15 @@ import (
 	cron "github.com/robfig/cron/v3"
 )
 
-// StartScheduler initializes and starts the cron scheduler.
-func StartScheduler() {
+// Start initializes and starts the cron scheduler.
+func Start() {
 	log.Println("Starting scheduler with cron expression...")
 
 	// Use WithSeconds to enable parsing of the seconds field
 	c := cron.New(cron.WithSeconds())
 
-	// Schedule the ping job to run at 45 seconds past every 4th minute.
-	// This is the closest standard cron expression to 4 minutes and 45 seconds.
-	_, err := c.AddFunc("45 */4 * * * *", func() {
+	// Schedule the ping job to run at the 0th second of every 5th minute.
+	_, err := c.AddFunc("0 */5 * * * *", func() {
 		pingRenderService()
 	})
 
