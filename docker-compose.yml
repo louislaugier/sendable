@@ -21,6 +21,8 @@ services:
       - DOMAIN=${DOMAIN}
     depends_on:
       - db
+      - reacher
+    restart: unless-stopped
   db:
     build:
       context: ./database
@@ -28,7 +30,7 @@ services:
       - ./database/.env
     volumes:
       - ./api/files:/api_files/files:ro
-    # ports:
+      # ports:
       # - 5432:5432s # should not be accessible outside docker in production
     networks:
       - vpc_local
@@ -36,6 +38,7 @@ services:
       replicas: 1
       restart_policy:
         condition: on-failure
+    restart: unless-stopped
   reacher:
     image: reacherhq/backend:latest
     environment:
@@ -48,10 +51,11 @@ services:
       replicas: 1
       restart_policy:
         condition: on-failure
-  # rabbitmq:
-  #   image: rabbitmq:3.12-management
-  # clamav:
-  #   image: clamav/clamav:1.3.0-41
+    # rabbitmq:
+    #   image: rabbitmq:3.12-management
+    # clamav:
+    #   image: clamav/clamav:1.3.0-41
+    restart: unless-stopped
 
 volumes:
   frontend_node_modules:
