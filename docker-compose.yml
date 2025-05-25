@@ -19,6 +19,8 @@ services:
         condition: on-failure
     environment:
       - DOMAIN=${DOMAIN}
+    depends_on:
+      - db
   db:
     build:
       context: ./database
