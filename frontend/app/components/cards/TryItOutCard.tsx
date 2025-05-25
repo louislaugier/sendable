@@ -109,14 +109,14 @@ export default function TryItOut() {
                     <p className="text-xs mt-2">*Target will not receive any email.</p>
                     {reachability &&
                         <>
-                            <Divider className="mt-8 mb-4" />
+                            <Divider className="mt-6 mb-2" />
                             <CardFooter>
                                 <div>
-                                    <p style={{ lineHeight: "30px" }}>Reachability for {emailConfirmed}: <ReachabilityChip reachability={reachability} email={email} /></p>
+                                    <p style={{ lineHeight: "30px" }}>Reachability for <b>{emailConfirmed}</b>: <ReachabilityChip reachability={reachability} email={email} /></p>
                                     <Link onClick={() => {
                                         setModalType(AuthModalType.Signup);
                                         authModal.onOpen();
-                                    }} className="mt-4 cursor-pointer">
+                                    }} className="mt-2 cursor-pointer">
                                         <u><p className="text-sm">Learn more</p></u>
                                     </Link>
                                 </div>
