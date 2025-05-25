@@ -258,31 +258,39 @@ export default function IntegrationCard(props: IntegrationCardProps) {
                 <Divider />
                 <CardFooter className="justify-end gap-2">
                     {showSignupButton && signupBtn}
-                    {isGuest ? (
-                        <Tooltip showArrow={true} content="You must be logged in to import contacts">
+                    {title === 'Salesforce' ?
+                        <Tooltip showArrow={true} content="Salesforce SSO is temporarily disabled.">
+                            <div>
+                                <Button isDisabled color="primary" variant="shadow">
+                                    Import contacts
+                                </Button>
+                            </div>
+                        </Tooltip>
+                        : isGuest ? (
+                            <Tooltip showArrow={true} content="You must be logged in to import contacts">
+                                <Button
+                                    // style={{ cursor: 'not-allowed' }}
+                                    onClick={() => {
+                                        // open auth modal
+                                        authModal.onOpen();
+                                    }}
+                                    className="notAllowed"
+                                    color="primary"
+                                    variant="shadow"
+                                >
+                                    Import contacts
+                                </Button>
+                            </Tooltip>
+                        ) : (
                             <Button
-                                // style={{ cursor: 'not-allowed' }}
-                                onClick={() => {
-                                    // open auth modal
-                                    authModal.onOpen();
-                                }}
-                                className="notAllowed"
+                                isLoading={loadingStates[title]}
+                                onClick={handleImportClick}
                                 color="primary"
                                 variant="shadow"
                             >
-                                Import contacts
+                                {shouldConnectApiKey ? 'Add API key' : loadingStates[title] ? 'Importing...' : 'Import contacts'}
                             </Button>
-                        </Tooltip>
-                    ) : (
-                        <Button
-                            isLoading={loadingStates[title]}
-                            onClick={handleImportClick}
-                            color="primary"
-                            variant="shadow"
-                        >
-                            {shouldConnectApiKey ? 'Add API key' : loadingStates[title] ? 'Importing...' : 'Import contacts'}
-                        </Button>
-                    )}
+                        )}
                 </CardFooter>
             </Card>
 

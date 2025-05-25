@@ -8,6 +8,8 @@ import { Button } from '@nextui-org/button';
 import SalesforceIcon from '~/components/icons/logos/SalesforceFullLogo';
 import UserContext from '~/contexts/UserContext';
 import { handleAuthCode, login } from '~/services/oauth';
+import { Tooltip } from '@nextui-org/react';
+import { siteName } from '~/constants/app';
 
 const url = 'https://login.salesforce.com/services/oauth2/authorize'
 
@@ -17,7 +19,7 @@ export default function SalesforceAuthButton(props: any) {
   const [isLoading, setLoading] = useState(false);
 
   const { setUser, setTemp2faUserId } = useContext(UserContext)
-  
+
   useEffect(() => {
     const handleAuthCallback = async (event: MessageEvent<AuthCodeEvent>) => {
       await handleAuthCode(event, setUser, setTemp2faUserId, salesforceAuth, setLoading, salesforceAuthCodeKey, salesforceStateKey, salesforceCodeVerifierKey);
@@ -43,8 +45,12 @@ export default function SalesforceAuthButton(props: any) {
   };
 
   return (
-    <Button style={{ justifyContent: 'flex-start' }} isLoading={isLoading} onClick={salesforceLogin} color='primary' variant="bordered" startContent={!customText && <SalesforceIcon />}>
-      <p className='text-red'>{isLoading ? 'Loading...' : customText ?? 'Log in with Salesforce'}</p>
-    </Button>
+    <Tooltip content={`Salesforce SSO is temporarily disabled.`}>
+      <div>
+        <Button isDisabled style={{ justifyContent: 'flex-start' }} isLoading={isLoading} onClick={salesforceLogin} color='primary' variant="bordered" startContent={!customText && <SalesforceIcon />}>
+          <p className='text-red'>{isLoading ? 'Loading...' : customText ?? 'Log in with Salesforce'}</p>
+        </Button>
+      </div>
+    </Tooltip>
   );
 }
