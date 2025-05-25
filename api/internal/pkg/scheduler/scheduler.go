@@ -1,10 +1,8 @@
 package scheduler
 
 import (
-	"fmt"
 	"log"
 	"net/http"
-	"os"
 	"time"
 
 	cron "github.com/robfig/cron/v3"
@@ -35,13 +33,7 @@ func Start() {
 
 // pingRenderService sends an HTTP GET request to the Render service.
 func pingRenderService() {
-	domain := os.Getenv("DOMAIN")
-	if domain == "" {
-		log.Println("DOMAIN environment variable not set, skipping ping.")
-		return
-	}
-
-	url := fmt.Sprintf("https://%s", domain)
+	url := "https://sendable.onrender.com"
 
 	client := &http.Client{
 		Timeout: 10 * time.Second, // Set a timeout for the request
