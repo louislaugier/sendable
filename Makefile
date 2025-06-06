@@ -15,5 +15,4 @@ re:
 
 .PHONY: deploy
 deploy:
-	$(eval $(shell cat .env | sed 's/^/export /'))
-	sshpass -e ssh root@$(SERVER_IP_ADDRESS) "cd sendable && git pull"
+	bash ./deploy.sh
