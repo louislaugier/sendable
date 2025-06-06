@@ -5,10 +5,10 @@ set -e
 
 # Load environment variables from .env file
 # This assumes .env is in the same directory as this script
-if [ -f .env ]; then
+if [ -f ./deploy/.env ]; then
     # Use 'source' to load variables into the current shell, if 'export $(...)' is problematic
     # Note: 'source' is bash-specific, consider '.' for broader compatibility if needed
-    source .env
+    source ./deploy/.env
 else
     echo "Error: .env file not found!" >&2
     exit 1
