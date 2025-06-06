@@ -15,3 +15,7 @@ re:
 	docker-compose up -d --force-recreate
 	make -C frontend postinstall
 	make -C files re
+
+.PHONY: deploy
+deploy:
+SSH_PASSWORD=$(grep SSH_PASSWORD .env | cut -d '=' -f2) sshpass -e ssh root@50.116.8.141 "cd sendable && git pull"

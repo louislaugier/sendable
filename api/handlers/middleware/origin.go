@@ -1,9 +1,9 @@
 package middleware
 
 import (
+	"net/http"
 	"sendable/config"
 	"sendable/internal/models"
-	"net/http"
 )
 
 func ValidateSingleValidationOriginAndLimits(next http.Handler) http.Handler {

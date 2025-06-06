@@ -60,7 +60,7 @@ export function RiskyDescriptor(props: any) {
 
 export function UnknownDescriptor(props: any) {
     const { nochip } = props;
-    const description = `There is no way to confidently say if the address is reachable or not. It might happen on rare occasions that the email provider doesn't allow real-time verification of email accounts. In most cases, this error happens on timeout, when port 25 prevents incoming connections. On other occasions, it might also happen that the email provider's DNS doesn't expose MX records (SMTP server domain names and/or IP addresses). In this case, there's unfortunately nothing we can do. We're working on finding ways to bypass these issues out of the box, which in most occasions are solved on a case-by-case basis.`;
+    const description = `There is no way to confidently say if the address is reachable or not. It might happen on rare occasions that the email provider doesn't allow real-time verification of email accounts. In most cases, this error happens on timeout, when port 25 prevents incoming connections. On other occasions, it might also happen that the email provider's DNS doesn't expose MX records (SMTP server domain names and/or IP addresses). In this case, there's unfortunately nothing we can do. We're working on finding ways to bypass these issues out of the box, which are solved on a case-by-case basis.`;
 
     return (
         <>

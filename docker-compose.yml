@@ -10,13 +10,6 @@ services:
       - 80:80
     networks:
       - vpc_local
-    deploy:
-      replicas: 1
-      update_config:
-        parallelism: 1
-        delay: 10s
-      restart_policy:
-        condition: on-failure
     environment:
       - DOMAIN=${DOMAIN}
     depends_on:
@@ -34,10 +27,6 @@ services:
       # - 5432:5432s # should not be accessible outside docker in production
     networks:
       - vpc_local
-    deploy:
-      replicas: 1
-      restart_policy:
-        condition: on-failure
     restart: unless-stopped
   reacher:
     image: reacherhq/backend:latest
@@ -47,10 +36,6 @@ services:
       # - RCH_AMQP_ADDR=amqp://rabbitmq:5672
     networks:
       - vpc_local
-    deploy:
-      replicas: 1
-      restart_policy:
-        condition: on-failure
     # rabbitmq:
     #   image: rabbitmq:3.12-management
     # clamav:

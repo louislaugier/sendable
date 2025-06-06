@@ -83,7 +83,7 @@ export default function TryItOut() {
                 <div className="bg-white p-8">
                     <div className="flex justify-between">
                         <h2 className="text-2xl font-bold mb-4">Test email address reachability*</h2>
-                        {!!user && <Button onClick={() => navigateToUrl('/dashboard')} color="primary" variant="bordered" className="mb-4">
+                        {!!user && <Button onClick={() => navigateToUrl('/dashboard')} color="primary" variant="bordered" className="mb-4 px-6">
                             Go to dashboard
                         </Button>}
                     </div>

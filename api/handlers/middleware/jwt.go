@@ -21,9 +21,8 @@ import (
 
 // CustomClaims includes the custom claims for the JWT.
 type CustomClaims struct {
-	UserID    uuid.UUID `json:"user_id"`
-	UserEmail string    `json:"user_email"`
 	jwt.StandardClaims
+	// add more claims if needed
 }
 
 type contextKey string
@@ -53,8 +52,6 @@ func GenerateJWT(userID uuid.UUID, userEmail string) (*string, error) {
 	now := time.Now()
 
 	claims := CustomClaims{
-		UserID:    userID,
-		UserEmail: userEmail,
 		StandardClaims: jwt.StandardClaims{
 			Issuer:    config.BaseURL,
 			Subject:   userID.String(),
@@ -62,6 +59,7 @@ func GenerateJWT(userID uuid.UUID, userEmail string) (*string, error) {
 			IssuedAt:  now.Unix(),
 			Audience:  config.FrontendURL,
 			Id:        uuid.New().String(),
+			NotBefore: now.Unix(),
 		},
 	}
 
@@ -99,7 +97,12 @@ func ValidateJWT(next http.Handler, requiresConfirmedEmail bool) http.Handler {
 		}
 
 		if claims, ok := token.Claims.(*CustomClaims); ok && token.Valid {
-			userID := claims.UserID
+			userID, err := uuid.Parse(claims.Subject)
+			if err != nil {
+				log.Printf("Error casting JWT subject into user ID (uuid): %v", err)
+				http.Error(w, "Internal Server Error", http.StatusInternalServerError)
+				return
+			}
 
 			u, err := user.GetByID(userID)
 			if err != nil || u == nil {

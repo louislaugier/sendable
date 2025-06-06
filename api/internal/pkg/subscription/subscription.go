@@ -8,7 +8,7 @@ import (
 )
 
 const (
-	insertQuery = "INSERT INTO public.subscription (id, user_id, billing_frequency, type, stripe_subscription_id, starting_at) VALUES ($1, $2, $3, $4, $5, $6);"
+	insertQuery = "INSERT INTO public.subscription (id, user_id, billing_frequency, type, stripe_subscription_id, starting_after) VALUES ($1, $2, $3, $4, $5, $6);"
 
 	getCountQuery = `
 		SELECT COUNT(*)
@@ -17,18 +17,18 @@ const (
 	`
 
 	getLatestActiveQuery = `
-		SELECT s."id", s."billing_frequency", s."type", s."created_at", s."cancelled_at", s."starting_at", s."stripe_subscription_id", sr."renewed_at"
+		SELECT s."id", s."billing_frequency", s."type", s."created_at", s."cancelled_at", s."starting_after", s."stripe_subscription_id", sr."renewed_at"
 		FROM public."subscription" s
 		LEFT JOIN public."subscription_renewal" sr ON s."id" = sr."subscription_id"
 		WHERE s."user_id" = $1
 		AND (s."cancelled_at" IS NULL OR s."cancelled_at" > NOW())
 		AND (
-			(s."starting_at" IS NOT NULL AND s."starting_at" + 
+			(s."starting_after" IS NOT NULL AND s."starting_after" + 
 			CASE s."billing_frequency"
 			WHEN 'monthly' THEN INTERVAL '1 month'
 			WHEN 'yearly' THEN INTERVAL '1 year'
 			END > NOW())
-			OR (s."starting_at" IS NULL AND s."created_at" + 
+			OR (s."starting_after" IS NULL AND s."created_at" + 
 			CASE s."billing_frequency"
 			WHEN 'monthly' THEN INTERVAL '1 month'
 			WHEN 'yearly' THEN INTERVAL '1 year'
@@ -41,10 +41,10 @@ const (
 
 	// Error getting user's upcoming plan: pq: missing FROM-clause entry for table "sr"
 	getUpcomingQuery = `
-		SELECT s."id", s."billing_frequency", s."type", s."created_at", s."cancelled_at", s."starting_at", s."stripe_subscription_id"
+		SELECT s."id", s."billing_frequency", s."type", s."created_at", s."cancelled_at", s."starting_after", s."stripe_subscription_id"
 		FROM public."subscription" s
 		WHERE s."user_id" = $1
-		AND s."starting_at" > NOW()
+		AND s."starting_after" > NOW()
 		AND s."cancelled_at" IS NULL
 		ORDER BY s."created_at" DESC
 		LIMIT 1;
@@ -65,7 +65,7 @@ const (
 	`
 
 	getByStripeSusbcriptionIDQuery = `
-		SELECT id, user_id, billing_frequency, type, stripe_subscription_id, created_at, cancelled_at, starting_at
+		SELECT id, user_id, billing_frequency, type, stripe_subscription_id, created_at, cancelled_at, starting_after
 		FROM public.subscription
 		WHERE stripe_subscription_id = $1
 		LIMIT 1;
