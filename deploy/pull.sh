@@ -4,10 +4,10 @@
 set -e
 
 # Source common functions
-source ./deploy/common.sh
+source ./common.sh
 
 # Load environment variables from .env file
-load_env_vars "./deploy/.env"
+load_env_vars "./.env"
 
 # Check if SSH_PASSWORD and SERVER_IP_ADDRESS are set
 check_env_vars "SSH_PASSWORD" "SERVER_IP_ADDRESS"

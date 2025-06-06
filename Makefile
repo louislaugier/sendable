@@ -16,7 +16,7 @@ re:
 # redeploy app
 .PHONY: deploy
 deploy:
-	bash ./deploy.sh
+	make -C deploy app
 
 # redeploy app & compose config
 .PHONY: deploy-compose
