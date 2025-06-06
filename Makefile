@@ -13,6 +13,17 @@ re:
 	make -C frontend postinstall
 	make -C files re
 
+# redeploy app
 .PHONY: deploy
 deploy:
-	bash ./deploy/pull.sh
+	make -C deploy app
+
+# redeploy compose config
+.PHONY: deploy-compose
+deploy-compose:
+	make -C deploy compose
+
+# redeploy dockerfiles
+.PHONY: deploy-build
+deploy-build:
+	make -C deploy build
