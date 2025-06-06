@@ -6,9 +6,6 @@ start:
 	make -C frontend postinstall
 	make -C api stripe-dev
 
-swarm:
-	docker stack deploy --compose-file docker-compose.yml sendable
-
 .PHONY: re
 re:
 	docker-compose build --no-cache
@@ -18,4 +15,5 @@ re:
 
 .PHONY: deploy
 deploy:
-SSH_PASSWORD=$(grep SSH_PASSWORD .env | cut -d '=' -f2) sshpass -e ssh root@50.116.8.141 "cd sendable && git pull"
+	$(eval $(shell cat .env | sed 's/^/export /'))
+	sshpass -e ssh root@$(SERVER_IP_ADDRESS) "cd sendable && git pull"
