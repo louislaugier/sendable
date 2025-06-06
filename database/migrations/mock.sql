@@ -64,7 +64,7 @@ VALUES
         'yearly',
         'enterprise',
         'sub_1PhffoRsG6IPgooN9UtBTApl',
-        '2024-05-03 14:10:20.996654',
+        now(),
         NULL
     );
 

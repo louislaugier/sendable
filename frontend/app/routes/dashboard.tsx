@@ -31,12 +31,6 @@ export default function Dashboard() {
 
   const isEmailAddressConfirmedCall = !!searchParams.get("email_confirmed")
 
-  useEffect(() => {
-    if (!user) {
-      navigateToUrl(isEmailAddressConfirmedCall ? '/?email_confirmed=true' : '/')
-    }
-  }, [user, isEmailAddressConfirmedCall])
-
   const [selectedTab, setSelectedTab] = useState<any>(searchParams.get("tab") ?? "validation");
 
   useEffect(() => {
@@ -99,6 +93,12 @@ export default function Dashboard() {
   const remainingApiValidations = getRemainingApiValidations(user!)
 
   const isPremiumOrEnterprise = user?.currentPlan?.type === SubscriptionType.Premium || user?.currentPlan?.type === SubscriptionType.Enterprise
+
+  useEffect(() => {
+    if (!user) {
+      navigateToUrl(isEmailAddressConfirmedCall ? '/?email_confirmed=true' : '/')
+    }
+  }, [user, isEmailAddressConfirmedCall])
 
   return (
     <>
