@@ -31,7 +31,7 @@ export default function SubscriptionHistoryTable(props: any) {
         const formattedCreatedAt = moment(subscription.createdAt).format("YYYY-MM-DD HH:mm:ss").toString()
         return <TableRow key={i}>
             <TableCell>{formattedCreatedAt}</TableCell>
-            <TableCell>{!!subscription.startingAt ? moment(subscription.startingAt).format("YYYY-MM-DD HH:mm:ss").toString() : formattedCreatedAt}</TableCell>
+            <TableCell>{!!subscription.delayedStartAt ? moment(subscription.delayedStartAt).format("YYYY-MM-DD HH:mm:ss").toString() : formattedCreatedAt}</TableCell>
             <TableCell>{capitalize(subscription.type)}</TableCell>
             <TableCell>{capitalize(subscription.billingFrequency)}</TableCell>
             <TableCell>

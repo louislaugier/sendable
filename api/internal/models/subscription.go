@@ -32,9 +32,9 @@ type Subscription struct {
 
 	StripeSubscriptionID *string `json:"-"`
 
-	CreatedAt   *time.Time `json:"createdAt,omitempty"`
-	CancelledAt *time.Time `json:"cancelledAt,omitempty"`
-	StartingAt  *time.Time `json:"startingAt,omitempty"`
+	CreatedAt      *time.Time `json:"createdAt,omitempty"`
+	CancelledAt    *time.Time `json:"cancelledAt,omitempty"`
+	DelayedStartAt *time.Time `json:"delayedStartAt,omitempty"`
 
 	LatestRenewedAt *time.Time `json:"latestRenewedAt,omitempty"`
 }

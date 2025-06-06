@@ -8,7 +8,7 @@ import (
 )
 
 const (
-	insertQuery = "INSERT INTO public.subscription (id, user_id, billing_frequency, type, stripe_subscription_id, starting_after) VALUES ($1, $2, $3, $4, $5, $6);"
+	insertQuery = "INSERT INTO public.subscription (id, user_id, billing_frequency, type, stripe_subscription_id, delayed_start_at) VALUES ($1, $2, $3, $4, $5, $6);"
 
 	getCountQuery = `
 		SELECT COUNT(*)
@@ -17,18 +17,18 @@ const (
 	`
 
 	getLatestActiveQuery = `
-		SELECT s."id", s."billing_frequency", s."type", s."created_at", s."cancelled_at", s."starting_after", s."stripe_subscription_id", sr."renewed_at"
+		SELECT s."id", s."billing_frequency", s."type", s."created_at", s."cancelled_at", s."delayed_start_at", s."stripe_subscription_id", sr."renewed_at"
 		FROM public."subscription" s
 		LEFT JOIN public."subscription_renewal" sr ON s."id" = sr."subscription_id"
 		WHERE s."user_id" = $1
 		AND (s."cancelled_at" IS NULL OR s."cancelled_at" > NOW())
 		AND (
-			(s."starting_after" IS NOT NULL AND s."starting_after" + 
+			(s."delayed_start_at" IS NOT NULL AND s."delayed_start_at" + 
 			CASE s."billing_frequency"
 			WHEN 'monthly' THEN INTERVAL '1 month'
 			WHEN 'yearly' THEN INTERVAL '1 year'
 			END > NOW())
-			OR (s."starting_after" IS NULL AND s."created_at" + 
+			OR (s."delayed_start_at" IS NULL AND s."created_at" + 
 			CASE s."billing_frequency"
 			WHEN 'monthly' THEN INTERVAL '1 month'
 			WHEN 'yearly' THEN INTERVAL '1 year'
@@ -41,10 +41,10 @@ const (
 
 	// Error getting user's upcoming plan: pq: missing FROM-clause entry for table "sr"
 	getUpcomingQuery = `
-		SELECT s."id", s."billing_frequency", s."type", s."created_at", s."cancelled_at", s."starting_after", s."stripe_subscription_id"
+		SELECT s."id", s."billing_frequency", s."type", s."created_at", s."cancelled_at", s."delayed_start_at", s."stripe_subscription_id"
 		FROM public."subscription" s
 		WHERE s."user_id" = $1
-		AND s."starting_after" > NOW()
+		AND s."delayed_start_at" > NOW()
 		AND s."cancelled_at" IS NULL
 		ORDER BY s."created_at" DESC
 		LIMIT 1;
@@ -65,7 +65,7 @@ const (
 	`
 
 	getByStripeSusbcriptionIDQuery = `
-		SELECT id, user_id, billing_frequency, type, stripe_subscription_id, created_at, cancelled_at, starting_after
+		SELECT id, user_id, billing_frequency, type, stripe_subscription_id, created_at, cancelled_at, delayed_start_at
 		FROM public.subscription
 		WHERE stripe_subscription_id = $1
 		LIMIT 1;
@@ -80,7 +80,7 @@ const (
 )
 
 func InsertNew(subscription *models.Subscription) error {
-	_, err := config.DB.Exec(insertQuery, &subscription.ID, &subscription.UserID, &subscription.BillingFrequency, &subscription.Type, &subscription.StripeSubscriptionID, &subscription.StartingAt)
+	_, err := config.DB.Exec(insertQuery, &subscription.ID, &subscription.UserID, &subscription.BillingFrequency, &subscription.Type, &subscription.StripeSubscriptionID, &subscription.DelayedStartAt)
 	return err
 }
 
@@ -141,7 +141,7 @@ func GetLatestActive(userID uuid.UUID) (*models.Subscription, error) {
 	for rows.Next() {
 		s := models.Subscription{}
 
-		err = rows.Scan(&s.ID, &s.BillingFrequency, &s.Type, &s.CreatedAt, &s.CancelledAt, &s.StartingAt, &s.StripeSubscriptionID, &s.LatestRenewedAt)
+		err = rows.Scan(&s.ID, &s.BillingFrequency, &s.Type, &s.CreatedAt, &s.CancelledAt, &s.DelayedStartAt, &s.StripeSubscriptionID, &s.LatestRenewedAt)
 		if err != nil {
 			return nil, err
 		}
@@ -168,7 +168,7 @@ func GetUpcoming(userID uuid.UUID) (*models.Subscription, error) {
 			&s.Type,
 			&s.CreatedAt,
 			&s.CancelledAt,
-			&s.StartingAt,
+			&s.DelayedStartAt,
 			&s.StripeSubscriptionID,
 		)
 		if err != nil {
@@ -203,7 +203,7 @@ func GetByStripeSubscriptionID(subscriptionID string) (*models.Subscription, err
 
 	var subscription *models.Subscription
 	for rows.Next() {
-		err := rows.Scan(&subscription.ID, &subscription.UserID, &subscription.BillingFrequency, &subscription.Type, &subscription.StripeSubscriptionID, &subscription.CreatedAt, &subscription.CancelledAt, &subscription.StartingAt)
+		err := rows.Scan(&subscription.ID, &subscription.UserID, &subscription.BillingFrequency, &subscription.Type, &subscription.StripeSubscriptionID, &subscription.CreatedAt, &subscription.CancelledAt, &subscription.DelayedStartAt)
 		if err != nil {
 			return nil, err
 		}

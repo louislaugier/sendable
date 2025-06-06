@@ -58,7 +58,7 @@ func DowngradePlanHandler(w http.ResponseWriter, r *http.Request) {
 		BillingFrequency:     &body.BillingFrequency,
 		Type:                 models.PremiumSubscription,
 		StripeSubscriptionID: &newStripeSubscription.ID,
-		StartingAt:           startingAt,
+		DelayedStartAt:       startingAt,
 	})
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)

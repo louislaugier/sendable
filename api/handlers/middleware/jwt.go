@@ -165,23 +165,6 @@ func ValidateJWT(next http.Handler, requiresConfirmedEmail bool) http.Handler {
 	})
 }
 
-// Parses claims from a JWT token.
-// This method parses the token but doesn't validate the signature. It's only
-// ever useful in cases where you know the signature is valid (because it has
-// been checked previously in the stack) and you want to extract values from
-// it.
-func ParseClaimsFromJWT(tokenString string) (*CustomClaims, error) {
-	token, _, err := new(jwt.Parser).ParseUnverified(tokenString, &CustomClaims{})
-	if err != nil {
-		return nil, err
-	}
-
-	if claims, ok := token.Claims.(*CustomClaims); ok {
-		return claims, nil
-	}
-	return nil, fmt.Errorf("could not parse claims")
-}
-
 // ExtractToken extracts the bearer token from the request.
 func ExtractToken(r *http.Request) string {
 	bearerToken := r.Header.Get("Authorization")

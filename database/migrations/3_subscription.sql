@@ -10,7 +10,7 @@ CREATE TABLE IF NOT EXISTS public."subscription" (
     "stripe_subscription_id" VARCHAR NOT NULL UNIQUE,
     "created_at" TIMESTAMP NOT NULL DEFAULT now(),
     "cancelled_at" TIMESTAMP,
-    "starting_after" TIMESTAMP
+    "delayed_start_at" TIMESTAMP
 );
 
 CREATE TABLE IF NOT EXISTS public."subscription_renewal" (

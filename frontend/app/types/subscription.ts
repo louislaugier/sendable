@@ -4,7 +4,7 @@ export interface Subscription {
     billingFrequency: SubscriptionBillingFrequency
     createdAt: string,
     cancelledAt: string
-    startingAt: string
+    delayedStartAt: string
     latestRenewedAt: string
 }
 

@@ -64,7 +64,7 @@ export default function PricingCard(props: any) {
                                     </>
                                     :
                                     plan.name !== SubscriptionType.Free ?
-                                        <UpgradeOrDowngradeButton isDisabled={!!user?.upcomingPlan?.startingAt} priceId={isYearly ? plan?.stripeYearlyPriceId : plan?.stripeMonthlyPriceId} value={!!user?.upcomingPlan?.startingAt ? 'Starting next billing period' : `Downgrade to ${capitalize(user?.upcomingPlan?.type)}`} />
+                                        <UpgradeOrDowngradeButton isDisabled={!!user?.upcomingPlan?.delayedStartAt} priceId={isYearly ? plan?.stripeYearlyPriceId : plan?.stripeMonthlyPriceId} value={!!user?.upcomingPlan?.delayedStartAt ? 'Starting next billing period' : `Downgrade to ${capitalize(user?.upcomingPlan?.type)}`} />
                                         :
                                         <div style={{ margin: '125px 0' }} />
                             :
