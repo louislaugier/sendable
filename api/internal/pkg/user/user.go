@@ -262,7 +262,6 @@ func getByCriteria(isMinimalResponse bool, query string, args ...interface{}) (*
 			} else {
 				u.CurrentPlan = *models.EmptyFreePlan()
 			}
-			log.Println("ok123", *currentPlan)
 
 			upcomingPlan, err := subscription.GetUpcoming(u.ID)
 			if err != nil {
