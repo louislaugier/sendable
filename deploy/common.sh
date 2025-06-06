@@ -3,27 +3,6 @@
 # Exit immediately if a command exits with a non-zero status.
 set -e
 
-# --- Common SSH Function (with private key) --- #
-# execute_remote_ssh_command <remote_user> <remote_host> <private_key_path> <remote_command>
-function execute_remote_ssh_command() {
-    local remote_user="$1"
-    local remote_host="$2"
-    local private_key_path="$3"
-    local remote_command="$4"
-
-    if [ -z "$remote_user" ] || [ -z "$remote_host" ] || [ -z "$private_key_path" ] || [ -z "$remote_command" ]; then
-        echo "Usage: execute_remote_ssh_command <remote_user> <remote_host> <private_key_path> <remote_command>" >&2
-        exit 1
-    fi
-
-    # Ensure the private key has correct permissions
-    chmod 600 "$private_key_path"
-
-    echo "Executing on ${remote_user}@${remote_host}: '${remote_command}'"
-    ssh -i "$private_key_path" "${remote_user}@${remote_host}" "${remote_command}"
-}
-# --- End Common SSH Function --- #
-
 # --- Common SSH Function (with sshpass) --- #
 # execute_remote_sshpass_command <ssh_password> <remote_user> <remote_host> <remote_command>
 function execute_remote_sshpass_command() {
