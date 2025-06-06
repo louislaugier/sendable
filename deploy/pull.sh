@@ -23,3 +23,5 @@ fi
 # Execute the remote command using sshpass with direct password input
 # This bypasses the need for the SSHPASS environment variable
 sshpass -p "$SSH_PASSWORD" ssh root@${SERVER_IP_ADDRESS} "cd sendable && git pull" 
+
+# Air will auto rebuild on the remote server after pulling

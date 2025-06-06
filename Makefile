@@ -15,4 +15,4 @@ re:
 
 .PHONY: deploy
 deploy:
-	bash ./deploy.sh
+	bash ./deploy/pull.sh
