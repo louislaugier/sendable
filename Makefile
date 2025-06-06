@@ -16,14 +16,14 @@ re:
 # redeploy app
 .PHONY: deploy
 deploy:
-	make -C deploy app
+	bash ./deploy.sh
 
-# redeploy compose config
+# redeploy app & compose config
 .PHONY: deploy-compose
 deploy-compose:
 	make -C deploy compose
 
-# redeploy dockerfiles
+# redeploy app & compose config & dockerfiles
 .PHONY: deploy-build
 deploy-build:
 	make -C deploy build

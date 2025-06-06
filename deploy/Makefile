@@ -2,10 +2,10 @@
 app:
 	bash ./pull.sh
 
-# redeploy compose config
+# redeploy app & compose config
 compose:
 	bash ./compose.sh
 
-# redeploy dockerfiles
+# redeploy app & compose config & dockerfiles
 build:
 	bash ./build.sh
