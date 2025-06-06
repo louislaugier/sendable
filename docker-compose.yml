@@ -24,7 +24,7 @@ services:
     volumes:
       - ./api/files:/api_files/files:ro
       # ports:
-      # - 5432:5432s # should not be accessible outside docker in production
+      - 5432:5432s # should not be accessible outside docker in production
     networks:
       - vpc_local
     restart: unless-stopped
