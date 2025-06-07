@@ -1,4 +1,3 @@
-# todo: swarm production without frontend (isolate db & object storage from api container)
 services:
   api:
     build:
@@ -32,6 +31,7 @@ services:
     image: reacherhq/backend:latest
     environment:
       - RCH_WORKER_CONCURRENCY=10
+      - RCH__FROM_EMAIL=hello@${DOMAIN}
       # - RCH_AMQP_ADDR=amqp://localhost
       # - RCH_AMQP_ADDR=amqp://rabbitmq:5672
     networks:
@@ -41,7 +41,25 @@ services:
     # clamav:
     #   image: clamav/clamav:1.3.0-41
     restart: unless-stopped
-
+  # frontend:
+  #   build:
+  #     context: ./frontend
+  #     dockerfile: Dockerfile.dev
+  #   volumes:
+  #     - ./frontend/app/:/frontend/app
+  #     - ./frontend/public/:/frontend/public
+  #     - ./frontend/package.json/:/frontend/package.json
+  #     # - ./frontend/package-lock.json/:/frontend/package-lock.json
+  #     - ./frontend/tailwind.config.ts/:/frontend/tailwind.config.ts
+  #     - frontend_node_modules:/frontend/node_modules
+  #   ports:
+  #     - 3000:5173
+  #   networks:
+  #     - vpc_local
+  #   deploy:
+  #     replicas: 1
+  #     restart_policy:
+  #       condition: on-failure
 volumes:
   frontend_node_modules:
 networks:
