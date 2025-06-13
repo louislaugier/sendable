@@ -1,8 +1,8 @@
 .PHONY: re
 re:
-	docker-compose rm -sfv api
-	docker-compose build api --no-cache
-	docker-compose up -d api --force-recreate
+	docker compose rm -sfv api
+	docker compose build api --no-cache
+	docker compose up -d api --force-recreate
 
 .PHONY: stripe-dev
 stripe-dev:
