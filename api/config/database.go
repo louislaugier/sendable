@@ -3,6 +3,7 @@ package config
 import (
 	"database/sql"
 	"fmt"
+	"log"
 	"os"
 
 	_ "github.com/lib/pq"
@@ -19,6 +20,7 @@ func initDatabaseConnection() {
 		"5432", // default
 		os.Getenv("POSTGRES_DB"),
 	)
+	log.Println("ok123", URL)
 
 	d, err := sql.Open("postgres", URL)
 	if err != nil {
