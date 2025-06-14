@@ -41,7 +41,6 @@ services:
       - RCH__FROM_EMAIL=hello@${DOMAIN}
       - RCH__HELLO_NAME=${DOMAIN}
       - RUST_LOG=debug
-      - RCH__OVERRIDES__HOTMAILB2C__TYPE=smtp
       # - RCH_AMQP_ADDR=amqp://localhost
       # - RCH_AMQP_ADDR=amqp://rabbitmq:5672
     networks:
