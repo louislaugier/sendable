@@ -3,6 +3,7 @@ package config
 import (
 	"database/sql"
 	"fmt"
+	"net/url"
 	"os"
 
 	_ "github.com/lib/pq"
@@ -14,7 +15,7 @@ func initDatabaseConnection() {
 
 	URL := fmt.Sprintf("postgres://%s:%s@%s:5432/db?sslmode=disable",
 		os.Getenv("POSTGRES_USER"),
-		os.Getenv("POSTGRES_PASSWORD"),
+		url.QueryEscape(os.Getenv("POSTGRES_PASSWORD")),
 		os.Getenv("POSTGRES_DB"),
 	)
 
