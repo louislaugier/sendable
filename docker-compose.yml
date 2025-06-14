@@ -11,6 +11,9 @@ services:
       - vpc_local
     environment:
       - DOMAIN=${DOMAIN}
+      - POSTGRES_USER=${POSTGRES_USER}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+      - POSTGRES_DB=${POSTGRES_DB}
     depends_on:
       - db
       - reacher
@@ -34,6 +37,9 @@ services:
       - RCH__FROM_EMAIL=hello@${DOMAIN}
       - RCH__HELLO_NAME=${DOMAIN}
       - RUST_LOG=debug
+      - POSTGRES_USER=${POSTGRES_USER}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+      - POSTGRES_DB=${POSTGRES_DB}
       # - RCH_AMQP_ADDR=amqp://localhost
       # - RCH_AMQP_ADDR=amqp://rabbitmq:5672
     networks:
