@@ -35,7 +35,10 @@ services:
       - vpc_local
     restart: unless-stopped
   reacher:
-    image: reacherhq/backend:latest
+    # image: reacherhq/backend:latest
+    build:
+      context: ./reacher
+      dockerfile: Dockerfile
     environment:
       - RCH_WORKER_CONCURRENCY=10
       - RCH__FROM_EMAIL=hello@${DOMAIN}
