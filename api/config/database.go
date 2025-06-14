@@ -12,11 +12,9 @@ var DB *sql.DB
 
 func initDatabaseConnection() {
 
-	URL := fmt.Sprintf("postgres://%s:%s@%s:%s/%s?sslmode=disable",
+	URL := fmt.Sprintf("postgres://%s:%s@%s:5432/db?sslmode=disable",
 		os.Getenv("POSTGRES_USER"),
 		os.Getenv("POSTGRES_PASSWORD"),
-		"db",   // docker service name
-		"5432", // default
 		os.Getenv("POSTGRES_DB"),
 	)
 
