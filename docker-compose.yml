@@ -48,7 +48,7 @@ services:
       # - RCH_AMQP_ADDR=amqp://rabbitmq:5672
     networks:
       - vpc_local
-    shm_size: '256m'
+    shm_size: '1024m'
     # rabbitmq:
     #   image: rabbitmq:3.12-management
     # clamav:
