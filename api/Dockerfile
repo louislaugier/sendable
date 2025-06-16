@@ -1,29 +1,14 @@
-# Start from the latest golang base image
-FROM --platform=linux/amd64 golang:1.23 AS builder
+FROM --platform=linux/amd64 golang:1.24
 
-# Set the Current Working Directory inside the container
-WORKDIR /go/src/sendable
+WORKDIR /go/src/sendable/api
 
-# Copy the source from the current directory to the Working Directory inside the container
 COPY . .
+COPY wait-for-certs.sh .
 
-# Download all dependencies. Dependencies will be cached if the go.mod and the go.sum files are not changed
-RUN go mod download
+RUN apt-get update && apt-get install -y netcat-traditional && rm -rf /var/lib/apt/lists/*
 
-# Build the Go app for a smaller and secured production binary
-RUN CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -a -installsuffix cgo -o main ./cmd/*.go
+RUN go install ./...
+RUN go install github.com/air-verse/air@latest
 
-######## Start a new stage from scratch #######
-FROM --platform=linux/amd64 alpine::3.20.3
-
-# Set the Current Working Directory inside the container
-WORKDIR /go/src/sendable
-
-# Copy the pre-built binary file from the previous stage
-COPY --from=builder /api/main .
-
-# Expose port 80 to the outside
-EXPOSE 80
-
-# Command to run the executable
-CMD ["./main"]
+ENTRYPOINT ["./wait-for-certs.sh"]
+CMD ["air", "."]

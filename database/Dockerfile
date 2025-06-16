@@ -27,8 +27,8 @@ COPY ./backup.sh /scripts/backup.sh
 RUN chmod +x /scripts/backup.sh
 
 # Set up cron with proper environment
-COPY ./entrypoint-wrapper.sh /scripts/entrypoint-wrapper.sh
-RUN chmod +x /scripts/entrypoint-wrapper.sh
+COPY ./entrypoint.sh /scripts/entrypoint.sh
+RUN chmod +x /scripts/entrypoint.sh
 
 # Setup cron job with logging and environment sourcing
 RUN echo "SHELL=/bin/bash\n\
@@ -48,5 +48,5 @@ RUN mkdir -p /var/log \
 # Create cron log symlink
 RUN ln -sf /proc/1/fd/1 /var/log/cron.log
 
-# Use our wrapper script as entrypoint
-CMD ["/bin/bash", "/scripts/entrypoint-wrapper.sh"]
+# Use our script as entrypoint
+CMD ["/bin/bash", "/scripts/entrypoint.sh"]
