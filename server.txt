@@ -1,0 +1,192 @@
+reacher-1  | Starting ChromeDriver 124.0.6367.78 (a087f2dd364ddd58b9c016ef1bf563d2bc138711-refs/branch-heads/6367@{#954}) on port 9515
+reacher-1  | Only local connections are allowed.
+reacher-1  | Please see https://chromedriver.chromium.org/security-considerations for suggestions on keeping ChromeDriver safe.
+reacher-1  | ChromeDriver was started successfully.
+reacher-1  | 2025-06-16T10:57:15.447052Z  INFO reacher: Running Reacher version="0.11.4"
+reacher-1  | 2025-06-16T10:57:15.451321Z DEBUG reacher: BackendConfig {
+reacher-1  |     backend_name: "backend-dev",
+reacher-1  |     from_email: "hello@sendable.email",
+reacher-1  |     hello_name: "sendable.email",
+reacher-1  |     smtp_timeout: None,
+reacher-1  |     proxy: None,
+reacher-1  |     overrides: OverridesConfig {
+reacher-1  |         proxies: {},
+reacher-1  |         gmail: None,
+reacher-1  |         hotmailb2b: None,
+reacher-1  |         hotmailb2c: None,
+reacher-1  |         mimecast: None,
+reacher-1  |         proofpoint: None,
+reacher-1  |         yahoo: None,
+reacher-1  |     },
+reacher-1  |     webdriver_addr: "http://localhost:9515",
+reacher-1  |     webdriver: WebdriverConfig {
+reacher-1  |         binary: None,
+reacher-1  |     },
+reacher-1  |     http_host: "0.0.0.0",
+reacher-1  |     http_port: 8080,
+reacher-1  |     header_secret: None,
+reacher-1  |     sentry_dsn: None,
+reacher-1  |     worker: WorkerConfig {
+reacher-1  |         enable: false,
+reacher-1  |         rabbitmq: Some(
+reacher-1  |             RabbitMQConfig {
+reacher-1  |                 url: "amqp://guest:guest@localhost:5672",
+reacher-1  |                 concurrency: 5,
+reacher-1  |             },
+reacher-1  |         ),
+reacher-1  |         webhook: None,
+reacher-1  |     },
+reacher-1  |     storage: None,
+reacher-1  |     commercial_license_trial: None,
+reacher-1  |     throttle: ThrottleConfig {
+reacher-1  |         max_requests_per_second: None,
+reacher-1  |         max_requests_per_minute: None,
+reacher-1  |         max_requests_per_hour: None,
+reacher-1  |         max_requests_per_day: None,
+reacher-1  |     },
+reacher-1  |     channel: None,
+reacher-1  |     storage_adapter: Noop,
+reacher-1  |     throttle_manager: ThrottleManager {
+reacher-1  |         inner: Mutex {
+reacher-1  |             data: Throttle {
+reacher-1  |                 requests_per_second: 0,
+reacher-1  |                 requests_per_minute: 0,
+reacher-1  |                 requests_per_hour: 0,
+reacher-1  |                 requests_per_day: 0,
+reacher-1  |                 last_reset_second: Instant {
+reacher-1  |                     tv_sec: 156471,
+reacher-1  |                     tv_nsec: 758475782,
+reacher-1  |                 },
+reacher-1  |                 last_reset_minute: Instant {
+reacher-1  |                     tv_sec: 156471,
+reacher-1  |                     tv_nsec: 758475782,
+reacher-1  |                 },
+reacher-1  |                 last_reset_hour: Instant {
+reacher-1  |                     tv_sec: 156471,
+reacher-1  |                     tv_nsec: 758475782,
+reacher-1  |                 },
+reacher-1  |                 last_reset_day: Instant {
+reacher-1  |                     tv_sec: 156471,
+reacher-1  |                     tv_nsec: 758475782,
+reacher-1  |                 },
+reacher-1  |             },
+reacher-1  |         },
+reacher-1  |         config: ThrottleConfig {
+reacher-1  |             max_requests_per_second: None,
+reacher-1  |             max_requests_per_minute: None,
+reacher-1  |             max_requests_per_hour: None,
+reacher-1  |             max_requests_per_day: None,
+reacher-1  |         },
+reacher-1  |     },
+reacher-1  | }
+reacher-1  | 2025-06-16T10:57:15.451656Z DEBUG reacher: VerifMethod {
+reacher-1  |     proxies: {},
+reacher-1  |     gmail: Smtp(
+reacher-1  |         VerifMethodSmtpConfig {
+reacher-1  |             from_email: "hello@sendable.email",
+reacher-1  |             hello_name: "sendable.email",
+reacher-1  |             proxy: None,
+reacher-1  |             smtp_port: 25,
+reacher-1  |             smtp_timeout: None,
+reacher-1  |             retries: 1,
+reacher-1  |         },
+reacher-1  |     ),
+reacher-1  |     hotmailb2b: Smtp(
+reacher-1  |         VerifMethodSmtpConfig {
+reacher-1  |             from_email: "hello@sendable.email",
+reacher-1  |             hello_name: "sendable.email",
+reacher-1  |             proxy: None,
+reacher-1  |             smtp_port: 25,
+reacher-1  |             smtp_timeout: None,
+reacher-1  |             retries: 1,
+reacher-1  |         },
+reacher-1  |     ),
+reacher-1  |     hotmailb2c: Headless,
+reacher-1  |     mimecast: Smtp(
+reacher-1  |         VerifMethodSmtpConfig {
+reacher-1  |             from_email: "hello@sendable.email",
+reacher-1  |             hello_name: "sendable.email",
+reacher-1  |             proxy: None,
+reacher-1  |             smtp_port: 25,
+reacher-1  |             smtp_timeout: None,
+reacher-1  |             retries: 1,
+reacher-1  |         },
+reacher-1  |     ),
+reacher-1  |     proofpoint: Smtp(
+reacher-1  |         VerifMethodSmtpConfig {
+reacher-1  |             from_email: "hello@sendable.email",
+reacher-1  |             hello_name: "sendable.email",
+reacher-1  |             proxy: None,
+reacher-1  |             smtp_port: 25,
+reacher-1  |             smtp_timeout: None,
+reacher-1  |             retries: 1,
+reacher-1  |         },
+reacher-1  |     ),
+reacher-1  |     yahoo: Headless,
+reacher-1  |     everything_else: Smtp(
+reacher-1  |         VerifMethodSmtpConfig {
+reacher-1  |             from_email: "hello@sendable.email",
+reacher-1  |             hello_name: "sendable.email",
+reacher-1  |             proxy: None,
+reacher-1  |             smtp_port: 25,
+reacher-1  |             smtp_timeout: None,
+reacher-1  |             retries: 1,
+reacher-1  |         },
+reacher-1  |     ),
+reacher-1  | }
+reacher-1  | 2025-06-16T10:57:15.451884Z  INFO reacher: Server is listening host=0.0.0.0 port=8080
+reacher-1  | 2025-06-16T10:57:15.452013Z  INFO Server::run{addr=0.0.0.0:8080}: warp::server: listening on http://0.0.0.0:8080
+reacher-1  | 2025-06-16T10:57:44.948917Z DEBUG hyper::proto::h1::io: parsed 5 headers
+reacher-1  | 2025-06-16T10:57:44.948939Z DEBUG hyper::proto::h1::conn: incoming body is content-length (91 bytes)
+reacher-1  | 2025-06-16T10:57:44.948954Z DEBUG hyper::proto::h1::conn: incoming body completed
+reacher-1  | 2025-06-16T10:57:44.949232Z DEBUG reacher: Checking email email=louis-laugier@hotmail.fr
+reacher-1  | 2025-06-16T10:57:44.949470Z DEBUG reacher: Found syntax validation email=louis-laugier@hotmail.fr syntax=SyntaxDetails { address: Some(EmailAddress(EmailAddress("louis-laugier@hotmail.fr"))), domain: "hotmail.fr", is_valid_syntax: true, username: "louis-laugier", normalized_email: Some("louis-laugier@hotmail.fr"), suggestion: None }
+reacher-1  | 2025-06-16T10:57:44.949686Z DEBUG hickory_proto::xfer::dns_handle: querying: hotmail.fr MX
+reacher-1  | 2025-06-16T10:57:44.949704Z DEBUG hickory_resolver::name_server::name_server_pool: sending request: [Query { name: Name("hotmail.fr"), query_type: MX, query_class: IN }]
+reacher-1  | 2025-06-16T10:57:44.949734Z DEBUG hickory_resolver::name_server::name_server: reconnecting: NameServerConfig { socket_addr: 127.0.0.11:53, protocol: Udp, tls_dns_name: None, trust_negative_responses: false, bind_addr: None }
+reacher-1  | 2025-06-16T10:57:44.949745Z DEBUG hickory_proto::xfer: enqueueing message:QUERY:[Query { name: Name("hotmail.fr"), query_type: MX, query_class: IN }]
+reacher-1  | 2025-06-16T10:57:44.949773Z DEBUG hickory_proto::udp::udp_client_stream: final message: ; header 32607:QUERY:RD:NoError:QUERY:0/0/0
+reacher-1  | ; query
+reacher-1  | ;; hotmail.fr. IN MX
+reacher-1  | 
+reacher-1  | 2025-06-16T10:57:44.949801Z DEBUG hickory_proto::udp::udp_stream: created socket successfully
+reacher-1  | 2025-06-16T10:57:44.951601Z DEBUG hickory_proto::udp::udp_client_stream: received message id: 32607
+reacher-1  | 2025-06-16T10:57:44.952080Z DEBUG hickory_resolver::error: Response:; header 32607:RESPONSE:RD,RA:NoError:QUERY:1/0/0
+reacher-1  | ; query
+reacher-1  | ;; hotmail.fr. IN MX
+reacher-1  | ; answers 1
+reacher-1  | hotmail.fr. 1739 IN MX 10 eur.olc.protection.outlook.com.
+reacher-1  | ; nameservers 0
+reacher-1  | ; additionals 0
+reacher-1  | 
+reacher-1  | 2025-06-16T10:57:44.952541Z DEBUG hickory_resolver::error: Response:; header 32607:RESPONSE:RD,RA:NoError:QUERY:1/0/0
+reacher-1  | ; query
+reacher-1  | ;; hotmail.fr. IN MX
+reacher-1  | ; answers 1
+reacher-1  | hotmail.fr. 1739 IN MX 10 eur.olc.protection.outlook.com.
+reacher-1  | ; nameservers 0
+reacher-1  | ; additionals 0
+reacher-1  | 
+reacher-1  | 2025-06-16T10:57:44.953160Z DEBUG reacher: Found MX hosts email=louis-laugier@hotmail.fr mx_hosts=["10 eur.olc.protection.outlook.com."]
+reacher-1  | 2025-06-16T10:57:44.974714Z DEBUG reacher: Found misc details email=louis-laugier@hotmail.fr misc=MiscDetails { is_disposable: false, is_role_account: false, is_b2c: true, gravatar_url: None, haveibeenpwned: None }
+reacher-1  | 2025-06-16T10:57:44.974956Z DEBUG reacher: Using Hotmail password recovery in headless navigator email="louis-laugier@hotmail.fr"
+reacher-1  | 2025-06-16T10:57:44.978691Z DEBUG hyper_rustls::config: with_native_roots processed 147 valid and 0 invalid certs    
+reacher-1  | 2025-06-16T10:57:44.979164Z DEBUG hickory_proto::xfer::dns_exchange: io_stream is done, shutting down
+reacher-1  | 2025-06-16T10:57:44.979555Z DEBUG hyper_util::client::legacy::connect::http: connecting to [::1]:9515
+reacher-1  | 2025-06-16T10:57:44.979963Z DEBUG hyper_util::client::legacy::connect::http: connected to [::1]:9515
+reacher-1  | 2025-06-16T10:57:45.414806Z DEBUG hyper_util::client::legacy::pool: pooling idle connection for ("http", localhost:9515)
+reacher-1  | 2025-06-16T10:57:45.415181Z DEBUG hyper_util::client::legacy::pool: reuse idle connection for ("http", localhost:9515)
+reacher-1  | 2025-06-16T10:57:45.451050Z DEBUG hyper_util::client::legacy::pool: pooling idle connection for ("http", localhost:9515)
+reacher-1  | 2025-06-16T10:57:45.451362Z DEBUG hyper_util::client::legacy::pool: reuse idle connection for ("http", localhost:9515)
+reacher-1  | 2025-06-16T10:57:46.426076Z DEBUG hyper_util::client::legacy::pool: pooling idle connection for ("http", localhost:9515)
+reacher-1  | 2025-06-16T10:57:46.427004Z DEBUG hyper_util::client::legacy::pool: reuse idle connection for ("http", localhost:9515)
+reacher-1  | 2025-06-16T10:57:46.463950Z DEBUG hyper_util::client::legacy::pool: pooling idle connection for ("http", localhost:9515)
+reacher-1  | 2025-06-16T10:57:46.716067Z DEBUG hyper_util::client::legacy::pool: reuse idle connection for ("http", localhost:9515)
+reacher-1  | [1750071467.719][SEVERE]: Unable to receive message from renderer
+reacher-1  | 2025-06-16T10:57:47.720438Z DEBUG hyper_util::client::legacy::pool: pooling idle connection for ("http", localhost:9515)
+reacher-1  | 2025-06-16T10:57:47.721031Z DEBUG reacher: Sending error to Sentry: Smtp(HeadlessError(Cmd(NotW3C(String("disconnected")))))
+reacher-1  | 2025-06-16T10:57:47.721977Z  INFO reacher: 172.18.0.4:48336 "POST /v0/check_email HTTP/1.1" 200 "-" "Go-http-client/1.1" 2.773000481s    
+reacher-1  | 2025-06-16T10:57:47.723925Z DEBUG hyper::proto::h1::io: flushed 882 bytes
+reacher-1  | 2025-06-16T10:57:47.725173Z DEBUG hyper_util::client::legacy::pool: reuse idle connection for ("http", localhost:9515)
+reacher-1  | 2025-06-16T10:57:47.776943Z DEBUG hyper_util::client::legacy::pool: pooling idle connection for ("http", localhost:9515)
+reacher-1  | 2025-06-16T10:59:17.722816Z DEBUG hyper::proto::h1::conn: read eof

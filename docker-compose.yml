@@ -35,10 +35,10 @@ services:
       - vpc_local
     restart: unless-stopped
   reacher:
-    # image: reacherhq/backend:latest
-    build:
-      context: ./reacher
-      dockerfile: Dockerfile
+    image: reacherhq/backend:v0.7.1-beta.1
+    # build:
+      # context: ./reacher
+      # dockerfile: Dockerfile
     environment:
       - RCH_WORKER_CONCURRENCY=10
       - RCH__FROM_EMAIL=hello@${DOMAIN}
@@ -48,7 +48,7 @@ services:
       # - RCH_AMQP_ADDR=amqp://rabbitmq:5672
     networks:
       - vpc_local
-    shm_size: '1024m'
+    # shm_size: '1024m'
     # rabbitmq:
     #   image: rabbitmq:3.12-management
     # clamav:
