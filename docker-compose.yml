@@ -1,8 +1,8 @@
 services:
+
   api:
     build:
       context: ./api
-      dockerfile: Dockerfile.dev
     volumes:
       - ./api/:/go/src/sendable/api
       - certbot-etc:/etc/letsencrypt
@@ -28,8 +28,10 @@ services:
       reacher:
         condition: service_healthy
     restart: unless-stopped
+
+
   certbot:
-    image: certbot/certbot
+    image: certbot/dns-cloudflare
     volumes:
       - certbot-etc:/etc/letsencrypt
       - certbot-web:/var/www/certbot
@@ -41,22 +43,25 @@ services:
           exit 0; \\
         fi; \\
         trap exit TERM; \
+        mkdir -p /etc/letsencrypt/creds/; \
+        echo \"dns_cloudflare_api_token = \"${CLOUDFLARE_API_TOKEN}\"\" > /etc/letsencrypt/creds/cloudflare.ini; \
+        chmod 600 /etc/letsencrypt/creds/cloudflare.ini; \
         if [ ! -f /etc/letsencrypt/live/$DOMAIN/fullchain.pem ]; then \\
-          certbot certonly --webroot -w /var/www/certbot --email hello@${DOMAIN} --agree-tos --no-eff-email --non-interactive -d $DOMAIN; \\
+          certbot certonly --dns-cloudflare --dns-cloudflare-credentials /etc/letsencrypt/creds/cloudflare.ini --email hello@${DOMAIN} --agree-tos --no-eff-email --non-interactive -d $DOMAIN -d api.$DOMAIN; \\
         fi; \\
         while :; do \\
-          certbot renew --non-interactive; \\
+          certbot renew --dns-cloudflare --dns-cloudflare-credentials /etc/letsencrypt/creds/cloudflare.ini --non-interactive; \\
           sleep 12h & wait $$!; \\
         done; \\
       "
     environment:
       - DOMAIN=${DOMAIN}
+      - CLOUDFLARE_API_TOKEN=${CLOUDFLARE_API_TOKEN}
     networks:
       - vpc_local
-    depends_on:
-      api:
-        condition: service_healthy
     restart: on-failure
+
+
   db:
     build:
       context: ./database
@@ -79,6 +84,8 @@ services:
       retries: 5
       start_period: 10s
     restart: unless-stopped
+
+
   reacher:
     image: reacherhq/backend:v0.7.1-beta.1
     # build:
@@ -124,10 +131,14 @@ services:
   #     replicas: 1
   #     restart_policy:
   #       condition: on-failure
+
+
 volumes:
   certbot-etc:
   certbot-web:
   # frontend_node_modules:
+
+
 networks:
   vpc_local:
     # driver: overlay

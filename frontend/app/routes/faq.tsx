@@ -1,6 +1,6 @@
 import type { MetaFunction } from "@remix-run/node";
 import { Accordion, AccordionItem } from "@nextui-org/react";
-import { siteName } from "~/constants/app";
+import { contactEmail, siteName } from "~/constants/app";
 
 export const meta: MetaFunction = () => {
   return [
@@ -104,7 +104,7 @@ export default function Faq() {
           question: "How do I get support?",
           answer: `• Free and Premium plans include deferred support
           • Enterprise plans include 24/7 support
-          • You can contact us at hello@sendable.email`
+          • You can contact us at ${contactEmail}`
         },
         {
           question: "Is there a trial period?",

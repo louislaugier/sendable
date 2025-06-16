@@ -206,7 +206,7 @@ func StartServer() {
 		certPath := fmt.Sprintf("/etc/letsencrypt/live/%s/fullchain.pem", domain)
 		keyPath := fmt.Sprintf("/etc/letsencrypt/live/%s/privkey.pem", domain)
 
-		fmt.Printf("HTTPS server is listening on port 443 with domain %s...\n", domain)
+		fmt.Printf("HTTPS server is listening on port 443 with domain %s...\n", config.BaseURL)
 		if err := http.ListenAndServeTLS(":443", certPath, keyPath, server); err != nil {
 			log.Fatal("ListenAndServeTLS: ", err)
 		}
