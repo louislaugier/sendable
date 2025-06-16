@@ -38,10 +38,8 @@ services:
         export DOMAIN=${DOMAIN}; \
         trap exit TERM; \
         if [ ! -f /etc/letsencrypt/live/$DOMAIN/fullchain.pem ]; then \\
-          echo \"No certificates found, obtaining initial certificate for $DOMAIN...\"; \\
           certbot certonly --webroot -w /var/www/certbot --email hello@${DOMAIN} --agree-tos --no-eff-email --non-interactive -d $DOMAIN; \\
         fi; \\
-        echo \"Starting certificate renewal loop...\"; \\
         while :; do \\
           certbot renew --non-interactive; \\
           sleep 12h & wait $$!; \\
