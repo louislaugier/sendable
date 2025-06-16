@@ -26,8 +26,19 @@ services:
     volumes:
       - certbot-etc:/etc/letsencrypt
       - certbot-web:/var/www/certbot
-    entrypoint: "/bin/sh -c 'trap exit TERM; while :; do certbot renew; sleep 12h & wait $!; done;'"
-    command: certonly --webroot -w /var/www/certbot --email hello@{DOMAIN} --agree-tos --no-eff-email -d ${DOMAIN} --force-renewal
+    entrypoint: | 
+      /bin/sh -c " \
+        trap exit TERM; \
+        if [ ! -f /etc/letsencrypt/live/$DOMAIN/fullchain.pem ]; then \\
+          echo \"No certificates found, obtaining initial certificate for $DOMAIN...\"; \\
+          certbot certonly --webroot -w /var/www/certbot --email your-email@example.com --agree-tos --no-eff-email -d $DOMAIN; \\
+        fi; \\
+        echo \"Starting certificate renewal loop...\"; \\
+        while :; do \\
+          certbot renew; \\
+          sleep 12h & wait $$!; \\
+        done; \\
+      "
     environment:
       - DOMAIN=${DOMAIN}
     networks:
