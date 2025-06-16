@@ -13,6 +13,6 @@ load_env_vars "./.env"
 check_env_vars "SSH_PASSWORD" "SERVER_IP_ADDRESS"
 
 # Execute the remote command using sshpass with direct password input
-execute_remote_sshpass_command "$SSH_PASSWORD" "root" "${SERVER_IP_ADDRESS}" "cd sendable && git pull"
+execute_remote_sshpass_command "$SSH_PASSWORD" "root" "${SERVER_IP_ADDRESS}" "cd sendable && git pull && sleep 5"
 
 # Air will auto rebuild on the remote server after pulling
