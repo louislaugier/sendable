@@ -47,10 +47,10 @@ services:
         echo \"dns_cloudflare_api_token = \"${CLOUDFLARE_API_TOKEN}\"\" > /etc/letsencrypt/creds/cloudflare.ini; \
         chmod 600 /etc/letsencrypt/creds/cloudflare.ini; \
         if [ ! -f /etc/letsencrypt/live/$DOMAIN/fullchain.pem ]; then \\
-          certbot certonly --dns-cloudflare --dns-cloudflare-credentials /etc/letsencrypt/creds/cloudflare.ini --email hello@${DOMAIN} --agree-tos --no-eff-email --non-interactive -d $DOMAIN -d api.$DOMAIN; \\
+          certbot certonly --dns-cloudflare --dns-cloudflare-credentials /etc/letsencrypt/creds/cloudflare.ini --email hello@${DOMAIN} --agree-tos --no-eff-email --non-interactive -d $DOMAIN -d api.$DOMAIN --dns-cloudflare-propagation-seconds 30; \\
         fi; \\
         while :; do \\
-          certbot renew --dns-cloudflare --dns-cloudflare-credentials /etc/letsencrypt/creds/cloudflare.ini --non-interactive; \\
+          certbot renew --dns-cloudflare --dns-cloudflare-credentials /etc/letsencrypt/creds/cloudflare.ini --non-interactive --dns-cloudflare-propagation-seconds 30; \\
           sleep 12h & wait $$!; \\
         done; \\
       "
