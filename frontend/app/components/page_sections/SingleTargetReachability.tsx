@@ -4,7 +4,7 @@ import ReachabilityChip from "~/components/dropdowns/ReachabilityReference/Reach
 import { ReachableDescriptor, RiskyDescriptor, UnknownDescriptor, InvalidDescriptor } from "~/components/dropdowns/ReachabilityReference/ReachabilityDescriptor";
 
 const SingleTargetReachability = (props: any) => {
-    const { email, singleTargetResp, reset } = props
+    const { singleTargetResp, reset } = props
 
     if (!singleTargetResp) {
         return <p>No response data available.</p>;
@@ -25,7 +25,7 @@ const SingleTargetReachability = (props: any) => {
 
     return (
         <>
-            <p style={{ lineHeight: "30px" }} className="mt-8 mb-4"><strong>Reachability</strong> for {email}: <ReachabilityChip reachability={singleTargetResp.is_reachable} email={email} /></p>
+            <p style={{ lineHeight: "30px" }} className="mt-8 mb-4">Reachability for <strong>{singleTargetResp.input}</strong>: <ReachabilityChip reachability={singleTargetResp.is_reachable} email={singleTargetResp.input} /></p>
             <div className="mb-4">
                 {
                     singleTargetResp.is_reachable === Reachability.Reachable ?

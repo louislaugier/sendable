@@ -39,7 +39,7 @@ services:
       /bin/sh -c " \
         export DOMAIN=${DOMAIN}; \
         if [ -z \"$DOMAIN\" ]; then \\
-          echo \"DOMAIN environment variable not set. Skipping Certbot operations.\"; \\
+          echo \"Local development, skipping Certbot operations.\"; \\
           exit 0; \\
         fi; \\
         trap exit TERM; \
@@ -112,31 +112,42 @@ services:
     # clamav:
     #   image: clamav/clamav:1.3.0-41
     restart: unless-stopped
-  # frontend: # on a separate host
-  #   build:
-  #     context: ./frontend
-  #     dockerfile: Dockerfile.dev
-  #   volumes:
-  #     - ./frontend/app/:/frontend/app
-  #     - ./frontend/public/:/frontend/public
-  #     - ./frontend/package.json/:/frontend/package.json
-  #     # - ./frontend/package-lock.json/:/frontend/package-lock.json
-  #     - ./frontend/tailwind.config.ts/:/frontend/tailwind.config.ts
-  #     - frontend_node_modules:/frontend/node_modules
-  #   ports:
-  #     - 3000:5173
-  #   networks:
-  #     - vpc_local
-  #   deploy:
-  #     replicas: 1
-  #     restart_policy:
-  #       condition: on-failure
+
+
+  frontend: # on a separate host in production
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile.dev
+    entrypoint: |
+      /bin/sh -c " \
+        if [ -z "$$DOMAIN" ]; then \
+          npm run dev; \
+        else \
+          echo \"DOMAIN environment variable is set. Skipping frontend dev startup.\"; \
+          exit 0; \
+        fi; \
+      "
+    volumes:
+      - ./frontend/app/:/frontend/app
+      - ./frontend/public/:/frontend/public
+      - ./frontend/package.json/:/frontend/package.json
+      # - ./frontend/package-lock.json/:/frontend/package-lock.json
+      - ./frontend/tailwind.config.ts/:/frontend/tailwind.config.ts
+      - frontend_node_modules:/frontend/node_modules
+    ports:
+      - 3000:5173
+    networks:
+      - vpc_local
+    deploy:
+      replicas: 1
+      restart_policy:
+        condition: on-failure
 
 
 volumes:
   certbot-etc:
   certbot-web:
-  # frontend_node_modules:
+  frontend_node_modules:
 
 
 networks:

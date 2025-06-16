@@ -36,7 +36,7 @@ export default function IntegrationCard(props: IntegrationCardProps) {
         Salesforce: false,
     });
 
-    const { title, url, description, signupBtn, logo, resetHistory, isGuest } = props;
+    const { title, url, description, signupBtn, logo, resetHistory, isGuest, comingSoon } = props;
 
     const { user } = useContext(UserContext);
 
@@ -243,56 +243,57 @@ export default function IntegrationCard(props: IntegrationCardProps) {
 
     return (
         <>
-            <Card style={{ opacity: props.comingSoon ? 0.5 : 1, pointerEvents: props.comingSoon ? "none" : undefined }} className="w-[400px] mb-12">
-                <CardHeader className="flex gap-3">
-                    {logo}
-                    <div className="flex flex-col">
-                        <p className="text-md">{title}</p>
-                        <p className="text-small text-default-500">{url}</p>
-                    </div>
-                </CardHeader>
-                <Divider />
-                <CardBody>
-                    <p>{description}</p>
-                </CardBody>
-                <Divider />
-                <CardFooter className="justify-end gap-2">
-                    {showSignupButton && signupBtn}
-                    {title === 'Salesforce' ?
-                        <Tooltip showArrow={true} content="Salesforce SSO is temporarily disabled.">
-                            <div>
-                                <Button isDisabled color="primary" variant="shadow">
-                                    Import contacts
-                                </Button>
-                            </div>
-                        </Tooltip>
-                        : isGuest ? (
-                            <Tooltip showArrow={true} content="You must be logged in to import contacts">
+            <Tooltip content="Coming Soon!" isDisabled={!comingSoon}>
+                <Card style={{ opacity: comingSoon ? 0.5 : 1 }} className="w-[400px] mb-12">
+                    <CardHeader className="flex gap-3">
+                        {logo}
+                        <div className="flex flex-col">
+                            <p className="text-md">{title}</p>
+                            <p className="text-small text-default-500">{url}</p>
+                        </div>
+                    </CardHeader>
+                    <Divider />
+                    <CardBody>
+                        <p>{description}</p>
+                    </CardBody>
+                    <Divider />
+                    <CardFooter className="justify-end gap-2">
+                        {showSignupButton && signupBtn}
+                        {title === 'Salesforce' ?
+                            <Tooltip showArrow={true} content="Salesforce SSO is temporarily disabled.">
+                                <div>
+                                    <Button isDisabled color="primary" variant="shadow">
+                                        Import contacts
+                                    </Button>
+                                </div>
+                            </Tooltip>
+                            : isGuest ? (
+                                <Tooltip showArrow={true} content="You must be logged in to import contacts">
+                                    <Button
+                                        onClick={() => {
+                                            authModal.onOpen();
+                                        }}
+                                        className="notAllowed"
+                                        color="primary"
+                                        variant="shadow"
+                                    >
+                                        Import contacts
+                                    </Button>
+                                </Tooltip>
+                            ) : (
                                 <Button
-                                    // style={{ cursor: 'not-allowed' }}
-                                    onClick={() => {
-                                        // open auth modal
-                                        authModal.onOpen();
-                                    }}
-                                    className="notAllowed"
+                                    isDisabled={comingSoon}
+                                    isLoading={loadingStates[title]}
+                                    onClick={handleImportClick}
                                     color="primary"
                                     variant="shadow"
                                 >
-                                    Import contacts
+                                    {shouldConnectApiKey ? 'Add API key' : loadingStates[title] ? 'Importing...' : 'Import contacts'}
                                 </Button>
-                            </Tooltip>
-                        ) : (
-                            <Button
-                                isLoading={loadingStates[title]}
-                                onClick={handleImportClick}
-                                color="primary"
-                                variant="shadow"
-                            >
-                                {shouldConnectApiKey ? 'Add API key' : loadingStates[title] ? 'Importing...' : 'Import contacts'}
-                            </Button>
-                        )}
-                </CardFooter>
-            </Card>
+                            )}
+                    </CardFooter>
+                </Card>
+            </Tooltip>
 
             {contacts.length > 0 && (
                 <SelectContactsModal

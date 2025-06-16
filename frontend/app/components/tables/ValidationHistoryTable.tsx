@@ -33,7 +33,7 @@ export default function ValidationHistoryTable(props: any) {
         <TableCell>{moment(validation.createdAt).format("YYYY-MM-DD HH:mm:ss").toString()}</TableCell>
 
         <TableCell>
-            <p>{validation.providerSource ? capitalize(validation.providerSource) : validation.uploadFilename ? validation.uploadFilename : 'Raw JSON'}</p>
+            <p>{validation.providerSource ? capitalize(validation.providerSource) : validation.uploadFilename ? validation.uploadFilename : validation.origin === ValidationOrigin.Platform ? 'Text' : 'Raw JSON'}</p>
         </TableCell>
 
         <TableCell>

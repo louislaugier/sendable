@@ -3,7 +3,7 @@ import ReachabilityChip from "./ReachabilityChip";
 
 export function ReachableDescriptor(props: any) {
     const { nochip } = props;
-    const description = "We guarantee a hard bounce rate lower than 1% when sending an email to this address. In some cases, your emails might bounce even though the recipient address exists, for instance if <strong>your</strong> email server is flagged as a potential spam server or if your domain name or sender has a bad or nascent reputation.";
+    const description = "We guarantee a hard bounce rate lower than 1% when sending an email to this address. In some cases, your emails might bounce even though the recipient address exists, for instance if <strong>your</strong> email server is flagged as a potential spam server or if <strong>your</strong> domain name or sender has a bad or nascent reputation.";
 
     return (
         <>
