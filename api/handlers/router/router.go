@@ -219,7 +219,6 @@ func StartServer() {
 }
 
 func createCorsHandler(mux *http.ServeMux) http.Handler {
-	log.Println("ok123", config.FrontendURL)
 	corsOptions := cors.New(cors.Options{
 		AllowedOrigins: []string{"*"}, // Allows all origins
 		// AllowedOrigins:   []string{config.FrontendURL, "http://127.0.0.1:3000"}, // Mailchimp doesn't allow "localhost" as oauth callback but allows 127.0.0.1
