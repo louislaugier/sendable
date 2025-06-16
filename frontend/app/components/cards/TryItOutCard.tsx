@@ -112,7 +112,7 @@ export default function TryItOut() {
                             <Divider className="mt-6 mb-2" />
                             <CardFooter>
                                 <div>
-                                    <p style={{ lineHeight: "30px" }}>Reachability for <b>{emailConfirmed}</b>: <ReachabilityChip reachability={reachability} email={email} /></p>
+                                    <p style={{ lineHeight: "30px" }}>Reachability status for <b>{emailConfirmed}</b>: <ReachabilityChip reachability={reachability} email={email} /></p>
                                     <Link onClick={() => {
                                         setModalType(AuthModalType.Signup);
                                         authModal.onOpen();
