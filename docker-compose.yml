@@ -12,14 +12,21 @@ services:
       - 443:443
     networks:
       - vpc_local
+    healthcheck:
+      test: ["CMD", "wget", "--quiet", "--tries=1", "--timeout=2", "http://localhost/v1/healthz", "-O", "/dev/null"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
     environment:
       - DOMAIN=${DOMAIN}
       - POSTGRES_USER=${POSTGRES_USER}
       - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
       - POSTGRES_DB=${POSTGRES_DB}
     depends_on:
-      - db
-      - reacher
+      db:
+        condition: service_started
+      reacher:
+        condition: service_started
     restart: unless-stopped
   certbot:
     image: certbot/certbot
@@ -28,14 +35,15 @@ services:
       - certbot-web:/var/www/certbot
     entrypoint: | 
       /bin/sh -c " \
+        export DOMAIN=${DOMAIN}; \
         trap exit TERM; \
         if [ ! -f /etc/letsencrypt/live/$DOMAIN/fullchain.pem ]; then \\
           echo \"No certificates found, obtaining initial certificate for $DOMAIN...\"; \\
-          certbot certonly --webroot -w /var/www/certbot --email your-email@example.com --agree-tos --no-eff-email -d $DOMAIN; \\
+          certbot certonly --webroot -w /var/www/certbot --email hello@${DOMAIN} --agree-tos --no-eff-email --non-interactive -d $DOMAIN; \\
         fi; \\
         echo \"Starting certificate renewal loop...\"; \\
         while :; do \\
-          certbot renew; \\
+          certbot renew --non-interactive; \\
           sleep 12h & wait $$!; \\
         done; \\
       "
@@ -44,7 +52,8 @@ services:
     networks:
       - vpc_local
     depends_on:
-      - api
+      api:
+        condition: service_healthy
     restart: on-failure
   db:
     build:
