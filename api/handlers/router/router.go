@@ -194,15 +194,6 @@ func StartServer() {
 	// Add CORS to all routes except generate_jwt, validate_email and validate_emails (consumer API routes)
 	server.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
 		if r.URL.Path == config.APIVersionPrefix+"/generate_jwt" || r.URL.Path == config.APIVersionPrefix+"/validate_email" || r.URL.Path == config.APIVersionPrefix+"/validate_emails" {
-			// For routes that bypass main CORS, handle OPTIONS preflight explicitly
-			if r.Method == "OPTIONS" {
-				w.Header().Set("Access-Control-Allow-Origin", r.Header.Get("Origin"))
-				w.Header().Set("Access-Control-Allow-Methods", "POST, GET, OPTIONS, PUT, DELETE") // Or whatever methods your API supports
-				w.Header().Set("Access-Control-Allow-Headers", "Accept, Content-Type, Content-Length, Accept-Encoding, X-CSRF-Token, Authorization")
-				w.Header().Set("Access-Control-Allow-Credentials", "true")
-				w.WriteHeader(http.StatusOK)
-				return
-			}
 			mux.ServeHTTP(w, r) // Serve the request without CORS middleware
 		} else {
 			corsHandler := createCorsHandler(mux)
@@ -230,9 +221,9 @@ func StartServer() {
 func createCorsHandler(mux *http.ServeMux) http.Handler {
 	log.Println("ok123", config.FrontendURL)
 	corsOptions := cors.New(cors.Options{
-		// AllowedOrigins: []string{"*"}, // Allows all origins
+		AllowedOrigins: []string{"*"}, // Allows all origins
 		// AllowedOrigins:   []string{config.FrontendURL, "http://127.0.0.1:3000"}, // Mailchimp doesn't allow "localhost" as oauth callback but allows 127.0.0.1
-		AllowedOrigins:   []string{config.FrontendURL}, // The allowed domains
+		// AllowedOrigins:   []string{config.FrontendURL}, // The allowed domains
 		AllowedMethods:   []string{"GET", "POST", "OPTIONS", "PUT", "DELETE"},
 		AllowedHeaders:   []string{"Accept", "Content-Type", "Content-Length", "Accept-Encoding", "X-CSRF-Token", "Authorization"},
 		AllowCredentials: true,
