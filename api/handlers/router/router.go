@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"log"
 	"net/http"
+	"os"
 	"sendable/config"
 	"sendable/handlers"
 	"sendable/handlers/middleware"
@@ -173,6 +174,15 @@ func handleHTTP(mux *http.ServeMux) {
 		),
 		true,
 	)
+
+	handle(mux, "/.well-known/acme-challenge/",
+		http.StripPrefix("/.well-known/acme-challenge/",
+			http.FileServer(
+				http.Dir("/var/www/certbot"),
+			),
+		),
+		false, // No base rate limit for ACME challenge
+	)
 }
 
 func StartServer() {
@@ -183,7 +193,7 @@ func StartServer() {
 
 	// Add CORS to all routes except generate_jwt, validate_email and validate_emails (consumer API routes)
 	server.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
-		if r.URL.Path == "/generate_jwt" || r.URL.Path == "/validate_email" || r.URL.Path == "/validate_emails" {
+		if r.URL.Path == config.APIVersionPrefix+"/generate_jwt" || r.URL.Path == config.APIVersionPrefix+"/validate_email" || r.URL.Path == config.APIVersionPrefix+"/validate_emails" {
 			mux.ServeHTTP(w, r) // Serve the request without CORS middleware
 		} else {
 			corsHandler := createCorsHandler(mux)
@@ -191,9 +201,17 @@ func StartServer() {
 		}
 	})
 
-	fmt.Println("HTTP server is listening on port 80...")
-	if err := http.ListenAndServe(":80", server); err != nil {
-		log.Fatal("ListenAndServe: ", err)
+	domain := os.Getenv("DOMAIN")
+	if domain != "" {
+		fmt.Printf("HTTPS server is listening on port 443 with domain %s...\n", domain)
+		if err := http.ListenAndServeTLS(":443", "/etc/certs/fullchain.pem", "/etc/certs/privkey.pem", server); err != nil {
+			log.Fatal("ListenAndServeTLS: ", err)
+		}
+	} else {
+		fmt.Println("HTTP server is listening on port 80...")
+		if err := http.ListenAndServe(":80", server); err != nil {
+			log.Fatal("ListenAndServe: ", err)
+		}
 	}
 }
 

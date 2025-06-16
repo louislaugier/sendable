@@ -5,8 +5,11 @@ services:
       dockerfile: Dockerfile.dev
     volumes:
       - ./api/:/go/src/sendable/api
+      - certbot-etc:/etc/letsencrypt
+      - certbot-web:/var/www/certbot
     ports:
       - 80:80
+      - 443:443
     networks:
       - vpc_local
     environment:
@@ -18,6 +21,20 @@ services:
       - db
       - reacher
     restart: unless-stopped
+  certbot:
+    image: certbot/certbot
+    volumes:
+      - certbot-etc:/etc/letsencrypt
+      - certbot-web:/var/www/certbot
+    entrypoint: "/bin/sh -c 'trap exit TERM; while :; do certbot renew; sleep 12h & wait $!; done;'"
+    command: certonly --webroot -w /var/www/certbot --email your-email@example.com --agree-tos --no-eff-email -d ${DOMAIN} --force-renewal
+    environment:
+      - DOMAIN=${DOMAIN}
+    networks:
+      - vpc_local
+    depends_on:
+      - api
+    restart: on-failure
   db:
     build:
       context: ./database
@@ -74,6 +91,8 @@ services:
   #     restart_policy:
   #       condition: on-failure
 volumes:
+  certbot-etc:
+  certbot-web:
   frontend_node_modules:
 networks:
   vpc_local:
