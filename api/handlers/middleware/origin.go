@@ -21,6 +21,10 @@ func ValidateSingleValidationOriginAndLimits(next http.Handler) http.Handler {
 			).ServeHTTP(w, r)
 		} else {
 			// If no Authorization header, apply rate limit middlewares directly
+			if GetOriginFromRequest(r) != config.FrontendURL {
+				http.Error(w, "Unauthorized Origin", http.StatusUnauthorized)
+				return
+			}
 			SingleValidationRateLimit(next).ServeHTTP(w, r)
 		}
 	})

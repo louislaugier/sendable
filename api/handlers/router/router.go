@@ -174,15 +174,6 @@ func handleHTTP(mux *http.ServeMux) {
 		),
 		true,
 	)
-
-	handle(mux, "/.well-known/acme-challenge/",
-		http.StripPrefix("/.well-known/acme-challenge/",
-			http.FileServer(
-				http.Dir("/var/www/certbot"),
-			),
-		),
-		false, // No base rate limit for ACME challenge
-	)
 }
 
 func StartServer() {
@@ -220,9 +211,9 @@ func StartServer() {
 
 func createCorsHandler(mux *http.ServeMux) http.Handler {
 	corsOptions := cors.New(cors.Options{
-		// AllowedOrigins: []string{"*"}, // Allows all origins
+		AllowedOrigins: []string{"*"}, // Allows all origins
 		// AllowedOrigins:   []string{config.FrontendURL, "http://127.0.0.1:3000"}, // Mailchimp doesn't allow "localhost" as oauth callback but allows 127.0.0.1
-		AllowedOrigins:   []string{config.FrontendURL}, // The allowed domains
+		// AllowedOrigins:   []string{config.FrontendURL}, // The allowed domains
 		AllowedMethods:   []string{"GET", "POST", "OPTIONS", "PUT", "DELETE"},
 		AllowedHeaders:   []string{"Accept", "Content-Type", "Content-Length", "Accept-Encoding", "X-CSRF-Token", "Authorization"},
 		AllowCredentials: true,
