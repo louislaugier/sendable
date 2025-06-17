@@ -7,7 +7,7 @@ const googleAuth = async (data: { accessToken?: string, jwt?: string }) => {
 
         return userData;
     } catch (error: any) {
-        if (error?.message?.includes('user already exists with provider')) alert(error?.response?.data)
+        if (error?.response?.data.includes('user already exists with')) alert(error?.response?.data)
         else {
             console.error('Error:', error);
             throw error;

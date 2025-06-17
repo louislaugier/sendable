@@ -5,7 +5,7 @@ const emailSignup = async (data: any) => {
         const response = await (await getClient()).post('email_signup', data);
         return response.data;
     } catch (error: any) {
-        if (error?.message?.includes('409')) return { error: error?.response?.data }
+        if (error?.response?.data.includes('user already exists with') || error?.response?.data.includes('address already in use')) alert(error?.response?.data)
         else {
             console.error('Error:', error);
             throw error;

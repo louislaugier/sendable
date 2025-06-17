@@ -5,7 +5,7 @@ const linkedinAuth = async (data: any) => {
         const response = await (await getClient()).post('auth_linkedin', data);
         return response.data;
     } catch (error: any) {
-        if (error?.message?.includes('user already exists with provider')) alert(error?.response?.data)
+        if (error?.response?.data.includes('user already exists with')) alert(error?.response?.data)
         else {
             console.error('Error:', error);
             throw error;
