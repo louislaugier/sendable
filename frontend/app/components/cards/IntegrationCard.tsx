@@ -13,6 +13,7 @@ import { AuthCodeEvent } from "~/types/oauth";
 import { fetchSalesforcePKCE } from "~/services/utils/salesforce/pkce";
 import NoContactsModal from "../modals/NoContactsModal";
 import AuthModalContext from "~/contexts/AuthModalContext";
+import { AuthModalType } from "~/types/modal";
 
 interface IntegrationCardProps {
     comingSoon?: boolean;
@@ -239,7 +240,7 @@ export default function IntegrationCard(props: IntegrationCardProps) {
 
     const showSignupButton = isGuest && title !== 'SendGrid' && title !== 'Brevo';
 
-    const { authModal } = useContext(AuthModalContext);
+    const { authModal, setModalType } = useContext(AuthModalContext);
 
     return (
         <>
@@ -271,6 +272,7 @@ export default function IntegrationCard(props: IntegrationCardProps) {
                                 <Tooltip showArrow={true} content="You must be logged in to import contacts">
                                     <Button
                                         onClick={() => {
+                                            setModalType(AuthModalType.Login);
                                             authModal.onOpen();
                                         }}
                                         className="notAllowed"

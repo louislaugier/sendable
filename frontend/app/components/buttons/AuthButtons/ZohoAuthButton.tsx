@@ -10,11 +10,12 @@ import { Tooltip } from '@nextui-org/react';
 import { siteName } from '~/constants/app';
 import { zohoOauthClientId } from '~/constants/oauth/clientIds';
 import { zohoOauthRedirectUri } from '~/constants/oauth/urls';
+import { AuthModalType } from "~/types/modal";
 
 const url = 'https://accounts.zoho.com/oauth/v2/auth'
 
-export default function ZohoAuthButton(props: any) {
-  const { customText } = props;
+export default function ZohoAuthButton(props: { customText?: string, modalType?: AuthModalType }) {
+  const { customText, modalType } = props;
 
   const [isLoading, setLoading] = useState(false);
 
@@ -48,7 +49,7 @@ export default function ZohoAuthButton(props: any) {
     <Tooltip content={`Zoho SSO is temporarily disabled for authentication on ${siteName}. You may still import contacts from your Zoho CRM once logged in with another provider or your email.`}>
       <div>
         <Button className='w-full' isDisabled style={{ justifyContent: 'flex-start' }} isLoading={isLoading} onClick={zohoLogin} variant="bordered" color="primary" startContent={!customText && <ZohoIcon />}>
-          {isLoading ? 'Loading...' : customText ?? 'Log in with Zoho'}
+          {isLoading ? 'Loading...' : customText ?? `${modalType === AuthModalType.Signup ? AuthModalType.Signup : AuthModalType.Login} with Zoho`}
         </Button>
       </div>
     </Tooltip>

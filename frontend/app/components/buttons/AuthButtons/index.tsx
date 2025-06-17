@@ -68,17 +68,17 @@ export default function AuthButtons(props: any) {
                 <div className="flex flex-col py-4" style={{ width: '90%', alignItems: 'center', margin: 'auto' }}>
                     <div className="gap-2 flex flex-col" style={{ width: '220px' }}>
 
-                        <SalesforceAuthButton />
-                        <HubspotAuthButton />
-                        <ZohoAuthButton />
-                        <MailchimpAuthButton />
+                        <SalesforceAuthButton modalType={modalType} />
+                        <HubspotAuthButton modalType={modalType} />
+                        <ZohoAuthButton modalType={modalType} />
+                        <MailchimpAuthButton modalType={modalType} />
                     </div>
 
                     <Divider className="my-6" />
 
                     <div className="gap-2 flex flex-col" style={{ width: '220px' }}>
-                        <GoogleAuthButton />
-                        <LinkedinAuthButton />
+                        <GoogleAuthButton modalType={modalType} />
+                        <LinkedinAuthButton modalType={modalType} />
                     </div>
 
                     <Divider className="my-6" />

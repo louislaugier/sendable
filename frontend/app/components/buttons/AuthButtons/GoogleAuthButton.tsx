@@ -5,6 +5,7 @@ import GoogleIcon from "~/components/icons/logos/GoogleLogo";
 import googleAuth from "~/services/api/auth/google";
 import UserContext from "~/contexts/UserContext";
 import { navigateToUrl } from "~/utils/url";
+import { AuthModalType } from "~/types/modal";
 
 export function GoogleOneTap() {
     const { setUser, setTemp2faUserId } = useContext(UserContext);
@@ -31,7 +32,7 @@ export function GoogleOneTap() {
     return null; // This component doesn't render anything
 }
 
-export default function GoogleAuthButton() {
+export default function GoogleAuthButton({ modalType }: { modalType?: AuthModalType }) {
     const [isLoading, setLoading] = useState(false);
     const { setUser, setTemp2faUserId } = useContext(UserContext)
 
@@ -85,7 +86,7 @@ export default function GoogleAuthButton() {
                 color="primary"
                 startContent={<GoogleIcon />}
             >
-                <p>{isLoading ? 'Loading...' : 'Log in with Google'}</p>
+                <p>{isLoading ? 'Loading...' : `${modalType === AuthModalType.Signup ? AuthModalType.Signup : AuthModalType.Login} with Google`}</p>
             </Button>
         </>
     )

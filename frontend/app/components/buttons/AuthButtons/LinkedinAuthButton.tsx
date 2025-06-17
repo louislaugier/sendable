@@ -8,11 +8,12 @@ import linkedinAuth from "~/services/api/auth/linkedin";
 import { AuthCodeEvent } from "~/types/oauth";
 import UserContext from "~/contexts/UserContext";
 import { handleAuthCode, login } from "~/services/oauth";
+import { AuthModalType } from "~/types/modal";
 
 const url = 'https://www.linkedin.com/oauth/v2/authorization'
 const scope = 'email openid'
 
-export default function LinkedinAuthButton() {
+export default function LinkedinAuthButton({ modalType }: { modalType?: AuthModalType }) {
     const [isLoading, setLoading] = useState(false);
 
     const { setUser, setTemp2faUserId } = useContext(UserContext)
@@ -43,7 +44,7 @@ export default function LinkedinAuthButton() {
 
     return (
         <Button style={{ justifyContent: 'flex-start' }} isLoading={isLoading} onClick={linkedinLogin} variant="bordered" color="primary" startContent={<LinkedinIcon />}>
-            {isLoading ? 'Loading...' : 'Log in with LinkedIn'}
+            {isLoading ? 'Loading...' : `${modalType === AuthModalType.Signup ? AuthModalType.Signup : AuthModalType.Login} with LinkedIn`}
         </Button>
     );
 }

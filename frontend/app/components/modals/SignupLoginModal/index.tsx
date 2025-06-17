@@ -20,7 +20,7 @@ import { useSearchParams } from "@remix-run/react";
 export default function SignupLoginModal(props: any) {
     const { authModal, modalType, setModalType } = useContext(AuthModalContext);
 
-    const { isOpen, onClose, onOpenChange } = props;
+    const { isOpen, onClose, onOpenChange } = authModal;
 
     const { user, setUser, setTemp2faUserId } = useContext(UserContext);
 
@@ -338,8 +338,25 @@ export default function SignupLoginModal(props: any) {
                                                 setModalType(AuthModalType.Login);
                                                 authModal.onOpen();
                                             }} href='/'>log into your account</Link>.</p>
-                                        </> :
-                                            <AuthButtons isSignup={isSignup} isLogin={isLogin} signupEmail={signupEmail} signupPassword={signupPassword} setSignupEmail={setSignupEmail} setSignupPassword={setSignupPassword} loginEmail={loginEmail} loginPassword={loginPassword} setLoginEmail={setLoginEmail} setLoginPassword={setLoginPassword} isSignupButtonVisible={isSignupButtonVisible} setSignupButtonVisible={setSignupButtonVisible} isLoginButtonVisible={isLoginButtonVisible} setLoginButtonVisible={setLoginButtonVisible} modalType={modalType} loginError={loginError} setLoginError={setLoginError} signupEmailError={signupEmailError} signupPasswordError={signupPasswordError} isForgotPassVisible={isForgotPassVisible} setForgotPassVisible={setForgotPassVisible} submitRef={submitRef} />}
+                                        </> : (
+                                            <>
+                                                <AuthButtons isSignup={isSignup} isLogin={isLogin} signupEmail={signupEmail} signupPassword={signupPassword} setSignupEmail={setSignupEmail} setSignupPassword={setSignupPassword} loginEmail={loginEmail} loginPassword={loginPassword} setLoginEmail={setLoginEmail} setLoginPassword={setLoginPassword} isSignupButtonVisible={isSignupButtonVisible} setSignupButtonVisible={setSignupButtonVisible} isLoginButtonVisible={isLoginButtonVisible} setLoginButtonVisible={setLoginButtonVisible} modalType={modalType} loginError={loginError} setLoginError={setLoginError} signupEmailError={signupEmailError} signupPasswordError={signupPasswordError} isForgotPassVisible={isForgotPassVisible} setForgotPassVisible={setForgotPassVisible} submitRef={submitRef} />
+
+                                                {isLogin && !isForgotPassVisible &&
+                                                    <p className="text-center text-sm">Don't have an account? <Link className="text-sm" style={{ textDecoration: 'underline', cursor: "pointer" }} onClick={(e: any) => {
+                                                        e.preventDefault();
+                                                        setModalType(AuthModalType.Signup);
+                                                    }}>Sign up</Link>.</p>
+                                                }
+
+                                                {isSignup && !isSignupEmailSent &&
+                                                    <p className="text-center text-sm">Already have an account? <Link className="text-sm" style={{ textDecoration: 'underline', cursor: "pointer" }} onClick={(e: any) => {
+                                                        e.preventDefault();
+                                                        setModalType(AuthModalType.Login);
+                                                    }}>Log in</Link>.</p>
+                                                }
+                                            </>
+                                        )}
                             </ModalBody>
                             <ModalFooter>
                                 <Button color="danger" variant="bordered" onPress={onClose}>

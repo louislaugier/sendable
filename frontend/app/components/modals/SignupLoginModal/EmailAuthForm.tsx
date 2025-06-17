@@ -80,7 +80,7 @@ export default function EmailAuthForm(props: any) {
                 >
                     Remember me
                 </Checkbox> */}
-                    <Link onClick={() => setForgotPassVisible(true)} color="primary" size="sm" className="cursor-pointer">
+                    <Link onClick={() => setForgotPassVisible(true)} color="primary" size="sm" className="cursor-pointer" style={{textDecoration: 'underline'}}>
                         Forgot password?
                     </Link>
                 </div>}

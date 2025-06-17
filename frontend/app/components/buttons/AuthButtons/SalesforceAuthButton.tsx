@@ -10,11 +10,12 @@ import UserContext from '~/contexts/UserContext';
 import { handleAuthCode, login } from '~/services/oauth';
 import { Tooltip } from '@nextui-org/react';
 import { siteName } from '~/constants/app';
+import { AuthModalType } from "~/types/modal";
 
 const url = 'https://login.salesforce.com/services/oauth2/authorize'
 
-export default function SalesforceAuthButton(props: any) {
-  const { customText } = props;
+export default function SalesforceAuthButton(props: { customText?: string, modalType?: AuthModalType }) {
+  const { customText, modalType } = props;
 
   const [isLoading, setLoading] = useState(false);
 
@@ -47,8 +48,8 @@ export default function SalesforceAuthButton(props: any) {
   return (
     <Tooltip content={`Salesforce SSO is temporarily disabled.`}>
       <div>
-        <Button isDisabled style={{ justifyContent: 'flex-start' }} isLoading={isLoading} onClick={salesforceLogin} color='primary' variant="bordered" startContent={!customText && <SalesforceIcon />}>
-          <p className='text-red'>{isLoading ? 'Loading...' : customText ?? 'Log in with Salesforce'}</p>
+        <Button isDisabled style={{ justifyContent: 'flex-start', width: !!modalType ? '220px' : '' }} isLoading={isLoading} onClick={salesforceLogin} color='primary' variant="bordered" startContent={!customText && <SalesforceIcon />}>
+          <p className='text-red'>{isLoading ? 'Loading...' : customText ?? `${modalType === AuthModalType.Signup ? AuthModalType.Signup : AuthModalType.Login} with Salesforce`}</p>
         </Button>
       </div>
     </Tooltip>
