@@ -7,7 +7,8 @@ ARG BUILDPLATFORM
 
 # Define email configuration only
 ENV BACKUP_EMAIL_FROM=louis.laugier.backups@gmail.com
-ENV BACKUP_EMAIL_TO=l.laugier@pm.me
+ENV BACKUP_EMAIL_TO=louis.laugier.backups@gmail.com
+# ENV BACKUP_EMAIL_TO=l.laugier@pm.me
 
 # Install required packages
 RUN apt-get update && apt-get install -y \
